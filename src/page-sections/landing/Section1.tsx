@@ -8,6 +8,8 @@ import Container from '@mui/material/Container'
 import { styled, keyframes } from '@mui/material/styles'
 // CUSTOM COMPONENT
 import { H1, Paragraph } from '@/components/typography'
+// APP CONSTANTS
+import { BRAND } from '@/utils/constants'
 
 const shine = keyframes`
 0% {
@@ -84,28 +86,29 @@ export default function Section1() {
           </Paragraph>
 
           <MainTitle fontSize={92} fontWeight={800}>
-            Uko
+            {BRAND.name}
           </MainTitle>
 
           <Paragraph color="white" fontSize={18} mt={1}>
-            Choose from React CRA/Vite/Next.js versions, <br /> with both RTL support and Dark/Light
-            themes included.
+            Launch governed AI operations with enterprise-ready patterns, <br /> observability, and
+            compliance baked in from day one.
           </Paragraph>
 
+          {/* Marketing-focused calls to action that drive visitors to revenue and contact routes */}
           <Stack mt={6} direction="row" gap={2} alignItems="center" justifyContent="center">
             <Button
-              onClick={() => navigate('/components')}
+              onClick={() => navigate('/pricing')}
               sx={{ paddingInline: 3, paddingBlock: 1 }}
             >
-              Browse Components
+              See Pricing
             </Button>
 
             <Button
               variant="outlined"
-              onClick={() => navigate('/dashboard/ecommerce')}
+              onClick={() => navigate('/contact-us')}
               sx={{ paddingInline: 3, paddingBlock: 1 }}
             >
-              View Demo
+              Talk to Us
             </Button>
           </Stack>
         </Box>

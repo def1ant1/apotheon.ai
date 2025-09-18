@@ -42,7 +42,7 @@ export const PROJECTS = [
   {
     id: 5,
     progress: 27,
-    name: 'Uko Dashboard',
+    name: 'Apotheon.ai Control Center',
     status: 'in-progress',
     startDate: '2022-01-01',
     endDate: '2022-12-31',

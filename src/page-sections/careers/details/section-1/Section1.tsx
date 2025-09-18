@@ -3,6 +3,8 @@ import Button from '@mui/material/Button'
 // CUSTOM COMPONENT
 import Link from '@/components/link/Link'
 import { H6, Paragraph } from '@/components/typography'
+// APP CONSTANTS
+import { BRAND } from '@/utils/constants'
 // STYLED COMPONENT
 import { StyledRoot } from './styles'
 
@@ -20,13 +22,13 @@ export default function Section1() {
         </div>
 
         <Paragraph pt={2} pb={3} lineHeight={1}>
-          at UI-Lib
+          at {BRAND.name}
         </Paragraph>
 
         <div className="tags">
-          <Chip label="www.ui-lib.com" color="secondary" />
+          <Chip label="apotheon.ai" color="secondary" />
           <Chip label="Contact" color="secondary" />
-          <Chip label="jobs@ui-lib.com" color="secondary" />
+          <Chip label={`jobs@${BRAND.name.toLowerCase()}`} color="secondary" />
           <Chip label="+0123456789" color="secondary" />
           <Chip label="Facebook" color="secondary" />
           <Chip label="Whatsapp" color="secondary" />

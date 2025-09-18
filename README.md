@@ -1,4 +1,4 @@
-# Uko Admin Dashboard & UI Kits
+# Apotheon.ai Marketing Site
 
 ## Install dependencies
 

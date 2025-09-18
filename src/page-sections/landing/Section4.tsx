@@ -10,6 +10,8 @@ import Container from '@mui/material/Container'
 import KeyboardTab from '@mui/icons-material/KeyboardTab'
 // CUSTOM COMPONENTS
 import { H2, Paragraph } from '@/components/typography'
+// APP CONSTANTS
+import { BRAND } from '@/utils/constants'
 
 export default function Section4() {
   const navigate = useNavigate()
@@ -24,16 +26,18 @@ export default function Section4() {
             </H2>
 
             <Paragraph mt={1} mb={3} fontSize={18} color="text.secondary">
-              Save thousands of development hours with Uko’s well crafted features and clean code
+              Save thousands of development hours with {BRAND.name}'s well-crafted features and
+              clean code
             </Paragraph>
 
+            {/* Invite prospects to a conversation instead of gated app previews. */}
             <Button
               color="secondary"
               variant="outlined"
               startIcon={<KeyboardTab />}
-              onClick={() => navigate('/dashboard/product-list')}
+              onClick={() => navigate('/contact-us')}
             >
-              Browse pages & apps
+              Talk with our team
             </Button>
           </Box>
         </Grid>

@@ -4,6 +4,8 @@ import Container from '@mui/material/Container'
 // CUSTOM COMPONENTS
 import FlexBox from '@/components/flexbox/FlexBox'
 import { H6, Paragraph } from '@/components/typography'
+// APP CONSTANTS
+import { BRAND } from '@/utils/constants'
 // STYLED COMPONENTS
 import { HeaderTop, TicketWrapper } from './styles'
 
@@ -20,23 +22,29 @@ export default function Footer() {
               lineHeight={1.4}
               fontSize={{ sm: 36, xs: 27 }}
             >
-              Streamline your workflow <br /> with Uko
+              Streamline your workflow <br /> with {BRAND.name}
             </H6>
 
             <FlexBox alignItems="center" gap={2}>
-              <Button size="large" color="inherit" className="buy-btn" href='https://mui.com/store/items/uko-client-admin-dashboard/'>
-                Buy Now
+              <Button
+                size="large"
+                color="inherit"
+                className="buy-btn"
+                href={BRAND.marketingSite}
+              >
+                Explore Platform
               </Button>
 
+              {/* Encourage direct sales contact rather than internal previews. */}
               <Button
                 size="large"
                 color="inherit"
                 variant="outlined"
                 className="preview-btn"
                 LinkComponent="a"
-                href="/dashboard"
+                href={BRAND.contact}
               >
-                Live Preview
+                Book a call
               </Button>
             </FlexBox>
           </Box>
@@ -52,7 +60,7 @@ export default function Footer() {
           </Paragraph>
 
           <FlexBox justifyContent="center" alignItems="center" gap={2}>
-            <Button LinkComponent="a" href="https://support.ui-lib.com/" target="_blank">
+            <Button LinkComponent="a" href={BRAND.supportPortal} target="_blank">
               Submit Ticket
             </Button>
 
@@ -60,7 +68,7 @@ export default function Footer() {
               target="_blank"
               LinkComponent="a"
               variant="outlined"
-              href="mailto:support@ui-lib.com?subject=Uko React Query"
+              href={`mailto:${BRAND.supportEmail}?subject=Apotheon.ai%20Support%20Request`}
             >
               Send an email
             </Button>
@@ -70,8 +78,8 @@ export default function Footer() {
 
       <Paragraph fontSize={16} textAlign="center" py={6}>
         Copyright ©{' '}
-        <Box component="a" href="https://ui-lib.com" target="_blank">
-          UI Lib
+        <Box component="a" href={BRAND.marketingSite} target="_blank">
+          {BRAND.name}
         </Box>
         . All rights reserved
       </Paragraph>

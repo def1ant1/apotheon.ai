@@ -4,6 +4,8 @@ import Container from '@mui/material/Container'
 import Link from '@/components/link'
 import SectionTitle from '@/components/section-title'
 import GradientBackground from '@/components/gradient-background'
+// APP CONSTANTS
+import { BRAND } from '@/utils/constants'
 // STYLED COMPONENT
 import { MainContent } from './styles'
 
@@ -13,7 +15,7 @@ export default function MaintenancePageView() {
       <Container>
         <MainContent>
           <SectionTitle centered title="Maintenance underway" />
-          <p>Uko is Undergoing maintenance for future growth.</p>
+          <p>{BRAND.name} is undergoing maintenance for future growth.</p>
 
           <div className="img-wrapper">
             <img src="/static/pages/maintenance.svg" alt="maintenance" width="100%" />

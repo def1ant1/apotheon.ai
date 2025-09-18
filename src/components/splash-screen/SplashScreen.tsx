@@ -1,5 +1,7 @@
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
+// APP CONSTANTS
+import { BRAND } from '@/utils/constants'
 // STYLED COMPONENT
 import { GradientBox, RootStyle } from './styles'
 
@@ -17,7 +19,7 @@ export default function SplashScreen() {
           position="relative"
           boxSizing="border-box"
         >
-          <Box component="img" src="/static/logo/logo-svg.svg" alt="uko" width="100%" />
+          <Box component="img" src="/static/logo/logo-svg.svg" alt={BRAND.name} width="100%" />
         </Box>
       </GradientBox>
     </RootStyle>

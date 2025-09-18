@@ -23,6 +23,8 @@ import MegaMenuList from './menu/MegaMenuList'
 import ChevronDown from '@/icons/ChevronDown'
 // NAVIGATION LIST
 import { PAGES_MENUS } from './menu/navigation'
+// APP CONSTANTS
+import { BRAND } from '@/utils/constants'
 
 // STYLED COMPONENT
 const StyledRoot = styled('header')(({ theme }) => ({
@@ -57,9 +59,13 @@ export default function Navigation() {
   const [collapsed, setCollapsed] = useState(false)
   const isMedium = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
 
-  const isActive = (path: string) => pathname === path
+  // Centralise frequently reused URLs to keep navigation CTAs consistent.
+  const primaryDestinations = {
+    docs: BRAND.docs,
+    contactSales: BRAND.contact,
+  }
 
-  const isComponentsRoute = pathname.startsWith('/components')
+  const isActive = (path: string) => pathname === path
 
   useEffect(() => {
     if (isMedium) setOpen(false)
@@ -68,26 +74,18 @@ export default function Navigation() {
   // FOR LARGE SCREEN DEVICE
   const LARGE_DEVICE_CONTENT = (
     <StyledNav>
-      <StyledNavItem href="/" isActive={isActive('/')} isDark={isComponentsRoute}>
+      <StyledNavItem href="/" isActive={isActive('/')} isDark={false}>
         Home
       </StyledNavItem>
 
-      {/* PAGES MEGA MENU */}
-      <MegaMenu isDark={isComponentsRoute} />
+      {/* PAGES MEGA MENU - trimmed to public marketing destinations only */}
+      <MegaMenu isDark={false} />
 
-      <StyledNavItem
-        href="/components"
-        isDark={isComponentsRoute}
-        isActive={isActive('/components')}
-      >
-        Components
-      </StyledNavItem>
-
-      <StyledNavItem href="http://uko-doc.vercel.app/" isDark={isComponentsRoute}>
+      <StyledNavItem href={primaryDestinations.docs} isDark={false}>
         Documentation
       </StyledNavItem>
 
-      <Button href="https://mui.com/store/items/uko-client-admin-dashboard/">Buy Now</Button>
+      <Button href={primaryDestinations.contactSales}>Contact Sales</Button>
     </StyledNav>
   )
 
@@ -130,20 +128,14 @@ export default function Navigation() {
             </ListItem>
 
             <ListItem disablePadding>
-              <ListItemButton LinkComponent={Link} href="/components">
-                Components
-              </ListItemButton>
-            </ListItem>
-
-            <ListItem disablePadding>
-              <ListItemButton LinkComponent="a" href="http://uko-doc.vercel.app/">
+              <ListItemButton LinkComponent="a" href={primaryDestinations.docs}>
                 Documentation
               </ListItemButton>
             </ListItem>
 
             <ListItem sx={{ mt: 1 }}>
-              <Button fullWidth href="https://mui.com/store/items/uko-client-admin-dashboard/">
-                Buy Now
+              <Button fullWidth href={primaryDestinations.contactSales}>
+                Contact Sales
               </Button>
             </ListItem>
           </List>
@@ -158,7 +150,7 @@ export default function Navigation() {
 
   return (
     <StyledRoot>
-      {/* UKO LOGO */}
+      {/* Apotheon.ai logo keeps the masthead branded for the public site. */}
       <Link href="/">
         <img src="/static/logo/logo-svg.svg" alt="logo" width={35} height={35} />
       </Link>

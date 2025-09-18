@@ -5,6 +5,8 @@ import Stack from '@mui/material/Stack'
 import Container from '@mui/material/Container'
 // CUSTOM COMPONENTS
 import { H2, H6, Paragraph } from '@/components/typography'
+// APP CONSTANTS
+import { BRAND } from '@/utils/constants'
 
 // DUMMY DATA
 const LIST_1 = [
@@ -57,7 +59,8 @@ export default function Section2() {
           <Box maxWidth={450} position="sticky" top={0} pt={4}>
             <H2 fontSize={36}>Core Features</H2>
             <Paragraph mt={1} fontSize={18} color="text.secondary">
-              Save thousands of development hours with Uko’s well crafted features and clean code
+              Save thousands of development hours with {BRAND.name}'s well-crafted governance,
+              security, and automation guardrails.
             </Paragraph>
           </Box>
         </Grid>

@@ -8,7 +8,7 @@ import Link from '@/components/link'
 import FlexBox from '@/components/flexbox/FlexBox'
 import { Paragraph } from '@/components/typography'
 // CUSTOM UTILS METHOD
-import { isDark } from '@/utils/constants'
+import { BRAND, isDark } from '@/utils/constants'
 
 // STYLED COMPONENTS
 const LinkList = styled('div')(({ theme }) => ({
@@ -41,7 +41,7 @@ export default function Footer() {
               />
 
               <Paragraph fontSize={28} fontWeight={600}>
-                Uko
+                {BRAND.name}
               </Paragraph>
             </FlexBox>
 
@@ -52,8 +52,9 @@ export default function Footer() {
               color="text.secondary"
               pr={{ lg: 5, md: 2, xs: 0 }}
             >
-              Uko SaaS template is a powerful and versatile software application that provides a
-              comprehensive framework for building and delivering cloud-based solutions.
+              Apotheon.ai orchestrates AI-powered operations, compliance, and analytics so
+              enterprises can ship trustworthy automation faster without rebuilding core
+              infrastructure.
             </Paragraph>
           </Grid>
 
@@ -109,8 +110,8 @@ export default function Footer() {
 
       <Paragraph py={5} textAlign="center" fontSize={16} fontWeight={500}>
         Copyright © 2023{' '}
-        <a href="https://ui-lib.com" target="_blank" rel="noreferrer">
-          UI Lib
+        <a href={BRAND.marketingSite} target="_blank" rel="noreferrer">
+          {BRAND.name}
         </a>
         . All rights reserved
       </Paragraph>

@@ -3,6 +3,8 @@ import Container from '@mui/material/Container'
 import Carousel from '@/components/carousel'
 import { Paragraph } from '@/components/typography'
 import SectionTitle from '@/components/section-title'
+// APP CONSTANTS
+import { BRAND } from '@/utils/constants'
 // STYLED COMPONENTS
 import { StyledRoot, TestimonialItem } from './styles'
 
@@ -18,9 +20,9 @@ export default function Section4() {
               <img src="/static/quotation.svg" alt="Quotation" className="quotation" />
 
               <p className="review-text">
-                Uko Admin Template is a user-friendly website template with a modern design and
-                responsive layout. It offers pre-built customizable components and modules to create
-                a unique admin interface for your web applications.
+                {BRAND.name} delivers a user-friendly automation fabric with a modern design system
+                and responsive layout. Pre-built integrations and governance modules accelerate
+                every deployment without sacrificing control.
               </p>
 
               <div className="reviewer-img">
