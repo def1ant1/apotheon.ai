@@ -1,45 +1,49 @@
 # Apotheon.ai Web Platform
 
-Apotheon.ai is an enterprise-ready analytics and operations cockpit that centralizes observability, customer insights, and workflow automation for AI-first organizations. The project packages a React + Vite single-page application backed by cloud-first integrations (AWS Amplify, Auth0, Firebase) to deliver a production-caliber starting point for building the Apotheon.ai experience.
+Apotheon.ai now ships on top of an **Astro static-first architecture** optimized for
+enterprise documentation, marketing, and product surfaces. Static HTML delivers
+instant performance across global CDNs while **React islands** hydrate only the
+interactive moments that truly need it. Tailwind CSS, MDX-driven content
+collections, and Pagefind search keep future teams productive without bespoke
+scaffolding.
 
-The repository ships with a modular component system, end-to-end localization, role-based navigation, and extensive charting/reporting utilities. Use it as the foundation for executive dashboards, customer-facing portals, or internal control planes that need to scale with Apotheon.ai's AI services.
+## Tech Stack Overview
 
-## Platform Highlights
-
-- **AI-native dashboarding** – Prebuilt analytic tiles, KPI cards, and data grid views designed around Apotheon.ai's product telemetry and customer data lifecycle.
-- **Secure authentication options** – Pluggable Auth0 single sign-on (SSO) and Firebase authentication contexts for rapid enterprise identity integration.
-- **Cloud extensibility** – AWS Amplify configuration, REST-friendly API client utilities (Axios), and modular service hooks to connect to Apotheon.ai backends.
-- **Enterprise UX framework** – Material UI (MUI) theming, responsive layout primitives, drag-and-drop interactions, and RTL support enable cohesive, accessible experiences.
-- **Localization & internationalization** – `react-i18next` configuration ships with lazy-loaded namespaces so Apotheon.ai can localize content without code rewrites.
-- **Automation-first development** – TypeScript, ESLint, and Prettier enforce consistent, maintainable code; Vite delivers fast builds and previews.
+- **Framework:** [Astro 4](https://astro.build/) with TypeScript and MDX support
+- **Styling:** Tailwind CSS with centralized global tokens
+- **Interactive islands:** React 18, hydrated on demand with `client:*`
+- **Search:** Pagefind static indexing (`npm run pagefind:index`)
+- **Images:** `@astrojs/image` powered by Sharp for responsive, optimized media
+- **Content collections:** Strongly typed blog + marketing collections ready for
+  MDX adoption
+- **Tooling:** Prettier formatting, Astro check for lint/type safety
 
 ## Repository Structure
 
 ```
 ├─ src/
-│  ├─ components/         # Reusable UI primitives (cards, forms, charts, tables)
-│  ├─ contexts/           # Auth0, Firebase, Amplify, and settings providers
-│  ├─ layouts/            # Dashboard shell, navigation, and responsive layouts
-│  ├─ pages/              # Route-level screens (analytics, commerce, CRM, etc.)
-│  ├─ page-sections/      # Hero/marketing sections for site landing experiences
-│  ├─ theme/              # MUI theme overrides, typography, palette definitions
-│  ├─ utils/              # Helper utilities (formatters, API helpers, mocks)
-│  ├─ i18n/               # Translation resources and i18next setup
-│  ├─ __fakeData__/       # Mock data used by demos and skeleton states
-│  └─ main.tsx/App.tsx    # Application bootstrap and router configuration
-├─ public/                # Static assets served by Vite
-├─ amplify/               # AWS Amplify backend configuration stubs
-├─ vercel.json            # Production hosting defaults for Vercel
-└─ package.json           # Tooling, scripts, dependencies
+│  ├─ components/islands/  # React islands, hydrated only when needed
+│  ├─ content/             # Astro content collections (blog, marketing)
+│  ├─ layouts/             # Shared layout shells that load global styles once
+│  ├─ pages/               # `.astro` routes, statically generated
+│  ├─ styles/              # Tailwind-powered global styles
+│  └─ env.d.ts             # Ambient types for Astro and React JSX
+├─ public/                 # Static assets copied directly into the build
+├─ astro.config.mjs        # Astro configuration (CSP, integrations, build)
+├─ tailwind.config.mjs     # Tailwind scanning + design tokens
+├─ postcss.config.cjs      # Autoprefixer + Tailwind pipeline
+└─ package.json            # Scripts, dependencies, automation hooks
 ```
 
-> **Note:** This repository rebrands the original "Uko Admin" starter into the Apotheon.ai design system. UI text, theme tokens, and imagery should be updated incrementally to reflect Apotheon.ai's visual identity and messaging.
+> **Why Astro?** The platform favors static delivery with opt-in hydration. That
+> keeps Core Web Vitals well within enterprise SLAs and reduces operational
+> overhead compared to maintaining a monolithic SPA.
 
 ## Getting Started
 
 1. **Install prerequisites**
-   - Node.js ≥ 18.x (LTS recommended)
-   - npm ≥ 9.x
+   - Node.js ≥ 18 (LTS recommended)
+   - npm ≥ 9
 
 2. **Install dependencies**
 
@@ -47,70 +51,53 @@ The repository ships with a modular component system, end-to-end localization, r
    npm install
    ```
 
-3. **Start the development server**
+3. **Run the dev server**
 
    ```bash
    npm run dev
    ```
 
-   The Vite dev server will print a local URL (default `http://localhost:5173`). Hot module reloading keeps the UI in sync while you iterate on Apotheon.ai features.
+   Astro prints a local URL (default `http://localhost:4321`) with file watching
+   and on-demand React island hydration.
 
-4. **Run quality checks**
-
-   ```bash
-   npm run lint      # ESLint with TypeScript + React hooks rules
-   npm run build     # Type-check + bundle to validate production readiness
-   ```
-
-5. **Preview production build**
+4. **Run automation scripts**
 
    ```bash
-   npm run preview
+   npm run lint          # Astro's type-aware checker across .astro/.mdx/.ts(x)
+   npm run format        # Prettier --check for consistent formatting
+   npm run build         # Static production build (dist/)
+   npm run preview       # Serve the production build locally
+   npm run pagefind:index # Build + generate static search index in dist/
    ```
 
-## Environment Configuration
+   `npm test` currently echoes a placeholder—add Vitest/Playwright suites when
+   UI logic appears.
 
-Create a `.env.local` (ignored by Git) to configure secrets for identity providers and analytics services. Common keys include:
+## Content & Search Workflow
 
-```bash
-VITE_APP_AUTH0_DOMAIN="your-auth0-domain"
-VITE_APP_AUTH0_CLIENT_ID="your-auth0-client-id"
-
-VITE_FIREBASE_APT_KEY="your-firebase-api-key"
-VITE_FIREBASE_AUTH_DOMAIN="your-firebase-auth-domain"
-VITE_FIREBASE_PROJECT_ID="your-firebase-project-id"
-VITE_FIREBASE_STORAGE_BUCKET="your-firebase-storage-bucket"
-VITE_FIREBASE_MESSAGING_SENDER_ID="your-firebase-messaging-sender-id"
-VITE_FIREBASE_ID="your-firebase-app-id"
-VITE_FIREBASE_MEASUREMENT_ID="your-firebase-measurement-id"
-```
-
-Restart the dev server after editing environment variables so Vite picks up the new values.
+- Drop MDX/Markdown files into `src/content/blog` or `src/content/marketing`. The
+  Zod schemas in `src/content/config.ts` guarantee consistent frontmatter.
+- `npm run build` emits static HTML to `dist/`. Running `npm run pagefind:index`
+  immediately afterwards generates a searchable index consumed client-side with
+  zero additional infrastructure.
+- React islands live in `src/components/islands/` and can be imported into any
+  `.astro` template with hydration directives like `client:load` or
+  `client:visible`.
 
 ## Deployment
 
-- **Vercel (default)** – `vercel.json` configures the SPA fallback for effortless hosting. Connect your Git repository, add environment variables, and deploy directly from the `main` branch.
-- **AWS Amplify** – The `amplify/` directory contains starter configuration for provisioning backend resources (authentication, storage, APIs). Use the Amplify CLI or console to extend Apotheon.ai with managed cloud services.
-- **Custom infrastructure** – Because the project builds to static assets in `dist/`, it can be served via any CDN (S3 + CloudFront, Azure Static Web Apps, etc.).
-
-## Customization Roadmap
-
-- **Branding** – Update theme palettes, typography, and assets under `src/theme/` and `public/` to reflect Apotheon.ai's identity (logos, gradients, iconography).
-- **Modules** – Expand `src/pages/` and `src/routes/` with Apotheon.ai-specific flows (model management, observability, billing, etc.).
-- **Data integrations** – Replace `__fakeData__` mocks with live API calls using the Axios helpers inside `src/utils/`. Centralize service endpoints to minimize repetitive wiring.
-- **Automation** – Integrate CI pipelines (GitHub Actions, Vercel checks) that run `npm run lint` and `npm run build` on every pull request to maintain enterprise quality.
+The project outputs plain static assets. Deploy via Cloudflare Pages, Netlify,
+Vercel, S3/CloudFront, or any static-friendly CDN. Because CSP defaults are set
+in `astro.config.mjs`, most hosts require no extra headers configuration.
 
 ## Contributing
 
-1. Fork the repository or create a feature branch.
-2. Keep code self-documenting with TypeScript types, JSDoc annotations, and inline comments where complex logic exists.
-3. Run linting and build commands before opening a pull request.
-4. Provide screenshots or Loom walkthroughs for any significant UI updates to accelerate Apotheon.ai stakeholder review.
+1. Fork or branch from `main`.
+2. Build features within Astro pages or MDX collections; prefer islands for
+   isolated interactivity.
+3. Run `npm run lint`, `npm run check`, and `npm run build` before opening a PR.
+4. Document changes in the **Changelog** and relevant docs under `/docs`.
 
-## Support
-
-For roadmap discussions, bug reports, or feature requests, open a GitHub issue with reproduction details and environment information. Internal Apotheon.ai teams should tag the owning squad in Slack and link to the issue for visibility.
-
----
-
-Apotheon.ai is committed to building scalable, automated platforms that help enterprises operationalize AI. Use this repository as your launchpad for delivering the Apotheon.ai web experience.
+Apotheon.ai continues to prioritize automation, scalability, and zero-trust
+security. This Astro foundation minimizes manual plumbing so teams can focus on
+high-leverage AI experiences.

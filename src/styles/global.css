@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Centralized global styles keep cross-page UX aligned. Leverage Tailwind's
+  design tokens for consistency and long-term maintainability.
+*/
+
+:root {
+  color-scheme: light dark;
+}
+
+body {
+  @apply bg-slate-950 text-slate-100 antialiased;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+}
+
+main {
+  @apply mx-auto flex min-h-screen max-w-5xl flex-col gap-12 px-6 pb-24 pt-16;
+}
+
+a {
+  @apply font-semibold text-sky-400 transition hover:text-sky-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400;
+}
+
+code {
+  @apply rounded bg-slate-900 px-1 py-0.5 font-mono text-sm text-amber-300;
+}
