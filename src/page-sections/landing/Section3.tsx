@@ -23,15 +23,33 @@ import Add from '@mui/icons-material/Add'
 import Error from '@mui/icons-material/Error'
 import Delete from '@mui/icons-material/Delete'
 import KeyboardTab from '@mui/icons-material/KeyboardTab'
-import Masonry from '@mui/lab/Masonry'
+import Paper from '@mui/material/Paper'
 // CUSTOM COMPONENTS
 import { H2, Paragraph } from '@/components/typography'
-// CUSTOM PAGE SECTION COMPONENTS
-import LiveUser from '@/page-sections/dashboards/analytics/LiveUser'
-import ReturnRate from '@/page-sections/dashboards/ecommerce/ReturnRate'
-import CompleteGoal from '@/page-sections/dashboards/analytics/CompleteGoal'
-import DailyVisitors from '@/page-sections/dashboards/ecommerce/DailyVisitors'
-import SessionBrowser from '@/page-sections/dashboards/analytics/SessionBrowser'
+
+// Marketing narratives replace internal dashboard previews so the landing page remains fully public.
+const marketingHighlights = [
+  {
+    title: 'Analytics you can share',
+    body:
+      'Executive-ready dashboards and exports make it painless to communicate progress with every stakeholder.',
+  },
+  {
+    title: 'Automated onboarding',
+    body:
+      'Guided flows, lifecycle emails, and prebuilt checklists eliminate repetitive setup for new customers.',
+  },
+  {
+    title: 'Enterprise security baseline',
+    body:
+      'SSO, SCIM provisioning, and detailed audit trails are available out of the box so compliance is never an afterthought.',
+  },
+  {
+    title: 'Global scale infrastructure',
+    body:
+      'Region-aware deployments and CDN edge caching keep experiences fast no matter where teams collaborate.',
+  },
+]
 
 export default function Section3() {
   const navigate = useNavigate()
@@ -50,9 +68,9 @@ export default function Section3() {
               color="secondary"
               variant="outlined"
               startIcon={<KeyboardTab />}
-              onClick={() => navigate('/components')}
+              onClick={() => navigate('/about-us')}
             >
-              Browse components
+              Discover our approach
             </Button>
           </Box>
         </Grid>
@@ -153,23 +171,19 @@ export default function Section3() {
               </div>
             </Stack>
 
-            <Masonry columns={{ sm: 2, xs: 1 }}>
-              <div>
-                <SessionBrowser />
-              </div>
-
-              <CompleteGoal chart="area" />
-
-              <DailyVisitors />
-
-              <div>
-                <LiveUser />
-              </div>
-
-              <div>
-                <ReturnRate />
-              </div>
-            </Masonry>
+            {/* Replacing dashboard previews with concise narrative cards keeps the landing page fully public. */}
+            <Grid container spacing={2}>
+              {marketingHighlights.map(({ title, body }) => (
+                <Grid key={title} size={{ sm: 6, xs: 12 }}>
+                  <Paper sx={{ p: 3, height: '100%' }} elevation={3}>
+                    <Paragraph fontWeight={600} fontSize={18} mb={1}>
+                      {title}
+                    </Paragraph>
+                    <Paragraph color="text.secondary">{body}</Paragraph>
+                  </Paper>
+                </Grid>
+              ))}
+            </Grid>
           </Stack>
         </Grid>
       </Grid>
