@@ -28,15 +28,16 @@ export default function Footer() {
                 Buy Now
               </Button>
 
+              {/* Encourage direct sales contact rather than internal previews. */}
               <Button
                 size="large"
                 color="inherit"
                 variant="outlined"
                 className="preview-btn"
                 LinkComponent="a"
-                href="/dashboard"
+                href="/contact-us"
               >
-                Live Preview
+                Book a call
               </Button>
             </FlexBox>
           </Box>

@@ -27,13 +27,14 @@ export default function Section4() {
               Save thousands of development hours with Uko’s well crafted features and clean code
             </Paragraph>
 
+            {/* Invite prospects to a conversation instead of gated app previews. */}
             <Button
               color="secondary"
               variant="outlined"
               startIcon={<KeyboardTab />}
-              onClick={() => navigate('/dashboard/product-list')}
+              onClick={() => navigate('/contact-us')}
             >
-              Browse pages & apps
+              Talk with our team
             </Button>
           </Box>
         </Grid>

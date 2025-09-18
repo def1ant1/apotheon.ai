@@ -92,20 +92,21 @@ export default function Section1() {
             themes included.
           </Paragraph>
 
+          {/* Marketing-focused calls to action that drive visitors to revenue and contact routes */}
           <Stack mt={6} direction="row" gap={2} alignItems="center" justifyContent="center">
             <Button
-              onClick={() => navigate('/components')}
+              onClick={() => navigate('/pricing')}
               sx={{ paddingInline: 3, paddingBlock: 1 }}
             >
-              Browse Components
+              See Pricing
             </Button>
 
             <Button
               variant="outlined"
-              onClick={() => navigate('/dashboard/ecommerce')}
+              onClick={() => navigate('/contact-us')}
               sx={{ paddingInline: 3, paddingBlock: 1 }}
             >
-              View Demo
+              Talk to Us
             </Button>
           </Stack>
         </Box>

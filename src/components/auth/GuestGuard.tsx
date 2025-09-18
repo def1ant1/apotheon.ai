@@ -9,7 +9,8 @@ export default function GuestGuard({ children }: PropsWithChildren) {
 
   if (isAuthenticated) {
     if (state?.from) return <Navigate to={state.from} />
-    return <Navigate to="/dashboard" />
+    // Default to the marketing homepage because private dashboards are no longer exposed.
+    return <Navigate to="/" />
   }
 
   return <Fragment>{children || <Outlet />}</Fragment>

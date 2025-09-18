@@ -59,8 +59,6 @@ export default function Navigation() {
 
   const isActive = (path: string) => pathname === path
 
-  const isComponentsRoute = pathname.startsWith('/components')
-
   useEffect(() => {
     if (isMedium) setOpen(false)
   }, [isMedium])
@@ -68,22 +66,14 @@ export default function Navigation() {
   // FOR LARGE SCREEN DEVICE
   const LARGE_DEVICE_CONTENT = (
     <StyledNav>
-      <StyledNavItem href="/" isActive={isActive('/')} isDark={isComponentsRoute}>
+      <StyledNavItem href="/" isActive={isActive('/')} isDark={false}>
         Home
       </StyledNavItem>
 
-      {/* PAGES MEGA MENU */}
-      <MegaMenu isDark={isComponentsRoute} />
+      {/* PAGES MEGA MENU - trimmed to public marketing destinations only */}
+      <MegaMenu isDark={false} />
 
-      <StyledNavItem
-        href="/components"
-        isDark={isComponentsRoute}
-        isActive={isActive('/components')}
-      >
-        Components
-      </StyledNavItem>
-
-      <StyledNavItem href="http://uko-doc.vercel.app/" isDark={isComponentsRoute}>
+      <StyledNavItem href="http://uko-doc.vercel.app/" isDark={false}>
         Documentation
       </StyledNavItem>
 
@@ -127,12 +117,6 @@ export default function Navigation() {
                   ))}
                 </Box>
               </Collapse>
-            </ListItem>
-
-            <ListItem disablePadding>
-              <ListItemButton LinkComponent={Link} href="/components">
-                Components
-              </ListItemButton>
             </ListItem>
 
             <ListItem disablePadding>
