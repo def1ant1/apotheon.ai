@@ -1,13 +1,28 @@
 ---
 # Draft placeholder: capture metadata early so schema validation keeps future edits honest.
+#
+# Editorial workflow crib notes:
+# 1. Keep this metadata block current even during outline phases—the automation in
+#    `npm run typecheck` catches drift before review.
+# 2. Once stakeholder sign-off lands, update the hero asset + description, flip
+#    `draft` to false, and commit alongside the final copy edit.
+# 3. After publishing, append an `updatedDate` field when making material changes
+#    so JSON-LD + feeds inherit the right timestamps.
+# title: Use executive-ready phrasing. No trailing periods and keep under 90 chars.
 title: 'Building AI Vendor Scorecards that Survive Board Scrutiny'
+# description: 140–160 characters for SEO/social. State the outcome readers achieve.
 description: 'Placeholder draft capturing outline + stakeholders for upcoming procurement guide'
+# publishDate: ISO-8601; target go-live date to sequence teasers + release notes.
 publishDate: 2024-07-01
+# heroImage / heroImageAlt: optional until creative delivers. Keep alt text plain-language.
 heroImageAlt: 'Scorecard wireframe awaiting final illustration'
+# tags: Lowercase kebab-case tokens. Use them to drive upcoming filters + related content scoring.
 tags:
   - procurement
   - governance
+# estimatedReadingMinutes: Whole numbers only; re-run once narrative solidifies.
 estimatedReadingMinutes: 6
+# author: Sync with the central contributor roster to avoid duplicate bios.
 author:
   name: 'Marcus Reid'
   title: 'Head of Platform Strategy'
@@ -15,6 +30,7 @@ author:
   links:
     - label: 'Strategy Newsletter'
       url: 'https://apotheon.ai/newsletter'
+# draft: Leave true until all checklist items below are complete + creative signed off.
 draft: true
 ---
 

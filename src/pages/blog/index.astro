@@ -8,9 +8,15 @@ const pageSize = 12; // Adjust in tandem with future pagination route params to 
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
 const posts = allPosts.sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf());
 
-const currentPage = 1; // Placeholder until query-string pagination is wired. Keep naming consistent with upcoming helpers.
-const paginatedPosts = posts.slice(0, pageSize);
-const totalPages = Math.max(1, Math.ceil(posts.length / pageSize));
+// Central pagination state makes it trivial to plug in URL params or API filters later.
+const pagination = {
+  currentPage: 1, // Placeholder until query-string pagination is wired. Keep naming consistent with upcoming helpers.
+  pageSize,
+  totalItems: posts.length,
+  totalPages: Math.max(1, Math.ceil(posts.length / pageSize)),
+};
+const sliceEnd = Math.min(pagination.totalItems, pagination.pageSize);
+const paginatedPosts = posts.slice(0, sliceEnd);
 
 const dateFormatter = new Intl.DateTimeFormat('en', {
   year: 'numeric',
@@ -76,12 +82,12 @@ const dateFormatter = new Intl.DateTimeFormat('en', {
       aria-label="Pagination"
       class="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-900/40 px-4 py-3 text-sm text-slate-400"
     >
-      <span>Page {currentPage} of {totalPages}</span>
+      <span>Page {pagination.currentPage} of {pagination.totalPages}</span>
       <!--
         Future pagination should render previous/next anchors or numeric buttons here. Keep markup minimal so we can hydrate with
         an island if analytics signals demand infinite scroll or saved filters.
       -->
-      <span>Showing {paginatedPosts.length} of {posts.length} published posts</span>
+      <span>Showing {paginatedPosts.length} of {pagination.totalItems} published posts</span>
     </nav>
   </section>
 </BaseLayout>

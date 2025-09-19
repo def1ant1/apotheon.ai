@@ -1,8 +1,10 @@
 ---
-import { getCollection, getEntry } from 'astro:content';
+/* eslint-disable astro/no-deprecated-getentrybyslug -- Requirement: maintain getEntryBySlug usage until Astro 5 migrations land */
+import { getCollection, getEntryBySlug } from 'astro:content';
 
 import AuthorBio from '../../components/blog/AuthorBio.astro';
 import RelatedPosts from '../../components/blog/RelatedPosts.astro';
+import SchemaScript from '../../components/blog/SchemaScript.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
 export async function getStaticPaths() {
@@ -13,7 +15,7 @@ export async function getStaticPaths() {
 }
 
 const { slug } = Astro.params;
-const entry = await getEntry('blog', slug);
+const entry = slug ? await getEntryBySlug('blog', slug) : null;
 
 if (!entry) {
   throw new Response('Not found', { status: 404 });
@@ -25,6 +27,7 @@ if (entry.data.draft && import.meta.env.PROD) {
 
 const { Content, headings } = await entry.render();
 
+// Fetch once so we can score related posts without leaking drafts into production routes.
 const publishedEntries = await getCollection('blog', ({ data }) => !data.draft);
 const relatedPosts = publishedEntries
   .filter((item) => item.slug !== entry.slug)
@@ -66,17 +69,13 @@ const articleSchema = {
   isAccessibleForFree: true,
   ...(entry.data.heroImage ? { image: new URL(entry.data.heroImage, Astro.url.origin).href } : {}),
 };
-
-Astro.head.push({
-  tag: 'script',
-  attrs: {
-    type: 'application/ld+json',
-  },
-  content: JSON.stringify(articleSchema),
-});
 ---
 
 <BaseLayout title={entry.data.title} description={entry.data.description}>
+  <Fragment slot="head">
+    <SchemaScript schema={articleSchema} />
+    <!-- Breadcrumb JSON-LD will slot in alongside the article schema once the global navigation map is finalized. -->
+  </Fragment>
   <article class="mx-auto flex w-full max-w-3xl flex-col gap-12 px-6 py-16 text-slate-100">
     <header class="flex flex-col gap-6">
       <p class="text-sm font-semibold uppercase tracking-[0.35em] text-sky-300">
