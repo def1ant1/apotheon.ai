@@ -1,0 +1,67 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+/**
+ * Related posts surface adjacent reading without manual curation.
+ * Pass filtered `CollectionEntry<'blog'>` data from the page to keep the component presentational.
+ */
+type Props = {
+  posts: Array<CollectionEntry<'blog'>>;
+};
+
+const { posts } = Astro.props as Props;
+
+const dateFormatter = new Intl.DateTimeFormat('en', {
+  year: 'numeric',
+  month: 'short',
+  day: '2-digit',
+});
+---
+
+{
+  posts.length > 0 && (
+    <section class="mt-16">
+      <header class="mb-6 flex items-baseline justify-between">
+        <h2 class="text-2xl font-semibold text-white">Related reading</h2>
+        <p class="text-sm text-slate-400">
+          Automatically generated from matching tags + publish cadence.
+        </p>
+      </header>
+      <div class="grid gap-6 md:grid-cols-3">
+        {posts.map((post) => (
+          <article class="group flex h-full flex-col gap-3 rounded-2xl border border-slate-800 bg-slate-900/30 p-6 text-slate-200 transition hover:border-sky-400/60">
+            <span class="text-xs font-semibold uppercase tracking-wide text-sky-300">
+              {dateFormatter.format(post.data.publishDate)}
+            </span>
+            <h3 class="text-lg font-semibold text-white group-hover:text-sky-200">
+              {post.data.title}
+            </h3>
+            <p class="flex-1 text-sm text-slate-400">{post.data.description}</p>
+            <div class="flex flex-wrap gap-2">
+              {post.data.tags.map((tag) => (
+                <span class="rounded-full border border-slate-700 bg-slate-800 px-2 py-1 text-xs uppercase tracking-wide text-slate-400">
+                  {tag}
+                </span>
+              ))}
+            </div>
+            <a
+              class="mt-4 text-sm font-semibold text-sky-300 group-hover:text-sky-200"
+              href={`/blog/${post.slug}`}
+            >
+              Read article →
+            </a>
+          </article>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+<!--
+  Usage guidance:
+  ```astro
+  <RelatedPosts posts={relatedPosts} />
+  ```
+  Generate `relatedPosts` by filtering the full blog collection (excluding the current slug) and scoring against shared tags.
+  Keep the curation logic in the page to unlock experiments with knowledge graphs or vector search without touching markup.
+-->
