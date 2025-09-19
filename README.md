@@ -46,6 +46,20 @@ scaffolding.
 > keeps Core Web Vitals well within enterprise SLAs and reduces operational
 > overhead compared to maintaining a monolithic SPA.
 
+## UI Components & Radix Integration
+
+- `RadixNavigationMenu` (see `src/components/islands/RadixNavigationMenu.tsx`) demonstrates
+  how we wrap Radix primitives inside React islands. The component ships a
+  keyboard-first navigation shell hydrated with `client:idle` on `src/pages/index.astro`
+  to preserve static rendering while still enabling fully accessible dropdowns.
+- Shared Tailwind tokens (`brand.*`, `shadow-navigation*`) live in
+  `tailwind.config.mjs` so additional Radix-driven surfaces can adopt the same
+  interaction language without bespoke utility sprawl. Styling helpers for the
+  navigation namespace are consolidated inside `src/styles/global.css`.
+- Radix adoption workflows and hydration guidance are captured in
+  `docs/dev/WORKFLOWS.md` under "Radix UI Composition Workflow" to keep future
+  islands consistent and low-maintenance.
+
 ## Getting Started
 
 1. **Install prerequisites**

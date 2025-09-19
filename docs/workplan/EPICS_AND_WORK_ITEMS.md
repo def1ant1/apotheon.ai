@@ -18,6 +18,12 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
 
 **Goal:** Foundation optimized for performance (CWV), security, and maintainability.
 
+- **Status:** ✅ Radix primitives now wired into the Astro shell with documented workflows
+  covering hydration, Tailwind tokens, and accessibility expectations.
+- **Next checkpoint:** Extend the Radix pattern to the global header/footer once the
+  remaining layout epics are prioritized.
+- **Owner:** Web platform engineering
+
 - **Decisions/Deliverables**
   - Framework: **Astro** (MIT) + **TypeScript** + **MDX**; **React islands** only where interactivity is needed (menus, forms).
   - UI: **TailwindCSS** + **Radix UI primitives** (headless, accessible). Optional icons: **Lucide** / custom SVGs.

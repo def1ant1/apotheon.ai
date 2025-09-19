@@ -39,3 +39,66 @@ a {
 code {
   @apply rounded bg-slate-900 px-1 py-0.5 font-mono text-sm text-amber-300;
 }
+
+/*
+  Radix Navigation Menu styling: we encapsulate the look-and-feel into small utility
+  classes so other islands can opt into the same primitives without duplicating
+  Tailwind declarations. All class names use a namespace (`navigation-*`) to avoid
+  collisions with existing layout utilities.
+*/
+
+.navigation-surface {
+  @apply relative mx-auto flex w-full max-w-4xl items-center justify-center gap-4 rounded-3xl border border-slate-800/70 bg-slate-950/70 px-6 py-3 text-sm text-slate-200 shadow-navigation backdrop-blur supports-[backdrop-filter]:bg-slate-950/50;
+}
+
+.navigation-list {
+  @apply flex flex-wrap items-center justify-center gap-3;
+}
+
+.navigation-trigger {
+  @apply inline-flex items-center gap-1 rounded-full border border-transparent bg-transparent px-4 py-2 font-semibold text-slate-300 transition-colors duration-200 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary data-[state=open]:border-slate-700 data-[state=open]:bg-slate-900/80 data-[state=open]:text-white;
+}
+
+.navigation-trigger__chevron {
+  @apply text-xs transition-transform duration-200 group-data-[state=open]:-rotate-180;
+}
+
+.navigation-content {
+  @apply absolute left-1/2 top-full z-10 mt-4 w-[min(36rem,90vw)] -translate-x-1/2 space-y-4 rounded-3xl border border-slate-800/80 bg-slate-950/95 p-6 text-left shadow-navigation backdrop-blur-xl supports-[backdrop-filter]:bg-slate-950/80;
+}
+
+.navigation-content__description {
+  @apply text-sm text-slate-400;
+}
+
+.navigation-grid {
+  @apply grid gap-4 pt-2 sm:grid-cols-2;
+}
+
+.navigation-grid__item {
+  @apply h-full;
+}
+
+.navigation-link {
+  @apply block h-full space-y-1.5 rounded-2xl border border-transparent bg-slate-950/40 px-4 py-3 text-left text-slate-200 transition duration-200 hover:border-brand-primary/50 hover:bg-slate-900/80 hover:text-white hover:shadow-navigation-inset focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-primary;
+}
+
+.navigation-grid__heading {
+  @apply text-base font-semibold text-white;
+}
+
+.navigation-grid__copy {
+  @apply text-sm text-slate-400;
+}
+
+.navigation-indicator {
+  @apply pointer-events-none absolute top-full flex h-3 items-end justify-center overflow-hidden;
+}
+
+.navigation-indicator__arrow {
+  @apply h-3 w-3 rotate-45 rounded-sm bg-slate-900 shadow-navigation;
+}
+
+.navigation-viewport {
+  @apply pointer-events-none absolute left-0 top-full z-10 mt-4 w-full rounded-3xl border border-transparent bg-transparent opacity-0 transition-opacity duration-200 data-[state=open]:pointer-events-auto data-[state=open]:opacity-100;
+}

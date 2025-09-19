@@ -1,5 +1,6 @@
 ---
 import LiveClock from '../components/islands/LiveClock';
+import RadixNavigationMenu from '../components/islands/RadixNavigationMenu';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
 const heroTitle = 'Astro-first delivery for Apotheon.ai';
@@ -28,6 +29,16 @@ const heroCopy = `Ship marketing sites, documentation, and dashboards from one
       </div>
     </header>
 
+    <!--
+      React island hydration note:
+      - `client:idle` waits until the browser thread settles post-LCP before hydrating the
+        Radix primitives. This preserves static-first delivery for bots and low-power devices
+        while still unlocking keyboard/focus management once users are ready to interact.
+      - Even without hydration the semantic <nav> shell remains usable because Radix renders
+        plain anchors and buttons by default.
+    -->
+    <RadixNavigationMenu client:idle />
+
     <article class="grid gap-12 lg:grid-cols-[2fr,1fr]">
       <div class="space-y-6">
         <h2 class="text-2xl font-semibold text-white">Composable foundations</h2>
@@ -48,6 +59,7 @@ const heroCopy = `Ship marketing sites, documentation, and dashboards from one
           rest of the experience static-first.
         </p>
       </div>
+      <!-- Hydrate immediately so the live clock reflects the current time for demos/tests. -->
       <LiveClock client:load />
     </article>
   </section>
