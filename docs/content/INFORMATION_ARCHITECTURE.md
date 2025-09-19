@@ -13,6 +13,17 @@ components cooperate during `npm run build`.
   wiring, and extensibility options (e.g., embedding MDX components). Keep the comments updated as
   templates evolve so new contributors know which layout slot each section targets.
 
+### Authoring Patterns
+
+- Add `[//]: # 'SECTION LAYOUT — …'` comments before each heading. These notes explain how the
+  prose should interact with layout slots (hero, article body, CTA rows) and highlight where design
+  teams expect visual augmentations (diagrams, accordions, media embeds).
+- Use `[//]: # 'CTA INTERPLAY — …'` comments to note how the section should influence CTA copy or
+  destinations. Editors can then align card labels with the narrative without reading implementation
+  code.
+- Keep closing notes about `<MarketingCtaRow>` usage so future contributors know which follow-up
+  actions already perform well with analytics funnels.
+
 ## Page Templates
 
 - **Dynamic routes:**

@@ -6,6 +6,11 @@ import MarketingHero from '../../components/marketing/MarketingHero.astro';
 import MarketingShell from '../../components/marketing/MarketingShell.astro';
 
 export async function getStaticPaths() {
+  /*
+    About pages share the same folder-driven automation contract as other marketing sections. Keeping
+    the slug derived from the file name ensures breadcrumbs and nav grids stay predictable when new
+    culture or leadership pages launch.
+  */
   const entries = await getCollection('marketing', ({ id }) => id.startsWith('about/'));
   return entries.map((entry) => ({
     params: { page: entry.slug.split('/').pop() ?? entry.id },
@@ -19,6 +24,7 @@ interface Props {
 
 const { entry } = Astro.props as Props;
 const { data } = entry;
+// MDX renders server-side during build and streams as static markup.
 const { Content } = await entry.render();
 const slugSegment = entry.slug.split('/').pop() ?? entry.id;
 const heroCopy =
