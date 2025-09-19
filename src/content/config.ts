@@ -10,8 +10,11 @@ const blogCollection = defineCollection({
     publishDate: z.date().describe('ISO publish date for chronological sorting'),
     updatedDate: z.date().optional().describe('Optional last updated date for release notes'),
     heroImage: z.string().optional().describe('Path to hero image processed by @astrojs/image'),
-    draft: z.boolean().default(false).describe('Toggle to omit unpublished drafts from static builds')
-  })
+    draft: z
+      .boolean()
+      .default(false)
+      .describe('Toggle to omit unpublished drafts from static builds'),
+  }),
 });
 
 // Marketing and evergreen content (solutions, pricing, etc.) stay in
@@ -22,12 +25,16 @@ const marketingCollection = defineCollection({
     title: z.string(),
     summary: z.string().optional(),
     heroCtaLabel: z.string().optional(),
-    order: z.number().int().default(0).describe('Controls navigation ordering without renaming files'),
-    featured: z.boolean().default(false)
-  })
+    order: z
+      .number()
+      .int()
+      .default(0)
+      .describe('Controls navigation ordering without renaming files'),
+    featured: z.boolean().default(false),
+  }),
 });
 
 export const collections = {
   blog: blogCollection,
-  marketing: marketingCollection
+  marketing: marketingCollection,
 };
