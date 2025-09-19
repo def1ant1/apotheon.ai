@@ -1,0 +1,14 @@
+<!--
+  Manufacturing glyph highlights advanced production analytics.
+  A modular gear couples with a conveyor baseline to represent closed-loop feedback.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <title>Manufacturing industry glyph</title>
+  <!-- Gear assembly -->
+  <path d="M12 6.25a3.75 3.75 0 1 1-3.75 3.75A3.75 3.75 0 0 1 12 6.25Zm0-2.5v2.5m0 7.5v2.5m5-5h2.5m-15 0H6m10.4-4.4 1.8-1.8m-9.4 9.4-1.8 1.8m0-11.2 1.8 1.8m9.4 9.4-1.8-1.8" stroke="#312E81" />
+  <!-- Conveyor baseline with sensor beacons -->
+  <path d="M4 17.75h16" stroke="#0F172A" />
+  <circle cx="7.5" cy="19.5" r="1" stroke="#0EA5E9" />
+  <circle cx="12" cy="19.5" r="1" stroke="#0EA5E9" />
+  <circle cx="16.5" cy="19.5" r="1" stroke="#0EA5E9" />
+</svg>

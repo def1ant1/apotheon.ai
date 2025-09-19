@@ -1,0 +1,356 @@
+#!/usr/bin/env node
+/**
+ * Enterprise-grade brand icon pipeline.
+ *
+ * Responsibilities:
+ * 1. Lint raw SVG sources for naming + accessibility metadata.
+ * 2. Run SVGO with our shared config to produce deterministic, deployable assets.
+ * 3. Optionally emit typed React wrappers to keep Astro/React islands in parity.
+ * 4. Fail CI when optimized artifacts drift from committed output ("--check" mode).
+ */
+import { createRequire } from 'node:module';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import process from 'node:process';
+import fs from 'node:fs/promises';
+import { optimize } from 'svgo';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.resolve(__dirname, '..', '..');
+const RAW_DIR = path.join(ROOT, 'assets', 'brand-icons', 'raw');
+const DIST_DIR = path.join(ROOT, 'public', 'static', 'icons', 'brand');
+const REACT_DIR = path.join(ROOT, 'src', 'components', 'icons');
+
+const args = new Set(process.argv.slice(2));
+const mode = args.has('--check') ? 'check' : 'write';
+const emitReact = args.has('--react');
+const quiet = args.has('--quiet');
+
+const require = createRequire(import.meta.url);
+const svgoConfig = require(path.join(ROOT, 'svgo.config.cjs'));
+
+const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+/**
+ * Pretty logger that we can silence in CI lint mode.
+ */
+function log(message) {
+  if (!quiet) {
+    console.log(message);
+  }
+}
+
+async function ensureDir(dir) {
+  await fs.mkdir(dir, { recursive: true });
+}
+
+async function loadSvgFiles(dir) {
+  const entries = await fs.readdir(dir, { withFileTypes: true });
+  const files = [];
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...(await loadSvgFiles(fullPath)));
+    } else if (entry.isFile() && entry.name.endsWith('.svg')) {
+      files.push(fullPath);
+    }
+  }
+  return files.sort();
+}
+
+function validateSlugSegment(segment, context) {
+  if (!slugPattern.test(segment)) {
+    throw new Error(
+      `Invalid slug "${segment}" derived from ${context}. Use lower-case kebab-case (a-z, 0-9, hyphen).`,
+    );
+  }
+}
+
+function extractTitle(svgContent, relPath) {
+  const match = svgContent.match(/<title>([\s\S]*?)<\/title>/i);
+  if (!match) {
+    throw new Error(`Missing <title> element in ${relPath}. Accessible labelling is mandatory.`);
+  }
+  const title = match[1].trim();
+  if (!title) {
+    throw new Error(`Empty <title> found in ${relPath}. Populate with descriptive copy.`);
+  }
+  return title;
+}
+
+function normalizeContent(content) {
+  return `${content.trim()}\n`;
+}
+
+function indentLines(content, spaces) {
+  const padding = ' '.repeat(spaces);
+  return content
+    .split('\n')
+    .filter((line, index, arr) => !(index === arr.length - 1 && line.trim() === ''))
+    .map((line) => (line.length ? `${padding}${line.trimStart()}` : ''))
+    .join('\n');
+}
+
+function toComponentName(slug) {
+  return `${slug
+    .split('-')
+    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+    .join('')}Icon`;
+}
+
+function escapeHtml(value) {
+  return value.replace(/[&<>"']/g, (char) => {
+    switch (char) {
+      case '&':
+        return '&amp;';
+      case '<':
+        return '&lt;';
+      case '>':
+        return '&gt;';
+      case '"':
+        return '&quot;';
+      case "'":
+        return '&#39;';
+      default:
+        return char;
+    }
+  });
+}
+
+function ensureSvgTitle(svgContent, title) {
+  if (/<title[\s\S]*?<\/title>/i.test(svgContent)) {
+    return svgContent;
+  }
+  const escapedTitle = escapeHtml(title);
+  return svgContent.replace(/(<svg[^>]*>)/i, `$1\n  <title>${escapedTitle}<\/title>`);
+}
+
+function buildAttrString(rawAttr) {
+  if (!rawAttr) return '';
+  const attributes = [];
+  const attrRegex = /([\w:-]+)(?:="([^"]*)")?/g;
+  let match;
+  while ((match = attrRegex.exec(rawAttr))) {
+    attributes.push({ name: match[1], value: match[2] ?? null });
+  }
+  const filtered = attributes.filter(
+    (attr) => !['aria-hidden', 'aria-labelledby', 'aria-label', 'role'].includes(attr.name),
+  );
+  if (!filtered.length) return '';
+  return filtered.map((attr) => (attr.value === null ? ` ${attr.name}` : ` ${attr.name}="${attr.value}"`)).join('');
+}
+
+function createReactComponent({ optimizedSvg, slug, defaultTitle }) {
+  const match = optimizedSvg.match(/^<svg([^>]*)>([\s\S]*)<\/svg>\s*$/i);
+  if (!match) {
+    throw new Error(`Optimized SVG for ${slug} is malformed.`);
+  }
+  const attrString = buildAttrString(match[1]);
+  const withoutTitle = match[2].replace(/<title[\s\S]*?<\/title>/gi, '').trim();
+  const body = withoutTitle ? indentLines(withoutTitle, 8) : '';
+  const componentName = toComponentName(slug);
+  const titleConst = `${componentName}Title`;
+  const safeDefaultTitle = JSON.stringify(defaultTitle).slice(1, -1);
+
+  return {
+    componentName,
+    filename: `${componentName}.tsx`,
+    content: `/**\n * Auto-generated by scripts/brand/build-icons.mjs.\n * DO NOT edit directly—edit the source in assets/brand-icons/raw/${slug}.svg instead.\n */\nimport { forwardRef } from 'react';\n\nimport type { SVGProps } from 'react';\n\ntype IconProps = Omit<SVGProps<SVGSVGElement>, 'children'> & {\n  /** Accessible title for screen readers. Provide \"\" to mark as decorative. */\n  title?: string;\n  /** Deterministic title id allows aria-labelledby composition. */\n  titleId?: string;\n};\n\nexport const ${componentName} = forwardRef<SVGSVGElement, IconProps>(\n  ({ title = '${safeDefaultTitle}', titleId, ...props }, ref) => {\n    const labelledBy = title ? titleId ?? '${titleConst}' : undefined;\n\n    return (\n      <svg${attrString} ref={ref} aria-hidden={title ? undefined : true} aria-labelledby={title ? labelledBy : undefined} role="img" {...props}>\n        {title ? <title id={labelledBy}>{title}</title> : null}\n${body ? `${body}\n` : ''}      </svg>\n    );\n  },\n);\n\n${componentName}.displayName = '${componentName}';\n`,
+  };
+}
+
+async function writeFileIfChanged(filePath, nextContent) {
+  try {
+    const current = await fs.readFile(filePath, 'utf8');
+    if (normalizeContent(current) === normalizeContent(nextContent)) {
+      return false;
+    }
+  } catch (error) {
+    if (error.code !== 'ENOENT') {
+      throw error;
+    }
+  }
+  await ensureDir(path.dirname(filePath));
+  await fs.writeFile(filePath, nextContent, 'utf8');
+  return true;
+}
+
+async function checkFileMatches(filePath, expectedContent, context) {
+  try {
+    const current = await fs.readFile(filePath, 'utf8');
+    if (normalizeContent(current) !== normalizeContent(expectedContent)) {
+      throw new Error(`${context} is outdated. Run \"npm run icons:build\" to refresh.`);
+    }
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      throw new Error(`${context} is missing. Run \"npm run icons:build\" to generate it.`);
+    }
+    throw error;
+  }
+}
+
+async function listExistingFiles(dir, predicate) {
+  try {
+    const entries = await fs.readdir(dir, { withFileTypes: true });
+    const files = [];
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        files.push(...(await listExistingFiles(fullPath, predicate)));
+      } else if (predicate(entry.name)) {
+        files.push(path.relative(dir, fullPath));
+      }
+    }
+    return files;
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      return [];
+    }
+    throw error;
+  }
+}
+
+(async () => {
+  const rawFiles = await loadSvgFiles(RAW_DIR);
+  if (!rawFiles.length) {
+    throw new Error('No SVG sources found in assets/brand-icons/raw/.');
+  }
+
+  const optimizedArtifacts = [];
+  const reactArtifacts = [];
+
+  for (const absolutePath of rawFiles) {
+    const relativePath = path.relative(RAW_DIR, absolutePath);
+    const segments = relativePath.split(path.sep);
+    segments.slice(0, -1).forEach((segment) => validateSlugSegment(segment, relativePath));
+    const slug = path.basename(relativePath, '.svg');
+    validateSlugSegment(slug, relativePath);
+
+    const rawSvg = await fs.readFile(absolutePath, 'utf8');
+    const title = extractTitle(rawSvg, relativePath);
+
+    const optimized = optimize(rawSvg, {
+      ...svgoConfig,
+      path: absolutePath,
+    });
+    if (optimized.error) {
+      throw new Error(`SVGO failed for ${relativePath}: ${optimized.error}`);
+    }
+
+    const optimizedData = ensureSvgTitle(optimized.data, title);
+    const optimizedContent = normalizeContent(optimizedData);
+    const destination = path.join(DIST_DIR, relativePath);
+    optimizedArtifacts.push({ destination, content: optimizedContent, slug, relativePath });
+
+    if (emitReact) {
+      reactArtifacts.push({
+        ...createReactComponent({ optimizedSvg: optimizedData, slug, defaultTitle: title }),
+        title,
+      });
+    }
+  }
+
+  const extraneous = new Set(
+    (await listExistingFiles(DIST_DIR, (name) => name.endsWith('.svg'))).map((file) => file.replace(/\\/g, '/')),
+  );
+  for (const artifact of optimizedArtifacts) {
+    const rel = path.relative(DIST_DIR, artifact.destination).replace(/\\/g, '/');
+    extraneous.delete(rel);
+  }
+
+  let reactExtraneous = new Set();
+  if (emitReact) {
+    reactExtraneous = new Set(
+      (await listExistingFiles(REACT_DIR, (name) => name.endsWith('.tsx'))).map((file) => file.replace(/\\/g, '/')),
+    );
+    for (const artifact of reactArtifacts) {
+      reactExtraneous.delete(artifact.filename.replace(/\\/g, '/'));
+    }
+  }
+
+  if (mode === 'check') {
+    await Promise.all(
+      optimizedArtifacts.map((artifact) =>
+        checkFileMatches(artifact.destination, artifact.content, `Optimized icon ${artifact.relativePath}`),
+      ),
+    );
+    if (emitReact) {
+      await Promise.all(
+        reactArtifacts.map((artifact) =>
+          checkFileMatches(
+            path.join(REACT_DIR, artifact.filename),
+            artifact.content,
+            `React wrapper ${artifact.filename}`,
+          ),
+        ),
+      );
+      const expectedIndex = buildReactIndex(reactArtifacts.map((artifact) => artifact.componentName));
+      await checkFileMatches(path.join(REACT_DIR, 'index.ts'), expectedIndex, 'React icon barrel file');
+    }
+    if (extraneous.size) {
+      const list = Array.from(extraneous).join(', ');
+      throw new Error(`Unexpected optimized icon(s) detected: ${list}. Remove them or regenerate assets.`);
+    }
+    if (emitReact && reactExtraneous.size) {
+      const list = Array.from(reactExtraneous).join(', ');
+      throw new Error(`Unexpected React icon component(s): ${list}. Remove stale files or regenerate with --react.`);
+    }
+    log('Icon check passed ✔');
+    return;
+  }
+
+  let writes = 0;
+  for (const artifact of optimizedArtifacts) {
+    const wrote = await writeFileIfChanged(artifact.destination, artifact.content);
+    if (wrote) {
+      log(`Optimized ${artifact.relativePath}`);
+      writes += 1;
+    }
+  }
+
+  if (emitReact) {
+    let reactWrites = 0;
+    for (const artifact of reactArtifacts) {
+      const targetPath = path.join(REACT_DIR, artifact.filename);
+      const wrote = await writeFileIfChanged(targetPath, artifact.content);
+      if (wrote) {
+        log(`Generated React wrapper ${artifact.filename}`);
+        reactWrites += 1;
+      }
+    }
+    const indexContent = buildReactIndex(reactArtifacts.map((artifact) => artifact.componentName));
+    if (await writeFileIfChanged(path.join(REACT_DIR, 'index.ts'), indexContent)) {
+      log('Updated React icon barrel index.ts');
+      reactWrites += 1;
+    }
+    if (reactWrites === 0) {
+      log('React wrappers already up to date.');
+    }
+    if (reactExtraneous.size) {
+      const list = Array.from(reactExtraneous)
+        .map((entry) => path.join('src/components/icons', entry))
+        .join(', ');
+      log(`⚠️  Found React wrapper(s) with no matching SVG source: ${list}. Delete them if obsolete.`);
+    }
+  }
+
+  if (extraneous.size) {
+    const list = Array.from(extraneous)
+      .map((entry) => path.join('public/static/icons/brand', entry))
+      .join(', ');
+    log(`⚠️  Found optimized icon(s) with no matching source: ${list}. Delete them manually if obsolete.`);
+  }
+
+  if (writes === 0) {
+    log('SVG optimizations already up to date.');
+  }
+})();
+
+function buildReactIndex(componentNames) {
+  if (!componentNames.length) {
+    return `/**\n * React icon exports placeholder generated by scripts/brand/build-icons.mjs.\n */\n`;
+  }
+  const sorted = [...componentNames].sort();
+  const exports = sorted.map((name) => `export { ${name} } from './${name}';`).join('\n');
+  return `/**\n * Auto-generated React icon barrel.\n * Updates via scripts/brand/build-icons.mjs --react.\n */\n${exports}\n`;
+}

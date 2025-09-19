@@ -1,0 +1,13 @@
+<!--
+  Public sector glyph underpins civic operations, defense, and regulatory programs.
+  The capitol silhouette is paired with a secure shield for mission assurance.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <title>Public sector industry glyph</title>
+  <!-- Capitol dome -->
+  <path d="M12 4.25a4.5 4.5 0 0 1 4.5 4.5v1H7.5v-1A4.5 4.5 0 0 1 12 4.25Z" stroke="#312E81" />
+  <path d="M6.25 12.25h11.5l-1 6.5h-9.5Z" stroke="#0EA5E9" />
+  <!-- Secure shield overlay -->
+  <path d="M12 11.5s2 1.25 4 1.25c0 3.25-1.5 5.5-4 6.75-2.5-1.25-4-3.5-4-6.75 2 0 4-1.25 4-1.25Z" stroke="#4338CA" />
+  <path d="M12 14v2" stroke="#4338CA" />
+</svg>

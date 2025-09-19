@@ -1,0 +1,17 @@
+<!--
+  Clio represents Apotheon's living knowledge archive.
+  The icon visualizes an open codex with a central fold to signal "history recorded".
+  We keep raw assets generous in comments to guide future brand iterations before optimization.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <title>Clio brand logomark</title>
+  <!-- Left page of the open codex -->
+  <rect x="4.75" y="4.75" width="6.5" height="14.5" rx="1.6" stroke="#312E81" />
+  <!-- Right page mirrors the left to emphasize the dual-page spread -->
+  <rect x="12.75" y="4.75" width="6.5" height="14.5" rx="1.6" stroke="#312E81" />
+  <!-- Center fold with a subtle ribbon marker to imply curated annotations -->
+  <path d="M12 6.25v10.5l-1.5-1.25" stroke="#4338CA" />
+  <!-- Narrative spark keeps the brand tied to analytical storytelling -->
+  <path d="M7.5 9.5h2.25" stroke="#4338CA" />
+  <path d="M15.5 9.5h2.25" stroke="#4338CA" />
+</svg>

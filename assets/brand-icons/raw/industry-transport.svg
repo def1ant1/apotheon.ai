@@ -1,0 +1,17 @@
+<!--
+  Transport glyph supports logistics, fleet, and aerospace messaging.
+  The connected hubs track predictability across global routes.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <title>Transport industry glyph</title>
+  <!-- Global path network -->
+  <path d="M5.5 16.5c2.25-4.5 5.5-7 13-8.25" stroke="#4338CA" />
+  <path d="M6.75 7.5c3 .75 5.5 2.25 8.75 7.5" stroke="#0EA5E9" />
+  <!-- Hub markers -->
+  <circle cx="5.5" cy="16.5" r="1.35" stroke="#312E81" />
+  <circle cx="6.5" cy="7.5" r="1.35" stroke="#312E81" />
+  <circle cx="18.5" cy="8.25" r="1.35" stroke="#312E81" />
+  <circle cx="15.5" cy="15" r="1.35" stroke="#312E81" />
+  <!-- Directional arrow for in-transit tracking -->
+  <path d="M17.25 6.25 18.5 8.25l-2.5.75" stroke="#0F172A" />
+</svg>

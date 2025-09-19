@@ -1,0 +1,11 @@
+<!--
+  Energy glyph is tuned for utilities, renewables, and grid orchestration messaging.
+  The turbine blades and central spark communicate resilient generation.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <title>Energy industry glyph</title>
+  <!-- Turbine blades -->
+  <path d="M12 4.5 9.75 9.5h-5l4 2.5-1.5 4.75L12 14.5l4.75 2.25-1.5-4.75 4-2.5h-5Z" stroke="#0EA5E9" />
+  <!-- Central spark -->
+  <path d="M12 10.5 10.75 13h2L12 15.5" stroke="#F97316" />
+</svg>

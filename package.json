@@ -10,7 +10,9 @@
     "preview": "astro preview --host",
     "typecheck": "astro check",
     "check": "npm run typecheck",
-    "lint": "npm run lint:eslint && npm run lint:styles",
+    "icons:lint": "node ./scripts/brand/build-icons.mjs --check --react",
+    "icons:build": "node ./scripts/brand/build-icons.mjs --react",
+    "lint": "npm run icons:lint && npm run lint:eslint && npm run lint:styles",
     "lint:eslint": "cross-env ESLINT_USE_FLAT_CONFIG=0 eslint --config .eslintrc.cjs . --max-warnings=0 --report-unused-disable-directives --ext .js,.jsx,.ts,.tsx,.astro,.mdx",
     "lint:styles": "stylelint \"src/**/*.{css,pcss,scss,sass,astro}\" \"docs/**/*.{css,pcss,scss,sass,astro}\" \"public/**/*.{css,pcss,scss,sass}\" --allow-empty-input",
     "format": "prettier --write \"**/*.{astro,css,html,js,json,md,mdx,ts,tsx,yaml,yml}\"",
@@ -70,6 +72,7 @@
     "stylelint-config-standard": "^39.0.0",
     "stylelint-config-tailwindcss": "^1.0.0",
     "stylelint-order": "^7.0.0",
+    "svgo": "^4.0.0",
     "tailwindcss": "^3.4.12",
     "typescript": "^5.6.2"
   }

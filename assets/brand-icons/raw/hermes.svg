@@ -1,0 +1,17 @@
+<!--
+  Hermes is our delivery and orchestration muse, signaling speed and reliable transit of insights.
+  The design leans on a winged staff motif composed of mirrored bezier curves for balance.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <title>Hermes orchestration emblem</title>
+  <!-- Central staff representing the backbone of secure data delivery -->
+  <path d="M12 4.5v15" stroke="#0F172A" />
+  <!-- Dual helix bands showcase bi-directional communication flows -->
+  <path d="M8.5 7.75c1.2-1.1 2.6-1.1 3.5 0s2.3 1.1 3.5 0" stroke="#0EA5E9" />
+  <path d="M8.5 12c1.2-1.1 2.6-1.1 3.5 0s2.3 1.1 3.5 0" stroke="#0EA5E9" />
+  <!-- Wing caps for upward velocity -->
+  <path d="M6 6.25l2.5 1.5-2.5 1.5" stroke="#312E81" />
+  <path d="M18 6.25l-2.5 1.5 2.5 1.5" stroke="#312E81" />
+  <!-- Foundation arc to ground the logomark -->
+  <path d="M9 18.75h6" stroke="#312E81" />
+</svg>

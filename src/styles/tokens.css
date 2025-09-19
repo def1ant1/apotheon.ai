@@ -12,6 +12,8 @@
   ============================================================================
 */
 
+/* stylelint-disable custom-property-empty-line-before */
+
 :root {
   /* Spatial scale ----------------------------------------------------------- */
   --space-3xs: 0.125rem; /* Micro inset used for tight icon padding and hairline gaps. */
@@ -108,6 +110,8 @@
   --color-border-subtle: 220 35% 82%; /* Subtle borders dividing neutral surfaces. */
   --color-border-strong: 221 39% 72%; /* Prominent strokes such as cards and nav rails. */
 }
+
+/* stylelint-enable custom-property-empty-line-before */
 
 [data-theme='light'] {
   color-scheme: light;
