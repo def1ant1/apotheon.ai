@@ -1,0 +1,53 @@
+{
+  "ci": {
+    "collect": {
+      "staticDistDir": "./dist",
+      "url": [
+        "/"
+      ],
+      "numberOfRuns": 1,
+      "settings": {
+        "preset": "desktop",
+        "formFactor": "desktop",
+        "throttlingMethod": "simulate"
+      },
+      "budgets": [
+        {
+          "path": "/*",
+          "resourceSizes": [
+            { "resourceType": "script", "budget": 200 },
+            { "resourceType": "image", "budget": 600 },
+            { "resourceType": "third-party", "budget": 150 }
+          ],
+          "resourceCounts": [
+            { "resourceType": "third-party", "budget": 10 },
+            { "resourceType": "total", "budget": 50 }
+          ],
+          "timings": [
+            { "metric": "largest-contentful-paint", "budget": 2500 },
+            { "metric": "cumulative-layout-shift", "budget": 0.1 },
+            { "metric": "total-blocking-time", "budget": 150 },
+            { "metric": "interactive", "budget": 3500 },
+            { "metric": "experimental-interaction-to-next-paint", "budget": 200 }
+          ]
+        }
+      ]
+    },
+    "assert": {
+      "assertions": {
+        "categories:performance": ["error", { "minScore": 0.9 }],
+        "categories:accessibility": ["error", { "minScore": 0.95 }],
+        "categories:best-practices": ["error", { "minScore": 0.95 }],
+        "categories:seo": ["warn", { "minScore": 0.9 }],
+        "largest-contentful-paint": ["error", { "maxNumericValue": 2500 }],
+        "cumulative-layout-shift": ["error", { "maxNumericValue": 0.1 }],
+        "total-blocking-time": ["error", { "maxNumericValue": 150 }],
+        "experimental-interaction-to-next-paint": ["error", { "maxNumericValue": 200 }]
+      }
+    },
+    "upload": {
+      "target": "filesystem",
+      "outputDir": "./artifacts/lighthouse"
+    }
+  }
+}

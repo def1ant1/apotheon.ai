@@ -1,0 +1,105 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  FORCE_COLOR: "1"
+  NODE_ENV: "test"
+
+jobs:
+  quality-gates:
+    name: Node ${{ matrix.node }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['18.x', '20.x']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linting
+        run: npm run lint
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Execute test suite
+        run: npm run test
+
+      - name: Build project
+        run: npm run build
+
+      - name: Build Pagefind index
+        if: matrix.node == '20.x'
+        run: npm run pagefind:index
+
+      - name: Upload Pagefind artifacts
+        if: always() && matrix.node == '20.x'
+        uses: actions/upload-artifact@v4
+        with:
+          name: pagefind-index
+          path: |
+            dist/pagefind
+            dist/**/*.html
+          retention-days: 14
+
+      - name: Lighthouse budget enforcement
+        if: matrix.node == '20.x'
+        run: npm run lighthouse:ci
+
+      - name: Upload Lighthouse results
+        if: always() && matrix.node == '20.x'
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-reports
+          path: artifacts/lighthouse
+          retention-days: 14
+
+      - name: OWASP ZAP baseline scan
+        if: matrix.node == '20.x'
+        run: npm run zap:baseline
+
+      - name: Upload ZAP artifacts
+        if: always() && matrix.node == '20.x'
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-baseline
+          path: artifacts/security/zap
+          retention-days: 14
+
+      - name: Secret scanning with Gitleaks
+        if: matrix.node == '20.x'
+        run: npm run gitleaks:ci
+
+      - name: Upload Gitleaks report
+        if: always() && matrix.node == '20.x'
+        uses: actions/upload-artifact@v4
+        with:
+          name: gitleaks-report
+          path: artifacts/security/gitleaks/report.json
+          retention-days: 14
