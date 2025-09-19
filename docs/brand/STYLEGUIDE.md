@@ -1,0 +1,251 @@
+# Apotheon Brand & Experience Style Guide
+
+> **Purpose & Rationale:** Apotheon’s product surfaces and marketing experiences now share a single brand system. This living guide distills design tokens, component behaviors, and WCAG 2.2 AA compliance guardrails so that designers, engineers, and content teams ship consistent, scalable interfaces without duplicating effort across repos.
+
+## Contents
+
+- [Brand Design North Star](#brand-design-north-star)
+- [Color Systems](#color-systems)
+  - [Daylight Palette (Light Mode)](#daylight-palette-light-mode)
+  - [Midnight Palette (Dark Mode)](#midnight-palette-dark-mode)
+  - [Palette Pairing Matrix](#palette-pairing-matrix)
+- [Typography Scale](#typography-scale)
+- [Layout Density Tokens](#layout-density-tokens)
+  - [Spacing Rhythm](#spacing-rhythm)
+  - [Corner Radii](#corner-radii)
+  - [Elevation & Shadows](#elevation--shadows)
+- [Component Application Cheat Sheets](#component-application-cheat-sheets)
+  - [Buttons](#buttons)
+  - [Form Inputs](#form-inputs)
+  - [Data Surfaces](#data-surfaces)
+- [Accessibility & WCAG 2.2 AA Guardrails](#accessibility--wcag-22-aa-guardrails)
+  - [Contrast Automation](#contrast-automation)
+  - [Manual QA Checklist](#manual-qa-checklist)
+- [Adoption Workflow for Designers & Engineers](#adoption-workflow-for-designers--engineers)
+
+---
+
+## Brand Design North Star
+
+- **Voice & Tone:** Confident, data-forward, and transparent. Interfaces should feel like a precision instrument rather than a marketing site. _Rationale:_ Stakeholders rely on Apotheon.ai for mission-critical forecasting – a restrained palette and purposeful animation reduce distraction.
+- **Token-first delivery:** All surfaces consume Tailwind design tokens declared once in `tailwind.config.mjs` and mirrored in this document. _Rationale:_ Shared tokens eliminate manual restyling and enable automation like the contrast script to validate pairings.
+- **Dark mode parity:** Every color, typography, and spacing token includes a dark-mode equivalent. _Rationale:_ Enterprise customers expect first-class dark themes for dashboards and SOC workflows.
+
+---
+
+## Color Systems
+
+> **Rationale:** Color communicates hierarchy and state. Each palette locks to 8–10 colors so we can meet contrast ratios without bloating CSS bundles or overloading the brand team with variants.
+
+Each table lists the internal token name (`brand.<group>.<step>`), HEX value, usage guidance, and the minimum text/background role it supports.
+
+### Daylight Palette (Light Mode)
+
+![Light palette preview showing primary, secondary, neutral, and status colors arranged in 4x3 blocks.](../../public/static/brand/palette-light.svg)
+
+| Token                | Hex       | Usage                           | Meets Contrast With                      |
+| -------------------- | --------- | ------------------------------- | ---------------------------------------- |
+| `brand.primary.500`  | `#4F46E5` | Primary actions, key links      | `brand.neutral.0`, `brand.neutral.50`    |
+| `brand.primary.600`  | `#4338CA` | Hover/active states             | `brand.neutral.0`, `brand.neutral.50`    |
+| `brand.primary.700`  | `#312E81` | Focus rings, pressed states     | `brand.neutral.0`, `brand.primary.050`   |
+| `brand.primary.050`  | `#EEF2FF` | Primary subtle backgrounds      | `brand.primary.700` text                 |
+| `brand.primary.200`  | `#C7D2FE` | Borders, subtle charts          | `brand.primary.700`, `brand.neutral.900` |
+| `brand.accent.500`   | `#14B8A6` | Secondary CTAs, positive charts | `brand.neutral.0`, `brand.neutral.900`   |
+| `brand.accent.050`   | `#ECFEFF` | Success background fills        | `brand.accent.700` text                  |
+| `brand.accent.200`   | `#A5F3FC` | Chip backgrounds, charts        | `brand.accent.700`, `brand.neutral.900`  |
+| `brand.accent.700`   | `#0F766E` | Success headlines, badges       | `brand.neutral.0`, `brand.accent.050`    |
+| `brand.neutral.0`    | `#FFFFFF` | Canvas background               | `brand.neutral.900` text                 |
+| `brand.neutral.050`  | `#F9FAFB` | Cards, tables                   | `brand.neutral.700`, `brand.primary.600` |
+| `brand.neutral.200`  | `#E5E7EB` | Dividers, subtle strokes        | —                                        |
+| `brand.neutral.500`  | `#6B7280` | Secondary text                  | `brand.neutral.0`, `brand.neutral.050`   |
+| `brand.neutral.700`  | `#374151` | Body text on light              | `brand.neutral.0`, `brand.neutral.050`   |
+| `brand.neutral.900`  | `#111827` | Headings, data emphasis         | `brand.neutral.0`, `brand.neutral.050`   |
+| `brand.warning.050`  | `#FFF7ED` | Warning backgrounds             | `brand.warning.700` text                 |
+| `brand.warning.500`  | `#F97316` | Warnings, delayed states        | `brand.neutral.0`, `brand.neutral.900`   |
+| `brand.warning.700`  | `#B45309` | Warning headlines, icons        | `brand.neutral.0`, `brand.warning.050`   |
+| `brand.critical.050` | `#FEF2F2` | Error backgrounds               | `brand.critical.700` text                |
+| `brand.critical.500` | `#DC2626` | Errors, destructive actions     | `brand.neutral.0`, `brand.neutral.050`   |
+| `brand.critical.700` | `#991B1B` | Destructive confirmations       | `brand.neutral.0`, `brand.critical.050`  |
+
+### Midnight Palette (Dark Mode)
+
+![Dark palette preview showing equivalent tones for dark surfaces.](../../public/static/brand/palette-dark.svg)
+
+| Token                | Hex       | Usage                              | Meets Contrast With                       |
+| -------------------- | --------- | ---------------------------------- | ----------------------------------------- |
+| `brand.primary.400`  | `#818CF8` | Primary actions on dark            | `brand.neutral.950`, `brand.neutral.900`  |
+| `brand.primary.300`  | `#A5B4FC` | Hover/disabled                     | `brand.neutral.950`                       |
+| `brand.primary.200`  | `#C7D2FE` | Text on deep primary surfaces      | `brand.primary.950`                       |
+| `brand.primary.900`  | `#1E1B4B` | Charts, border accents             | `brand.neutral.050`                       |
+| `brand.primary.950`  | `#11123A` | Primary surface background         | `brand.primary.200`, `brand.neutral.050`  |
+| `brand.accent.400`   | `#2DD4BF` | Success actions                    | `brand.neutral.950`, `brand.neutral.900`  |
+| `brand.accent.200`   | `#99F6E4` | Text on deep success surfaces      | `brand.accent.950`                        |
+| `brand.accent.950`   | `#042F2E` | Success surface                    | `brand.accent.200`                        |
+| `brand.neutral.950`  | `#030712` | Canvas/background                  | `brand.neutral.050`, `brand.primary.300`  |
+| `brand.neutral.900`  | `#111827` | Cards, table rows                  | `brand.neutral.050`, `brand.accent.200`   |
+| `brand.neutral.700`  | `#374151` | Dividers, medium strokes           | `brand.neutral.050`                       |
+| `brand.neutral.500`  | `#6B7280` | Secondary text                     | `brand.neutral.050`                       |
+| `brand.neutral.050`  | `#F9FAFB` | Text on dark                       | `brand.neutral.950`, `brand.primary.900`  |
+| `brand.warning.200`  | `#FED7AA` | Text/icons on warning backgrounds  | `brand.warning.900`                       |
+| `brand.warning.400`  | `#FB923C` | Warnings on dark                   | `brand.neutral.950`                       |
+| `brand.warning.900`  | `#7C2D12` | Warning backgrounds (dark)         | `brand.warning.200`, `brand.neutral.050`  |
+| `brand.critical.200` | `#FECACA` | Text/icons on critical backgrounds | `brand.critical.900`                      |
+| `brand.critical.400` | `#F87171` | Errors on dark                     | `brand.neutral.950`                       |
+| `brand.critical.900` | `#7F1D1D` | Critical backgrounds (dark)        | `brand.critical.200`, `brand.neutral.050` |
+
+### Palette Pairing Matrix
+
+> **Rationale:** Codifying allowable foreground/background pairs keeps authors from guessing. The automation script consumes this same matrix so design reviews catch issues before QA.
+
+| Foreground Token    | Background Token    | Usage                     | Min Contrast |
+| ------------------- | ------------------- | ------------------------- | ------------ |
+| `brand.neutral.900` | `brand.neutral.0`   | Primary body text (light) | 7.2:1        |
+| `brand.neutral.700` | `brand.neutral.050` | Secondary text (light)    | 5.3:1        |
+| `brand.primary.600` | `brand.neutral.050` | Primary buttons (light)   | 5.6:1        |
+| `brand.neutral.0`   | `brand.primary.500` | Inverted buttons (light)  | 4.7:1        |
+| `brand.neutral.050` | `brand.neutral.950` | Primary body text (dark)  | 12.9:1       |
+| `brand.accent.200`  | `brand.accent.950`  | Success alerts (dark)     | 4.8:1        |
+| `brand.primary.200` | `brand.primary.950` | Primary surfaces (dark)   | 4.5:1        |
+| `brand.warning.700` | `brand.warning.050` | Warning badges (light)    | 4.7:1        |
+| `brand.neutral.950` | `brand.primary.300` | On-primary text (dark)    | 7.5:1        |
+
+---
+
+## Typography Scale
+
+![Typography specimen showing type ramp from Display to Micro.](../../public/static/brand/typography-scale.svg)
+
+> **Rationale:** A strict typographic scale (1.25 modular base) lets designers and engineers switch contexts without redefining font sizes. All sizes map to Tailwind utilities and custom CSS variables for handoffs into motion or PDF outputs.
+
+| Token          | Tailwind Utility | Size (rem) | Line Height | Use Case                       |
+| -------------- | ---------------- | ---------- | ----------- | ------------------------------ |
+| `type.display` | `text-6xl`       | 3.75       | 1.05        | Hero moments, product keynotes |
+| `type.h1`      | `text-5xl`       | 3.00       | 1.08        | Primary page titles            |
+| `type.h2`      | `text-4xl`       | 2.25       | 1.12        | Section headings               |
+| `type.h3`      | `text-3xl`       | 1.875      | 1.18        | Dashboard cards                |
+| `type.h4`      | `text-2xl`       | 1.5        | 1.2         | Feature callouts               |
+| `type.body-lg` | `text-xl`        | 1.25       | 1.45        | Marketing paragraphs           |
+| `type.body`    | `text-base`      | 1.0        | 1.55        | Application body copy          |
+| `type.body-sm` | `text-sm`        | 0.875      | 1.45        | Form help text                 |
+| `type.micro`   | `text-xs`        | 0.75       | 1.4         | Legal, table meta              |
+
+**Font Family Stack:**
+
+- `Inter Variable` (primary)
+- `Inter`, `system-ui`, `-apple-system`, `BlinkMacSystemFont`, `"Segoe UI"`, `sans-serif`
+
+_Rationale:_ Inter Variable ships variable axes for weight and optical size, reducing font swaps in responsive layouts while keeping the asset self-hosted for CSP compliance.
+
+---
+
+## Layout Density Tokens
+
+> **Rationale:** Apotheon dashboards must scale from mobile field devices to multi-monitor SOC walls. A 4px base grid maintains consistency while allowing coarse/fine adjustments with minimal math.
+
+### Spacing Rhythm
+
+![Spacing scale preview showing modular steps labeled 4px–64px.](../../public/static/brand/spacing-scale.svg)
+
+| Token      | px   | Tailwind Class  | Notes                             |
+| ---------- | ---- | --------------- | --------------------------------- |
+| `space.1`  | 4px  | `gap-1` / `p-1` | Micro adjustments, icon alignment |
+| `space.2`  | 8px  | `gap-2` / `p-2` | Input padding, compact stacks     |
+| `space.3`  | 12px | `gap-3`         | Mobile spacing, inset cards       |
+| `space.4`  | 16px | `gap-4` / `p-4` | Baseline body spacing             |
+| `space.6`  | 24px | `gap-6`         | Section padding, card gutters     |
+| `space.8`  | 32px | `gap-8`         | Desktop gutters                   |
+| `space.12` | 48px | `gap-12`        | Hero layouts, marketing modules   |
+| `space.16` | 64px | `gap-16`        | Large-scale whitespace            |
+
+### Corner Radii
+
+| Token         | Radius | Usage               | Rationale                             |
+| ------------- | ------ | ------------------- | ------------------------------------- |
+| `radius.none` | 0      | Tables, inline code | Reinforces precision surfaces         |
+| `radius.sm`   | 4px    | Inputs, chips       | Matches 4px grid                      |
+| `radius.md`   | 8px    | Cards, popovers     | Softens edges without feeling playful |
+| `radius.lg`   | 16px   | Hero panels, modals | Signals elevated components           |
+| `radius.full` | 9999px | Pills, status dots  | Balanced with typography weight       |
+
+### Elevation & Shadows
+
+| Token         | Shadow CSS                          | Use Case                  | Rationale                              |
+| ------------- | ----------------------------------- | ------------------------- | -------------------------------------- |
+| `shadow.none` | `none`                              | Inline surfaces           | Keep baseline pages flat               |
+| `shadow.sm`   | `0 1px 2px rgba(3, 7, 18, 0.12)`    | Table headers, sticky nav | Subtle separation without blur         |
+| `shadow.md`   | `0 8px 24px rgba(3, 7, 18, 0.14)`   | Cards, dropdowns          | Works in both light/dark via low alpha |
+| `shadow.lg`   | `0 20px 40px rgba(15, 23, 42, 0.2)` | Modals, command palette   | High elevation and focus               |
+
+---
+
+## Component Application Cheat Sheets
+
+> **Rationale:** Component reference tables reduce handoffs and keep product teams aligned on which tokens to apply. Each table references the palette matrix above so automated contrast checks can enforce the same pairings.
+
+### Buttons
+
+| Variant     | Light Mode Tokens                                                                   | Dark Mode Tokens                                                                    | Notes                                                         |
+| ----------- | ----------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| Primary     | Text: `brand.neutral.0`<br>Bg: `brand.primary.500`<br>Hover: `brand.primary.600`    | Text: `brand.neutral.950`<br>Bg: `brand.primary.300`<br>Hover: `brand.primary.400`  | Use for main calls-to-action; maintain min width `space.8`.   |
+| Secondary   | Text: `brand.primary.600`<br>Bg: `brand.primary.050`<br>Border: `brand.primary.200` | Text: `brand.primary.200`<br>Bg: `brand.primary.950`<br>Border: `brand.primary.700` | Reserve for secondary flows; ensures 4.5:1 contrast on hover. |
+| Tertiary    | Text: `brand.primary.600` on transparent                                            | Text: `brand.primary.200` on transparent                                            | Inline actions; underline on focus for clarity.               |
+| Destructive | Text: `brand.neutral.0`<br>Bg: `brand.critical.500`                                 | Text: `brand.neutral.950`<br>Bg: `brand.critical.400`                               | Always pair with confirmation to avoid accidental triggers.   |
+
+### Form Inputs
+
+| State    | Light Mode                                                                         | Dark Mode                                                                            | Notes                                                        |
+| -------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------ |
+| Default  | Bg: `brand.neutral.0`<br>Border: `brand.neutral.200`<br>Label: `brand.neutral.700` | Bg: `brand.neutral.900`<br>Border: `brand.neutral.700`<br>Label: `brand.neutral.050` | Input padding uses `space.3` vertical, `space.4` horizontal. |
+| Focus    | Outline: `brand.primary.500` 2px                                                   | Outline: `brand.primary.300` 2px                                                     | Use `outline-offset: 2px` to respect WCAG focus visibility.  |
+| Error    | Border: `brand.critical.500`<br>Message: `brand.critical.500`                      | Border: `brand.critical.400`<br>Message: `brand.critical.400`                        | Inline help text uses `type.body-sm`.                        |
+| Disabled | Bg: `brand.neutral.050`<br>Text: `brand.neutral.500`                               | Bg: `brand.neutral.950`<br>Text: `brand.neutral.500`                                 | Maintain 3:1 contrast for placeholder text.                  |
+
+### Data Surfaces
+
+| Surface           | Light Mode Tokens                                                                | Dark Mode Tokens                                                                 | Notes                                                         |
+| ----------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| Cards             | Bg: `brand.neutral.0`<br>Shadow: `shadow.md`                                     | Bg: `brand.neutral.900`<br>Shadow: `shadow.md`                                   | Borderless by default; add `brand.neutral.200` when stacking. |
+| Tables            | Header Bg: `brand.neutral.050`<br>Row hover: `brand.primary.050`                 | Header Bg: `brand.neutral.900`<br>Row hover: `brand.primary.950`                 | Zebra stripes optional but keep 4.5:1 text contrast.          |
+| Alerts (Success)  | Bg: `brand.accent.050`<br>Border: `brand.accent.500`<br>Text: `brand.accent.700` | Bg: `brand.accent.950`<br>Border: `brand.accent.400`<br>Text: `brand.accent.200` | Icons should use the same text color for clarity.             |
+| Alerts (Warning)  | Bg: `brand.warning.050`<br>Border: `brand.warning.500`                           | Bg: `brand.warning.900`<br>Border: `brand.warning.400`                           | Provide call-to-action using secondary button tokens.         |
+| Alerts (Critical) | Bg: `brand.critical.050`<br>Border: `brand.critical.500`                         | Bg: `brand.critical.900`<br>Border: `brand.critical.400`                         | Always include remediation steps inline.                      |
+
+---
+
+## Accessibility & WCAG 2.2 AA Guardrails
+
+> **Rationale:** Accessibility compliance is a non-negotiable enterprise requirement. Baking guidelines and automation into the design system keeps teams from relying on ad-hoc manual testing.
+
+### Contrast Automation
+
+Run the automated audit before opening a pull request or handing off new mockups:
+
+```bash
+npm run brand:contrast
+```
+
+The script checks every pairing listed in the [palette matrix](#palette-pairing-matrix) plus the component tables. Failures print the observed ratio and the WCAG threshold breached.
+
+**Implementation Details:** The Node script (`scripts/brand/contrast-audit.mjs`) uses WCAG 2.2 relative luminance math to calculate ratios. Pairings live in a structured JSON object so design tokens remain the single source of truth for both docs and linting automation.
+
+### Manual QA Checklist
+
+- Verify focus indicators are at least 2px and contrast with adjacent colors by 3:1.
+- Confirm text styles smaller than `type.body` use at least 4.5:1 contrast even if they are bold.
+- Ensure motion states (e.g., loading skeletons) never rely on color alone – pair with iconography or text.
+- Review dark mode surfaces for pure black usage; prefer `brand.neutral.950` to avoid halation on HDR displays.
+- Export Figma components with token names, not hex values, so engineers can map them to Tailwind config without translation errors.
+
+---
+
+## Adoption Workflow for Designers & Engineers
+
+1. **Design tokens in Figma:** Reference the palette, typography, and spacing tables above. Publish a shared library with the same token names to unlock 1:1 parity. _Rationale:_ Aligned naming keeps developer handoff frictionless and ensures automation like the contrast audit matches Figma styles.\*
+2. **Update Tailwind config:** Mirror any token changes inside `tailwind.config.mjs`. Use CSS variables for runtime theming when necessary. _Rationale:_ Tailwind leverages a central tokens map, minimizing manual CSS overrides.\*
+3. **Regenerate documentation assets:** When colors or scales shift, update the SVGs in `public/static/brand/` using the shared vector template (`public/static/brand/palette-light.svg` as a starting point) or your editor of choice. _Rationale:_ Visual previews catch issues quicker than tables alone.\*
+4. **Run automation:** Execute `npm run lint`, `npm run format:check`, and `npm run brand:contrast` to ensure code quality, formatting, and contrast standards before pushing. _Rationale:_ Automation removes repetitive manual review cycles and enforces enterprise compliance gates.\*
+5. **Ship with confidence:** Attach this guide to product briefs and onboarding docs so every stakeholder references the same source of truth.
+
+---
+
+_Last updated: 2025-09-19_

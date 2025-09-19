@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="320" viewBox="0 0 720 320" role="img" aria-labelledby="title desc">
+  <title id="title">Apotheon Daylight Palette</title>
+  <desc id="desc">Preview of the primary, accent, neutral, warning, and critical colors for the light theme.</desc>
+  <rect width="720" height="320" fill="#F9FAFB" rx="24" />
+  <!-- Primary column -->
+  <g transform="translate(32 32)">
+    <rect width="120" height="64" fill="#EEF2FF" rx="12" />
+    <rect y="72" width="120" height="64" fill="#C7D2FE" rx="12" />
+    <rect y="144" width="120" height="64" fill="#4F46E5" rx="12" />
+    <rect y="216" width="120" height="64" fill="#4338CA" rx="12" />
+    <text x="60" y="36" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" fill="#111827">primary 050/200/500/600</text>
+  </g>
+  <!-- Accent column -->
+  <g transform="translate(192 32)">
+    <rect width="120" height="64" fill="#ECFEFF" rx="12" />
+    <rect y="72" width="120" height="64" fill="#A5F3FC" rx="12" />
+    <rect y="144" width="120" height="64" fill="#14B8A6" rx="12" />
+    <rect y="216" width="120" height="64" fill="#0F766E" rx="12" />
+    <text x="60" y="36" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" fill="#111827">accent 050/200/500/700</text>
+  </g>
+  <!-- Neutral column -->
+  <g transform="translate(352 32)">
+    <rect width="120" height="64" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2" rx="12" />
+    <rect y="72" width="120" height="64" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="2" rx="12" />
+    <rect y="144" width="120" height="64" fill="#6B7280" rx="12" />
+    <rect y="216" width="120" height="64" fill="#111827" rx="12" />
+    <text x="60" y="36" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" fill="#111827">neutral 0/050/500/900</text>
+  </g>
+  <!-- Status column -->
+  <g transform="translate(512 32)">
+    <rect width="120" height="64" fill="#FFF7ED" rx="12" />
+    <rect y="72" width="120" height="64" fill="#F97316" rx="12" />
+    <rect y="144" width="120" height="64" fill="#FEF2F2" rx="12" />
+    <rect y="216" width="120" height="64" fill="#DC2626" rx="12" />
+    <text x="60" y="36" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" fill="#111827">warning/critical</text>
+  </g>
+</svg>

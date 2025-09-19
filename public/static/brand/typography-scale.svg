@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="360" viewBox="0 0 720 360" role="img" aria-labelledby="title desc">
+  <title id="title">Apotheon Typography Scale</title>
+  <desc id="desc">Specimen showing typographic styles from display through micro text with their token names.</desc>
+  <rect width="720" height="360" fill="#FFFFFF" rx="24" />
+  <g transform="translate(48 64)" font-family="'Inter', sans-serif" fill="#111827">
+    <text font-size="60" font-weight="600">Display · 3.75rem</text>
+    <text y="72" font-size="48" font-weight="600">H1 · 3.00rem</text>
+    <text y="132" font-size="36" font-weight="600">H2 · 2.25rem</text>
+    <text y="188" font-size="30" font-weight="600">H3 · 1.875rem</text>
+    <text y="236" font-size="24" font-weight="600">H4 · 1.5rem</text>
+    <text y="280" font-size="20" font-weight="500">Body · 1rem</text>
+    <text y="320" font-size="16" font-weight="500">Body-sm · 0.875rem</text>
+  </g>
+  <g transform="translate(400 120)" font-family="'Inter', sans-serif" fill="#374151">
+    <text font-size="14">Line heights scale from 1.05–1.55 to preserve rhythm.</text>
+    <text y="32" font-size="14">Use font-variation-settings to dial optical sizes in dense UIs.</text>
+  </g>
+</svg>

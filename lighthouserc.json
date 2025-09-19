@@ -2,9 +2,7 @@
   "ci": {
     "collect": {
       "staticDistDir": "./dist",
-      "url": [
-        "/"
-      ],
+      "url": ["/"],
       "numberOfRuns": 1,
       "settings": {
         "preset": "desktop",
