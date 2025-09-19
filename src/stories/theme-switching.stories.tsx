@@ -117,8 +117,10 @@ export const InteractiveThemePlayground: Story = () => {
     </article>
   );
 };
-InteractiveThemePlayground.storyName = 'Interactive theme playground';
-InteractiveThemePlayground.meta = { width: 'large' };
+Object.assign(InteractiveThemePlayground, {
+  storyName: 'Interactive theme playground',
+  meta: { width: 'large' },
+});
 
 export const ThemeEmbeddingChecklist: Story = () => (
   <article className="token-story">
@@ -157,5 +159,7 @@ export const ThemeEmbeddingChecklist: Story = () => (
     </section>
   </article>
 );
-ThemeEmbeddingChecklist.storyName = 'Embedding checklist';
-ThemeEmbeddingChecklist.meta = { width: 'large' };
+Object.assign(ThemeEmbeddingChecklist, {
+  storyName: 'Embedding checklist',
+  meta: { width: 'large' },
+});

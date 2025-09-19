@@ -32,6 +32,7 @@ const {
       Fonts are imported via src/styles/global.css using @fontsource-variable/inter
       so we never punch holes in the CSP for third-party font CDNs.
     -->
+    <slot name="head" />
   </head>
   <body class="font-sans">
     <a class="sr-only focus:not-sr-only" href="#main">Skip to content</a>

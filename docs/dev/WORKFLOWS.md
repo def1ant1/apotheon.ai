@@ -40,19 +40,25 @@ is a safe fallback after cloning from a shallow checkout.
 - **Collections + schema:** Blog MDX files live in `src/content/blog/`. Frontmatter fields (`title`, `description`, `publishDate`,
   `updatedDate`, `heroImage`, `heroImageAlt`, `tags`, `estimatedReadingMinutes`, `author`, `draft`) are type-checked by
   `src/content/config.ts`. Keep the inline comments shipped with each starter file—automation reads those lines during tooling
-  upgrades to detect missing documentation.
+  upgrades to detect missing documentation and editorial guardrails.
 - **Authoring flow:**
   1. Duplicate the production-ready example MDX file to inherit editorial comments.
   2. Update metadata and body copy. Run `npm run typecheck` to catch schema violations before opening a PR.
-  3. Preview locally via `npm run dev` (drafts render automatically) or `npm run build -- --drafts` to simulate a release build
-     that still includes in-progress work for stakeholder reviews.
+  3. Preview locally via `npm run dev` (drafts render automatically) or execute `npm run dev -- --drafts` when you want to mimic
+     a production-like route map with drafts included. For static validation, run `npm run build -- --drafts` and `npm run preview`
+     to serve the artifact before stakeholders review.
 - **Publishing checklist:** Flip `draft` to `false`, verify hero artwork is in `/public/images/blog`, and re-run `npm run build`
   without the `--drafts` flag. CI only publishes entries with `draft: false`, ensuring the static export never leaks drafts.
 - **Layout components:** Shared blocks (`AuthorBio`, `RelatedPosts`) reside in `src/components/blog/` with documented prop types.
   Extend these components instead of editing page templates to keep JSON-LD, SEO metadata, and automation hooks centralized.
-- **Pagination + search roadmap:** `src/pages/blog/index.astro` slices results with a configurable page size. When expanding to
-  paginated routes or tag filters, reuse the helper variables already defined in the file and feed them into a new dynamic route
+- **Pagination + search roadmap:** `src/pages/blog/index.astro` slices results with a configurable page size and exports a
+  reusable pagination object. When expanding to paginated routes or tag filters, reuse this state inside a new dynamic route
   (`src/pages/blog/[page].astro`) or Astro endpoint. This avoids duplicating sorting/filtering rules across multiple surfaces.
+- **Detail pages:** `src/pages/blog/[slug].astro` resolves entries via `getEntryBySlug`, enforcing the `draft` gate at build time.
+  JSON-LD article schema is injected automatically; when breadcrumb data is ready, extend the existing `Astro.head` push block
+  rather than rewriting the template.
+- **Editorial handbook:** Long-form guidance, including required frontmatter commentary and review stages, now lives in
+  [`docs/dev/EDITORIAL.md`](./EDITORIAL.md). Keep that file current as our automation evolves.
 
 ## Pre-commit Automation
 

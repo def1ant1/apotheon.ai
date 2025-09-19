@@ -86,8 +86,10 @@ export const ColorAtlas: Story = () => (
     </section>
   </article>
 );
-ColorAtlas.storyName = 'Color atlas (light & dark ready)';
-ColorAtlas.meta = { width: 'large' };
+Object.assign(ColorAtlas, {
+  storyName: 'Color atlas (light & dark ready)',
+  meta: { width: 'large' },
+});
 
 const spacingList = Object.entries(spacingTokens);
 const radiusList = Object.entries(radiusTokens);
@@ -163,8 +165,10 @@ export const SpatialScale: Story = () => (
     </section>
   </article>
 );
-SpatialScale.storyName = 'Spatial scale + elevation';
-SpatialScale.meta = { width: 'large' };
+Object.assign(SpatialScale, {
+  storyName: 'Spatial scale + elevation',
+  meta: { width: 'large' },
+});
 
 const typographyList = Object.entries(typographyTokens);
 
@@ -220,5 +224,7 @@ export const TypographyRamp: Story = () => (
     </section>
   </article>
 );
-TypographyRamp.storyName = 'Typography ramp';
-TypographyRamp.meta = { width: 'large' };
+Object.assign(TypographyRamp, {
+  storyName: 'Typography ramp',
+  meta: { width: 'large' },
+});

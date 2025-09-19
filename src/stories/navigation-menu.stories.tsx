@@ -45,8 +45,10 @@ export const PrimaryNavigation: Story = () => (
     <RadixNavigationMenu />
   </article>
 );
-PrimaryNavigation.storyName = 'Primary navigation shell';
-PrimaryNavigation.meta = { width: 'large' };
+Object.assign(PrimaryNavigation, {
+  storyName: 'Primary navigation shell',
+  meta: { width: 'large' },
+});
 
 export const InformationArchitectureBlueprint: Story = () => (
   <article className="token-story">
@@ -91,8 +93,10 @@ export const InformationArchitectureBlueprint: Story = () => (
     </section>
   </article>
 );
-InformationArchitectureBlueprint.storyName = 'IA data blueprint';
-InformationArchitectureBlueprint.meta = { width: 'large' };
+Object.assign(InformationArchitectureBlueprint, {
+  storyName: 'IA data blueprint',
+  meta: { width: 'large' },
+});
 
 const inlineMenuExample = navigationMenuGroups.map((group) => ({
   ...group,
@@ -147,5 +151,7 @@ export const ExternalizedDataFeed: Story = () => (
     </nav>
   </article>
 );
-ExternalizedDataFeed.storyName = 'External IA feed (pseudo-code)';
-ExternalizedDataFeed.meta = { width: 'large' };
+Object.assign(ExternalizedDataFeed, {
+  storyName: 'External IA feed (pseudo-code)',
+  meta: { width: 'large' },
+});
