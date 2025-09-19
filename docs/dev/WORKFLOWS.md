@@ -28,6 +28,13 @@ is a safe fallback after cloning from a shallow checkout.
 | Component docs (build)          | `npm run ladle:build`  | Static export consumed by CI + artifact previews.                              |
 | Full regression gate            | `npm run test`         | Lint → typecheck → Ladle CI (a11y + visual smoke tests).                       |
 
+## Marketing Content Pipeline
+
+- **Content collections:** Marketing MDX lives in `src/content/marketing` under `solutions/`, `industries/`, and `about/`. Each file only needs the existing schema fields (`title`, `summary`, `heroCtaLabel`, `order`, `featured`), and richly commented sections describe which Astro layout slots they target. New files are auto-discovered by the dynamic routes created in `src/pages/solutions/[product].astro`, `src/pages/industries/[sector].astro`, and `src/pages/about/[page].astro`.
+- **Author workflow:** Drop an MDX file into the appropriate folder, run `npm run typecheck` to verify schema compliance, and execute `npm run build` to regenerate the static routes. Index pages (`/solutions`, `/industries`, `/about`) automatically enumerate new entries and feed breadcrumb metadata to upcoming navigation helpers.
+- **Reusable components:** Shared hero, CTA rows, and shell metadata live in `src/components/marketing/`. Follow the inline comments for SEO, accessibility, and performance guidance before extending any template.
+- **Automation-first mindset:** The marketing pipeline avoids manual routing. Editors should not touch files under `src/pages/solutions/`, `src/pages/industries/`, or `src/pages/about/` unless evolving the templates for the entire section.
+
 ## Pre-commit Automation
 
 - Husky hooks run `lint-staged` to auto-fix staged files with ESLint, Stylelint,

@@ -1,0 +1,79 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+import MarketingCtaRow from '../../components/marketing/MarketingCtaRow.astro';
+import MarketingHero from '../../components/marketing/MarketingHero.astro';
+import MarketingShell from '../../components/marketing/MarketingShell.astro';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('marketing', ({ id }) => id.startsWith('industries/'));
+  return entries.map((entry) => ({
+    params: { sector: entry.slug.split('/').pop() ?? entry.id },
+    props: { entry },
+  }));
+}
+
+interface Props {
+  entry: CollectionEntry<'marketing'>;
+}
+
+const { entry } = Astro.props as Props;
+const { data } = entry;
+const { Content } = await entry.render();
+const slugSegment = entry.slug.split('/').pop() ?? entry.id;
+const heroCopy =
+  data.summary ??
+  'Discover how Apotheon.ai adapts the platform to meet compliance, performance, and mission outcomes across industries.';
+const heroCtaLabel = data.heroCtaLabel ?? 'Talk with an industry specialist';
+const breadcrumbs = [
+  { href: '/industries/', label: 'Industries' },
+  { href: `/industries/${slugSegment}/`, label: data.title },
+];
+---
+
+<MarketingShell title={data.title} description={heroCopy} {breadcrumbs}>
+  <MarketingHero
+    eyebrow="Industries"
+    headline={data.title}
+    copy={heroCopy}
+    cta={{
+      label: heroCtaLabel,
+      href: '/about/contact/',
+      description: 'Route to the vertical experts that manage compliance alignment.',
+    }}
+  />
+
+  <!--
+    Industry pages lean heavily on proof points and compliance assurances. When adding new sections,
+    prioritize headings that align with RFP requirements (security, onboarding, support, outcomes).
+  -->
+  <article
+    class="prose prose-invert prose-headings:font-semibold prose-headings:text-white prose-p:text-slate-200 prose-a:text-indigo-300 max-w-none"
+  >
+    <Content />
+  </article>
+
+  <MarketingCtaRow
+    items={[
+      {
+        title: 'Book a compliance review',
+        description: 'Map regulatory obligations to Apotheon.ai controls with our governance team.',
+        href: '/about/contact/',
+        label: 'Schedule a review',
+      },
+      {
+        title: 'Explore solution capabilities',
+        description: 'Pair this industry story with the platform modules built for your teams.',
+        href: '/solutions/',
+        label: 'See platform modules',
+      },
+      {
+        title: 'Download procurement toolkit',
+        description:
+          'Access security attestations, reference architectures, and deployment checklists.',
+        href: '/about/company/',
+        label: 'Open toolkit overview',
+      },
+    ]}
+  />
+</MarketingShell>

@@ -1,0 +1,56 @@
+---
+interface Cta {
+  label: string;
+  href: string;
+  variant?: 'primary' | 'secondary';
+  description?: string;
+}
+
+interface Props {
+  eyebrow: string;
+  headline: string;
+  copy: string;
+  cta?: Cta;
+}
+
+const { eyebrow, headline, copy, cta } = Astro.props as Props;
+
+const ctaLabel = cta?.label ?? 'Talk with our architects';
+const ctaHref = cta?.href ?? '/contact/';
+const ctaVariant = cta?.variant ?? 'primary';
+const ctaDescription = cta?.description;
+
+const baseButtonClass =
+  'inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-200';
+const variantClass =
+  ctaVariant === 'secondary'
+    ? 'border border-slate-700 bg-transparent text-slate-200 hover:border-slate-500'
+    : 'bg-indigo-500 text-white hover:bg-indigo-400';
+---
+
+<!--
+  MarketingHero standardizes our above-the-fold structure:
+  - Eyebrow text introduces the content pillar (Solutions, Industries, About) with consistent casing.
+  - Headline renders in an <h1> so crawlers and assistive tech identify the primary topic.
+  - Copy stays within 2–3 short sentences to preserve fast FCP and avoid reflow on smaller devices.
+  - CTA uses a plain anchor for zero-hydration semantics; analytics scripts can attach listeners later.
+-->
+<header
+  class="flex flex-col gap-6 rounded-3xl bg-slate-900/70 p-10 shadow-xl shadow-indigo-950/40 backdrop-blur"
+>
+  <p class="text-xs uppercase tracking-[0.4rem] text-slate-400">{eyebrow}</p>
+  <h1 class="text-4xl font-black leading-tight text-white md:text-5xl">{headline}</h1>
+  <p class="max-w-3xl text-base text-slate-300 md:text-lg">{copy}</p>
+  <div class="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+    <a class={`${baseButtonClass} ${variantClass}`} href={ctaHref}>
+      {ctaLabel}
+    </a>
+    {ctaDescription && <span class="text-sm text-slate-400">{ctaDescription}</span>}
+  </div>
+  <!--
+    Accessibility considerations:
+    - Buttons maintain 4.5:1 contrast ratios in both variants for WCAG AA compliance.
+    - Focus-visible ring uses high-contrast outline to remain visible on dark surfaces.
+    - Avoid embedding autoplaying media here to keep CLS low and hero rendering deterministic.
+  -->
+</header>

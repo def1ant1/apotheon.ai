@@ -1,0 +1,89 @@
+---
+import { getCollection } from 'astro:content';
+
+import MarketingCtaRow from '../../components/marketing/MarketingCtaRow.astro';
+import MarketingHero from '../../components/marketing/MarketingHero.astro';
+import MarketingShell from '../../components/marketing/MarketingShell.astro';
+
+const industryEntries = await getCollection('marketing', ({ id }) => id.startsWith('industries/'));
+const industries = industryEntries
+  .map((entry) => ({
+    title: entry.data.title,
+    summary:
+      entry.data.summary ?? 'Sector guidance for procurement, compliance, and customer success.',
+    href: `/industries/${entry.slug.split('/').pop() ?? entry.id}/`,
+    featured: entry.data.featured,
+    order: entry.data.order ?? 0,
+  }))
+  .sort((a, b) => (a.order === b.order ? a.title.localeCompare(b.title) : a.order - b.order));
+
+const heroCopy =
+  'Assess how Apotheon.ai adapts the platform for the regulations and missions you manage.';
+const breadcrumbs = [{ href: '/industries/', label: 'Industries' }];
+---
+
+<MarketingShell title="Industries" description={heroCopy} {breadcrumbs}>
+  <MarketingHero
+    eyebrow="Industries"
+    headline="Purpose-built industry playbooks"
+    copy={heroCopy}
+    cta={{
+      label: 'Pair with our specialists',
+      href: '/about/contact/',
+      description: 'Vertical strategists align go-live plans with compliance checkpoints.',
+    }}
+  />
+
+  <section class="flex flex-col gap-6">
+    <h2 class="text-2xl font-semibold text-white">Industry guides</h2>
+    <p class="text-sm text-slate-400">
+      Each card links to an MDX-driven narrative covering data sourcing, onboarding, and mission
+      outcomes. Authors append new cards by dropping MDX files into <code
+        >src/content/marketing/industries</code
+      >.
+    </p>
+    <div class="grid gap-4 md:grid-cols-3">
+      {
+        industries.map((industry) => (
+          <a
+            class={`flex flex-col gap-3 rounded-2xl border border-slate-800 bg-slate-950/40 p-6 transition hover:border-indigo-500 ${
+              industry.featured ? 'ring-1 ring-indigo-500/40' : ''
+            }`}
+            href={industry.href}
+          >
+            <span class="text-xs uppercase tracking-[0.35rem] text-indigo-300">
+              {industry.featured ? 'Priority vertical' : 'Industry'}
+            </span>
+            <span class="text-lg font-semibold text-white">{industry.title}</span>
+            <span class="text-sm text-slate-300">{industry.summary}</span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <MarketingCtaRow
+    heading="Build your rollout coalition"
+    items={[
+      {
+        title: 'Sync with governance',
+        description: 'Introduce risk and compliance leads to our security principals early.',
+        href: '/about/contact/',
+        label: 'Coordinate a workshop',
+      },
+      {
+        title: 'Preview implementation services',
+        description:
+          'See how the delivery team runs migrations, data cleanup, and change management.',
+        href: '/solutions/clio/',
+        label: 'Review delivery patterns',
+      },
+      {
+        title: 'Capture executive alignment',
+        description: 'Share the company overview to align CIO, CDO, and CISO stakeholders.',
+        href: '/about/company/',
+        label: 'Share leadership brief',
+      },
+    ]}
+  />
+</MarketingShell>

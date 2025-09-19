@@ -1,0 +1,52 @@
+---
+interface CtaItem {
+  title: string;
+  description: string;
+  href: string;
+  label: string;
+  rel?: string;
+}
+
+interface Props {
+  heading?: string;
+  items: CtaItem[];
+}
+
+const { heading = 'Continue your evaluation', items } = Astro.props as Props;
+---
+
+<!--
+  MarketingCtaRow keeps our closing CTAs visually consistent. Each item renders as a card with a
+  semantic heading so screen readers announce the available follow-up actions. Avoid more than three
+  CTAs to prevent analysis paralysis and keep the row responsive without wrapping awkwardly.
+-->
+<section class="flex flex-col gap-6 rounded-3xl border border-slate-800 bg-slate-900/50 p-10">
+  <div class="flex flex-col gap-2">
+    <h2 class="text-2xl font-semibold text-white">{heading}</h2>
+    <p class="text-sm text-slate-400">
+      Choose a next step; analytics funnels bucket selections to measure demand generation impact.
+    </p>
+  </div>
+  <div class="grid gap-4 md:grid-cols-3">
+    {
+      items.map((item) => (
+        <article class="flex flex-col gap-3 rounded-2xl border border-slate-800 bg-slate-950/40 p-6 transition hover:border-slate-600">
+          <h3 class="text-lg font-semibold text-white">{item.title}</h3>
+          <p class="flex-1 text-sm text-slate-300">{item.description}</p>
+          <a
+            class="text-sm font-semibold text-indigo-300 underline-offset-4 transition hover:text-indigo-200 hover:underline"
+            href={item.href}
+            rel={item.rel}
+          >
+            {item.label}
+          </a>
+        </article>
+      ))
+    }
+  </div>
+  <!--
+    Performance note: cards are pure HTML/CSS so they stream immediately with the rest of the page.
+    If future experiments require click tracking, use IntersectionObserver in a light client island to
+    avoid blocking initial paint.
+  -->
+</section>
