@@ -1,0 +1,87 @@
+---
+import { getCollection } from 'astro:content';
+
+import MarketingCtaRow from '../../components/marketing/MarketingCtaRow.astro';
+import MarketingHero from '../../components/marketing/MarketingHero.astro';
+import MarketingShell from '../../components/marketing/MarketingShell.astro';
+
+const aboutEntries = await getCollection('marketing', ({ id }) => id.startsWith('about/'));
+const aboutPages = aboutEntries
+  .map((entry) => ({
+    title: entry.data.title,
+    summary:
+      entry.data.summary ?? 'Context about Apotheon.ai culture, leadership, and engagement paths.',
+    href: `/about/${entry.slug.split('/').pop() ?? entry.id}/`,
+    featured: entry.data.featured,
+    order: entry.data.order ?? 0,
+  }))
+  .sort((a, b) => (a.order === b.order ? a.title.localeCompare(b.title) : a.order - b.order));
+
+const heroCopy =
+  'Learn how Apotheon.ai operates, who leads the mission, and the best ways to partner with our teams.';
+const breadcrumbs = [{ href: '/about/', label: 'About' }];
+---
+
+<MarketingShell title="About Apotheon.ai" description={heroCopy} {breadcrumbs}>
+  <MarketingHero
+    eyebrow="About"
+    headline="Inside Apotheon.ai"
+    copy={heroCopy}
+    cta={{
+      label: 'Reach out to our team',
+      href: '/about/contact/',
+      description: 'Messages route through RevOps for fast assignment.',
+    }}
+  />
+
+  <section class="flex flex-col gap-6">
+    <h2 class="text-2xl font-semibold text-white">Company resources</h2>
+    <p class="text-sm text-slate-400">
+      Pages render statically via the marketing content collection. Drop additional MDX files into
+      <code>src/content/marketing/about</code> and the list below updates automatically on the next build.
+    </p>
+    <div class="grid gap-4 md:grid-cols-2">
+      {
+        aboutPages.map((page) => (
+          <a
+            class={`flex flex-col gap-3 rounded-2xl border border-slate-800 bg-slate-950/40 p-6 transition hover:border-indigo-500 ${
+              page.featured ? 'ring-1 ring-indigo-500/40' : ''
+            }`}
+            href={page.href}
+          >
+            <span class="text-xs uppercase tracking-[0.35rem] text-indigo-300">
+              {page.featured ? 'Start here' : 'About resource'}
+            </span>
+            <span class="text-lg font-semibold text-white">{page.title}</span>
+            <span class="text-sm text-slate-300">{page.summary}</span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <MarketingCtaRow
+    heading="Keep momentum"
+    items={[
+      {
+        title: 'Evaluate platform modules',
+        description: 'Bridge company context with the solutions that will power your roadmap.',
+        href: '/solutions/',
+        label: 'View solution catalog',
+      },
+      {
+        title: 'Check industry readiness',
+        description: 'Confirm regulatory coverage and mission alignment across target markets.',
+        href: '/industries/',
+        label: 'Browse industries',
+      },
+      {
+        title: 'Review implementation workflows',
+        description: 'Understand how our delivery teams automate repeatable launches.',
+        href: 'mailto:hello@apotheon.ai?subject=Workflow%20Guide%20Request',
+        label: 'Request workflow briefing',
+        rel: 'noopener',
+      },
+    ]}
+  />
+</MarketingShell>

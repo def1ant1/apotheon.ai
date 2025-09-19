@@ -1,0 +1,82 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+import MarketingCtaRow from '../../components/marketing/MarketingCtaRow.astro';
+import MarketingHero from '../../components/marketing/MarketingHero.astro';
+import MarketingShell from '../../components/marketing/MarketingShell.astro';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('marketing', ({ id }) => id.startsWith('about/'));
+  return entries.map((entry) => ({
+    params: { page: entry.slug.split('/').pop() ?? entry.id },
+    props: { entry },
+  }));
+}
+
+interface Props {
+  entry: CollectionEntry<'marketing'>;
+}
+
+const { entry } = Astro.props as Props;
+const { data } = entry;
+const { Content } = await entry.render();
+const slugSegment = entry.slug.split('/').pop() ?? entry.id;
+const heroCopy =
+  data.summary ??
+  'Understand the teams, history, and culture powering Apotheon.ai as we scale enterprise platforms.';
+const heroCtaLabel = data.heroCtaLabel ?? 'Connect with us';
+const breadcrumbs = [
+  { href: '/about/', label: 'About' },
+  { href: `/about/${slugSegment}/`, label: data.title },
+];
+---
+
+<MarketingShell title={data.title} description={heroCopy} {breadcrumbs}>
+  <MarketingHero
+    eyebrow="About"
+    headline={data.title}
+    copy={heroCopy}
+    cta={{
+      label: heroCtaLabel,
+      href: '/about/contact/',
+      description: 'Direct message routes into the RevOps-managed intake queue.',
+    }}
+  />
+
+  <!--
+    About pages welcome more narrative storytelling. Feel free to embed imagery or data visualizations
+    with MDX imports in future iterations. Keep alt text descriptive and ensure charts ship with
+    table-based fallbacks for accessibility.
+  -->
+  <article
+    class="prose prose-invert prose-headings:font-semibold prose-headings:text-white prose-p:text-slate-200 prose-a:text-indigo-300 max-w-none"
+  >
+    <Content />
+  </article>
+
+  <MarketingCtaRow
+    items={[
+      {
+        title: 'Read our operating principles',
+        description:
+          'See the guardrails steering product decisions, hiring, and customer engagement.',
+        href: '/about/company/',
+        label: 'Explore the manifesto',
+      },
+      {
+        title: 'Meet the leadership team',
+        description:
+          'Deep dive into the cross-functional leaders guiding delivery, research, and success.',
+        href: '/about/team/',
+        label: 'Review leadership bios',
+      },
+      {
+        title: 'Join the mission',
+        description:
+          'Preview roles across engineering, go-to-market, and operations as we scale globally.',
+        href: '/about/careers/',
+        label: 'Browse open roles',
+      },
+    ]}
+  />
+</MarketingShell>
