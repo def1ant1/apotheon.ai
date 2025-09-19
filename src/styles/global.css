@@ -5,6 +5,13 @@
 */
 @import '@fontsource-variable/inter/index.css';
 
+/*
+  Import the design token CSS variables before Tailwind runs so every layer
+  (base, components, utilities) can read the values. The Tailwind config wires
+  semantic colors/spacing/typography to these variables.
+*/
+@import './tokens.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -14,30 +21,70 @@
   design tokens for consistency and long-term maintainability.
 */
 
-:root {
-  color-scheme: light dark;
+/*
+  Documented theming strategy -------------------------------------------------
+  - Tokens define light/dark palettes using `[data-theme]` selectors.
+  - We expose a `data-theme="dark"` toggle on `<html>` (or any ancestor) to flip
+    seamlessly without repainting the entire page.
+  - Base styles below consume Tailwind utilities that read from those tokens, so
+    component islands pick up updates automatically.
+*/
+
+html {
+  /* Keep height pinned so modals/backdrops fill the viewport regardless of content. */
+  min-height: 100%;
 }
 
 body {
   /*
-    Tailwind's font-sans utility now resolves to our locally bundled Inter
-    Variable family (see tailwind.config.mjs). Keeping the explicit feature
-    settings ensures discretionary ligatures remain consistent across browsers.
+    Tailwind's `font-sans` now resolves to a system-first stack (per config) so
+    first paint is stable. Once Inter Variable loads we inherit it without
+    layout shift. The background/text colors route through semantic tokens so
+    theme flips happen instantly.
   */
-  @apply bg-slate-950 text-slate-100 antialiased;
+  @apply bg-surface-base font-sans text-ink-primary antialiased;
+  background-color: hsl(var(--color-surface-base));
+  color: hsl(var(--color-ink-primary));
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  transition:
+    background-color 180ms ease,
+    color 180ms ease;
+}
+
+body[data-theme='dark'],
+html[data-theme='dark'] body {
+  /* Provide an explicit hook so nested theme scopes (e.g., docs sandbox) work. */
+  background-color: hsl(var(--color-surface-base));
+  color: hsl(var(--color-ink-primary));
 }
 
 main {
-  @apply mx-auto flex min-h-screen max-w-5xl flex-col gap-12 px-6 pb-24 pt-16;
+  /*
+    Center the main column and honor responsive spacing tokens for enterprise
+    dashboards and marketing pages alike. The clamp-based gutters from
+    `tokens.css` mean designers tweak a single value to realign the entire
+    layout.
+  */
+  @apply mx-auto flex min-h-screen max-w-5xl flex-col gap-space-xl px-gutter-inline pb-space-3xl pt-space-2xl;
 }
 
 a {
-  @apply font-semibold text-sky-400 transition hover:text-sky-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400;
+  /*
+    Link color uses the accent brand token to meet WCAG AA across themes. Focus
+    states lean on the shared focus-ring shadow so the outline matches component
+    controls.
+  */
+  @apply font-semibold text-accent-brand transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-brand;
+  text-decoration-color: hsl(var(--color-accent-brand));
+}
+
+a:hover {
+  @apply text-accent-brand/80;
 }
 
 code {
-  @apply rounded bg-slate-900 px-1 py-0.5 font-mono text-sm text-amber-300;
+  /* Inline code surfaces leverage raised backgrounds + inverted ink. */
+  @apply rounded-radius-sm bg-surface-overlay/80 px-space-3xs py-[0.35rem] font-mono text-caption text-ink-inverted shadow-elevation-1;
 }
 
 /*
@@ -48,31 +95,32 @@ code {
 */
 
 .navigation-surface {
-  @apply relative mx-auto flex w-full max-w-4xl items-center justify-center gap-4 rounded-3xl border border-slate-800/70 bg-slate-950/70 px-6 py-3 text-sm text-slate-200 shadow-navigation backdrop-blur supports-[backdrop-filter]:bg-slate-950/50;
+  /* The global navigation bar references raised surfaces + blur for glassmorphism. */
+  @apply relative mx-auto flex w-full max-w-4xl items-center justify-center gap-space-sm rounded-radius-2xl border border-border-subtle/70 bg-surface-raised/70 px-space-md py-space-sm text-body-sm text-ink-secondary shadow-elevation-2 backdrop-blur supports-[backdrop-filter]:bg-surface-raised/50;
 }
 
 .navigation-list {
-  @apply flex flex-wrap items-center justify-center gap-3;
+  @apply flex flex-wrap items-center justify-center gap-space-sm;
 }
 
 .navigation-trigger {
-  @apply inline-flex items-center gap-1 rounded-full border border-transparent bg-transparent px-4 py-2 font-semibold text-slate-300 transition-colors duration-200 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary data-[state=open]:border-slate-700 data-[state=open]:bg-slate-900/80 data-[state=open]:text-white;
+  @apply inline-flex items-center gap-space-3xs rounded-radius-pill border border-transparent bg-transparent px-space-sm py-space-2xs font-semibold text-ink-muted transition-colors duration-200 hover:text-ink-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-brand data-[state=open]:border-border-strong data-[state=open]:bg-surface-overlay/80 data-[state=open]:text-ink-primary;
 }
 
 .navigation-trigger__chevron {
-  @apply text-xs transition-transform duration-200 group-data-[state=open]:-rotate-180;
+  @apply text-xs text-ink-muted transition-transform duration-200 group-data-[state=open]:-rotate-180;
 }
 
 .navigation-content {
-  @apply absolute left-1/2 top-full z-10 mt-4 w-[min(36rem,90vw)] -translate-x-1/2 space-y-4 rounded-3xl border border-slate-800/80 bg-slate-950/95 p-6 text-left shadow-navigation backdrop-blur-xl supports-[backdrop-filter]:bg-slate-950/80;
+  @apply absolute left-1/2 top-full z-10 mt-space-sm w-[min(36rem,90vw)] -translate-x-1/2 space-y-space-sm rounded-radius-2xl border border-border-subtle/80 bg-surface-overlay/95 p-space-lg text-left text-ink-secondary shadow-elevation-3 backdrop-blur-xl supports-[backdrop-filter]:bg-surface-overlay/80;
 }
 
 .navigation-content__description {
-  @apply text-sm text-slate-400;
+  @apply text-body-sm text-ink-muted;
 }
 
 .navigation-grid {
-  @apply grid gap-4 pt-2 sm:grid-cols-2;
+  @apply grid gap-space-sm pt-space-xs sm:grid-cols-2;
 }
 
 .navigation-grid__item {
@@ -80,15 +128,15 @@ code {
 }
 
 .navigation-link {
-  @apply block h-full space-y-1.5 rounded-2xl border border-transparent bg-slate-950/40 px-4 py-3 text-left text-slate-200 transition duration-200 hover:border-brand-primary/50 hover:bg-slate-900/80 hover:text-white hover:shadow-navigation-inset focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-primary;
+  @apply block h-full space-y-[0.375rem] rounded-radius-xl border border-transparent bg-surface-base/60 px-space-md py-space-sm text-left text-ink-secondary transition duration-200 hover:border-accent-brand/60 hover:bg-surface-overlay/80 hover:text-ink-primary hover:shadow-elevation-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent-brand;
 }
 
 .navigation-grid__heading {
-  @apply text-base font-semibold text-white;
+  @apply text-title-md font-semibold text-ink-primary;
 }
 
 .navigation-grid__copy {
-  @apply text-sm text-slate-400;
+  @apply text-body-sm text-ink-muted;
 }
 
 .navigation-indicator {
@@ -96,9 +144,9 @@ code {
 }
 
 .navigation-indicator__arrow {
-  @apply h-3 w-3 rotate-45 rounded-sm bg-slate-900 shadow-navigation;
+  @apply h-3 w-3 rotate-45 rounded-radius-xs bg-surface-overlay shadow-elevation-2;
 }
 
 .navigation-viewport {
-  @apply pointer-events-none absolute left-0 top-full z-10 mt-4 w-full rounded-3xl border border-transparent bg-transparent opacity-0 transition-opacity duration-200 data-[state=open]:pointer-events-auto data-[state=open]:opacity-100;
+  @apply pointer-events-none absolute left-0 top-full z-10 mt-space-sm w-full rounded-radius-2xl border border-transparent bg-transparent opacity-0 transition-opacity duration-200 data-[state=open]:pointer-events-auto data-[state=open]:opacity-100;
 }

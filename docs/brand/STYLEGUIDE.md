@@ -28,8 +28,22 @@
 ## Brand Design North Star
 
 - **Voice & Tone:** Confident, data-forward, and transparent. Interfaces should feel like a precision instrument rather than a marketing site. _Rationale:_ Stakeholders rely on Apotheon.ai for mission-critical forecasting – a restrained palette and purposeful animation reduce distraction.
-- **Token-first delivery:** All surfaces consume Tailwind design tokens declared once in `tailwind.config.mjs` and mirrored in this document. _Rationale:_ Shared tokens eliminate manual restyling and enable automation like the contrast script to validate pairings.
+- **Token-first delivery:** All surfaces consume Tailwind design tokens declared once in `tailwind.config.mjs`, hydrated from `src/styles/tokens.css`, and mirrored in this document. _Rationale:_ Shared tokens eliminate manual restyling and enable automation like the contrast script to validate pairings.
 - **Dark mode parity:** Every color, typography, and spacing token includes a dark-mode equivalent. _Rationale:_ Enterprise customers expect first-class dark themes for dashboards and SOC workflows.
+
+---
+
+## Token Orchestration & Theme Controls
+
+> **Why this matters:** A centralized token pipeline lets the brand team tweak one file and have Astro, Tailwind, and React islands update in lockstep. Theme switches (light/dark) ride on the exact same variables so we avoid diverging palettes between CSS and TypeScript.
+
+1. **Source of truth:** Author tokens in `src/styles/tokens.css`. Every variable is documented inline—keep comments up to date when changing usage so downstream consumers inherit the rationale. Light and dark variants live side-by-side using `[data-theme]` selectors.
+2. **Tailwind bridge:** `tailwind.config.mjs` maps semantic utilities (e.g., `bg-surface-base`, `text-ink-primary`, `gap-space-lg`) to those CSS variables. When adding or renaming tokens, update the corresponding objects (`semanticColors`, `spatialScale`, etc.) so utilities resolve correctly.
+3. **TypeScript helpers:** Runtime code should import from `src/styles/tokens.ts` rather than hard-coding variable names. The helpers export typed records and the `getThemeAttribute` helper for React/Preact islands that need to scope dark mode to a subtree.
+4. **Theme flipping:** Toggle light/dark mode by setting `data-theme="light" | "dark"` on `<html>` or any container. Because the CSS file defines defaults on `:root` _and_ respects nested data attributes, sandboxed components can opt into their own theme without affecting the rest of the page.
+5. **Verification workflow:** After updating tokens, always run `npm run lint`, `npm run typecheck`, and `npm run build`. These commands ensure Tailwind picks up the new utilities, TypeScript stays aligned, and Astro can produce production bundles without regression.
+
+_Automation tip:_ The `scripts/sync-tokens.mjs` task (see developer docs) can be extended to ingest design tool exports. Keep this in mind when planning large palette or typography refreshes.
 
 ---
 
@@ -131,10 +145,11 @@ Each table lists the internal token name (`brand.<group>.<step>`), HEX value, us
 
 **Font Family Stack:**
 
-- `Inter Variable` (primary)
-- `Inter`, `system-ui`, `-apple-system`, `BlinkMacSystemFont`, `"Segoe UI"`, `sans-serif`
+- `system-ui`, `-apple-system`, `BlinkMacSystemFont`, `"Segoe UI"` (first paint stability)
+- `Inter Variable`, `Inter`
+- `sans-serif`
 
-_Rationale:_ Inter Variable ships variable axes for weight and optical size, reducing font swaps in responsive layouts while keeping the asset self-hosted for CSP compliance.
+_Rationale:_ A system-first stack eliminates layout shift on initial render, while the optional Inter Variable download provides optical tuning once loaded. Keeping Inter self-hosted maintains CSP compliance.
 
 ---
 
