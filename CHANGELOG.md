@@ -11,6 +11,8 @@ semantic versioning once releases begin.
 - Migrated the web platform to an Astro 4 static-first architecture with React
   islands, Tailwind CSS, MDX content collections, Pagefind search automation, and
   hardened CSP defaults.
+- Delivered nonce-based CSP middleware, HTTPS dev tooling, mkcert automation,
+  and documentation for capturing CSP reports via Cloudflare Workers.
 - Introduced baseline Astro project scaffolding (`src/pages`, `src/layouts`,
   `src/components/islands`, `src/styles`, and content collections).
 - Added automation scripts for linting, formatting, building, previewing, and

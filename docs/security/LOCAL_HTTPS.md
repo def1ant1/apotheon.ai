@@ -1,0 +1,66 @@
+# Local HTTPS + CSP Validation Playbook
+
+Enterprise QA requires parity with production transport security. The workflow
+below automates certificate management, Astro dev server configuration, and CSP
+report capture so engineers can exercise real-world browser behaviour before
+shipping.
+
+## 1. Install mkcert root CA (one-time)
+
+```bash
+./scripts/security/mkcert-install.sh
+```
+
+This script wraps `mkcert -install` and ensures the local trust store is primed
+for development certificates. Run it again whenever the root CA expires or if a
+new developer workstation comes online.
+
+## 2. Mint localhost certificates
+
+```bash
+./scripts/security/mkcert-localhost.sh
+```
+
+The helper drops `certs/localhost-cert.pem` and `certs/localhost-key.pem`, the
+same paths consumed by both the Astro dev server and future reverse proxies. You
+can regenerate the pair at any time; the script overwrites existing files.
+
+## 3. Launch Astro with HTTPS + CSP reporting
+
+```bash
+npm run dev:https
+```
+
+`scripts/dev-https.mjs` automatically:
+
+- exports `ASTRO_DEV_HTTPS=true` so `astro.config.mjs` enables HTTPS
+- feeds the mkcert certificates to `astro dev` (or falls back to Vite's
+  self-signed cert when none exist)
+- toggles `ASTRO_CSP_REPORT_ONLY=true` by default so browsers surface CSP
+  violations without blocking the page
+
+Pass additional flags directly (for example, `npm run dev:https -- --open`).
+
+## 4. Review CSP violations locally
+
+While the dev server runs, open https://localhost:4321/ in a browser. Inline
+scripts/styles should hydrate using the nonce emitted by
+`src/middleware/security.ts`. Inspect `Application → Storage → Reporting API` or
+watch the terminal where `npm run dev:https` executes; violations are printed to
+stdout until the Cloudflare Worker is deployed.
+
+## 5. Wire CSP reporting in Cloudflare later
+
+`workers/csp-report-handler.ts` is a stub Worker that captures POSTed
+`application/csp-report` payloads. Deploy it behind a Pages/Worker route like
+`/api/security/csp-report` and bind storage (KV, Queue, R2, etc.) when ready for
+centralized telemetry.
+
+## 6. Troubleshooting checklist
+
+- Certificate mismatch? Regenerate them with
+  `./scripts/security/mkcert-localhost.sh` and restart the dev server.
+- Browser still flags the cert as untrusted? Re-run
+  `./scripts/security/mkcert-install.sh` to re-seed the mkcert root CA.
+- Need to force strict CSP even in dev? Set `ASTRO_CSP_REPORT_ONLY=false` when
+  running `npm run dev:https`.

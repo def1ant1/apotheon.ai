@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
+    "dev:https": "node ./scripts/dev-https.mjs",
     "build": "astro build",
     "preview": "astro preview --host",
     "typecheck": "astro check",
