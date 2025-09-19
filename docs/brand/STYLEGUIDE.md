@@ -312,7 +312,12 @@ The script checks every pairing listed in the [palette matrix](#palette-pairing-
 2. **Update Tailwind config:** Mirror any token changes inside `tailwind.config.mjs`. Use CSS variables for runtime theming when necessary. _Rationale:_ Tailwind leverages a central tokens map, minimizing manual CSS overrides.\*
 3. **Regenerate documentation assets:** When colors or scales shift, update the SVGs in `public/static/brand/` using the shared vector template (`public/static/brand/palette-light.svg` as a starting point) or your editor of choice. _Rationale:_ Visual previews catch issues quicker than tables alone.\*
 4. **Run automation:** Execute `npm run lint`, `npm run format:check`, and `npm run brand:contrast` to ensure code quality, formatting, and contrast standards before pushing. _Rationale:_ Automation removes repetitive manual review cycles and enforces enterprise compliance gates.\*
-5. **Ship with confidence:** Attach this guide to product briefs and onboarding docs so every stakeholder references the same source of truth.
+5. **Document component updates in Ladle:**
+   - Author or update stories in `src/stories/`, importing shared helpers like `navigationMenuGroups` or `getThemeAttribute`.
+   - Launch the docs workspace with `npm run ladle` for live review, then export static docs using `npm run ladle:build` (artifacts land in `dist/ladle`).
+   - Before merging, run `npm run ladle:ci` to execute the Puppeteer + axe-core sweep that verifies accessibility and basic visual density. The command also runs under `npm run test` so CI parity stays intact.
+     _Rationale:_ Centralized component documentation keeps designers, engineers, and QA aligned on states, tokens, and theming expectations.
+6. **Ship with confidence:** Attach this guide to product briefs and onboarding docs so every stakeholder references the same source of truth.
 
 ---
 

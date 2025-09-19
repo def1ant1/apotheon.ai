@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["@ladle/react"],
+    "jsx": "react-jsx"
+  },
+  "include": ["src", ".ladle", ".ladle/**/*", "ladle.config.mjs", "ladle.vite.config.mjs"]
+}

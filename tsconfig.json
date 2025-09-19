@@ -8,6 +8,13 @@
       "@content/*": ["src/content/*"]
     }
   },
-  "include": ["src", "workers", "astro.config.mjs", "tailwind.config.mjs", "postcss.config.cjs"],
+  "include": [
+    "src",
+    "workers",
+    ".ladle",
+    "astro.config.mjs",
+    "tailwind.config.mjs",
+    "postcss.config.cjs"
+  ],
   "exclude": ["dist", "node_modules"]
 }
