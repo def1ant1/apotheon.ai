@@ -32,3 +32,15 @@ dist-ssr/
 *.sw?
 
 tools/output
+
+# Generated favicon assets (produced by npm run brand:favicons)
+public/android-chrome-192x192.png
+public/android-chrome-512x512.png
+public/apple-touch-icon.png
+public/favicon-16x16.png
+public/favicon-32x32.png
+public/favicon-48x48.png
+public/favicon.ico
+public/maskable-icon-192x192.png
+public/maskable-icon-512x512.png
+public/mstile-150x150.png

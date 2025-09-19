@@ -264,6 +264,20 @@ Current brand marks include the five Apotheon pillars (Clio, Hermes, THEMIS, Mor
 
 _Automation tip:_ Extend `scripts/brand/build-icons.mjs` with additional exporters (e.g., PNG sprites, React Native wrappers) instead of branching asset pipelines across repositories.
 
+### Favicon & Manifest Automation
+
+- **Master source:** `assets/brand-icons/master-icon.svg` is the single, designer-owned vector blueprint that powers every favicon. Update it (and the companion `favicon.svg`/`mask.svg` blueprints) whenever the logomark shifts hues or geometry.
+- **One-command regen:**
+
+  ```bash
+  npm run brand:favicons
+  ```
+
+  The script wipes previous outputs, rasterizes the size matrix (`android-chrome-*.png`, `maskable-icon-*.png`, `apple-touch-icon.png`, `mstile-150x150.png`, `favicon-*.png`), rebuilds `favicon.ico`, and optimizes the Safari mask + SVG favicon through SVGO for deterministic diffs.
+
+- **Post-checks:** After running the command, refresh `public/manifest.json` metadata if icons move or product messaging changes, then execute `npm run build` to validate Astro picks up the regenerated assets.
+- **Version control:** PNG + ICO outputs live in `public/` but are intentionally `.gitignore`d. CI and local builds rely on the `prebuild` hook (which calls `npm run brand:favicons`) to materialize them, keeping the repository free of binary churn while guaranteeing production artifacts.
+
 ---
 
 ## Accessibility & WCAG 2.2 AA Guardrails

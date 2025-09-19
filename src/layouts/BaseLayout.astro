@@ -14,7 +14,20 @@ const {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+    <!--
+      Favicon + PWA metadata is regenerated via `npm run brand:favicons`.
+      The command ensures every browser (desktop, mobile, pinned tabs) pulls the
+      same iconography + theme colors without manual raster edits.
+    -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#4F46E5" />
+    <meta name="theme-color" content="#4F46E5" />
+    <meta name="msapplication-TileColor" content="#111827" />
     <!--
       Fonts are imported via src/styles/global.css using @fontsource-variable/inter
       so we never punch holes in the CSP for third-party font CDNs.
