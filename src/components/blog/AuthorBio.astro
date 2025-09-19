@@ -1,0 +1,82 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+/**
+ * Shared author metadata block for article pages.
+ * The props intentionally mirror the blog content schema so templates stay data-driven.
+ */
+type AuthorLink = {
+  label: string;
+  url: string;
+  rel?: string;
+};
+
+type Props = {
+  author: CollectionEntry<'blog'>['data']['author'];
+  publishDate: Date;
+  updatedDate?: Date;
+  readingTimeMinutes: number;
+};
+
+const { author, publishDate, updatedDate, readingTimeMinutes } = Astro.props as Props;
+
+const dateFormatter = new Intl.DateTimeFormat('en', {
+  year: 'numeric',
+  month: 'long',
+  day: '2-digit',
+});
+---
+
+<section
+  class="rounded-2xl border border-slate-800 bg-slate-900/40 p-6 text-slate-200 shadow-lg shadow-slate-900/40"
+>
+  <header class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+    <div>
+      <p class="text-sm uppercase tracking-wide text-sky-300">Written by</p>
+      <h2 class="text-xl font-semibold text-white">{author.name}</h2>
+      {author.title && <p class="text-sm text-slate-400">{author.title}</p>}
+    </div>
+    <div class="text-right text-sm text-slate-400">
+      <p>
+        Published {dateFormatter.format(publishDate)}
+      </p>
+      <p>
+        {readingTimeMinutes} minute read
+      </p>
+      {updatedDate && <p>Last updated {dateFormatter.format(updatedDate)}</p>}
+    </div>
+  </header>
+  <p class="mt-4 text-base leading-relaxed text-slate-300">{author.bio}</p>
+  {
+    author.links.length > 0 && (
+      <ul class="mt-4 flex flex-wrap gap-3 text-sm text-sky-300">
+        {author.links.map((link: AuthorLink) => (
+          <li>
+            <a
+              class="inline-flex items-center gap-1 rounded-full border border-sky-500/40 px-3 py-1 transition hover:border-sky-300 hover:text-sky-200"
+              href={link.url}
+              rel={link.rel ?? 'noopener noreferrer'}
+              target="_blank"
+            >
+              <span aria-hidden="true">↗</span>
+              <span>{link.label}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</section>
+
+<!--
+  Usage:
+  ```astro
+  <AuthorBio
+    author={entry.data.author}
+    publishDate={entry.data.publishDate}
+    updatedDate={entry.data.updatedDate}
+    readingTimeMinutes={entry.data.estimatedReadingMinutes}
+  />
+  ```
+  Keeping props strongly typed prevents layout drift whenever the collection schema evolves.
+-->
