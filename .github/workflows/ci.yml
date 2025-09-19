@@ -16,8 +16,8 @@ permissions:
   id-token: write
 
 env:
-  FORCE_COLOR: "1"
-  NODE_ENV: "test"
+  FORCE_COLOR: '1'
+  NODE_ENV: 'test'
 
 jobs:
   quality-gates:

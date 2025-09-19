@@ -1,12 +1,7 @@
 import * as NavigationMenu from '@radix-ui/react-navigation-menu';
 import { Slot } from '@radix-ui/react-slot';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
-import {
-  forwardRef,
-  useMemo,
-  type ComponentPropsWithoutRef,
-  type ElementRef
-} from 'react';
+import { forwardRef, useMemo, type ComponentPropsWithoutRef, type ElementRef } from 'react';
 
 /**
  * `RadixNavigationMenu` composes Radix primitives into an accessible primary navigation shell.
@@ -35,19 +30,19 @@ export function RadixNavigationMenu() {
           {
             label: 'AIOS Overview',
             href: '/solutions/clio',
-            description: 'Systems thinking behind our cognitive orchestration layer.'
+            description: 'Systems thinking behind our cognitive orchestration layer.',
           },
           {
             label: 'Secure Integrations',
             href: '/solutions/hermes',
-            description: 'Enterprise ingress/egress pipelines with signed artifact distribution.'
+            description: 'Enterprise ingress/egress pipelines with signed artifact distribution.',
           },
           {
             label: 'Continuous Learning',
             href: '/solutions/mnemosyne',
-            description: 'Feedback ingestion loops that stay compliant while improving accuracy.'
-          }
-        ]
+            description: 'Feedback ingestion loops that stay compliant while improving accuracy.',
+          },
+        ],
       },
       {
         label: 'Industries',
@@ -56,19 +51,19 @@ export function RadixNavigationMenu() {
           {
             label: 'Healthcare',
             href: '/industries/healthcare',
-            description: 'Augment clinical operations with AI guardrails and observability.'
+            description: 'Augment clinical operations with AI guardrails and observability.',
           },
           {
             label: 'Finance',
             href: '/industries/finance',
-            description: 'Accelerate underwriting decisions without compromising compliance.'
+            description: 'Accelerate underwriting decisions without compromising compliance.',
           },
           {
             label: 'Government',
             href: '/industries/government',
-            description: 'Deliver mission-ready intelligence workflows at the edge.'
-          }
-        ]
+            description: 'Deliver mission-ready intelligence workflows at the edge.',
+          },
+        ],
       },
       {
         label: 'Company',
@@ -77,22 +72,22 @@ export function RadixNavigationMenu() {
           {
             label: 'About Apotheon.ai',
             href: '/about/history',
-            description: 'Research pedigree, team structure, and governance disciplines.'
+            description: 'Research pedigree, team structure, and governance disciplines.',
           },
           {
             label: 'Investors',
             href: '/about/investors',
-            description: 'Structured diligence, metrics, and defensibility overview.'
+            description: 'Structured diligence, metrics, and defensibility overview.',
           },
           {
             label: 'Contact',
             href: '/about/contact',
-            description: 'Edge-secured intake routing leads to the Cloudflare Worker API.'
-          }
-        ]
-      }
+            description: 'Edge-secured intake routing leads to the Cloudflare Worker API.',
+          },
+        ],
+      },
     ],
-    []
+    [],
   );
 
   return (
@@ -163,11 +158,7 @@ const NavigationMenuLink = forwardRef<
   return (
     <NavigationMenu.Link asChild {...props}>
       <Slot>
-        <a
-          ref={forwardedRef}
-          href={href}
-          className="navigation-link"
-        >
+        <a ref={forwardedRef} href={href} className="navigation-link">
           {children}
         </a>
       </Slot>

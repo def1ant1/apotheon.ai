@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="200" viewBox="0 0 720 200" role="img" aria-labelledby="title desc">
+  <title id="title">Apotheon Spacing Scale</title>
+  <desc id="desc">Horizontal bars representing spacing tokens from 4 pixels to 64 pixels.</desc>
+  <rect width="720" height="200" fill="#FFFFFF" rx="24" />
+  <g transform="translate(40 40)" font-family="'Inter', sans-serif" fill="#111827">
+    <g>
+      <rect width="64" height="24" fill="#EEF2FF" rx="12" />
+      <text x="0" y="-8" font-size="12">space.1 · 4px</text>
+    </g>
+    <g transform="translate(0 40)">
+      <rect width="112" height="24" fill="#C7D2FE" rx="12" />
+      <text x="0" y="-8" font-size="12">space.2 · 8px</text>
+    </g>
+    <g transform="translate(0 80)">
+      <rect width="160" height="24" fill="#A5F3FC" rx="12" />
+      <text x="0" y="-8" font-size="12">space.4 · 16px</text>
+    </g>
+    <g transform="translate(0 120)">
+      <rect width="256" height="24" fill="#14B8A6" rx="12" />
+      <text x="0" y="-8" font-size="12">space.8 · 32px</text>
+    </g>
+  </g>
+  <g transform="translate(360 40)" font-family="'Inter', sans-serif" fill="#111827">
+    <g>
+      <rect width="320" height="24" fill="#F97316" rx="12" />
+      <text x="0" y="-8" font-size="12">space.12 · 48px</text>
+    </g>
+    <g transform="translate(0 40)">
+      <rect width="400" height="24" fill="#DC2626" rx="12" />
+      <text x="0" y="-8" font-size="12">space.16 · 64px</text>
+    </g>
+  </g>
+</svg>

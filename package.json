@@ -20,7 +20,8 @@
     "pagefind:index": "astro build && pagefind --site dist",
     "lighthouse:ci": "node ./scripts/ci/lighthouse-ci.mjs",
     "zap:baseline": "node ./scripts/ci/zap-baseline.mjs",
-    "gitleaks:ci": "node ./scripts/ci/gitleaks-ci.mjs"
+    "gitleaks:ci": "node ./scripts/ci/gitleaks-ci.mjs",
+    "brand:contrast": "node ./scripts/brand/contrast-audit.mjs"
   },
   "dependencies": {
     "@astrojs/image": "^0.10.0",

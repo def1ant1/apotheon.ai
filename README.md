@@ -60,6 +60,10 @@ scaffolding.
   `docs/dev/WORKFLOWS.md` under "Radix UI Composition Workflow" to keep future
   islands consistent and low-maintenance.
 
+## Brand System
+
+- [Brand & Experience Style Guide](docs/brand/STYLEGUIDE.md) — token-driven palettes, typography, spacing, radius/shadow tokens, and component playbooks backed by automated WCAG 2.2 AA contrast auditing.
+
 ## Getting Started
 
 1. **Install prerequisites**
