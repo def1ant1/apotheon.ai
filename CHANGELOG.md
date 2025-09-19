@@ -7,6 +7,7 @@ semantic versioning once releases begin.
 ## Unreleased
 
 ### Added
+
 - Migrated the web platform to an Astro 4 static-first architecture with React
   islands, Tailwind CSS, MDX content collections, Pagefind search automation, and
   hardened CSP defaults.
@@ -16,11 +17,13 @@ semantic versioning once releases begin.
   Pagefind indexing via npm.
 
 ### Changed
+
 - Replaced the prior Vite/React SPA entrypoints and removed unused Amplify and
   Vercel scaffolding.
 - Updated documentation (README and engineering playbook) to reflect the new
   static-first stack and workflows.
 
 ### Removed
+
 - Legacy React components, routing, and configuration files incompatible with the
   Astro architecture.

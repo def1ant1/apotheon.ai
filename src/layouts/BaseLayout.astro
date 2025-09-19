@@ -3,11 +3,11 @@ import '../styles/global.css';
 
 const {
   title = 'Apotheon.ai Platform',
-  description = 'Composable Astro architecture ready for enterprise-scale experiences.'
+  description = 'Composable Astro architecture ready for enterprise-scale experiences.',
 } = Astro.props;
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" data-theme="night">
   <head>
     <meta charset="utf-8" />
@@ -16,8 +16,15 @@ const {
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" as="style" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" />
+    <link
+      rel="preload"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      as="style"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+    />
   </head>
   <body class="font-sans">
     <a class="sr-only focus:not-sr-only" href="#main">Skip to content</a>
@@ -27,8 +34,8 @@ const {
     <footer class="mx-auto flex w-full max-w-5xl flex-col gap-2 px-6 pb-12 text-xs text-slate-400">
       <p>© {new Date().getFullYear()} Apotheon.ai — Astro powered, edge-ready delivery.</p>
       <p>
-        Pagefind search indexes are generated during CI/CD via <code>npm run pagefind:index</code>, ensuring
-        the static bundle remains search-friendly without a custom backend.
+        Pagefind search indexes are generated during CI/CD via <code>npm run pagefind:index</code>,
+        ensuring the static bundle remains search-friendly without a custom backend.
       </p>
     </footer>
   </body>

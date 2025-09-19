@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+#
+# Husky pre-commit hook: run staged linters/formatters before code lands in main.
+# Guard against unset vars and stop on first failure; pipefail is skipped for POSIX portability.
+set -eu
+
+npm exec lint-staged

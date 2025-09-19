@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+#
+# Conventional commit guardrail. Lint the commit subject/body before it enters history.
+# Use bash so we can fail fast; pipefail is skipped for portability with older shells.
+set -eu
+
+npm exec commitlint -- --edit "$1"

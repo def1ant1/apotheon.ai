@@ -1,5 +1,7 @@
 docs/workplan/EPICS_AND_WORK_ITEMS.md
+
 # Apotheon.ai Website — Large Work Items (Epics) for Codex
+
 > **Goal:** Build and launch the public **apotheon.ai** website using **free / open‑source or custom‑developed** components that **maximize scalability, performance, and security**.  
 > **Strategy:** **Static‑first, edge‑enhanced** architecture: **Astro (TypeScript, MDX)** + **React islands (minimal JS)** + **TailwindCSS** + **Radix Primitives** (accessible headless UI).  
 > **Edge & Hosting:** **Cloudflare Pages** (global CDN, WAF, DDoS) + **Cloudflare Workers/D1/KV/R2** for forms, gating, and signed downloads (all with free tiers).  
@@ -13,6 +15,7 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
 ---
 
 ## EPIC 00 — Program Setup & Architecture Decisions
+
 **Goal:** Foundation optimized for performance (CWV), security, and maintainability.
 
 - **Decisions/Deliverables**
@@ -30,6 +33,7 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
 ---
 
 ## EPIC 01 — Brand System & Design Tokens (OSS)
+
 **Goal:** Elegant enterprise design with tokenized theming.
 
 - **Deliverables**
@@ -44,6 +48,7 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
 ---
 
 ## EPIC 02 — Information Architecture & Routing (Astro)
+
 **Goal:** SEO‑friendly, minimal‑JS routing & breadcrumbs.
 
 - **Deliverables**
@@ -60,6 +65,7 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
 ---
 
 ## EPIC 03 — Global Layout, Accessible Navigation & Footer
+
 **Goal:** Zero‑bloat shell with WCAG‑compliant dropdowns.
 
 - **Deliverables**
@@ -71,6 +77,7 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
 ---
 
 ## EPIC 04 — Homepage (AIOS‑first, investor‑led)
+
 **Goal:** High‑impact, low‑latency landing.
 
 - **Sections**
@@ -88,6 +95,7 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
 ---
 
 ## EPIC 05 — Solutions Pages (5)
+
 **Goal:** Public‑safe technical pages; no secret IP.
 
 - **Deliverables**
@@ -99,6 +107,7 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
 ---
 
 ## EPIC 06 — Industry Pages (6)
+
 **Goal:** Sector value; compliance & security called out.
 
 - **Deliverables**
@@ -110,6 +119,7 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
 ---
 
 ## EPIC 07 — Contact & Lead Form (Edge Worker, OSS stack)
+
 **Goal:** High‑quality leads; block free emails.
 
 - **Backend (free/custom)**
@@ -124,6 +134,7 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
 ---
 
 ## EPIC 08 — Investors Page (Thesis + CTA)
+
 **Goal:** Investor narrative, defensibility & compliance.
 
 - **Deliverables**
@@ -136,6 +147,7 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
 ---
 
 ## EPIC 09 — White Papers Library (Gated, Signed URLs)
+
 **Goal:** Gated downloads; trackable, secure access.
 
 - **Backend**
@@ -149,6 +161,7 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
 ---
 
 ## EPIC 10 — History Page (Research Roots)
+
 **Goal:** Narrative + timeline with minimal JS.
 
 - **Deliverables**
@@ -159,6 +172,7 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
 ---
 
 ## EPIC 11 — Blog System (MDX + OSS search)
+
 **Goal:** Thought leadership at launch.
 
 - **Deliverables**
@@ -171,6 +185,7 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
 ---
 
 ## EPIC 12 — SEO/SMO & Structured Data (Static)
+
 **Goal:** Discoverability with zero runtime cost.
 
 - **Deliverables**
@@ -182,6 +197,7 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
 ---
 
 ## EPIC 13 — Privacy, Analytics & Consent (OSS)
+
 **Goal:** Privacy‑first measurement.
 
 - **Deliverables**
@@ -194,6 +210,7 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
 ---
 
 ## EPIC 14 — Performance Engineering & OG Images
+
 **Goal:** CWV excellence; dynamic OG images (free).
 
 - **Deliverables**
@@ -206,6 +223,7 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
 ---
 
 ## EPIC 15 — Accessibility (WCAG 2.2 AA)
+
 **Goal:** Inclusive by default.
 
 - **Deliverables**
@@ -217,6 +235,7 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
 ---
 
 ## EPIC 16 — Security Hardening (Headers, WAF, CI)
+
 **Goal:** Defense‑in‑depth with free/OSS.
 
 - **Deliverables**
@@ -230,6 +249,7 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
 ---
 
 ## EPIC 17 — Hosting, Edge & CI/CD (Free tiers)
+
 **Goal:** Global edge delivery; reproducible deploys.
 
 - **Deliverables**
@@ -243,6 +263,7 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
 ---
 
 ## EPIC 18 — QA & Cross‑Browser/Device Testing
+
 **Goal:** Confidence across environments.
 
 - **Deliverables**
@@ -255,6 +276,7 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
 ---
 
 ## EPIC 19 — Content Workflow & Optional OSS CMS
+
 **Goal:** Non‑dev updates with governance.
 
 - **Deliverables**
@@ -267,6 +289,7 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
 ---
 
 ## EPIC 20 — Launch Readiness & Go‑Live
+
 **Goal:** Safe, observable launch.
 
 - **Deliverables**
@@ -278,6 +301,7 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
 ---
 
 ## EPIC 21 — Post‑Launch Growth (OSS Experimentation)
+
 **Goal:** Iterative improvement.
 
 - **Deliverables**
@@ -289,6 +313,7 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
 ---
 
 ## EPIC 22 — Assets & Media Production (OSS pipeline)
+
 **Goal:** Complete visual inventory, optimized.
 
 - **Deliverables**
@@ -300,6 +325,7 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
 ---
 
 ## EPIC 23 — i18n Scaffold (Optional, OSS)
+
 **Goal:** Future‑proof localization.
 
 - **Deliverables**
@@ -310,6 +336,7 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
 ---
 
 ## EPIC 24 — Legal & Compliance Pages
+
 **Goal:** Publish mandatory policies.
 
 - **Deliverables**
@@ -321,6 +348,7 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
 ---
 
 ## EPIC 25 — Security Operations & Runbooks (OSS)
+
 **Goal:** Fast response to incidents.
 
 - **Deliverables**
@@ -328,4 +356,3 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
   - Scheduled backups: D1 export, R2 lifecycle rules; integrity checksums.
 - **Acceptance Criteria**
   - Tabletop exercise complete; backups verified restore.
-

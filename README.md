@@ -16,7 +16,8 @@ scaffolding.
 - **Images:** `@astrojs/image` powered by Sharp for responsive, optimized media
 - **Content collections:** Strongly typed blog + marketing collections ready for
   MDX adoption
-- **Tooling:** Prettier formatting, Astro check for lint/type safety
+- **Tooling:** ESLint + Stylelint + Prettier with Husky/commitlint automation for
+  zero-drift code quality
 
 ## Repository Structure
 
@@ -42,6 +43,7 @@ scaffolding.
 ## Getting Started
 
 1. **Install prerequisites**
+
    - Node.js ≥ 18 (LTS recommended)
    - npm ≥ 9
 
@@ -63,15 +65,20 @@ scaffolding.
 4. **Run automation scripts**
 
    ```bash
-   npm run lint          # Astro's type-aware checker across .astro/.mdx/.ts(x)
-   npm run format        # Prettier --check for consistent formatting
-   npm run build         # Static production build (dist/)
-   npm run preview       # Serve the production build locally
+   npm run lint           # ESLint + Stylelint across Astro, TS/TSX, MDX, and CSS
+   npm run lint:eslint    # Script-focused lint pass only
+   npm run lint:styles    # Tailwind-aware Stylelint for stylesheets and <style> blocks
+   npm run format         # Prettier --write with Astro + Tailwind class sorting
+   npm run format:check   # Formatting verification for CI or pre-push checks
+   npm run typecheck      # Astro's type- and content-aware analysis
+   npm run test           # Aggregated lint + typecheck gate mirroring CI
+   npm run build          # Static production build (dist/)
+   npm run preview        # Serve the production build locally
    npm run pagefind:index # Build + generate static search index in dist/
    ```
 
-   `npm test` currently echoes a placeholder—add Vitest/Playwright suites when
-   UI logic appears.
+   Husky runs `lint-staged` automatically on commit, so the majority of files are
+   auto-fixed before they land in history.
 
 ## Content & Search Workflow
 
@@ -95,8 +102,11 @@ in `astro.config.mjs`, most hosts require no extra headers configuration.
 1. Fork or branch from `main`.
 2. Build features within Astro pages or MDX collections; prefer islands for
    isolated interactivity.
-3. Run `npm run lint`, `npm run check`, and `npm run build` before opening a PR.
-4. Document changes in the **Changelog** and relevant docs under `/docs`.
+3. Run `npm run test` (aggregates lint + typecheck) and `npm run build` before
+   opening a PR.
+4. Commit messages must follow Conventional Commits; the Husky `commit-msg` hook
+   provides immediate feedback.
+5. Document changes in the **Changelog** and relevant docs under `/docs`.
 
 Apotheon.ai continues to prioritize automation, scalability, and zero-trust
 security. This Astro foundation minimizes manual plumbing so teams can focus on

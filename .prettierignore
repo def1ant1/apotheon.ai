@@ -1,0 +1,17 @@
+# Build output and cache directories are generated and should never be reformatted.
+dist
+.astro
+
+# Node + package manager system folders
+node_modules
+pnpm-lock.yaml
+yarn.lock
+
+# Git + Husky internals
+.husky/_
+
+# Public assets may include binaries or third-party files.
+public/
+
+# Generated search indexes and other tooling artefacts.
+pagefind/

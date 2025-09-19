@@ -23,8 +23,8 @@ export function LiveClock() {
         {now.toLocaleTimeString()}
       </p>
       <p className="mt-3 text-xs text-slate-500">
-        This island proves React components remain supported for targeted
-        interactivity while the rest of the site stays static.
+        This island proves React components remain supported for targeted interactivity while the
+        rest of the site stays static.
       </p>
     </div>
   );

@@ -1,6 +1,6 @@
 ---
+import LiveClock from '../components/islands/LiveClock';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import LiveClock from '../components/islands/LiveClock.tsx';
 
 const heroTitle = 'Astro-first delivery for Apotheon.ai';
 const heroCopy = `Ship marketing sites, documentation, and dashboards from one
@@ -8,16 +8,22 @@ const heroCopy = `Ship marketing sites, documentation, and dashboards from one
   islands provide the interactivity product teams expect.`;
 ---
 
-<BaseLayout title={heroTitle} description="Static-first architecture with optional React hydration.">
+<BaseLayout
+  title={heroTitle}
+  description="Static-first architecture with optional React hydration."
+>
   <section class="flex flex-col gap-10">
     <header class="flex flex-col gap-6">
       <p class="text-sm uppercase tracking-[0.35rem] text-slate-500">Launch-Ready Platform</p>
       <h1 class="text-5xl font-black leading-tight text-white md:text-6xl">{heroTitle}</h1>
       <p class="max-w-3xl text-lg text-slate-300">{heroCopy}</p>
       <div class="flex flex-wrap gap-3 text-sm text-slate-400">
-        <span class="rounded-full border border-slate-800 px-3 py-1">Static output for global CDNs</span>
+        <span class="rounded-full border border-slate-800 px-3 py-1"
+          >Static output for global CDNs</span
+        >
         <span class="rounded-full border border-slate-800 px-3 py-1">MDX content collections</span>
-        <span class="rounded-full border border-slate-800 px-3 py-1">Pagefind full-text search</span>
+        <span class="rounded-full border border-slate-800 px-3 py-1">Pagefind full-text search</span
+        >
         <span class="rounded-full border border-slate-800 px-3 py-1">React islands on demand</span>
       </div>
     </header>
@@ -26,8 +32,9 @@ const heroCopy = `Ship marketing sites, documentation, and dashboards from one
       <div class="space-y-6">
         <h2 class="text-2xl font-semibold text-white">Composable foundations</h2>
         <p class="text-base text-slate-300">
-          Drop future MDX files into <code>src/content/blog</code> or <code>src/content/marketing</code> and Astro
-          will automatically type-check frontmatter, generate static pages, and feed the
+          Drop future MDX files into <code>src/content/blog</code> or <code
+            >src/content/marketing</code
+          > and Astro will automatically type-check frontmatter, generate static pages, and feed the
           Pagefind index when you run <code>npm run pagefind:index</code>.
         </p>
         <p class="text-base text-slate-300">
@@ -36,9 +43,9 @@ const heroCopy = `Ship marketing sites, documentation, and dashboards from one
           and is imported once through <code>BaseLayout.astro</code>.
         </p>
         <p class="text-base text-slate-300">
-          React islands remain fully supported for analytics widgets, onboarding flows, or
-          other targeted interactivity. Hydrate them with any <code>client:*</code> directive and
-          keep the rest of the experience static-first.
+          React islands remain fully supported for analytics widgets, onboarding flows, or other
+          targeted interactivity. Hydrate them with any <code>client:*</code> directive and keep the
+          rest of the experience static-first.
         </p>
       </div>
       <LiveClock client:load />
