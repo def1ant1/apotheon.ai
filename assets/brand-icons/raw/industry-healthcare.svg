@@ -1,0 +1,11 @@
+<!--
+  Healthcare glyph aligns with precision medicine and hospital operations narratives.
+  The data pulse overlays a universal medical cross for clarity.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <title>Healthcare industry glyph</title>
+  <!-- Universal medical cross -->
+  <path d="M10.25 5.25h3.5v3.5h3.5v3.5h-3.5v3.5h-3.5v-3.5h-3.5v-3.5h3.5Z" stroke="#0EA5E9" />
+  <!-- Signal waveform to emphasize monitored outcomes -->
+  <path d="M5 13.5h2.25l1-2.5 2 4.75 2.25-5.5 1.5 3.25H19" stroke="#4338CA" />
+</svg>

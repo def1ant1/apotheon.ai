@@ -7,6 +7,7 @@ const styleTargets = '**/*.{css,pcss,scss,sass,astro}';
 const prettierTargets = '**/*.{astro,css,html,js,json,md,mdx,ts,tsx,yaml,yml}';
 
 export default {
+  'assets/brand-icons/raw/**/*.svg': ['npm run icons:build'],
   [eslintTargets]: ['eslint --max-warnings=0 --fix'],
   [styleTargets]: ['stylelint --fix'],
   [prettierTargets]: ['prettier --write'],

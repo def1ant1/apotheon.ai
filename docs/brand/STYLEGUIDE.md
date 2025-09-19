@@ -18,6 +18,7 @@
   - [Buttons](#buttons)
   - [Form Inputs](#form-inputs)
   - [Data Surfaces](#data-surfaces)
+- [Brand Iconography Pipeline](#brand-iconography-pipeline)
 - [Accessibility & WCAG 2.2 AA Guardrails](#accessibility--wcag-22-aa-guardrails)
   - [Contrast Automation](#contrast-automation)
   - [Manual QA Checklist](#manual-qa-checklist)
@@ -224,6 +225,44 @@ _Rationale:_ A system-first stack eliminates layout shift on initial render, whi
 | Alerts (Success)  | Bg: `brand.accent.050`<br>Border: `brand.accent.500`<br>Text: `brand.accent.700` | Bg: `brand.accent.950`<br>Border: `brand.accent.400`<br>Text: `brand.accent.200` | Icons should use the same text color for clarity.             |
 | Alerts (Warning)  | Bg: `brand.warning.050`<br>Border: `brand.warning.500`                           | Bg: `brand.warning.900`<br>Border: `brand.warning.400`                           | Provide call-to-action using secondary button tokens.         |
 | Alerts (Critical) | Bg: `brand.critical.050`<br>Border: `brand.critical.500`                         | Bg: `brand.critical.900`<br>Border: `brand.critical.400`                         | Always include remediation steps inline.                      |
+
+---
+
+## Brand Iconography Pipeline
+
+> **Why this matters:** Iconography sells the brand promise faster than paragraphs of copy. Enterprise buyers expect that pictograms remain WCAG-compliant, auto-generated, and version-controlled to avoid drift between marketing and product surfaces.
+
+### Source of Truth & Asset Locations
+
+- **Raw vectors:** Author and review new glyphs inside `assets/brand-icons/raw/`. Files must use lower-case kebab-case names (e.g., `morpheus.svg`, `industry-finance.svg`) and include a descriptive `<title>` node. Comments in the raw files explain intent for future art direction tweaks.
+- **Optimized exports:** Running the build script writes production-ready assets into `public/static/icons/brand/`. The SVGO config (`svgo.config.cjs`) enforces precision, viewBox preservation, and adds `role="img"`/`focusable="false"` for consistent runtime behavior.
+- **React wrappers:** When marketing or product teams need JSX access, enable the optional React generation (`--react`) to refresh `src/components/icons/`. Components expose a typed `title` prop so experiences can opt into decorative or labelled usage.
+
+Current brand marks include the five Apotheon pillars (Clio, Hermes, THEMIS, Morpheus, Mnemosyne) plus six industry glyphs (energy, finance, healthcare, manufacturing, public sector, transport). Keep additions within this directory so the automation stack can reason over them.
+
+### Accessibility Expectations
+
+- Every icon **must** ship with a meaningful `<title>` in the raw SVG. The build pipeline fails fast when metadata is missing or empty.
+- React wrappers default to the authored title but accept `title=""` for decorative placement. Consumers are responsible for providing more contextual labels when icons communicate status or actions.
+- SVGO retains the `viewBox` attribute and strips explicit `width`/`height`. Pair with CSS utilities (e.g., `w-6 h-6`) for responsive sizing without distorting geometry.
+- When exporting from Figma or Illustrator, snap strokes to the 24×24 grid and avoid relying on `clipPath` or filters—SVGO removes unsupported constructs during optimization.
+
+### Automated Regeneration Workflow
+
+1. **Design iteration:** Update or add raw SVGs under `assets/brand-icons/raw/`. Commit comments documenting intent so downstream teams understand symbolism.
+2. **Regenerate assets:**
+
+   ```bash
+   npm run icons:build
+   ```
+
+   The command optimizes SVGs and emits React wrappers. Pre-commit hooks call the same script whenever raw assets change, preventing manual drudgery.
+
+3. **Quality gate:** `npm run icons:lint` executes the pipeline in `--check` mode during `npm run lint` and CI, ensuring optimized assets remain in sync.
+4. **Usage in content systems:** Reference icons from `/static/icons/brand/*.svg` for Astro/markdown content. React islands should import from `src/components/icons`, e.g. `import { ClioIcon } from '@/components/icons';`.
+5. **Documentation updates:** Capture notable symbolism or industry mapping deltas in this section so GTM, design, and product teams stay aligned.
+
+_Automation tip:_ Extend `scripts/brand/build-icons.mjs` with additional exporters (e.g., PNG sprites, React Native wrappers) instead of branching asset pipelines across repositories.
 
 ---
 

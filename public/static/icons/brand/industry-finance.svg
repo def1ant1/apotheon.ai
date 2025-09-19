@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" focusable="false" role="img">
+  <title>Finance industry glyph</title>
+  <path stroke="#0f172a" d="M4.5 5.75v12.5h15"/>
+  <rect width="2.5" height="3.25" x="6.5" y="13" stroke="#0ea5e9" rx=".6"/>
+  <rect width="2.5" height="5.75" x="10.5" y="10.5" stroke="#0ea5e9" rx=".6"/>
+  <rect width="2.5" height="8.25" x="14.5" y="8" stroke="#0ea5e9" rx=".6"/>
+  <path stroke="#4338ca" d="m6 11 2.25-2.25L11 12l3.25-4 4.25 3"/>
+</svg>

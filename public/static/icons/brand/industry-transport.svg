@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" focusable="false" role="img">
+  <title>Transport industry glyph</title>
+  <path stroke="#4338ca" d="M5.5 16.5c2.25-4.5 5.5-7 13-8.25"/>
+  <path stroke="#0ea5e9" d="M6.75 7.5c3 .75 5.5 2.25 8.75 7.5"/>
+  <circle cx="5.5" cy="16.5" r="1.35" stroke="#312e81"/>
+  <circle cx="6.5" cy="7.5" r="1.35" stroke="#312e81"/>
+  <circle cx="18.5" cy="8.25" r="1.35" stroke="#312e81"/>
+  <circle cx="15.5" cy="15" r="1.35" stroke="#312e81"/>
+  <path stroke="#0f172a" d="m17.25 6.25 1.25 2L16 9"/>
+</svg>

@@ -1,0 +1,15 @@
+<!--
+  THEMIS anchors Apotheon's governance and compliance commitments.
+  The balanced scale communicates impartial analytics that remain auditable.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <title>THEMIS governance sigil</title>
+  <!-- Mast and fulcrum -->
+  <path d="M12 4.25v14.5" stroke="#0F172A" />
+  <path d="M8 6.75h8" stroke="#312E81" />
+  <!-- Scales -->
+  <path d="M7 6.75 5.25 11a2.25 2.25 0 0 0 4.5 0L7 6.75Z" stroke="#4338CA" />
+  <path d="M17 6.75 15.25 11a2.25 2.25 0 0 0 4.5 0L17 6.75Z" stroke="#4338CA" />
+  <!-- Base platform for stability -->
+  <path d="M8.5 19.75h7" stroke="#0F172A" />
+</svg>
