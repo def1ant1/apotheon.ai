@@ -7,6 +7,7 @@
     "dev": "astro dev",
     "dev:https": "node ./scripts/dev-https.mjs",
     "build": "astro build",
+    "prebuild": "npm run brand:favicons",
     "preview": "astro preview --host",
     "typecheck": "astro check",
     "check": "npm run typecheck",
@@ -23,7 +24,8 @@
     "lighthouse:ci": "node ./scripts/ci/lighthouse-ci.mjs",
     "zap:baseline": "node ./scripts/ci/zap-baseline.mjs",
     "gitleaks:ci": "node ./scripts/ci/gitleaks-ci.mjs",
-    "brand:contrast": "node ./scripts/brand/contrast-audit.mjs"
+    "brand:contrast": "node ./scripts/brand/contrast-audit.mjs",
+    "brand:favicons": "node ./scripts/brand/generate-favicons.mjs"
   },
   "dependencies": {
     "@astrojs/image": "^0.10.0",
@@ -62,6 +64,7 @@
     "eslint-plugin-security": "^3.0.1",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.6",
+    "png-to-ico": "^3.0.1",
     "postcss": "^8.4.47",
     "postcss-html": "^1.8.0",
     "prettier": "^3.3.3",
