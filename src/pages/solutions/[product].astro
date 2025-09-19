@@ -6,11 +6,6 @@ import MarketingHero from '../../components/marketing/MarketingHero.astro';
 import MarketingShell from '../../components/marketing/MarketingShell.astro';
 
 export async function getStaticPaths() {
-  /*
-    Static paths resolve during build so every solution variant ships as prerendered HTML. Filtering by
-    the `solutions/` prefix keeps the content pipeline folder-driven—authors only need to add an MDX
-    file and the route materializes on the next deploy with no code edits.
-  */
   const entries = await getCollection('marketing', ({ id }) => id.startsWith('solutions/'));
   return entries.map((entry) => ({
     params: { product: entry.slug.split('/').pop() ?? entry.id },
@@ -24,7 +19,6 @@ interface Props {
 
 const { entry } = Astro.props as Props;
 const { data } = entry;
-// Rendering the MDX upfront ensures Content is a static component tree—no hydration is required.
 const { Content } = await entry.render();
 const slugSegment = entry.slug.split('/').pop() ?? entry.id;
 const heroCopy =

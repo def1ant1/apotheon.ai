@@ -6,11 +6,6 @@ import MarketingHero from '../../components/marketing/MarketingHero.astro';
 import MarketingShell from '../../components/marketing/MarketingShell.astro';
 
 export async function getStaticPaths() {
-  /*
-    Industries follow the same automation contract as solutions: drop an MDX file into the
-    `industries/` folder and a static page materializes. Maintaining this convention removes manual
-    slug registries and keeps deploys deterministic.
-  */
   const entries = await getCollection('marketing', ({ id }) => id.startsWith('industries/'));
   return entries.map((entry) => ({
     params: { sector: entry.slug.split('/').pop() ?? entry.id },
@@ -24,7 +19,6 @@ interface Props {
 
 const { entry } = Astro.props as Props;
 const { data } = entry;
-// Content is pure HTML markup generated at build time for zero-JS execution at runtime.
 const { Content } = await entry.render();
 const slugSegment = entry.slug.split('/').pop() ?? entry.id;
 const heroCopy =
