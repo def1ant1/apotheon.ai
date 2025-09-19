@@ -86,6 +86,25 @@ scaffolding.
    Husky runs `lint-staged` automatically on commit, so the majority of files are
    auto-fixed before they land in history.
 
+## Security
+
+- **Local HTTPS:** Run `./scripts/security/mkcert-install.sh` once per machine to
+  trust the mkcert root CA, then `./scripts/security/mkcert-localhost.sh` to mint
+  `certs/localhost-*.pem` certificates. Launch the hardened dev server via
+  `npm run dev:https`, which auto-detects the certs and forces Astro into HTTPS
+  mode.
+- **CSP testing:** The security middleware emits nonce-based CSP headers. In
+  dev/preview modes the middleware downgrades to `Content-Security-Policy-Report-Only`
+  so you can open the HTTPS site in a browser and iterate without blocking
+  hydration. Inspect the terminal running `npm run dev:https` for violation logs
+  or instrument the Reporting API tab inside browser devtools.
+- **Report collection:** Forward the CSP `report-uri` to the Cloudflare Worker
+  stub in `workers/csp-report-handler.ts` once deployed. The handler currently
+  logs to the console but is designed to fan out to KV/Queues/SIEM endpoints.
+- **Playbook:** See [`docs/security/LOCAL_HTTPS.md`](docs/security/LOCAL_HTTPS.md)
+  for end-to-end automation covering mkcert setup, Astro HTTPS flags, and
+  troubleshooting tips.
+
 ## Content & Search Workflow
 
 - Drop MDX/Markdown files into `src/content/blog` or `src/content/marketing`. The

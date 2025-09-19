@@ -4,15 +4,34 @@ import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
 import image from '@astrojs/image';
 
-const cspDirectives = {
-  'default-src': "'self'",
-  'script-src': "'self'",
-  'style-src': "'self'",
-  'img-src': "'self' data: blob:",
-  'font-src': "'self'",
-  'connect-src': "'self'",
-  'frame-src': "'self'",
-  'object-src': "'none'"
+import {
+  BASELINE_DIRECTIVES,
+  buildNonceEnabledDirectives,
+  buildReportToHeader,
+  DEFAULT_SECURITY_HEADERS,
+  DEFAULT_REPORT_URI,
+  serializeDirectives,
+  resolveDevHttpsConfig,
+  toAstroContentSecurityPolicy
+} from './config/security/csp';
+
+const enableHttps = process.env.ASTRO_DEV_HTTPS === 'true';
+const httpsOptions = enableHttps ? resolveDevHttpsConfig() ?? true : undefined;
+
+const { directives: devCspDirectives } = buildNonceEnabledDirectives({
+  reportUri: DEFAULT_REPORT_URI,
+  overrides: {
+    'script-src': [...BASELINE_DIRECTIVES['script-src']],
+    'style-src': [...BASELINE_DIRECTIVES['style-src']]
+  }
+});
+
+const devCspHeaderValue = serializeDirectives(devCspDirectives);
+
+const devServerHeaders = {
+  ...DEFAULT_SECURITY_HEADERS,
+  'Content-Security-Policy-Report-Only': devCspHeaderValue,
+  'Report-To': buildReportToHeader(DEFAULT_REPORT_URI)
 };
 
 // Pagefind indexing is triggered post-build via the `pagefind:index` npm script
@@ -39,10 +58,15 @@ export default defineConfig({
   security: {
     checkOrigin: true,
     contentSecurityPolicy: {
-      directives: cspDirectives
+      directives: toAstroContentSecurityPolicy(BASELINE_DIRECTIVES)
     }
   },
   vite: {
+    server: {
+      host: true,
+      https: httpsOptions,
+      headers: devServerHeaders
+    },
     build: {
       target: 'esnext'
     },
