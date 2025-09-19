@@ -1,0 +1,57 @@
+# Architecture Decision Ledger
+
+This document captures the canonical architecture choices for the Apotheon.ai platform. Each entry summarises the problem context, the decision that was made, expected consequences, and references to operating guidance such as [`docs/ai-instructions.md`](../ai-instructions.md).
+
+## Decision: Astro Static Site Generation
+
+- **Context**: We require a content-first marketing and knowledge site that serves AI governance collateral with deterministic build pipelines, excellent SEO defaults, and seamless integration with Astro Islands for interactive widgets while respecting the automation mandate in [`docs/ai-instructions.md`](../ai-instructions.md).
+- **Decision**: Adopt Astro's Static Site Generation (SSG) mode with incremental builds and component-level hydration only where dynamic behaviour is essential.
+- **Consequences**:
+  - Positive: Predictable build artefacts for Cloudflare Pages, high Lighthouse scores, and simplified caching strategies at the edge.
+  - Negative/Mitigations: Dynamic content must either be pre-rendered or sourced via serverless endpoints; content editors require pipeline automation to publish updates.
+  - Security & Performance: Static assets remain within the public edge boundary, keeping origin attack surface minimal; enforce a performance budget of <100 ms TTFB and <2.5 s Largest Contentful Paint (LCP) via build-time Web Vitals checks.
+- **References**: [`docs/ai-instructions.md`](../ai-instructions.md), [`docs/architecture/system-context.svg`](./system-context.svg).
+
+## Decision: Tailwind CSS with Radix UI Primitives
+
+- **Context**: The design system must scale for enterprise-grade workflows and remain accessible-by-default while enabling rapid iteration and a small surface area for manual CSS.
+- **Decision**: Standardise on Tailwind CSS with Radix UI headless components layered via Astro/React Islands.
+- **Consequences**:
+  - Positive: Utility-first CSS keeps styling deterministic and automatable; Radix primitives deliver WCAG compliance and composable accessibility tokens.
+  - Negative/Mitigations: Requires strict configuration linting to avoid style bloat; integrate PurgeCSS/Tailwind pruning in CI to uphold a <150 KB CSS budget.
+  - Security & Performance: Components interact only within the browser boundary; enforce security reviews for any third-party Tailwind plugins.
+- **References**: [`docs/ai-instructions.md`](../ai-instructions.md), Tailwind configuration in `tailwind.config.mjs`.
+
+## Decision: Pagefind for Localised Search
+
+- **Context**: The documentation site needs client-side search that functions offline/CDN-only while supporting multilingual content and minimal operational overhead.
+- **Decision**: Integrate Pagefind static search index generation as part of the Astro build pipeline.
+- **Consequences**:
+  - Positive: Zero server dependencies for search, progressive enhancement, and minimal bundle footprint when lazy-loaded.
+  - Negative/Mitigations: Index rebuilds are required on every publish; schedule nightly builds and incremental indexing jobs to keep within a <60 s build budget.
+  - Security & Performance: Search index stays within the public CDN boundary; sanitise index content to avoid leaking confidential drafts.
+- **References**: [`docs/ai-instructions.md`](../ai-instructions.md), `package.json#scripts.pagefind:index`.
+
+## Decision: Cloudflare Pages & Workers Platform
+
+- **Context**: We require a unified global edge platform for static hosting, serverless compute, and durable storage that minimises manual operations while providing enterprise observability and security controls.
+- **Decision**: Deploy static assets via Cloudflare Pages, execute dynamic requests through Cloudflare Workers, and govern connectivity using Cloudflare Zero Trust and WAF policies.
+- **Consequences**:
+  - Positive: Managed deployment workflows, integrated CI/CD, and automatic TLS across edge locations; centralised observability via Cloudflare Logs.
+  - Negative/Mitigations: Ties architecture to Cloudflare-specific APIs; maintain IaC blueprints for alternative targets (see [`docs/infra/ALTERNATIVES.md`](../infra/ALTERNATIVES.md)).
+  - Security & Performance: Workers form the security boundary between the public internet and storage services; enforce <50 ms Worker execution budgets per request and log Zero Trust access policies.
+- **References**: [`docs/ai-instructions.md`](../ai-instructions.md), [`docs/architecture/system-context.puml`](./system-context.puml).
+
+## Decision: Cloudflare D1 (SQL), KV, and R2 (Object Storage)
+
+- **Context**: Persisted data must be multi-region, serverless, and support hybrid workloads ranging from transactional metadata to static artefacts and cache invalidation.
+- **Decision**: Use Cloudflare D1 for relational data, KV for ultra-low latency key/value access, and R2 for durable object storage. Workers mediate all data access.
+- **Consequences**:
+  - Positive: Fully managed storage primitives aligned with Cloudflare's global edge, reducing operational toil while enabling automated backups and lifecycle rules.
+  - Negative/Mitigations: Vendor lock-in around query dialect and API semantics; implement portable schema definitions and replication exports to alternative stores (see [`docs/infra/ALTERNATIVES.md`](../infra/ALTERNATIVES.md)).
+  - Security & Performance: Workers enforce data validation and tenancy checks before crossing into the private storage boundary; set budgets of <20 ms KV reads, <150 ms D1 transactional latency, and <200 ms R2 retrieval for <5 MB assets.
+- **References**: [`docs/ai-instructions.md`](../ai-instructions.md), [`docs/architecture/system-context.svg`](./system-context.svg).
+
+---
+
+For detailed data flow, security domain definitions, and integration hand-offs, consult the accompanying system context diagram and associated infrastructure alternatives document. Future changes MUST update this ledger to remain the single source of truth.
