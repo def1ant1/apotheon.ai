@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="469px" preserveAspectRatio="none" style="width:4373px;height:469px;" version="1.1" viewBox="0 0 4373 469" width="4373px" zoomAndPan="magnify"><defs/><g><rect fill="#DDDDDD" height="79.1875" rx="5" ry="5" style="stroke: #000000; stroke-width: 1.0;" width="493" x="8" y="8"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="44" x="19" y="27.9951">Layer</text><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="123" x="101" y="27.9951">Responsibilities</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="57" x="18" y="44.292">Browser</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="326" x="100" y="44.292">Renders SSG pages, executes Pagefind search</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="36" x="18" y="60.5889">Edge</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="391" x="100" y="60.5889">Terminates TLS, caches Astro SSG output, enforces WAF</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="74" x="18" y="76.8857">Data Plane</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="342" x="100" y="76.8857">Stores authoritative content &amp; automation signals</text><line style="stroke: #000000; stroke-width: 1.0;" x1="14" x2="495" y1="15" y2="15"/><line style="stroke: #000000; stroke-width: 1.0;" x1="14" x2="495" y1="31.2969" y2="31.2969"/><line style="stroke: #000000; stroke-width: 1.0;" x1="14" x2="495" y1="47.5938" y2="47.5938"/><line style="stroke: #000000; stroke-width: 1.0;" x1="14" x2="495" y1="63.8906" y2="63.8906"/><line style="stroke: #000000; stroke-width: 1.0;" x1="14" x2="495" y1="80.1875" y2="80.1875"/><line style="stroke: #000000; stroke-width: 1.0;" x1="14" x2="14" y1="15" y2="80.1875"/><line style="stroke: #000000; stroke-width: 1.0;" x1="96" x2="96" y1="15" y2="80.1875"/><line style="stroke: #000000; stroke-width: 1.0;" x1="495" x2="495" y1="15" y2="80.1875"/><!--MD5=[dcedd65fa8fb4e5d75413c5ebec00276]
+cluster Edge--><polygon fill="#E2E8F0" points="686,238.1875,871,238.1875,878,260.4844,1374,260.4844,1374,377.1875,686,377.1875,686,238.1875" style="stroke: #0F172A; stroke-width: 1.5;"/><line style="stroke: #0F172A; stroke-width: 1.5;" x1="686" x2="878" y1="260.4844" y2="260.4844"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="179" x="690" y="253.1826">Cloudflare Global Edge</text><!--MD5=[22e5274afd0f6d646644b42811de1733]
+cluster DataPlane--><polygon fill="#E2E8F0" points="2004,238.1875,2169,238.1875,2176,260.4844,2657,260.4844,2657,377.1875,2004,377.1875,2004,238.1875" style="stroke: #0F172A; stroke-width: 1.5;"/><line style="stroke: #0F172A; stroke-width: 1.5;" x1="2004" x2="2176" y1="260.4844" y2="260.4844"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="159" x="2008" y="253.1826">Managed Data Plane</text><!--MD5=[50225177c3cbfccb15b2d26af63722da]
+entity CDN--><rect fill="#BFDBFE" height="52.5938" style="stroke: #1F2933; stroke-width: 1.5;" width="238" x="729" y="300.1875"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="154" x="739" y="323.1826">Cloudflare CDN + WAF</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="218" x="739" y="339.4795">TLS Termination / Bot Mitigation</text><!--MD5=[7a1b5d849ed40d82cacd8d7f81f0bdd6]
+entity Workers--><rect fill="#C4B5FD" height="52.5938" style="stroke: #1F2933; stroke-width: 1.5;" width="198" x="1152" y="300.1875"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="119" x="1162" y="323.1826">Workers Runtime</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="178" x="1162" y="339.4795">(Access Policies, Routing)</text><!--MD5=[b3ad01ddeee7a8023078597cce53191f]
+entity D1--><rect fill="#FDE68A" height="52.5938" style="stroke: #1F2933; stroke-width: 1.5;" width="180" x="2453" y="300.1875"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="51" x="2463" y="323.1826">D1 SQL</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="160" x="2463" y="339.4795">Transactional Metadata</text><!--MD5=[fa740713f2939187ead4df0b4ab0bb70]
+entity KV--><rect fill="#BBF7D0" height="52.5938" style="stroke: #1F2933; stroke-width: 1.5;" width="188" x="2230" y="300.1875"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="59" x="2240" y="323.1826">KV Store</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="168" x="2240" y="339.4795">Session &amp; Feature Flags</text><!--MD5=[fdba6e7774e828d7bdf93a3c3efba6ce]
+entity R2--><rect fill="#FECACA" height="52.5938" style="stroke: #1F2933; stroke-width: 1.5;" width="147" x="2047.5" y="300.1875"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="126" x="2057.5" y="323.1826">R2 Object Storage</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="127" x="2057.5" y="339.4795">Media, ML Artifacts</text><!--MD5=[e9dede37b31fdda9664526f66258b036]
+entity Browser--><rect fill="#DBEAFE" height="52.5938" style="stroke: #1F2933; stroke-width: 1.5;" width="190" x="6" y="300.1875"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="108" x="16" y="323.1826">Browser Clients</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="170" x="16" y="339.4795">(Policy Admins, Readers)</text><path d="M231,314.1875 L231,323.1875 L196.37,327.1875 L231,331.1875 L231,339.3203 A0,0 0 0 0 231,339.3203 L659,339.3203 A0,0 0 0 0 659,339.3203 L659,324.1875 L649,314.1875 L231,314.1875 A0,0 0 0 0 231,314.1875 " fill="#F1F5F9" style="stroke: #64748B; stroke-width: 1.0;"/><path d="M649,314.1875 L649,324.1875 L659,324.1875 L649,314.1875 " fill="#F1F5F9" style="stroke: #64748B; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="407" x="237" y="331.2544">Security Boundary: Public\n  Budget: &lt;2.5 s LCP, &lt;100 ms TTFB</text><path d="M2681,314.1875 L2681,339.3203 L3409,339.3203 L3409,324.1875 L3399,314.1875 L2681,314.1875 " fill="#F1F5F9" style="stroke: #64748B; stroke-width: 1.0;"/><path d="M3399,314.1875 L3399,324.1875 L3409,324.1875 L3399,314.1875 " fill="#F1F5F9" style="stroke: #64748B; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="707" x="2687" y="331.2544">Security Boundary: Zero Trust Policies\n  Data Flow: Edge cache → Worker\n  Budget: &lt;50 ms Worker CPU time</text><path d="M3444.5,314.1875 L3444.5,339.3203 L4361.5,339.3203 L4361.5,324.1875 L4351.5,314.1875 L3444.5,314.1875 " fill="#F1F5F9" style="stroke: #64748B; stroke-width: 1.0;"/><path d="M4351.5,314.1875 L4351.5,324.1875 L4361.5,324.1875 L4351.5,314.1875 " fill="#F1F5F9" style="stroke: #64748B; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="896" x="3450.5" y="331.2544">Security Boundary: Private Storage Network\n  Data Flow: Worker-mediated SQL/Blob calls\n  Budget: D1 &lt;150 ms, KV &lt;20 ms, R2 &lt;200 ms</text><path d="M955.5,432.1875 L955.5,457.3203 A0,0 0 0 0 955.5,457.3203 L1546.5,457.3203 A0,0 0 0 0 1546.5,457.3203 L1546.5,442.1875 L1536.5,432.1875 L1255,432.1875 L1251,353.4675 L1247,432.1875 L955.5,432.1875 A0,0 0 0 0 955.5,432.1875 " fill="#F1F5F9" style="stroke: #64748B; stroke-width: 1.0;"/><path d="M1536.5,432.1875 L1536.5,442.1875 L1546.5,442.1875 L1536.5,432.1875 " fill="#F1F5F9" style="stroke: #64748B; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="570" x="961.5" y="449.2544">Observability: Cloudflare Logs + Traces\n  Automated Deploy: GitHub → Pages/Workers CI</text><!--MD5=[f8c75a822021e1be325cb3925742c73f]
+link Browser to CDN--><path d="M196.37,307.1875 C196.37,307.1875 723.88,307.1875 723.88,307.1875 " fill="none" id="Browser-&gt;CDN" style="stroke: #2563EB; stroke-width: 1.0;"/><polygon fill="#2563EB" points="728.88,307.1875,719.88,303.1875,723.88,307.1875,719.88,311.1875,728.88,307.1875" style="stroke: #2563EB; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="104" x="410" y="195.2544">HTTPS Requests</text><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="147" x="388.5" y="210.3872">(Static Assets, Search)</text><!--MD5=[eb88973ed97322754cdb34fafc12c221]
+link CDN to Workers--><path d="M967.01,327.1875 C967.01,327.1875 1146.92,327.1875 1146.92,327.1875 " fill="none" id="CDN-&gt;Workers" style="stroke: #7C3AED; stroke-width: 1.0;"/><polygon fill="#7C3AED" points="1151.92,327.1875,1142.92,323.1875,1146.92,327.1875,1142.92,331.1875,1151.92,327.1875" style="stroke: #7C3AED; stroke-width: 1.0;"/><!--MD5=[735f595d4141c1771b81702745c6ab25]
+link Workers to D1--><path d="M1218,300.0275 C1218,290.5575 1218,282.1875 1218,282.1875 C1218,282.1875 2543,282.1875 2543,282.1875 C2543,282.1875 2543,295.0275 2543,295.0275 " fill="none" id="Workers-&gt;D1" style="stroke: #16A34A; stroke-width: 1.0;"/><polygon fill="#16A34A" points="2543,300.0275,2547,291.0275,2543,295.0275,2539,291.0275,2543,300.0275" style="stroke: #16A34A; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="124" x="2191" y="202.7544">Parameterised SQL</text><!--MD5=[3a42e6f3a86e2daab1d131656206d91b]
+link Workers to KV--><path d="M1284,300.1475 C1284,295.0075 1284,291.1875 1284,291.1875 C1284,291.1875 2324,291.1875 2324,291.1875 C2324,291.1875 2324,295.1475 2324,295.1475 " fill="none" id="Workers-&gt;KV" style="stroke: #16A34A; stroke-width: 1.0;"/><polygon fill="#16A34A" points="2324,300.1475,2328,291.1475,2324,295.1475,2320,291.1475,2324,300.1475" style="stroke: #16A34A; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="130" x="1351" y="202.7544">Signed Reads/Writes</text><!--MD5=[d05df4185373484f3266364e46ec5187]
+link Workers to R2--><path d="M1350.38,313.1875 C1350.38,313.1875 2042.44,313.1875 2042.44,313.1875 " fill="none" id="Workers-&gt;R2" style="stroke: #16A34A; stroke-width: 1.0;"/><polygon fill="#16A34A" points="2047.44,313.1875,2038.44,309.1875,2042.44,313.1875,2038.44,317.1875,2047.44,313.1875" style="stroke: #16A34A; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="142" x="1905" y="202.7544">Pre-signed Object Ops</text><!--MD5=[1eebd81fe69064cd2fedbfe046d66abc]
+link Edge to GMN18--><path d="M1374.0066,273.1875 C1378.2147,273.1875 1382.4332,273.1875 1386.6618,273.1875 C1403.5761,273.1875 1420.6519,273.1875 1437.8711,273.1875 C1575.625,273.1875 1722.5625,273.1875 1869.5,273.1875 C2457.25,273.1875 3045,273.1875 3045,273.1875 C3045,273.1875 3045,298.1875 3045,314.0075 " fill="none" id="Edge-GMN18" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/><!--MD5=[18c01825bb1e3c044d5e67b7f95b4074]
+link DataPlane to GMN21--><path d="M2012,377.4229 C2012,377.53 2012,377.6368 2012,377.7432 C2012,378.1689 2012,378.5891 2012,379.0034 C2012,380.6603 2012,382.2218 2012,383.6598 C2012,389.4119 2012,393.1875 2012,393.1875 C2012,393.1875 3903,393.1875 3903,393.1875 C3903,393.1875 3903,358.4575 3903,339.1975 " fill="none" id="DataPlane-GMN21" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/><!--MD5=[f8e57c8f83f9bb50704b902d5e4de1f5]
+@startuml SystemContext
+skinparam handwritten false
+skinparam linetype ortho
+skinparam shadowing false
+skinparam rectangle {
+  BorderColor #1f2933
+  BackgroundColor #f8fafc
+}
+skinparam package {
+  BorderColor #0f172a
+  BackgroundColor #e2e8f0
+}
+skinparam note {
+  BorderColor #64748b
+  BackgroundColor #f1f5f9
+}
+
+rectangle "Browser Clients\n(Policy Admins, Readers)" as Browser #dbeafe
+package "Cloudflare Global Edge" as Edge {
+  rectangle "Cloudflare CDN + WAF\nTLS Termination / Bot Mitigation" as CDN #bfdbfe
+  rectangle "Workers Runtime\n(Access Policies, Routing)" as Workers #c4b5fd
+}
+package "Managed Data Plane" as DataPlane {
+  rectangle "D1 SQL\nTransactional Metadata" as D1 #fde68a
+  rectangle "KV Store\nSession & Feature Flags" as KV #bbf7d0
+  rectangle "R2 Object Storage\nMedia, ML Artifacts" as R2 #fecaca
+}
+
+Browser -[#2563eb]> CDN : HTTPS Requests\n(Static Assets, Search)
+CDN -[#7c3aed]> Workers : Authenticated API Calls
+Workers -[#16a34a]> D1 : Parameterised SQL
+Workers -[#16a34a]> KV : Signed Reads/Writes
+Workers -[#16a34a]> R2 : Pre-signed Object Ops
+
+note right of Browser
+  Security Boundary: Public\n  Budget: <2.5 s LCP, <100 ms TTFB
+end note
+
+note right of Edge
+  Security Boundary: Zero Trust Policies\n  Data Flow: Edge cache → Worker\n  Budget: <50 ms Worker CPU time
+end note
+
+note right of DataPlane
+  Security Boundary: Private Storage Network\n  Data Flow: Worker-mediated SQL/Blob calls\n  Budget: D1 <150 ms, KV <20 ms, R2 <200 ms
+end note
+
+note bottom of Workers
+  Observability: Cloudflare Logs + Traces\n  Automated Deploy: GitHub → Pages/Workers CI
+end note
+
+legend top left
+  |= Layer |= Responsibilities |
+  | Browser | Renders SSG pages, executes Pagefind search |
+  | Edge | Terminates TLS, caches Astro SSG output, enforces WAF |
+  | Data Plane | Stores authoritative content & automation signals |
+end legend
+
+@enduml
+
+PlantUML version 1.2020.02(Sun Mar 01 10:22:07 UTC 2020)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Java Version: 21.0.2+13-58
+Operating System: Linux
+Default Encoding: UTF-8
+Language: en
+Country: null
+--></g></svg>

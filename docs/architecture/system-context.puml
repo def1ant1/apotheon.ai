@@ -1,0 +1,58 @@
+@startuml SystemContext
+skinparam handwritten false
+skinparam linetype ortho
+skinparam shadowing false
+skinparam rectangle {
+  BorderColor #1f2933
+  BackgroundColor #f8fafc
+}
+skinparam package {
+  BorderColor #0f172a
+  BackgroundColor #e2e8f0
+}
+skinparam note {
+  BorderColor #64748b
+  BackgroundColor #f1f5f9
+}
+
+rectangle "Browser Clients\n(Policy Admins, Readers)" as Browser #dbeafe
+package "Cloudflare Global Edge" as Edge {
+  rectangle "Cloudflare CDN + WAF\nTLS Termination / Bot Mitigation" as CDN #bfdbfe
+  rectangle "Workers Runtime\n(Access Policies, Routing)" as Workers #c4b5fd
+}
+package "Managed Data Plane" as DataPlane {
+  rectangle "D1 SQL\nTransactional Metadata" as D1 #fde68a
+  rectangle "KV Store\nSession & Feature Flags" as KV #bbf7d0
+  rectangle "R2 Object Storage\nMedia, ML Artifacts" as R2 #fecaca
+}
+
+Browser -[#2563eb]> CDN : HTTPS Requests\n(Static Assets, Search)
+CDN -[#7c3aed]> Workers : Authenticated API Calls
+Workers -[#16a34a]> D1 : Parameterised SQL
+Workers -[#16a34a]> KV : Signed Reads/Writes
+Workers -[#16a34a]> R2 : Pre-signed Object Ops
+
+note right of Browser
+  Security Boundary: Public\n  Budget: <2.5 s LCP, <100 ms TTFB
+end note
+
+note right of Edge
+  Security Boundary: Zero Trust Policies\n  Data Flow: Edge cache → Worker\n  Budget: <50 ms Worker CPU time
+end note
+
+note right of DataPlane
+  Security Boundary: Private Storage Network\n  Data Flow: Worker-mediated SQL/Blob calls\n  Budget: D1 <150 ms, KV <20 ms, R2 <200 ms
+end note
+
+note bottom of Workers
+  Observability: Cloudflare Logs + Traces\n  Automated Deploy: GitHub → Pages/Workers CI
+end note
+
+legend top left
+  |= Layer |= Responsibilities |
+  | Browser | Renders SSG pages, executes Pagefind search |
+  | Edge | Terminates TLS, caches Astro SSG output, enforces WAF |
+  | Data Plane | Stores authoritative content & automation signals |
+end legend
+
+@enduml

@@ -19,6 +19,12 @@ scaffolding.
 - **Tooling:** ESLint + Stylelint + Prettier with Husky/commitlint automation for
   zero-drift code quality
 
+## Architecture
+
+- [Architecture Decision Ledger](docs/architecture/DECISIONS.md) — canonical ADRs covering Astro SSG, Tailwind + Radix, Pagefind, and Cloudflare platform services with security boundaries and performance budgets.
+- [System context diagram](docs/architecture/system-context.svg) — browser ↔ Cloudflare edge ↔ Workers/D1/KV/R2 data flows with boundary notes.
+- [Managed service alternatives](docs/infra/ALTERNATIVES.md) — vetted OSS/free substitutes and operational guidance aligned to [`docs/ai-instructions.md`](docs/ai-instructions.md).
+
 ## Repository Structure
 
 ```

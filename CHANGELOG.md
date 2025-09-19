@@ -15,6 +15,9 @@ semantic versioning once releases begin.
   `src/components/islands`, `src/styles`, and content collections).
 - Added automation scripts for linting, formatting, building, previewing, and
   Pagefind indexing via npm.
+- Captured Cloudflare-centric architecture decisions, security boundaries, and performance budgets in `docs/architecture/DECISIONS.md`.
+- Published a system context diagram (`docs/architecture/system-context.puml` + `.svg`) showing browser↔edge↔data plane flows.
+- Documented open-source/zero-cost substitutes for each managed service in `docs/infra/ALTERNATIVES.md`.
 
 ### Changed
 
