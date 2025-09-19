@@ -52,6 +52,7 @@ module.exports = {
     'node_modules/',
     'public/',
     'package-lock.json',
+    '!.ladle/**/*',
   ],
 
   // Organization-first rules that apply globally.
@@ -106,7 +107,7 @@ module.exports = {
   overrides: [
     {
       // TypeScript (including React islands) gets type-aware linting + React hook safety nets.
-      files: ['**/*.{ts,tsx}'],
+      files: ['src/**/*.{ts,tsx}', 'workers/**/*.{ts,tsx}', 'config/**/*.{ts,tsx}'],
       parser: '@typescript-eslint/parser',
       parserOptions: {
         project: projectTsconfig,
@@ -134,6 +135,37 @@ module.exports = {
         ],
         '@typescript-eslint/triple-slash-reference': 'off',
         // Hooks guardrails ensure React islands remain deterministic.
+        'react-hooks/exhaustive-deps': 'warn',
+        'react-hooks/rules-of-hooks': 'error',
+      },
+    },
+    {
+      files: ['.ladle/**/*.{ts,tsx}'],
+      parser: '@typescript-eslint/parser',
+      parserOptions: {
+        project: path.resolve(__dirname, 'tsconfig.ladle.json'),
+        tsconfigRootDir: __dirname,
+      },
+      plugins: ['@typescript-eslint', 'jsx-a11y', 'react-hooks'],
+      extends: [
+        'plugin:@typescript-eslint/recommended',
+        'plugin:@typescript-eslint/recommended-requiring-type-checking',
+        'plugin:jsx-a11y/strict',
+        'plugin:react-hooks/recommended',
+      ],
+      rules: {
+        '@typescript-eslint/consistent-type-imports': [
+          'warn',
+          { prefer: 'type-imports', disallowTypeAnnotations: false },
+        ],
+        '@typescript-eslint/explicit-module-boundary-types': 'off',
+        '@typescript-eslint/no-floating-promises': 'error',
+        '@typescript-eslint/no-non-null-assertion': 'warn',
+        '@typescript-eslint/no-empty-object-type': [
+          'warn',
+          { allowInterfaces: 'always', allowObjectTypes: 'always' },
+        ],
+        '@typescript-eslint/triple-slash-reference': 'off',
         'react-hooks/exhaustive-deps': 'warn',
         'react-hooks/rules-of-hooks': 'error',
       },

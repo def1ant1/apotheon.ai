@@ -14,81 +14,84 @@ import { forwardRef, useMemo, type ComponentPropsWithoutRef, type ElementRef } f
  * - Copious inline notes explain the integration so future teams can replicate the pattern without
  *   reverse engineering component internals.
  */
+/**
+ * Central navigation data is exported for Ladle stories and downstream products (e.g., SaaS
+ * consoles) so they can stay aligned without copy/pasting array literals. Treat it as the single
+ * source of truth for top-level IA buckets.
+ */
+export const navigationMenuGroups = [
+  {
+    label: 'Platform',
+    description: 'Deep dives into the Apotheon.ai operating system and its modular AI surfaces.',
+    links: [
+      {
+        label: 'AIOS Overview',
+        href: '/solutions/clio',
+        description: 'Systems thinking behind our cognitive orchestration layer.',
+      },
+      {
+        label: 'Secure Integrations',
+        href: '/solutions/hermes',
+        description: 'Enterprise ingress/egress pipelines with signed artifact distribution.',
+      },
+      {
+        label: 'Continuous Learning',
+        href: '/solutions/mnemosyne',
+        description: 'Feedback ingestion loops that stay compliant while improving accuracy.',
+      },
+    ],
+  },
+  {
+    label: 'Industries',
+    description: 'Verticalized GTM journeys designed for regulated environments.',
+    links: [
+      {
+        label: 'Healthcare',
+        href: '/industries/healthcare',
+        description: 'Augment clinical operations with AI guardrails and observability.',
+      },
+      {
+        label: 'Finance',
+        href: '/industries/finance',
+        description: 'Accelerate underwriting decisions without compromising compliance.',
+      },
+      {
+        label: 'Government',
+        href: '/industries/government',
+        description: 'Deliver mission-ready intelligence workflows at the edge.',
+      },
+    ],
+  },
+  {
+    label: 'Company',
+    description: 'Strategic context, investor narrative, and trust signals.',
+    links: [
+      {
+        label: 'About Apotheon.ai',
+        href: '/about/history',
+        description: 'Research pedigree, team structure, and governance disciplines.',
+      },
+      {
+        label: 'Investors',
+        href: '/about/investors',
+        description: 'Structured diligence, metrics, and defensibility overview.',
+      },
+      {
+        label: 'Contact',
+        href: '/about/contact',
+        description: 'Edge-secured intake routing leads to the Cloudflare Worker API.',
+      },
+    ],
+  },
+] as const;
+
 export function RadixNavigationMenu() {
   /**
    * Define navigation content as data first. This keeps the JSX lean and allows us to
    * generate both the trigger labels and panel content from a single source of truth.
    * Doing so avoids manual duplication whenever sections or routes evolve.
    */
-  const menuGroups = useMemo(
-    () => [
-      {
-        label: 'Platform',
-        description:
-          'Deep dives into the Apotheon.ai operating system and its modular AI surfaces.',
-        links: [
-          {
-            label: 'AIOS Overview',
-            href: '/solutions/clio',
-            description: 'Systems thinking behind our cognitive orchestration layer.',
-          },
-          {
-            label: 'Secure Integrations',
-            href: '/solutions/hermes',
-            description: 'Enterprise ingress/egress pipelines with signed artifact distribution.',
-          },
-          {
-            label: 'Continuous Learning',
-            href: '/solutions/mnemosyne',
-            description: 'Feedback ingestion loops that stay compliant while improving accuracy.',
-          },
-        ],
-      },
-      {
-        label: 'Industries',
-        description: 'Verticalized GTM journeys designed for regulated environments.',
-        links: [
-          {
-            label: 'Healthcare',
-            href: '/industries/healthcare',
-            description: 'Augment clinical operations with AI guardrails and observability.',
-          },
-          {
-            label: 'Finance',
-            href: '/industries/finance',
-            description: 'Accelerate underwriting decisions without compromising compliance.',
-          },
-          {
-            label: 'Government',
-            href: '/industries/government',
-            description: 'Deliver mission-ready intelligence workflows at the edge.',
-          },
-        ],
-      },
-      {
-        label: 'Company',
-        description: 'Strategic context, investor narrative, and trust signals.',
-        links: [
-          {
-            label: 'About Apotheon.ai',
-            href: '/about/history',
-            description: 'Research pedigree, team structure, and governance disciplines.',
-          },
-          {
-            label: 'Investors',
-            href: '/about/investors',
-            description: 'Structured diligence, metrics, and defensibility overview.',
-          },
-          {
-            label: 'Contact',
-            href: '/about/contact',
-            description: 'Edge-secured intake routing leads to the Cloudflare Worker API.',
-          },
-        ],
-      },
-    ],
-    [],
-  );
+  const menuGroups = useMemo(() => navigationMenuGroups, []);
 
   return (
     <NavigationMenu.Root

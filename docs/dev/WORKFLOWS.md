@@ -24,7 +24,9 @@ is a safe fallback after cloning from a shallow checkout.
 | Format files                    | `npm run format`       | Applies Prettier with Astro + Tailwind class sorting plugins.                  |
 | Check formatting                | `npm run format:check` | CI-friendly formatter verification.                                            |
 | Type + content safety           | `npm run typecheck`    | Delegates to `astro check` for schema + TS validation.                         |
-| Full regression gate            | `npm run test`         | Aggregates linting + typecheck to mirror CI locally.                           |
+| Component docs (dev)            | `npm run ladle`        | Launches Ladle with global theming + decorators.                               |
+| Component docs (build)          | `npm run ladle:build`  | Static export consumed by CI + artifact previews.                              |
+| Full regression gate            | `npm run test`         | Lint → typecheck → Ladle CI (a11y + visual smoke tests).                       |
 
 ## Pre-commit Automation
 
@@ -63,3 +65,22 @@ standard. Example prefixes include `feat:`, `fix:`, `docs:`, and `chore:`.
   `client:idle`, `client:visible`, etc.) so reviewers know why JavaScript is shipped.
 - Capture additional lessons learned in this workflow guide or a sibling doc under
   `docs/dev/` whenever new primitives join the stack.
+
+## Component Documentation (Ladle)
+
+- **Why Ladle?** Lightweight React environment aligned with our Astro islands. Vite +
+  SWC match production settings, ensuring story behavior mirrors deployed islands.
+- **Global decorators:** `.ladle/components.tsx` imports `src/styles/global.css` and
+  forwards Ladle’s theme toggle into our `data-theme` API. Stories render with identical
+  tokens/typography without per-story imports.
+- **Core commands:**
+  - `npm run ladle` → starts the authoring server, binding to `0.0.0.0` for containerized
+    dev environments.
+  - `npm run ladle:build` → emits `dist/ladle` for artifact uploads and async reviews.
+  - `npm run ladle:ci` → runs the build plus the Puppeteer + axe-core sweep defined in
+    `scripts/ci/ladle-ci.mjs`. This is invoked automatically by `npm run test`.
+- **Story patterns:** Place stories in `src/stories/`, import shared data exports (e.g.,
+  `navigationMenuGroups`), and annotate usage with exhaustive notes. Rich guidance keeps
+  partner teams from reverse-engineering implementation details.
+- **Artifacts:** `dist/ladle/meta.json` enumerates story IDs. CI consumes this manifest to
+  determine which routes to audit; do not delete it.

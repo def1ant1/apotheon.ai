@@ -43,6 +43,8 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
 
 **Goal:** Elegant enterprise design with tokenized theming.
 
+- **Status:** ✅ Completed — Ladle documentation pipeline with automated a11y + visual checks is operational and design tokens are fully documented.
+
 - **Deliverables**
 
   - `brand/STYLEGUIDE.md`: palette (dark & light), typography scale, spacing, radii, shadows.
