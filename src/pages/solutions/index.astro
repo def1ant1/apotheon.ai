@@ -5,6 +5,7 @@ import MarketingCtaRow from '../../components/marketing/MarketingCtaRow.astro';
 import MarketingHero from '../../components/marketing/MarketingHero.astro';
 import MarketingShell from '../../components/marketing/MarketingShell.astro';
 
+// Pull all marketing entries under the solutions directory to auto-generate navigation + breadcrumbs.
 const solutionEntries = await getCollection('marketing', ({ id }) => id.startsWith('solutions/'));
 const solutions = solutionEntries
   .map((entry) => ({
@@ -14,6 +15,7 @@ const solutions = solutionEntries
     featured: entry.data.featured,
     order: entry.data.order ?? 0,
   }))
+  // Sorting at build time keeps runtime fast and ensures nav order matches the MDX `order` field.
   .sort((a, b) => (a.order === b.order ? a.title.localeCompare(b.title) : a.order - b.order));
 
 const heroCopy =
@@ -48,6 +50,10 @@ const breadcrumbs = [{ href: '/solutions/', label: 'Solutions' }];
             }`}
             href={solution.href}
           >
+            {/*
+              Each card reuses semantic spans instead of headings so the index maintains a single H2.
+              Screen readers announce the featured badge first, then the title, mirroring visual order.
+            */}
             <span class="text-xs uppercase tracking-[0.35rem] text-indigo-300">
               {solution.featured ? 'Featured' : 'Solution'}
             </span>

@@ -5,6 +5,7 @@ import MarketingCtaRow from '../../components/marketing/MarketingCtaRow.astro';
 import MarketingHero from '../../components/marketing/MarketingHero.astro';
 import MarketingShell from '../../components/marketing/MarketingShell.astro';
 
+// Collection query keeps this hub in sync with MDX stored under marketing/industries.
 const industryEntries = await getCollection('marketing', ({ id }) => id.startsWith('industries/'));
 const industries = industryEntries
   .map((entry) => ({
@@ -15,6 +16,7 @@ const industries = industryEntries
     featured: entry.data.featured,
     order: entry.data.order ?? 0,
   }))
+  // Sorting ensures deterministic nav order for search bots and breadcrumbs.
   .sort((a, b) => (a.order === b.order ? a.title.localeCompare(b.title) : a.order - b.order));
 
 const heroCopy =
@@ -51,6 +53,10 @@ const breadcrumbs = [{ href: '/industries/', label: 'Industries' }];
             }`}
             href={industry.href}
           >
+            {/*
+              Preserve semantic spans for badges/titles to keep heading hierarchy simple while letting
+              authors embed optional MDX components without restructuring this template.
+            */}
             <span class="text-xs uppercase tracking-[0.35rem] text-indigo-300">
               {industry.featured ? 'Priority vertical' : 'Industry'}
             </span>

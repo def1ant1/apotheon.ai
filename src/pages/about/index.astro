@@ -5,6 +5,7 @@ import MarketingCtaRow from '../../components/marketing/MarketingCtaRow.astro';
 import MarketingHero from '../../components/marketing/MarketingHero.astro';
 import MarketingShell from '../../components/marketing/MarketingShell.astro';
 
+// Centralized query ensures culture, careers, and contact pages stay in sync with MDX inventory.
 const aboutEntries = await getCollection('marketing', ({ id }) => id.startsWith('about/'));
 const aboutPages = aboutEntries
   .map((entry) => ({
@@ -15,6 +16,7 @@ const aboutPages = aboutEntries
     featured: entry.data.featured,
     order: entry.data.order ?? 0,
   }))
+  // Sorting by configured order keeps nav stable even as filenames change.
   .sort((a, b) => (a.order === b.order ? a.title.localeCompare(b.title) : a.order - b.order));
 
 const heroCopy =
@@ -49,6 +51,10 @@ const breadcrumbs = [{ href: '/about/', label: 'About' }];
             }`}
             href={page.href}
           >
+            {/*
+              About cards only expose spans so future MDX shortcodes can inject headings without
+              violating document outline best practices.
+            */}
             <span class="text-xs uppercase tracking-[0.35rem] text-indigo-300">
               {page.featured ? 'Start here' : 'About resource'}
             </span>
