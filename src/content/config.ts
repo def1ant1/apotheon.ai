@@ -10,6 +10,54 @@ const blogCollection = defineCollection({
     publishDate: z.date().describe('ISO publish date for chronological sorting'),
     updatedDate: z.date().optional().describe('Optional last updated date for release notes'),
     heroImage: z.string().optional().describe('Path to hero image processed by @astrojs/image'),
+    heroImageAlt: z
+      .string()
+      .optional()
+      .describe('Plain-language alt text accompanying heroImage for accessibility compliance'),
+    tags: z
+      .array(z.string())
+      .default([])
+      .describe(
+        'Search facets + related content scoring (lowercase kebab-case values recommended)',
+      ),
+    estimatedReadingMinutes: z
+      .number()
+      .int()
+      .positive()
+      .describe('Rounded reading time used in hero metadata + JSON-LD hydration'),
+    author: z
+      .object({
+        name: z.string().describe('Primary byline for the article'),
+        title: z
+          .string()
+          .optional()
+          .describe('Role or team affiliation displayed alongside the name'),
+        avatar: z
+          .string()
+          .optional()
+          .describe('Optional path to an avatar rendered via @astrojs/image'),
+        bio: z
+          .string()
+          .describe(
+            'Short-form bio rendered in the shared author component for context + trust signals',
+          ),
+        links: z
+          .array(
+            z.object({
+              label: z.string().describe('Link label such as “LinkedIn” or “Research Portfolio”'),
+              url: z.string().url().describe('Destination URL'),
+              rel: z
+                .string()
+                .optional()
+                .describe('Override rel attribute for compliance (e.g., noopener)'),
+            }),
+          )
+          .default([])
+          .describe('Optional social/portfolio links that render inline below the author bio copy'),
+      })
+      .describe(
+        'Structured author metadata keeps layout + JSON-LD in sync without per-page overrides',
+      ),
     draft: z
       .boolean()
       .default(false)

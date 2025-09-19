@@ -35,6 +35,25 @@ is a safe fallback after cloning from a shallow checkout.
 - **Reusable components:** Shared hero, CTA rows, and shell metadata live in `src/components/marketing/`. Follow the inline comments for SEO, accessibility, and performance guidance before extending any template.
 - **Automation-first mindset:** The marketing pipeline avoids manual routing. Editors should not touch files under `src/pages/solutions/`, `src/pages/industries/`, or `src/pages/about/` unless evolving the templates for the entire section.
 
+## Blog Content Pipeline
+
+- **Collections + schema:** Blog MDX files live in `src/content/blog/`. Frontmatter fields (`title`, `description`, `publishDate`,
+  `updatedDate`, `heroImage`, `heroImageAlt`, `tags`, `estimatedReadingMinutes`, `author`, `draft`) are type-checked by
+  `src/content/config.ts`. Keep the inline comments shipped with each starter file—automation reads those lines during tooling
+  upgrades to detect missing documentation.
+- **Authoring flow:**
+  1. Duplicate the production-ready example MDX file to inherit editorial comments.
+  2. Update metadata and body copy. Run `npm run typecheck` to catch schema violations before opening a PR.
+  3. Preview locally via `npm run dev` (drafts render automatically) or `npm run build -- --drafts` to simulate a release build
+     that still includes in-progress work for stakeholder reviews.
+- **Publishing checklist:** Flip `draft` to `false`, verify hero artwork is in `/public/images/blog`, and re-run `npm run build`
+  without the `--drafts` flag. CI only publishes entries with `draft: false`, ensuring the static export never leaks drafts.
+- **Layout components:** Shared blocks (`AuthorBio`, `RelatedPosts`) reside in `src/components/blog/` with documented prop types.
+  Extend these components instead of editing page templates to keep JSON-LD, SEO metadata, and automation hooks centralized.
+- **Pagination + search roadmap:** `src/pages/blog/index.astro` slices results with a configurable page size. When expanding to
+  paginated routes or tag filters, reuse the helper variables already defined in the file and feed them into a new dynamic route
+  (`src/pages/blog/[page].astro`) or Astro endpoint. This avoids duplicating sorting/filtering rules across multiple surfaces.
+
 ## Pre-commit Automation
 
 - Husky hooks run `lint-staged` to auto-fix staged files with ESLint, Stylelint,

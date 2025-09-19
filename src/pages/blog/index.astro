@@ -1,0 +1,87 @@
+---
+import { getCollection } from 'astro:content';
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const pageSize = 12; // Adjust in tandem with future pagination route params to avoid reflow churn.
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const posts = allPosts.sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf());
+
+const currentPage = 1; // Placeholder until query-string pagination is wired. Keep naming consistent with upcoming helpers.
+const paginatedPosts = posts.slice(0, pageSize);
+const totalPages = Math.max(1, Math.ceil(posts.length / pageSize));
+
+const dateFormatter = new Intl.DateTimeFormat('en', {
+  year: 'numeric',
+  month: 'short',
+  day: '2-digit',
+});
+---
+
+<BaseLayout
+  title="Apotheon.ai Blog"
+  description="Enterprise AI governance, delivery, and platform engineering guides from the Apotheon.ai field team."
+>
+  <section class="mx-auto flex w-full max-w-5xl flex-col gap-12 px-6 py-16 text-slate-100">
+    <header class="flex flex-col gap-4">
+      <p class="text-sm font-semibold uppercase tracking-[0.35em] text-sky-300">Insights</p>
+      <h1 class="text-4xl font-bold text-white md:text-5xl">
+        Ship AI safely without sacrificing velocity
+      </h1>
+      <p class="max-w-3xl text-lg text-slate-300">
+        Every article is wired for automation-first delivery: content collections enforce schema
+        compliance, structured data keeps SEO tuned, and our CI suite validates drafts before they
+        ever leave a branch.
+      </p>
+      <!--
+        When adding search facets (tags, industries, personas) prefer deriving the values directly from collection data so the UI stays in sync
+        with metadata. Pagination params should funnel through a dedicated helper (e.g., `/pages/blog/[page].astro`) to avoid duplicating slicing
+        logic across filters.
+      -->
+    </header>
+
+    <div class="grid gap-8 md:grid-cols-2">
+      {
+        paginatedPosts.map((post) => (
+          <article class="flex flex-col gap-4 rounded-3xl border border-slate-800 bg-slate-900/40 p-6 transition hover:border-sky-400/60">
+            <header class="flex flex-col gap-2">
+              <p class="text-xs font-semibold uppercase tracking-wide text-sky-300">
+                {dateFormatter.format(post.data.publishDate)}
+              </p>
+              <h2 class="text-2xl font-semibold text-white">
+                <a class="hover:text-sky-200" href={`/blog/${post.slug}`}>
+                  {post.data.title}
+                </a>
+              </h2>
+              <p class="text-sm text-slate-400">{post.data.description}</p>
+            </header>
+            <div class="flex flex-wrap gap-2">
+              {post.data.tags.map((tag) => (
+                <span class="rounded-full border border-slate-700 bg-slate-800 px-3 py-1 text-xs uppercase tracking-wide text-slate-400">
+                  {tag}
+                </span>
+              ))}
+            </div>
+            <footer class="mt-auto flex items-center justify-between text-sm text-slate-400">
+              <span>{post.data.author.name}</span>
+              <span>{post.data.estimatedReadingMinutes} min read</span>
+            </footer>
+          </article>
+        ))
+      }
+    </div>
+
+    <nav
+      aria-label="Pagination"
+      class="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-900/40 px-4 py-3 text-sm text-slate-400"
+    >
+      <span>Page {currentPage} of {totalPages}</span>
+      <!--
+        Future pagination should render previous/next anchors or numeric buttons here. Keep markup minimal so we can hydrate with
+        an island if analytics signals demand infinite scroll or saved filters.
+      -->
+      <span>Showing {paginatedPosts.length} of {posts.length} published posts</span>
+    </nav>
+  </section>
+</BaseLayout>

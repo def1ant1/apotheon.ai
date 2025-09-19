@@ -1,0 +1,18 @@
+---
+/* eslint-disable astro/no-set-html-directive */
+/**
+ * Strongly typed JSON-LD emitter for blog articles. Accepts a structured payload and handles sanitization
+ * so downstream templates can safely opt into <script type="application/ld+json"> blocks without re-implementing
+ * escaping logic in every route.
+ */
+interface Props {
+  /** Plain object to serialize into the script payload. */
+  payload: Record<string, unknown>;
+}
+
+const { payload } = Astro.props satisfies Props;
+const serialized = JSON.stringify(payload).replace(/</g, '\\u003c');
+---
+
+<!-- prettier-ignore -->
+<script type="application/ld+json" set:html={serialized}></script>
