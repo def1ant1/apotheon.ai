@@ -46,3 +46,20 @@ standard. Example prefixes include `feat:`, `fix:`, `docs:`, and `chore:`.
   `npm run lint`; the TypeScript compiler caches results between invocations.
 - **Hooks did not run after cloning** – execute `npm install` or `npx husky install`
   to regenerate `.husky/_/husky.sh`.
+
+## Radix UI Composition Workflow
+
+- Install primitives with `npm install @radix-ui/react-*` so TypeScript inference and
+  accessibility props stay intact. New dependencies belong in production
+  `dependencies`, not `devDependencies`, because Astro islands bundle them for the
+  client runtime.
+- Keep Radix wrappers colocated under `src/components/islands/`. Each component
+  should expose data-driven APIs (arrays/objects that describe menu items, tabs,
+  accordions, etc.) to minimize future manual edits.
+- Favor semantic Tailwind tokens over raw hex values. The Radix navigation menu
+  consumes the shared `brand.primary` and `brand.secondary` colors plus the
+  `shadow-navigation` presets defined in `tailwind.config.mjs`.
+- Document hydration strategy directly inside Astro pages (`client:load`,
+  `client:idle`, `client:visible`, etc.) so reviewers know why JavaScript is shipped.
+- Capture additional lessons learned in this workflow guide or a sibling doc under
+  `docs/dev/` whenever new primitives join the stack.

@@ -11,6 +11,9 @@ semantic versioning once releases begin.
 - Migrated the web platform to an Astro 4 static-first architecture with React
   islands, Tailwind CSS, MDX content collections, Pagefind search automation, and
   hardened CSP defaults.
+- Introduced a Radix-powered navigation menu island with shared Tailwind tokens,
+  hydration guidance, and accessibility notes documented across README and
+  developer workflows.
 - Bundled the Inter variable typeface via `@fontsource-variable/inter`, removed
   Google Fonts dependencies, and documented the self-hosted font workflow across
   README and security runbooks.
@@ -28,6 +31,8 @@ semantic versioning once releases begin.
 
 - Replaced the prior Vite/React SPA entrypoints and removed unused Amplify and
   Vercel scaffolding.
+- Expanded developer documentation (`docs/dev/WORKFLOWS.md`, README) with Radix
+  integration practices and Tailwind token usage.
 - Updated documentation (README and engineering playbook) to reflect the new
   static-first stack and workflows.
 
