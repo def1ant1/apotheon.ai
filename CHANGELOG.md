@@ -11,6 +11,9 @@ semantic versioning once releases begin.
 - Migrated the web platform to an Astro 4 static-first architecture with React
   islands, Tailwind CSS, MDX content collections, Pagefind search automation, and
   hardened CSP defaults.
+- Bundled the Inter variable typeface via `@fontsource-variable/inter`, removed
+  Google Fonts dependencies, and documented the self-hosted font workflow across
+  README and security runbooks.
 - Delivered nonce-based CSP middleware, HTTPS dev tooling, mkcert automation,
   and documentation for capturing CSP reports via Cloudflare Workers.
 - Introduced baseline Astro project scaffolding (`src/pages`, `src/layouts`,

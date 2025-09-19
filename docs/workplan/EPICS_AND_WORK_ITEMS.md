@@ -21,6 +21,7 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
 - **Decisions/Deliverables**
   - Framework: **Astro** (MIT) + **TypeScript** + **MDX**; **React islands** only where interactivity is needed (menus, forms).
   - UI: **TailwindCSS** + **Radix UI primitives** (headless, accessible). Optional icons: **Lucide** / custom SVGs.
+  - Typography: **Self-hosted variable fonts** via `@fontsource` packages; external font CDNs are prohibited to maintain CSP fidelity.
   - Content: Astro **Content Collections** for blog & pages; whitepapers as static assets (R2) with signed links.
   - Build: Static pre‑render (SSG) for all pages; islands hydrate on demand; images via **@astrojs/image** (Sharp).
   - Repo: Monorepo (if needed) or single app; Prettier, ESLint, stylelint; commitlint + Husky; Conventional Commits.

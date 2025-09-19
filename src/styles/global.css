@@ -1,3 +1,10 @@
+/*
+  Self-host the Inter variable font via @fontsource so typography ships from our
+  own origin. This satisfies CSP policies (no third-party font CDNs) while still
+  delivering the variable-weight range with font-display: swap baked in.
+*/
+@import '@fontsource-variable/inter/index.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -12,6 +19,11 @@
 }
 
 body {
+  /*
+    Tailwind's font-sans utility now resolves to our locally bundled Inter
+    Variable family (see tailwind.config.mjs). Keeping the explicit feature
+    settings ensures discretionary ligatures remain consistent across browsers.
+  */
   @apply bg-slate-950 text-slate-100 antialiased;
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
 }

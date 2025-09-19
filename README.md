@@ -105,6 +105,22 @@ scaffolding.
   for end-to-end automation covering mkcert setup, Astro HTTPS flags, and
   troubleshooting tips.
 
+## Typography & Self-Hosted Fonts
+
+- **Inter Variable via @fontsource:** `@fontsource-variable/inter` is installed
+  as a production dependency so the entire font family is bundled during `astro build`.
+  Importing the package from `src/styles/global.css` ensures the `@font-face`
+  declarations resolve against locally served assets.
+- **Tailwind integration:** `tailwind.config.mjs` prioritizes the `Inter Variable`
+  family so the `font-sans` utility automatically maps to the self-hosted font
+  while retaining system fallbacks.
+- **Operational guidance:** If additional weights or families are needed, prefer
+  the [`@fontsource`](https://fontsource.org/) ecosystem to keep delivery within
+  our origin. Avoid `<link>` tags to third-party font CDNs; they violate the
+  default CSP and introduce availability risk. See
+  [`docs/security/FONT_HOSTING.md`](docs/security/FONT_HOSTING.md) for the
+  step-by-step playbook.
+
 ## Content & Search Workflow
 
 - Drop MDX/Markdown files into `src/content/blog` or `src/content/marketing`. The

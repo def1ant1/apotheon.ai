@@ -15,16 +15,10 @@ const {
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="preload"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
-      as="style"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
-    />
+    <!--
+      Fonts are imported via src/styles/global.css using @fontsource-variable/inter
+      so we never punch holes in the CSP for third-party font CDNs.
+    -->
   </head>
   <body class="font-sans">
     <a class="sr-only focus:not-sr-only" href="#main">Skip to content</a>
