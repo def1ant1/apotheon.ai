@@ -11,12 +11,15 @@
     "check": "npm run typecheck",
     "lint": "npm run lint:eslint && npm run lint:styles",
     "lint:eslint": "cross-env ESLINT_USE_FLAT_CONFIG=0 eslint --config .eslintrc.cjs . --max-warnings=0 --report-unused-disable-directives --ext .js,.jsx,.ts,.tsx,.astro,.mdx",
-    "lint:styles": "stylelint \"**/*.{css,pcss,scss,sass,astro}\" --allow-empty-input",
+    "lint:styles": "stylelint \"src/**/*.{css,pcss,scss,sass,astro}\" \"docs/**/*.{css,pcss,scss,sass,astro}\" \"public/**/*.{css,pcss,scss,sass}\" --allow-empty-input",
     "format": "prettier --write \"**/*.{astro,css,html,js,json,md,mdx,ts,tsx,yaml,yml}\"",
     "format:check": "prettier --check \"**/*.{astro,css,html,js,json,md,mdx,ts,tsx,yaml,yml}\"",
     "test": "npm run lint && npm run typecheck",
     "prepare": "husky install",
-    "pagefind:index": "astro build && pagefind --site dist"
+    "pagefind:index": "astro build && pagefind --site dist",
+    "lighthouse:ci": "node ./scripts/ci/lighthouse-ci.mjs",
+    "zap:baseline": "node ./scripts/ci/zap-baseline.mjs",
+    "gitleaks:ci": "node ./scripts/ci/gitleaks-ci.mjs"
   },
   "dependencies": {
     "@astrojs/image": "^0.10.0",
@@ -32,6 +35,7 @@
     "@astrojs/check": "^0.7.0",
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
+    "@lhci/cli": "^0.15.1",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^8.44.0",
@@ -55,6 +59,7 @@
     "prettier": "^3.3.3",
     "prettier-plugin-astro": "^0.14.1",
     "prettier-plugin-tailwindcss": "^0.6.14",
+    "puppeteer": "^24.22.0",
     "stylelint": "^16.24.0",
     "stylelint-config-standard": "^39.0.0",
     "stylelint-config-tailwindcss": "^1.0.0",

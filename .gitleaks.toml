@@ -1,0 +1,21 @@
+# Hardened secret scanning configuration tailored for the apotheon.ai codebase.
+# We extend the official default rules and then layer on repository-specific
+# allow lists to prevent noise from generated artifacts while keeping detections
+# strict for source files.
+
+[extend]
+  [[extend.configs]]
+    repo = "github.com/gitleaks/gitleaks"
+    ref = "v8.18.1"
+    path = "config/gitleaks.toml"
+
+[allowlist]
+  description = "Files and directories that are either generated or known-safe"
+  paths = [
+    "package-lock.json",
+    "^docs/",
+    "^dist/",
+    "^public/",
+    "^artifacts/"
+  ]
+
