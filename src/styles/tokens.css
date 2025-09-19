@@ -1,0 +1,148 @@
+/*
+  ============================================================================
+  Design Token Source of Truth
+  ----------------------------------------------------------------------------
+  This file centralizes the CSS custom properties that power Tailwind's
+  semantic configuration (see `tailwind.config.mjs`) and our runtime theme
+  toggling strategy. Values are expressed as human-readable HSL/REM strings so
+  product, brand, and accessibility stakeholders can reason about intent without
+  needing to translate raw hex codes or pixel math. Every token carries inline
+  documentation to align with the "copious notes" directive and to make future
+  audits trivial.
+  ============================================================================
+*/
+
+:root {
+  /* Spatial scale ----------------------------------------------------------- */
+  --space-3xs: 0.125rem; /* Micro inset used for tight icon padding and hairline gaps. */
+  --space-2xs: 0.25rem; /* Compact spacing for badge gutters and pill paddings. */
+  --space-xs: 0.5rem; /* Baseline small spacing for chips and compact controls. */
+  --space-sm: 0.75rem; /* Standard body copy spacing and inline paddings. */
+  --space-md: 1rem; /* Primary spacing unit for blocks like cards and section gutters. */
+  --space-lg: 1.5rem; /* Elevated spacing for dense card grids and modals. */
+  --space-xl: 2rem; /* Section-level spacing for hero/feature splits. */
+  --space-2xl: 3rem; /* Extended spacing for marquee moments and callouts. */
+  --space-3xl: 4.5rem; /* Generous spacing for page-level breathing room. */
+  --space-gutter-inline: clamp(
+    1.25rem,
+    3vw,
+    2.5rem
+  ); /* Inline gutter applied to the global main layout container. */
+  --space-gutter-block: clamp(
+    2.5rem,
+    6vw,
+    5rem
+  ); /* Block gutter ensures consistent top/bottom breathing room across sections. */
+
+  /* Typography scale ------------------------------------------------------- */
+  --font-size-display-2xl: clamp(
+    3.5rem,
+    8vw,
+    5.5rem
+  ); /* Hero/landing headlines for marketing pages. */
+  --line-height-display-2xl: 1.05; /* Keeps large headings tight without crowding multi-line phrases. */
+  --font-size-display-xl: clamp(
+    2.75rem,
+    6vw,
+    3.75rem
+  ); /* Upper-deck headings for interior section intros. */
+  --line-height-display-xl: 1.08; /* Balances hero copy legibility in both marketing and app shells. */
+  --font-size-title-lg: clamp(
+    1.875rem,
+    3vw,
+    2.5rem
+  ); /* Signature product titles (cards, summary blocks). */
+  --font-size-title-md: clamp(
+    1.5rem,
+    2.4vw,
+    1.875rem
+  ); /* Secondary headings that still require emphasis. */
+  --line-height-title: 1.2; /* Shared title line-height to keep hero stacks consistent. */
+  --font-size-body-lg: clamp(1.125rem, 1.6vw, 1.25rem); /* Core reading size for marketing copy. */
+  --font-size-body-md: clamp(1rem, 1.2vw, 1.0625rem); /* Everyday application copy. */
+  --font-size-body-sm: clamp(
+    0.9375rem,
+    1vw,
+    1rem
+  ); /* Supportive annotations and metadata labels. */
+  --font-size-caption: 0.8125rem; /* Tiny legal copy and UI captions. */
+  --line-height-body: 1.6; /* Base rhythm for multiline paragraphs. */
+  --line-height-tight: 1.3; /* Slightly tighter rhythm for labels and captions. */
+  --letter-spacing-tight: -0.01em; /* Slightly negative to tighten big headings without harming legibility. */
+  --letter-spacing-normal: 0em; /* Neutral letter-spacing for body copy. */
+  --letter-spacing-wide: 0.04em; /* Positive tracking to keep small text airy. */
+  --letter-spacing-display: -0.0125em; /* Display tracking prevents overly loose hero headlines. */
+
+  /* Radius tokens ---------------------------------------------------------- */
+  --radius-xs: 0.35rem; /* Small pills and compact chips. */
+  --radius-sm: 0.5rem; /* Inputs and buttons at compact density. */
+  --radius-md: 0.75rem; /* Cards, dropdowns, and popovers. */
+  --radius-lg: 1rem; /* Elevated cards and feature panels. */
+  --radius-xl: 1.5rem; /* Hero strips and marketing highlights. */
+  --radius-2xl: 2rem; /* Jumbo modals and navigation surfaces. */
+  --radius-pill: 999px; /* Fully pill-shaped objects (badges, toggles). */
+
+  /* Shadow recipes --------------------------------------------------------- */
+  --shadow-elevation-1: 0 12px 24px -12px rgb(15 23 42 / 25%); /* Subtle lift for cards and dropdowns. */
+  --shadow-elevation-2: 0 20px 45px -15px rgb(15 23 42 / 30%); /* Medium elevation for navigation surfaces. */
+  --shadow-elevation-3: 0 35px 65px -20px rgb(15 23 42 / 45%); /* High elevation for modals and command palettes. */
+
+  /* Utility tokens --------------------------------------------------------- */
+  --color-accent-focus: 221 83% 53%; /* Theme-agnostic focus ring hue. */
+  --color-utility-skeleton: 225 15% 78%; /* Default skeleton shimmer tone (light theme baseline). */
+  --color-utility-backdrop: 227 67% 11%; /* Backdrop overlays for dialogs and sheets. */
+
+  /* Light mode defaults ---------------------------------------------------- */
+  color-scheme: light;
+
+  --color-surface-base: 214 43% 97%; /* Canvas background for light surfaces. */
+  --color-surface-raised: 219 41% 94%; /* Raised cards over the light canvas. */
+  --color-surface-overlay: 222 47% 88%; /* Overlay glassmorphism panels. */
+  --color-ink-primary: 222 47% 11%; /* Primary body text on light. */
+  --color-ink-secondary: 221 25% 30%; /* Secondary text such as muted metadata. */
+  --color-ink-muted: 220 15% 45%; /* Disabled/placeholder text on light. */
+  --color-ink-inverted: 210 40% 98%; /* Inverted ink for accent backgrounds. */
+  --color-accent-brand: 227 90% 58%; /* Electric indigo brand accent. */
+  --color-accent-success: 151 55% 41%; /* Success states on light. */
+  --color-accent-danger: 351 74% 50%; /* Critical/destructive states on light. */
+  --color-border-subtle: 220 35% 82%; /* Subtle borders dividing neutral surfaces. */
+  --color-border-strong: 221 39% 72%; /* Prominent strokes such as cards and nav rails. */
+}
+
+[data-theme='light'] {
+  color-scheme: light;
+
+  --color-surface-base: 214 43% 97%; /* Mirrors :root so nested islands inherit light mode. */
+  --color-surface-raised: 219 41% 94%; /* Raised cards over the light canvas. */
+  --color-surface-overlay: 222 47% 88%; /* Overlay glassmorphism panels. */
+  --color-ink-primary: 222 47% 11%; /* Primary body text on light. */
+  --color-ink-secondary: 221 25% 30%; /* Secondary text such as muted metadata. */
+  --color-ink-muted: 220 15% 45%; /* Disabled/placeholder text on light. */
+  --color-ink-inverted: 210 40% 98%; /* Inverted ink for accent backgrounds. */
+  --color-accent-brand: 227 90% 58%; /* Electric indigo brand accent. */
+  --color-accent-success: 151 55% 41%; /* Success states on light. */
+  --color-accent-danger: 351 74% 50%; /* Critical/destructive states on light. */
+  --color-border-subtle: 220 35% 82%; /* Subtle borders dividing neutral surfaces. */
+  --color-border-strong: 221 39% 72%; /* Prominent strokes such as cards and nav rails. */
+  --color-utility-skeleton: 225 15% 78%; /* Ensure skeletons stay bright in forced light sections. */
+  --color-utility-backdrop: 227 67% 11%; /* Maintain backdrop contrast for modals nested in light mode. */
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-surface-base: 224 45% 6%; /* Deep canvas background for dark surfaces. */
+  --color-surface-raised: 224 42% 11%; /* Raised cards over the dark canvas. */
+  --color-surface-overlay: 223 40% 18%; /* Overlay glassmorphism panels in dark mode. */
+  --color-ink-primary: 220 40% 96%; /* Primary body text on dark. */
+  --color-ink-secondary: 221 27% 82%; /* Secondary text on dark surfaces. */
+  --color-ink-muted: 220 20% 68%; /* Disabled/placeholder text on dark. */
+  --color-ink-inverted: 224 45% 8%; /* Inverted ink for accent backgrounds on dark. */
+  --color-accent-brand: 226 92% 70%; /* Lightened brand accent for dark contexts. */
+  --color-accent-success: 149 58% 62%; /* Success states on dark. */
+  --color-accent-danger: 350 75% 65%; /* Critical/destructive states on dark. */
+  --color-border-subtle: 223 32% 26%; /* Subtle borders on dark surfaces. */
+  --color-border-strong: 223 40% 36%; /* Prominent strokes on dark surfaces. */
+  --color-utility-skeleton: 224 19% 28%; /* Dimmer skeleton shimmer for dark backgrounds. */
+  --color-utility-backdrop: 227 65% 4%; /* Darkened backdrop for modals nested in dark sections. */
+}
