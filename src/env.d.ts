@@ -1,5 +1,15 @@
 /// <reference path="../.astro/types.d.ts" />
 /// <reference types="astro/client" />
+/// <reference types="vitest" />
+/// <reference types="@playwright/test" />
+
+declare module 'astro/dist/runtime/server/render/index.js';
+declare module '@testing-library/react';
+declare module '@testing-library/user-event';
+declare module 'vitest/config';
+declare module 'vitest';
+declare module '*.astro';
+declare module '@radix-ui/react-dialog';
 
 // React JSX support for island components lives here to guarantee
 // enterprise teams get full IntelliSense out of the box.

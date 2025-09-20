@@ -11,10 +11,12 @@
   "include": [
     "src",
     "workers",
+    "tests",
     ".ladle",
     "astro.config.mjs",
     "tailwind.config.mjs",
-    "postcss.config.cjs"
+    "postcss.config.cjs",
+    "playwright.config.ts"
   ],
   "exclude": ["dist", "node_modules"]
 }

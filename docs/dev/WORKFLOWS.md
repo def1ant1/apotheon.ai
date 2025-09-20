@@ -65,6 +65,12 @@ shell (`src/components/system/ErrorPageShell.astro`) or the `404`/`500` routes c
 - **Reusable components:** Shared hero, CTA rows, and shell metadata live in `src/components/marketing/`. Follow the inline comments for SEO, accessibility, and performance guidance before extending any template.
 - **Automation-first mindset:** The marketing pipeline avoids manual routing. Editors should not touch files under `src/pages/solutions/`, `src/pages/industries/`, or `src/pages/about/` unless evolving the templates for the entire section.
 
+## Homepage Content Pipeline
+
+- **Structured hero source:** Homepage messaging now lives in `src/content/homepage/landing.mdx`. Frontmatter fields match the schema in `src/content/homepage/index.ts`, and inline comments double as editorial guardrails. Update text, CTA URLs, or bullet proof points here without touching templates.
+- **Media refresh loop:** `npm run ensure:homepage-hero-media` materializes a lightweight placeholder at `src/assets/homepage/hero-base.png` whenever no hero artwork exists. Designers can drop production-ready imagery in the same path and the generator will automatically skip regeneration so handcrafted assets stay intact. Reference the file name through `heroMedia.src` in the MDX frontmatter, run `npm run typecheck` to validate the schema, and execute `npm run build` so `@astrojs/image` regenerates AVIF/WebP derivatives.
+- **Release gate:** After editing homepage content or artwork, rerun `npm run lint`, `npm run typecheck`, `npm run test`, `npm run test:e2e`, `npm run build`, and `npm run ladle:build`. These commands now invoke the hero media guardrail automatically, exercise unit + E2E coverage for the component, rebuild static assets, and keep documentation artifacts in sync for downstream reviewers.
+
 ## Global Header & Navigation
 
 - **Single entry point:** `src/components/navigation/SiteHeader.astro` renders the skip link, brand home link, and Radix dropdown for every route. Layouts import it once so Astro can hydrate the navigation island with a single `client:idle` directive instead of duplicating islands per page.

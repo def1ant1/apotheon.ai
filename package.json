@@ -6,9 +6,11 @@
   "scripts": {
     "dev": "astro dev",
     "dev:https": "node ./scripts/dev-https.mjs",
+    "predev": "npm run ensure:homepage-hero-media",
     "build": "npm run build:static && npm run postbuild:seo && npm run search:index && npm run seo:verify",
     "build:static": "astro build",
-    "prebuild": "npm run brand:favicons",
+    "prebuild": "npm run ensure:homepage-hero-media && npm run brand:favicons",
+    "prebuild:static": "npm run ensure:homepage-hero-media",
     "preview": "astro preview --host",
     "typecheck": "astro check",
     "check": "npm run typecheck",
@@ -25,6 +27,7 @@
     "test": "npm run lint && npm run typecheck && npm run test:unit && npm run ladle:ci",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
+    "pretest:e2e": "npm run ensure:homepage-hero-media",
     "prepare": "husky install",
     "pagefind:index": "npm run search:index",
     "postbuild:seo": "node ./scripts/seo/generate-robots.mjs",
@@ -34,7 +37,8 @@
     "zap:baseline": "node ./scripts/ci/zap-baseline.mjs",
     "gitleaks:ci": "node ./scripts/ci/gitleaks-ci.mjs",
     "brand:contrast": "node ./scripts/brand/contrast-audit.mjs",
-    "brand:favicons": "node ./scripts/brand/generate-favicons.mjs"
+    "brand:favicons": "node ./scripts/brand/generate-favicons.mjs",
+    "ensure:homepage-hero-media": "node ./scripts/content/ensure-homepage-hero-media.mjs"
   },
   "dependencies": {
     "@astrojs/image": "^0.10.0",
@@ -49,7 +53,8 @@
     "pagefind": "^1.1.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "sharp": "^0.33.4"
+    "sharp": "^0.33.4",
+    "web-streams-polyfill": "^4.2.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.7.0",
@@ -95,6 +100,7 @@
     "svgo": "^4.0.0",
     "tailwindcss": "^3.4.12",
     "typescript": "^5.6.2",
-    "vitest": "^2.1.3"
+    "vitest": "^2.1.3",
+    "yaml": "^2.8.1"
   }
 }

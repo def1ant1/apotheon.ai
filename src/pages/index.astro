@@ -1,34 +1,25 @@
 ---
+import { getEntry } from 'astro:content';
+
+import HomepageHero from '../components/homepage/HomepageHero.astro';
 import LiveClock from '../components/islands/LiveClock';
+import { homepageEntryId } from '../content/homepage';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-const heroTitle = 'Astro-first delivery for Apotheon.ai';
-const heroCopy = `Ship marketing sites, documentation, and dashboards from one
-  codebase. Astro keeps the static surface area blazing fast while React
-  islands provide the interactivity product teams expect.`;
+const homepageEntry = await getEntry('homepage', homepageEntryId);
+const { Content: HeroDescription } = await homepageEntry.render();
+const heroMetaDescription =
+  homepageEntry.data.supportingBullets[0]?.description ??
+  'Operational intelligence for distributed Astro deployments.';
 ---
 
-<BaseLayout
-  title={heroTitle}
-  description="Static-first architecture with optional React hydration."
->
-  <section class="flex flex-col gap-10">
-    <header class="flex flex-col gap-6">
-      <p class="text-sm uppercase tracking-[0.35rem] text-slate-500">Launch-Ready Platform</p>
-      <h1 class="text-5xl font-black leading-tight text-white md:text-6xl">{heroTitle}</h1>
-      <p class="max-w-3xl text-lg text-slate-300">{heroCopy}</p>
-      <div class="flex flex-wrap gap-3 text-sm text-slate-400">
-        <span class="rounded-full border border-slate-800 px-3 py-1"
-          >Static output for global CDNs</span
-        >
-        <span class="rounded-full border border-slate-800 px-3 py-1">MDX content collections</span>
-        <span class="rounded-full border border-slate-800 px-3 py-1">Pagefind full-text search</span
-        >
-        <span class="rounded-full border border-slate-800 px-3 py-1">React islands on demand</span>
-      </div>
-    </header>
+<BaseLayout title={homepageEntry.data.headline} description={heroMetaDescription}>
+  <section class="flex flex-col gap-12" data-analytics-region="homepage-overview">
+    <HomepageHero hero={homepageEntry.data}>
+      <HeroDescription />
+    </HomepageHero>
 
-    <article class="grid gap-12 lg:grid-cols-[2fr,1fr]">
+    <article class="grid gap-12 lg:grid-cols-[2fr,1fr]" data-analytics-block="homepage-foundations">
       <div class="space-y-6">
         <h2 class="text-2xl font-semibold text-white">Composable foundations</h2>
         <p class="text-base text-slate-300">
@@ -49,8 +40,8 @@ const heroCopy = `Ship marketing sites, documentation, and dashboards from one
           rest of the experience static-first.
         </p>
       </div>
-      <!-- Hydrate immediately so the live clock reflects the current time for demos/tests. -->
-      <LiveClock client:load />
+      <!-- Live clock hydration can wait until the component scrolls into view; analytics and demos track the same behavior while protecting LCP. -->
+      <LiveClock client:visible />
     </article>
   </section>
 </BaseLayout>

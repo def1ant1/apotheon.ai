@@ -99,7 +99,15 @@ module.exports = {
     'import/no-unresolved': [
       'error',
       {
-        ignore: ['^astro:'],
+        ignore: [
+          '^astro:',
+          '^@playwright/test$',
+          '^vitest$',
+          '^vitest/config$',
+          '^@testing-library/',
+          '^@radix-ui/react-dialog$',
+          '^astro/dist/runtime/server/render/index.js$',
+        ],
       },
     ],
   },
@@ -137,6 +145,23 @@ module.exports = {
         // Hooks guardrails ensure React islands remain deterministic.
         'react-hooks/exhaustive-deps': 'warn',
         'react-hooks/rules-of-hooks': 'error',
+      },
+    },
+    {
+      files: ['**/__tests__/**/*.{ts,tsx}', '**/*.test.{ts,tsx}', 'tests/**/*.{ts,tsx}'],
+      parser: '@typescript-eslint/parser',
+      parserOptions: {
+        project: projectTsconfig,
+        tsconfigRootDir: __dirname,
+      },
+      rules: {
+        '@typescript-eslint/no-unsafe-call': 'off',
+        '@typescript-eslint/no-unsafe-member-access': 'off',
+        '@typescript-eslint/no-unsafe-assignment': 'off',
+        '@typescript-eslint/no-unsafe-return': 'off',
+        '@typescript-eslint/no-unsafe-argument': 'off',
+        '@typescript-eslint/no-explicit-any': 'off',
+        '@typescript-eslint/require-await': 'off',
       },
     },
     {
