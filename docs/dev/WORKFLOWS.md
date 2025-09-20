@@ -72,6 +72,19 @@ shell (`src/components/system/ErrorPageShell.astro`) or the `404`/`500` routes c
 - **Styling discipline:** Navigation styling is centralized in `src/styles/global.css` under the `navigation-*` namespace. When new layout requirements appear, extend those classes instead of bolting ad-hoc Tailwind utilities into pages.
 - **QA workflow:** After tweaking header or menu data, run `npm run lint`, `npm run typecheck`, and `npm run test` locally. These commands catch hydration regressions, schema drift, and Ladle accessibility issues before CI.
 
+### Mobile navigation QA loop
+
+- **Install browsers once:** `npx playwright install --with-deps chromium` ensures the headless runner is ready on fresh machines or containers.
+- **Manual focus audit:**
+  1. `npm run dev -- --host 0.0.0.0 --port 43210` to mirror the Playwright config and keep ports predictable.
+  2. Open the site at `http://localhost:43210/` using a responsive viewport (`375px` wide is our baseline) and activate the “Menu” button.
+  3. Confirm the “Skip to navigation links” control receives focus, `Tab` once to reach the first link, and press `Escape` to ensure focus returns to the trigger.
+  4. Click the backdrop to confirm the drawer collapses and `aria-expanded` resets to `false`.
+- **Automated checks:**
+  - `npm run test:unit` now includes `MobileNavigationDrawer` assertions that watch `aria-controls`, skip links, and focus restoration hooks.
+  - `npm run test:e2e` runs the Playwright smoke test that opens the drawer, tabs through the stack, and verifies focus restoration on close.
+- **Release checklist:** Run `npm run lint`, `npm run typecheck`, `npm run test`, and `npm run test:e2e` before shipping navigation changes so desktop + mobile paths stay green together.
+
 ## Breadcrumb Automation
 
 - **Central helpers:** `src/utils/breadcrumbs.ts` exposes section-aware factories (`createMarketingEntryTrail`, `createBlogPostTrail`, etc.) so templates never hand-build crumb arrays. When new IA nodes appear, add the section metadata to `SECTION_CONFIG`, expose a dedicated helper if needed, and capture a regression fixture in `src/utils/breadcrumbs.test.ts` before wiring the template.
