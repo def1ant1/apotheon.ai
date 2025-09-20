@@ -25,7 +25,7 @@ beforeAll(() => {
         throw new Error(`Missing frontmatter in ${file}`);
       }
       const rawFrontmatter = parse(frontmatterMatch[1]);
-      const data = rawFrontmatter as SolutionEntry['data'];
+      const data: SolutionEntry['data'] = rawFrontmatter;
       return { slug: file.replace(/\.mdx$/u, ''), data } satisfies SolutionDocumentLike;
     });
 });

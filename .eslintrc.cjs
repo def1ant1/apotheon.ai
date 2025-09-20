@@ -53,6 +53,7 @@ module.exports = {
     'public/',
     'package-lock.json',
     '!.ladle/**/*',
+    'scripts/utils/solutions-loader.d.ts',
   ],
 
   // Organization-first rules that apply globally.
@@ -194,6 +195,11 @@ module.exports = {
         'react-hooks/exhaustive-deps': 'warn',
         'react-hooks/rules-of-hooks': 'error',
       },
+    },
+    {
+      files: ['**/*.d.ts'],
+      parser: '@typescript-eslint/parser',
+      rules: {},
     },
     {
       // Astro single-file components combine HTML, frontmatter, scripts, and styles.
