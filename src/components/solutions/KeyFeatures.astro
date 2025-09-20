@@ -1,0 +1,41 @@
+---
+import type { SolutionEntry } from '../../content/solutions';
+
+export interface Props {
+  id?: string;
+  title?: string;
+  features: SolutionEntry['data']['keyFeatures'];
+}
+
+const {
+  id = 'solutions-key-features',
+  title = 'Key features',
+  features,
+} = Astro.props satisfies Props;
+const headingId = `${id}-heading`;
+---
+
+<!--
+  KeyFeatures renders a semantic list so screen readers announce how many capabilities exist.
+  Every list item includes an <h3> headline, supporting paragraph, and optional evidence line.
+  We intentionally avoid icons or client-side animation to keep the section hydration-free and SEO friendly.
+-->
+<section {id} aria-labelledby={headingId} class="flex flex-col gap-6">
+  <h2 id={headingId} class="text-3xl font-bold text-white">
+    {title}
+  </h2>
+  <ul class="grid gap-6 md:grid-cols-3">
+    {
+      features.map((feature, index) => (
+        <li
+          class="flex flex-col gap-3 rounded-2xl border border-slate-800/80 bg-slate-950/60 p-6"
+          data-analytics-index={index + 1}
+        >
+          <h3 class="text-xl font-semibold text-white">{feature.title}</h3>
+          <p class="text-sm text-slate-300">{feature.description}</p>
+          {feature.evidence && <p class="text-sm text-slate-400">{feature.evidence}</p>}
+        </li>
+      ))
+    }
+  </ul>
+</section>

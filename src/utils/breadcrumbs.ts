@@ -200,6 +200,24 @@ export function createMarketingEntryTrail(entry: EntryWithTitle): BreadcrumbTrai
 }
 
 /**
+ * Solutions content now lives in its own collection where the slug is the product identifier.
+ * This helper mirrors the marketing entry trail behavior while assuming the `/solutions/` prefix.
+ */
+export function createSolutionsEntryTrail(entry: EntryWithTitle): BreadcrumbTrail {
+  const normalizedSlug = entry.slug.replace(/^\/+|\/+$/gu, '');
+  const href = `/solutions/${normalizedSlug}/`;
+  const trail: BreadcrumbTrail = [
+    buildSectionCrumb('solutions'),
+    {
+      label: entry.data.title,
+      href,
+    },
+  ];
+
+  return normalizeTrail(trail);
+}
+
+/**
  * Marketing landing pages (solutions, industries, about) share the same index trail helper.
  * Accepting the slug segment keeps the API ergonomic when templates know the section statically.
  */

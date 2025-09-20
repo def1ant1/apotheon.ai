@@ -1,6 +1,7 @@
 import { z, defineCollection } from 'astro:content';
 
 import { homepageCollection } from './homepage';
+import { solutionCollection } from './solutions';
 
 // Blog articles will live in `src/content/blog`. The schema is designed so
 // teams can progressively enhance metadata without migrations.
@@ -92,4 +93,5 @@ export const collections = {
   blog: blogCollection,
   marketing: marketingCollection,
   homepage: homepageCollection,
+  solutions: solutionCollection,
 };

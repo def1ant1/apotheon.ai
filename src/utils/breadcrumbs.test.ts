@@ -6,6 +6,7 @@ import {
   createBlogPostTrail,
   createMarketingEntryTrail,
   createMarketingIndexTrail,
+  createSolutionsEntryTrail,
   createNestedTrail,
   normalizeTrail,
   trailToJsonLd,
@@ -24,8 +25,8 @@ const blogEntry = (slug: string, title: string): EntryWithTitle => ({
 });
 
 describe('breadcrumbs utilities', () => {
-  it('enforces home → section → entry ordering for marketing detail pages', () => {
-    const trail = createMarketingEntryTrail(marketingEntry('solutions/nova', 'Nova AI Workbench'));
+  it('enforces home → section → entry ordering for solutions detail pages', () => {
+    const trail = createSolutionsEntryTrail(marketingEntry('nova', 'Nova AI Workbench'));
 
     expect(trail).toEqual([
       { href: '/', label: 'Home', isCurrentPage: false },

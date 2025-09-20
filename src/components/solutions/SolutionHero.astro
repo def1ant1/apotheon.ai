@@ -1,0 +1,100 @@
+---
+import type { SolutionEntry } from '../../content/solutions';
+
+export interface Props {
+  id?: string;
+  hero: SolutionEntry['data']['hero'];
+  overview: SolutionEntry['data']['overview'];
+  featured?: boolean;
+}
+
+const { id = 'solution-hero', hero, overview, featured = false } = Astro.props satisfies Props;
+
+const headingId = `${id}-heading`;
+const descriptionId = `${id}-description`;
+const eyebrowId = `${id}-eyebrow`;
+const summaryId = `${id}-summary`;
+
+const buttonBaseClass =
+  'inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-200';
+---
+
+<!--
+  SolutionHero renders the above-the-fold experience for every solution page without hydration.
+  - We wrap the hero inside a <section> landmark so analytics and accessibility tooling can target it by ID.
+  - Headings remain purely semantic (eyebrow paragraph, <h1>, supporting copy) to avoid duplicate H1 warnings.
+  - CTA buttons are plain anchors for zero-JavaScript interactivity; analytics may attach listeners later.
+  - Overview summary content immediately follows the hero copy, reinforcing the value proposition before deep details.
+-->
+<section
+  {id}
+  aria-labelledby={headingId}
+  class={`flex flex-col gap-10 rounded-3xl border border-slate-800/80 bg-slate-950/60 p-10 shadow-2xl shadow-indigo-950/20 backdrop-blur ${
+    featured ? 'ring-1 ring-indigo-400/60' : ''
+  }`}
+>
+  <!-- Eyebrow stays visually subtle but accessible for quick context switching -->
+  <p id={eyebrowId} class="text-xs uppercase tracking-[0.45rem] text-indigo-300">
+    {hero.eyebrow}
+  </p>
+  <h1 id={headingId} class="text-4xl font-black leading-tight text-white md:text-5xl">
+    {hero.headline}
+  </h1>
+  <p id={descriptionId} class="max-w-3xl text-base text-slate-300 md:text-lg">
+    {hero.copy}
+  </p>
+  <!-- CTA group renders first so keyboard users encounter actions immediately after the elevator pitch -->
+  <div class="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+    <a
+      class={`${buttonBaseClass} bg-indigo-500 text-white hover:bg-indigo-400`}
+      href={hero.primaryCta.href}
+    >
+      {hero.primaryCta.label}
+    </a>
+    {
+      hero.primaryCta.description && (
+        <span class="text-sm text-slate-400">{hero.primaryCta.description}</span>
+      )
+    }
+    {
+      hero.secondaryCta && (
+        <a
+          class={`${buttonBaseClass} border border-slate-700 bg-transparent text-slate-200 hover:border-slate-500`}
+          href={hero.secondaryCta.href}
+        >
+          {hero.secondaryCta.label}
+        </a>
+      )
+    }
+  </div>
+  {
+    hero.secondaryCta?.description && (
+      <p class="text-sm text-slate-400">{hero.secondaryCta.description}</p>
+    )
+  }
+  <!-- Overview summary sits within the hero region so screen readers read the context in one pass -->
+  <div
+    id={summaryId}
+    class="flex flex-col gap-4 rounded-2xl border border-slate-800/80 bg-slate-900/60 p-6"
+  >
+    <h2 class="text-xl font-semibold text-white">Solution overview</h2>
+    <p class="text-base text-slate-300">{overview.summary}</p>
+    {
+      overview.bullets.length > 0 && (
+        <ul class="grid gap-3 md:grid-cols-3">
+          {overview.bullets.map((bullet, index) => (
+            <li
+              class="flex flex-col gap-1 rounded-xl border border-slate-800/70 bg-slate-950/60 p-4"
+              data-analytics-index={index + 1}
+            >
+              <span class="text-sm font-semibold uppercase tracking-wide text-indigo-200">
+                {bullet.label}
+              </span>
+              <span class="text-sm text-slate-300">{bullet.description}</span>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+</section>
