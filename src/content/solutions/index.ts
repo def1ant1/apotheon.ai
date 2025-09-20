@@ -1,5 +1,7 @@
 import { defineCollection, z, type CollectionEntry } from 'astro:content';
 
+import { diagramSchema } from './diagramSchema';
+
 const ctaSchema = z
   .object({
     label: z.string().min(1).describe('Button label rendered in CTA components'),
@@ -119,6 +121,8 @@ const crossLinkSchema = z
   })
   .describe('Cross-link target connecting the solution to adjacent resources');
 
+export { solutionDiagramFrontmatterSchema } from './diagramSchema';
+
 const finalCtaSchema = z
   .object({
     headline: z
@@ -160,6 +164,9 @@ export const solutionCollection = defineCollection({
         .array(crossLinkSchema)
         .min(1)
         .describe('Related resources rendered via the `CrossLinks` component'),
+      diagram: diagramSchema.describe(
+        'Architecture visual rendered after the “How it works” section',
+      ),
       finalCta: finalCtaSchema,
       order: z
         .number()

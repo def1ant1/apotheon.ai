@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 220">
+  <title>Governance Lakehouse control flows</title>
+  <rect x="0" y="0" width="360" height="220" rx="18" fill="#020617" />
+  <g fill="#0F172A" stroke="#1E293B" stroke-width="1.5">
+    <rect x="28" y="40" width="120" height="140" rx="16" />
+    <rect x="212" y="40" width="120" height="140" rx="16" />
+  </g>
+  <g font-family="'Inter', sans-serif" font-size="12" fill="#F1F5F9">
+    <text x="88" y="72" text-anchor="middle" font-weight="600">Policy inputs</text>
+    <text x="272" y="72" text-anchor="middle" font-weight="600">Evidence lake</text>
+  </g>
+  <g stroke="#22D3EE" stroke-width="3" stroke-linecap="round" fill="none">
+    <path d="M148 88 H212" />
+    <path d="M148 132 H212" />
+  </g>
+  <g font-family="'Inter', sans-serif" font-size="11" fill="#E0F2FE">
+    <text x="88" y="100" text-anchor="middle">Risk policies</text>
+    <text x="88" y="122" text-anchor="middle">Controls</text>
+    <text x="272" y="100" text-anchor="middle">Approval logs</text>
+    <text x="272" y="122" text-anchor="middle">Telemetry</text>
+    <text x="272" y="144" text-anchor="middle">Exports</text>
+  </g>
+  <g stroke="#F97316" stroke-width="3" stroke-dasharray="5 5" fill="none">
+    <path d="M90 160 C 120 190 240 190 270 160" />
+  </g>
+  <g fill="#38BDF8">
+    <circle cx="180" cy="88" r="6" />
+    <circle cx="180" cy="132" r="6" />
+  </g>
+</svg>

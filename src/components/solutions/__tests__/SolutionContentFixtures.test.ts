@@ -24,7 +24,8 @@ beforeAll(() => {
       if (!frontmatterMatch) {
         throw new Error(`Missing frontmatter in ${file}`);
       }
-      const data = parse(frontmatterMatch[1]) as SolutionEntry['data'];
+      const rawFrontmatter = parse(frontmatterMatch[1]);
+      const data = rawFrontmatter as SolutionEntry['data'];
       return { slug: file.replace(/\.mdx$/u, ''), data } satisfies SolutionDocumentLike;
     });
 });
@@ -67,6 +68,14 @@ describe('solutions content fixtures', () => {
         expect(link.label.length).toBeGreaterThan(0);
         expect(link.href.length).toBeGreaterThan(0);
       });
+    });
+  });
+
+  it('documents architecture diagrams with accessible metadata', () => {
+    entries.forEach((entry) => {
+      expect(entry.data.diagram.slug).toMatch(/^[a-z0-9-]+$/u);
+      expect(entry.data.diagram.alt.length).toBeGreaterThan(20);
+      expect(entry.data.diagram.caption.length).toBeGreaterThan(20);
     });
   });
 });

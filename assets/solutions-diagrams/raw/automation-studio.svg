@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 220">
+  <title>Automation Studio orchestration lanes</title>
+  <rect x="0" y="0" width="360" height="220" rx="18" fill="#020617" />
+  <g stroke="#1E293B" stroke-width="1.5" fill="#0F172A">
+    <rect x="24" y="40" width="312" height="48" rx="12" />
+    <rect x="24" y="96" width="312" height="48" rx="12" />
+    <rect x="24" y="152" width="312" height="48" rx="12" />
+  </g>
+  <g font-family="'Inter', sans-serif" font-size="12" fill="#F1F5F9">
+    <text x="40" y="68" font-weight="600">Model decisions</text>
+    <text x="40" y="124" font-weight="600">Human reviews</text>
+    <text x="40" y="180" font-weight="600">Escalations</text>
+  </g>
+  <g stroke="#A855F7" stroke-width="3" stroke-linecap="round" fill="none">
+    <path d="M140 60 H300" />
+    <path d="M140 116 H300" />
+    <path d="M140 172 H300" />
+  </g>
+  <g stroke="#22D3EE" stroke-width="3" stroke-linecap="round" fill="none">
+    <path d="M140 60 C 180 88 180 88 220 116" />
+    <path d="M140 116 C 200 144 200 144 260 172" />
+  </g>
+  <g stroke="#F97316" stroke-width="3" stroke-dasharray="6 6" fill="none">
+    <path d="M140 172 C 200 120 200 120 300 60" />
+  </g>
+</svg>

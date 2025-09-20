@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 220">
+  <title>Nova model governance loop</title>
+  <defs>
+    <linearGradient id="novaGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#22D3EE" />
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="360" height="220" rx="18" fill="#020617" />
+  <g fill="none" stroke="#1E293B" stroke-width="2" stroke-dasharray="6 6">
+    <rect x="18" y="18" width="324" height="184" rx="14" />
+    <rect x="60" y="60" width="240" height="120" rx="12" />
+  </g>
+  <g font-family="'Inter', sans-serif" fill="#F8FAFC">
+    <text x="30" y="48" font-size="16" font-weight="600">Nova AI research workbench</text>
+  </g>
+  <g font-family="'Inter', sans-serif" font-size="13" fill="#E0F2FE">
+    <rect x="40" y="76" width="120" height="52" rx="10" fill="#0F172A" stroke="#38BDF8" stroke-width="1.5" />
+    <text x="52" y="104" font-weight="600">Provision sandboxes</text>
+    <rect x="200" y="76" width="120" height="52" rx="10" fill="#0F172A" stroke="#A855F7" stroke-width="1.5" />
+    <text x="212" y="104" font-weight="600">Publish guardrails</text>
+    <rect x="120" y="150" width="120" height="52" rx="10" fill="#0F172A" stroke="#22D3EE" stroke-width="1.5" />
+    <text x="132" y="178" font-weight="600">Monitor launches</text>
+  </g>
+  <g stroke="url(#novaGradient)" stroke-width="4" stroke-linecap="round" fill="none">
+    <path d="M160 128 C 190 128 190 150 180 162" />
+    <path d="M200 128 C 170 128 170 150 180 162" />
+    <path d="M100 128 C 70 128 70 150 90 162" />
+    <path d="M260 128 C 290 128 290 150 270 162" />
+  </g>
+</svg>

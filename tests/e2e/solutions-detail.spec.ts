@@ -12,6 +12,7 @@ test.describe('solution detail page', () => {
       '#solutions-hero',
       '#solutions-key-features',
       '#solutions-how-it-works',
+      '#solutions-diagram',
       '#solutions-use-cases',
       '#solutions-cross-links',
       '#solutions-final-cta',
@@ -28,6 +29,7 @@ test.describe('solution detail page', () => {
       'Solution overview',
       'Key features',
       'How it works',
+      'Architecture at a glance',
       'Use cases',
       'Related resources',
       'Ready to operationalize board-grade forecasting?',
@@ -39,6 +41,16 @@ test.describe('solution detail page', () => {
     const crossLinkAnchors = page.locator('#solutions-cross-links a');
     await expect(crossLinkAnchors).toHaveCount(3);
     await expect(crossLinkAnchors.nth(0)).toHaveAttribute('href', /\//);
+
+    const diagram = page.getByRole('img', {
+      name: /Clio pipeline bringing CRM signals into the forecast engine/i,
+    });
+    await diagram.scrollIntoViewIfNeeded();
+    await expect(diagram).toBeVisible();
+    const caption = page.getByText(
+      /Clio unifies CRM pipeline data, the forecasting engine, and executive narratives/i,
+    );
+    await expect(caption).toBeVisible();
 
     const finalCtaPrimary = page.locator('#solutions-final-cta a').first();
     await expect(finalCtaPrimary).toHaveAttribute('href', '/about/contact/');

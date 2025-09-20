@@ -1,0 +1,40 @@
+---
+import { buildDiagramAccessibilityState } from './solutionDiagram.helpers';
+
+import type { SolutionEntry } from '../../content/solutions';
+
+export interface Props {
+  id?: string;
+  title?: string;
+  diagram: SolutionEntry['data']['diagram'];
+}
+
+const {
+  id = 'solutions-diagram',
+  title = 'Architecture at a glance',
+  diagram,
+} = Astro.props satisfies Props;
+
+const headingId = `${id}-heading`;
+const accessibility = buildDiagramAccessibilityState(diagram, id);
+---
+
+<!--
+  SolutionDiagram intentionally emits semantic figure markup around an optimized <img> tag. Loading
+  from `public/static/diagrams/solutions/` keeps rendering hydration-free while caption + aria hooks
+  maintain accessibility guarantees and unit tests can assert the experience end-to-end.
+-->
+<section {id} aria-labelledby={headingId} class="flex flex-col gap-6">
+  <h2 id={headingId} class="text-3xl font-bold text-white">{title}</h2>
+  <figure class="flex flex-col gap-4 rounded-2xl border border-slate-800/70 bg-slate-950/60 p-6">
+    <img
+      src={`/static/diagrams/solutions/${diagram.slug}.svg`}
+      alt={diagram.alt}
+      {...accessibility.imageAttributes}
+      class="h-auto w-full"
+    />
+    <figcaption id={accessibility.captionId} class="text-sm text-slate-300">
+      <span class="font-semibold text-white">{diagram.caption}</span>
+    </figcaption>
+  </figure>
+</section>

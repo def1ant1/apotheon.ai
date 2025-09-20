@@ -5,6 +5,7 @@ import CrossLinks from '../CrossLinks.astro';
 import HowItWorks from '../HowItWorks.astro';
 import KeyFeatures from '../KeyFeatures.astro';
 import SolutionCtaBanner from '../SolutionCtaBanner.astro';
+import SolutionDiagram from '../SolutionDiagram.astro';
 import SolutionHero from '../SolutionHero.astro';
 import UseCases from '../UseCases.astro';
 
@@ -14,6 +15,7 @@ describe('solutions Astro components', () => {
       SolutionHero,
       KeyFeatures,
       HowItWorks,
+      SolutionDiagram,
       UseCases,
       CrossLinks,
       SolutionCtaBanner,

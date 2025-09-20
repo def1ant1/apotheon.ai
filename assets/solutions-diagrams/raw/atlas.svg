@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 220">
+  <title>Atlas activation orchestration</title>
+  <rect x="0" y="0" width="360" height="220" rx="18" fill="#020617" />
+  <g stroke="#0EA5E9" stroke-width="3" stroke-dasharray="6 8" fill="none">
+    <path d="M40 110 H320" />
+    <path d="M120 48 V176" />
+    <path d="M240 48 V176" />
+  </g>
+  <g fill="#E0F2FE" font-family="'Inter', sans-serif" font-size="12">
+    <rect x="28" y="76" width="96" height="68" rx="12" fill="#0F172A" stroke="#38BDF8" stroke-width="1.5" />
+    <text x="76" y="110" text-anchor="middle" font-weight="600">Warehouse</text>
+    <rect x="132" y="36" width="96" height="68" rx="12" fill="#0F172A" stroke="#38BDF8" stroke-width="1.5" />
+    <text x="180" y="70" text-anchor="middle" font-weight="600">Policies</text>
+    <rect x="132" y="116" width="96" height="68" rx="12" fill="#0F172A" stroke="#38BDF8" stroke-width="1.5" />
+    <text x="180" y="150" text-anchor="middle" font-weight="600">Audiences</text>
+    <rect x="236" y="76" width="96" height="68" rx="12" fill="#0F172A" stroke="#38BDF8" stroke-width="1.5" />
+    <text x="284" y="110" text-anchor="middle" font-weight="600">Channels</text>
+  </g>
+  <g stroke="#22D3EE" stroke-width="4" stroke-linecap="round" fill="none">
+    <path d="M124 110 C 140 102 140 102 140 102" />
+    <path d="M228 110 C 244 118 244 118 244 118" />
+    <path d="M180 84 C 180 92 180 92 180 92" />
+    <path d="M180 128 C 180 136 180 136 180 136" />
+  </g>
+</svg>

@@ -6,6 +6,7 @@ import CrossLinks from '../../components/solutions/CrossLinks.astro';
 import HowItWorks from '../../components/solutions/HowItWorks.astro';
 import KeyFeatures from '../../components/solutions/KeyFeatures.astro';
 import SolutionCtaBanner from '../../components/solutions/SolutionCtaBanner.astro';
+import SolutionDiagram from '../../components/solutions/SolutionDiagram.astro';
 import SolutionHero from '../../components/solutions/SolutionHero.astro';
 import UseCases from '../../components/solutions/UseCases.astro';
 import { createSolutionsEntryTrail } from '../../utils/breadcrumbs';
@@ -38,6 +39,7 @@ const breadcrumbs = createSolutionsEntryTrail(entry);
     />
     <KeyFeatures id="solutions-key-features" features={data.keyFeatures} />
     <HowItWorks id="solutions-how-it-works" steps={data.howItWorks} />
+    <SolutionDiagram id="solutions-diagram" diagram={data.diagram} />
     <UseCases id="solutions-use-cases" useCases={data.useCases} />
     <CrossLinks id="solutions-cross-links" links={data.crossLinks} />
     <SolutionCtaBanner id="solutions-final-cta" banner={data.finalCta} />
