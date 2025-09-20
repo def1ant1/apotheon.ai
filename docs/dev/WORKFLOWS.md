@@ -28,6 +28,22 @@ is a safe fallback after cloning from a shallow checkout.
 | Component docs (build)          | `npm run ladle:build`  | Static export consumed by CI + artifact previews.                              |
 | Full regression gate            | `npm run test`         | Lint → typecheck → Ladle CI (a11y + visual smoke tests).                       |
 
+## Error Page Testing
+
+We treat error surfaces as first-class product experiences because they are the UI our customers
+see during the most stressful incidents. Keep the following loop handy whenever the shared error
+shell (`src/components/system/ErrorPageShell.astro`) or the `404`/`500` routes change.
+
+1. `npm run build` – Generates the static `/404/index.html` and `/500/index.html` assets.
+2. `npm run preview -- --host 0.0.0.0 --port 4321` – Serves the production build locally. The
+   explicit host binding keeps the server reachable from containers and remote browsers.
+3. Hit `http://localhost:4321/404/` and `http://localhost:4321/500/` in a browser or via `curl` to
+   confirm copy, navigation, and styles render as expected.
+4. In staging, use the CDN or hosting provider's preview URL to visit `/500/` and verify the
+   platform-level rewrite is serving the static artifact. Capture screenshots for incident runbooks
+   when making notable UX changes.
+5. After validation, stop the preview server with `Ctrl+C` so the next command session can reuse the port.
+
 ## Marketing Content Pipeline
 
 - **Content collections:** Marketing MDX lives in `src/content/marketing` under `solutions/`, `industries/`, and `about/`. Each file only needs the existing schema fields (`title`, `summary`, `heroCtaLabel`, `order`, `featured`), and richly commented sections describe which Astro layout slots they target. New files are auto-discovered by the dynamic routes created in `src/pages/solutions/[product].astro`, `src/pages/industries/[sector].astro`, and `src/pages/about/[page].astro`.

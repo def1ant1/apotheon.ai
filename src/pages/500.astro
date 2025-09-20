@@ -1,0 +1,64 @@
+---
+import ErrorPageShell from '../components/system/ErrorPageShell.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<!--
+  This static route is the canonical "origin failure" landing experience. Configure your edge/CDN provider
+  to serve `/500/index.html` whenever the origin emits a 500-range response. Cloudflare Pages exposes this
+  in *Project → Settings → Custom error pages* (docs: https://developers.cloudflare.com/pages/configuration/serving-pages/#custom-error-pages).
+  Keeping the page static ensures incident responders and customers receive a predictable, cached response
+  even if the origin remains degraded.
+-->
+<BaseLayout title="We're working on a fix" description="Service disruption runbooks are in motion.">
+  <ErrorPageShell
+    code="500"
+    title="Something broke on our side"
+    description="Our automation detected a server-side error and automatically alerted the reliability on-call engineer."
+  >
+    <Fragment slot="body">
+      <p>
+        While we remediate the incident, you can monitor updates on the status page or reach our
+        reliability team directly. We route every request through centralized observability so
+        responders already have request fingerprints.
+      </p>
+      <ul class="list-disc space-y-2 pl-5 text-slate-300">
+        <li>
+          Email: <a
+            class="text-sky-300 underline"
+            href="mailto:hello@apotheon.ai?subject=Production%20500%20report">hello@apotheon.ai</a
+          >
+        </li>
+        <li>
+          Slack: <span class="font-medium text-white">#incident-response</span> (internal responders
+          only; external partners use email)
+        </li>
+        <li>
+          Status: <a class="text-sky-300 underline" href="https://status.apotheon.ai"
+            >status.apotheon.ai</a
+          >
+        </li>
+      </ul>
+      <p>
+        If you are testing pre-production infrastructure, capture the `X-Request-ID` header and
+        attach it to your escalation so we can trace the failing workflow through our distributed
+        logs without additional repro steps.
+      </p>
+    </Fragment>
+
+    <Fragment slot="actions">
+      <a
+        class="inline-flex items-center gap-2 rounded border border-slate-700 px-4 py-2 text-sm"
+        href="/"
+      >
+        ← Return home
+      </a>
+      <a
+        class="inline-flex items-center gap-2 rounded border border-slate-300/40 bg-slate-100/5 px-4 py-2 text-sm text-slate-100"
+        href="https://status.apotheon.ai"
+      >
+        View status page →
+      </a>
+    </Fragment>
+  </ErrorPageShell>
+</BaseLayout>

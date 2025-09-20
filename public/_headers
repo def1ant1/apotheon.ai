@@ -1,0 +1,12 @@
+# Error page mapping guidance
+# ---------------------------
+# Serve the statically-generated /500/index.html for any 500-range responses. This keeps
+# outages isolated to the edge even if the origin cannot render dynamic templates.
+#
+# Cloudflare Pages: Project → Settings → Custom error pages → Add 500 → Path `/500/index.html`
+# Reference: https://developers.cloudflare.com/pages/configuration/serving-pages/#custom-error-pages
+# (Cloudflare does not currently support defining this mapping inside _headers; we keep the
+# instructions here to colocate the operational contract with the published artifact.)
+#
+# Other CDNs: create an equivalent rule/worker to rewrite 500 responses to /500/index.html and
+# cache aggressively (stale-while-revalidate) so the fallback remains resilient.
