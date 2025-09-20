@@ -1,7 +1,9 @@
 ---
 import { getCollection } from 'astro:content';
 
+import Breadcrumbs from '../../components/navigation/Breadcrumbs.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { createBlogIndexTrail } from '../../utils/breadcrumbs';
 
 const pageSize = 12; // Adjust in tandem with future pagination route params to avoid reflow churn.
 
@@ -23,12 +25,19 @@ const dateFormatter = new Intl.DateTimeFormat('en', {
   month: 'short',
   day: '2-digit',
 });
+
+const breadcrumbs = createBlogIndexTrail();
 ---
 
 <BaseLayout
   title="Apotheon.ai Blog"
   description="Enterprise AI governance, delivery, and platform engineering guides from the Apotheon.ai field team."
 >
+  <Breadcrumbs
+    baseHref={Astro.site?.origin ?? Astro.url.origin}
+    class="mx-auto w-full max-w-5xl px-6 pt-12"
+    trail={breadcrumbs}
+  />
   <section class="mx-auto flex w-full max-w-5xl flex-col gap-12 px-6 py-16 text-slate-100">
     <header class="flex flex-col gap-4">
       <p class="text-sm font-semibold uppercase tracking-[0.35em] text-sky-300">Insights</p>

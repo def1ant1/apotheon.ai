@@ -1,15 +1,18 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../navigation/Breadcrumbs.astro';
 
-type Breadcrumb = {
-  href: string;
-  label: string;
-};
+import type { BreadcrumbTrail } from '../../utils/breadcrumbs';
 
 interface Props {
   title: string;
   description?: string;
-  breadcrumbs?: Breadcrumb[];
+  /**
+   * Breadcrumb trail describing the current marketing surface. Defaulting to an empty array keeps
+   * hero-only experiences simple while enabling automated trails supplied by the helpers in
+   * `src/utils/breadcrumbs`.
+   */
+  breadcrumbs?: BreadcrumbTrail;
 }
 
 const { title, description, breadcrumbs = [] } = Astro.props as Props;
@@ -29,48 +32,7 @@ const metaDescription =
 }
 <BaseLayout title={normalizedTitle} description={metaDescription}>
   <section class="mx-auto flex w-full max-w-5xl flex-col gap-12 px-6 pb-16">
-    {
-      breadcrumbs.length > 0 && (
-        <nav
-          aria-label="Breadcrumb"
-          class="mt-6 text-xs uppercase tracking-[0.35rem] text-slate-400"
-        >
-          {/*
-          Breadcrumb markup intentionally avoids client-side hydration. Screen readers benefit from a
-          terse ordered list where the current page is an aria-current item. Future breadcrumb helpers
-          can replace this markup while keeping the contract identical.
-        */}
-          <ol class="flex flex-wrap items-center gap-2">
-            <li class="flex items-center gap-2">
-              <a class="transition hover:text-white" href="/">
-                Home
-              </a>
-              <span aria-hidden="true" class="text-slate-600">
-                /
-              </span>
-            </li>
-            {breadcrumbs.map((crumb, index) => (
-              <li class="flex items-center gap-2">
-                {index === breadcrumbs.length - 1 ? (
-                  <span aria-current="page" class="font-semibold text-white">
-                    {crumb.label}
-                  </span>
-                ) : (
-                  <a class="transition hover:text-white" href={crumb.href}>
-                    {crumb.label}
-                  </a>
-                )}
-                {index !== breadcrumbs.length - 1 && (
-                  <span aria-hidden="true" class="text-slate-600">
-                    /
-                  </span>
-                )}
-              </li>
-            ))}
-          </ol>
-        </nav>
-      )
-    }
+    {breadcrumbs.length > 0 && <Breadcrumbs class="mt-6" trail={breadcrumbs} />}
 
     {
       /*

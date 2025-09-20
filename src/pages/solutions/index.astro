@@ -4,6 +4,7 @@ import { getCollection } from 'astro:content';
 import MarketingCtaRow from '../../components/marketing/MarketingCtaRow.astro';
 import MarketingHero from '../../components/marketing/MarketingHero.astro';
 import MarketingShell from '../../components/marketing/MarketingShell.astro';
+import { createMarketingIndexTrail } from '../../utils/breadcrumbs';
 
 const solutionEntries = await getCollection('marketing', ({ id }) => id.startsWith('solutions/'));
 const solutions = solutionEntries
@@ -18,7 +19,7 @@ const solutions = solutionEntries
 
 const heroCopy =
   'Select an Apotheon.ai solution to deep dive into architecture, governance, and rollout guidance.';
-const breadcrumbs = [{ href: '/solutions/', label: 'Solutions' }];
+const breadcrumbs = createMarketingIndexTrail('solutions');
 ---
 
 <MarketingShell title="Solutions" description={heroCopy} {breadcrumbs}>
