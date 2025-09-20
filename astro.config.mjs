@@ -3,6 +3,7 @@ import tailwind from '@astrojs/tailwind';
 import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
 import image from '@astrojs/image';
+import sitemap from '@astrojs/sitemap';
 
 import {
   BASELINE_DIRECTIVES,
@@ -14,6 +15,10 @@ import {
   resolveDevHttpsConfig,
   toAstroContentSecurityPolicy
 } from './config/security/csp';
+import {
+  SEO_MANIFEST,
+  createRouteExclusionPredicate
+} from './config/seo/manifest.mjs';
 
 const enableHttps = process.env.ASTRO_DEV_HTTPS === 'true';
 const httpsOptions = enableHttps ? resolveDevHttpsConfig() ?? true : undefined;
@@ -34,11 +39,17 @@ const devServerHeaders = {
   'Report-To': buildReportToHeader(DEFAULT_REPORT_URI)
 };
 
-// Pagefind indexing is triggered post-build via the `pagefind:index` npm script
-// to keep the static output lean while still supporting local full-text search.
+// Search indexing, sitemap emission, and robots.txt generation are orchestrated
+// by the npm `build` script so every deployment artifact is fully SEO-ready.
+
+const canonicalSiteUrl = SEO_MANIFEST.site.toString();
+const isRouteExcludedFromDiscovery = createRouteExclusionPredicate();
+const sitemapLastModified = new Date();
+
 export default defineConfig({
   output: 'static',
   trailingSlash: 'ignore',
+  site: canonicalSiteUrl,
   integrations: [
     tailwind({
       applyBaseStyles: false
@@ -47,6 +58,44 @@ export default defineConfig({
     react(),
     image({
       serviceEntryPoint: '@astrojs/image/sharp'
+    }),
+    sitemap({
+      /**
+       * `@astrojs/sitemap` introspects Astro's route manifest after the build
+       * completes. The integration automatically enumerates all statically
+       * generated pages (content collections, dynamic routes, etc.) and feeds
+       * them through this filter before writing the final sitemap files.
+       */
+      filter: (page) => {
+        /**
+         * `page` is a fully-qualified URL string, so normalising through the
+         * canonical site URL lets us re-use the central exclusion predicate.
+         */
+        const { pathname } = new URL(page, canonicalSiteUrl);
+        /**
+         * Keep the sitemap aligned with our robots policy by skipping any path
+         * that matches the shared exclusion list (error routes, Ladle docs,
+         * etc.). Updating the manifest updates both sitemap and robots.txt.
+         */
+        return !isRouteExcludedFromDiscovery(pathname);
+      },
+      /**
+       * Guardrail for sitemap chunking. When we approach the limit we can wire
+       * in additional index shards before hitting the protocol's 50k ceiling.
+       */
+      entryLimit: SEO_MANIFEST.sitemap.entryLimit,
+      /**
+       * Change frequency and priority communicate soft caching hints to search
+       * engines. We intentionally keep them declarative in the manifest so CI,
+       * docs, and smoke tests remain in sync with production behaviour.
+       */
+      changefreq: SEO_MANIFEST.sitemap.cache.changeFrequency,
+      priority: SEO_MANIFEST.sitemap.cache.priority,
+      /**
+       * A stable timestamp for this build. Individual pages may override it
+       * later, but setting a baseline keeps cache validators deterministic.
+       */
+      lastmod: sitemapLastModified
     })
   ],
   markdown: {

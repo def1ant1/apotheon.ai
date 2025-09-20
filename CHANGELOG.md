@@ -11,6 +11,9 @@ semantic versioning once releases begin.
 - Migrated the web platform to an Astro 4 static-first architecture with React
   islands, Tailwind CSS, MDX content collections, Pagefind search automation, and
   hardened CSP defaults.
+- Centralised SEO automation: shared manifest-driven sitemap integration,
+  environment-aware robots.txt generation, and Pagefind post-build indexing with
+  smoke verification scripts.
 - Introduced a Radix-powered navigation menu island with shared Tailwind tokens,
   hydration guidance, and accessibility notes documented across README and
   developer workflows.
@@ -33,6 +36,8 @@ semantic versioning once releases begin.
   Vercel scaffolding.
 - Expanded developer documentation (`docs/dev/WORKFLOWS.md`, README) with Radix
   integration practices and Tailwind token usage.
+- Updated build and CI workflows so `npm run build` now chains Astro, sitemap,
+  robots, Pagefind, and verification steps while new docs capture rerun guidance.
 - Updated documentation (README and engineering playbook) to reflect the new
   static-first stack and workflows.
 
@@ -40,3 +45,4 @@ semantic versioning once releases begin.
 
 - Legacy React components, routing, and configuration files incompatible with the
   Astro architecture.
+- Static `public/robots.txt` in favor of manifest-driven generation.
