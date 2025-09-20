@@ -1,6 +1,8 @@
 ---
 import '../styles/global.css';
 
+import SiteHeader from '../components/navigation/SiteHeader.astro';
+
 const {
   title = 'Apotheon.ai Platform',
   description = 'Composable Astro architecture ready for enterprise-scale experiences.',
@@ -35,7 +37,12 @@ const {
     <slot name="head" />
   </head>
   <body class="font-sans">
-    <a class="sr-only focus:not-sr-only" href="#main">Skip to content</a>
+    <!--
+      Centralized header renders once per layout so every route inherits the Radix menu hydration
+      directive. Astro keeps the markup static until `client:idle` fires, which means crawlers and
+      low-power devices still receive accessible fallback navigation.
+    -->
+    <SiteHeader />
     <main id="main">
       <slot />
     </main>

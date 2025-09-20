@@ -1,0 +1,100 @@
+---
+import { getCollection } from 'astro:content';
+
+import RadixNavigationMenu, {
+  navigationMenuGroups,
+  type NavigationMenuGroup,
+  type NavigationMenuLink,
+} from '../islands/RadixNavigationMenu';
+
+/**
+ * Marketing routes double as our canonical IA map, so we derive navigation hrefs from the
+ * collection whenever possible. This keeps dropdowns, breadcrumbs, and landing pages in sync
+ * without manual auditing.
+ */
+const marketingEntries = await getCollection('marketing');
+
+const knownInternalHrefs = new Set<string>();
+
+for (const group of navigationMenuGroups) {
+  for (const link of group.links) {
+    if (link.href.startsWith('/')) {
+      knownInternalHrefs.add(link.href);
+    }
+  }
+}
+
+const marketingHrefLookup = new Map<string, string>();
+
+for (const entry of marketingEntries) {
+  const slugPath = `/${entry.slug}`.replace(/\/+/g, '/').replace(/\/$/, '');
+
+  if (knownInternalHrefs.has(slugPath)) {
+    marketingHrefLookup.set(slugPath, slugPath);
+  }
+}
+
+const EXTERNAL_LINK_PATTERN = /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i;
+
+function resolveInternalHref(href: string): string | null {
+  const normalized = `/${href.replace(/^\/+/u, '').replace(/\/$/u, '')}`;
+  return marketingHrefLookup.get(normalized) ?? null;
+}
+
+/**
+ * Copy the exported data into a mutable array before validating links. We intentionally avoid
+ * mutating `navigationMenuGroups` directly so stories and other Astro islands can keep consuming the
+ * shared export without accidentally inheriting header-specific transformations.
+ */
+const validatedGroups: NavigationMenuGroup[] = [];
+
+for (const group of navigationMenuGroups) {
+  const links: NavigationMenuLink[] = [];
+
+  for (const link of group.links) {
+    if (EXTERNAL_LINK_PATTERN.test(link.href)) {
+      links.push(link);
+      continue;
+    }
+
+    const canonicalHref = resolveInternalHref(link.href);
+
+    if (!canonicalHref) {
+      console.warn(
+        `navigation: skipping "${link.label}" because ${link.href} does not resolve to a marketing entry`,
+      );
+      continue;
+    }
+
+    links.push({ ...link, href: canonicalHref });
+  }
+
+  if (links.length > 0) {
+    validatedGroups.push({ ...group, links });
+  }
+}
+
+const sanitizedMenuGroups: ReadonlyArray<NavigationMenuGroup> = validatedGroups;
+---
+
+<header
+  class="sticky top-0 z-40 flex justify-center bg-surface-base/70 px-gutter-inline pb-space-sm pt-space-xs backdrop-blur supports-[backdrop-filter]:bg-surface-base/60"
+>
+  <div class="flex w-full max-w-5xl flex-col gap-space-xs">
+    <a class="sr-only focus:not-sr-only" href="#main">Skip to content</a>
+
+    <div class="flex flex-col gap-space-2xs sm:flex-row sm:items-center sm:justify-between">
+      <a
+        href="/"
+        class="text-title-sm font-black tracking-tight text-ink-primary transition hover:text-accent-brand"
+      >
+        Apotheon.ai
+      </a>
+      <p class="text-caption text-ink-muted">
+        Automation-first GTM fabric for enterprise AI launches.
+      </p>
+    </div>
+
+    <RadixNavigationMenu client:idle groups={sanitizedMenuGroups} />
+  </div>
+</header>

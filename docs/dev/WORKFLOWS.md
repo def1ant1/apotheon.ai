@@ -65,6 +65,13 @@ shell (`src/components/system/ErrorPageShell.astro`) or the `404`/`500` routes c
 - **Reusable components:** Shared hero, CTA rows, and shell metadata live in `src/components/marketing/`. Follow the inline comments for SEO, accessibility, and performance guidance before extending any template.
 - **Automation-first mindset:** The marketing pipeline avoids manual routing. Editors should not touch files under `src/pages/solutions/`, `src/pages/industries/`, or `src/pages/about/` unless evolving the templates for the entire section.
 
+## Global Header & Navigation
+
+- **Single entry point:** `src/components/navigation/SiteHeader.astro` renders the skip link, brand home link, and Radix dropdown for every route. Layouts import it once so Astro can hydrate the navigation island with a single `client:idle` directive instead of duplicating islands per page.
+- **Data contract:** `navigationMenuGroups` lives alongside the React island (`src/components/islands/RadixNavigationMenu.tsx`). The header clones the export, resolves each link against `getCollection('marketing')`, and drops any entries that do not map to real content. Update the marketing collection or extend the validation helper before adding a new menu item so we never ship 404s.
+- **Styling discipline:** Navigation styling is centralized in `src/styles/global.css` under the `navigation-*` namespace. When new layout requirements appear, extend those classes instead of bolting ad-hoc Tailwind utilities into pages.
+- **QA workflow:** After tweaking header or menu data, run `npm run lint`, `npm run typecheck`, and `npm run test` locally. These commands catch hydration regressions, schema drift, and Ladle accessibility issues before CI.
+
 ## Breadcrumb Automation
 
 - **Central helpers:** `src/utils/breadcrumbs.ts` exposes section-aware factories (`createMarketingEntryTrail`, `createBlogPostTrail`, etc.) so templates never hand-build crumb arrays. When new IA nodes appear, add the section metadata to `SECTION_CONFIG`, expose a dedicated helper if needed, and capture a regression fixture in `src/utils/breadcrumbs.test.ts` before wiring the template.
