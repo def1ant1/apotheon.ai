@@ -30,7 +30,7 @@ This document captures the canonical architecture choices for the Apotheon.ai pl
   - Positive: Zero server dependencies for search, progressive enhancement, and minimal bundle footprint when lazy-loaded.
   - Negative/Mitigations: Index rebuilds are required on every publish; schedule nightly builds and incremental indexing jobs to keep within a <60 s build budget.
   - Security & Performance: Search index stays within the public CDN boundary; sanitise index content to avoid leaking confidential drafts.
-- **References**: [`docs/ai-instructions.md`](../ai-instructions.md), `package.json#scripts.pagefind:index`.
+- **References**: [`docs/ai-instructions.md`](../ai-instructions.md), `package.json#scripts.search:index`.
 
 ## Decision: Cloudflare Pages & Workers Platform
 

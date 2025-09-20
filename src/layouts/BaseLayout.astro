@@ -42,8 +42,9 @@ const {
     <footer class="mx-auto flex w-full max-w-5xl flex-col gap-2 px-6 pb-12 text-xs text-slate-400">
       <p>© {new Date().getFullYear()} Apotheon.ai — Astro powered, edge-ready delivery.</p>
       <p>
-        Pagefind search indexes are generated during CI/CD via <code>npm run pagefind:index</code>,
-        ensuring the static bundle remains search-friendly without a custom backend.
+        Pagefind search indexes, sitemaps, and robots.txt are regenerated during CI/CD via
+        <code>npm run build</code>, ensuring the static bundle remains search-friendly without a
+        custom backend.
       </p>
     </footer>
   </body>

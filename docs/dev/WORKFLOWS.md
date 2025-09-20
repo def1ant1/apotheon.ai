@@ -28,6 +28,20 @@ is a safe fallback after cloning from a shallow checkout.
 | Component docs (build)          | `npm run ladle:build`  | Static export consumed by CI + artifact previews.                              |
 | Full regression gate            | `npm run test`         | Lint → typecheck → Ladle CI (a11y + visual smoke tests).                       |
 
+## SEO Automation Workflow
+
+- `npm run build` orchestrates the Astro export, sitemap emission, robots.txt
+  generation, Pagefind indexing, and the smoke verifier in a single command.
+- `npm run build:static` runs only the Astro build when you need raw HTML without
+  regenerating search/robots artifacts (for example, before diffing HTML).
+- `npm run postbuild:seo` rewrites `dist/robots.txt` using the shared manifest;
+  `APOTHEON_DEPLOY_ENV=preview` (or any non-production token) forces crawler
+  blocks for staging builds.
+- `npm run search:index` refreshes the Pagefind directory in place after content
+  edits without rebuilding Astro.
+- `npm run seo:verify` replays the smoke checks to ensure sitemap routes and the
+  search index exist and match expectations.
+
 ## Error Page Testing
 
 We treat error surfaces as first-class product experiences because they are the UI our customers

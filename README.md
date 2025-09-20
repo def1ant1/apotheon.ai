@@ -12,7 +12,7 @@ scaffolding.
 - **Framework:** [Astro 4](https://astro.build/) with TypeScript and MDX support
 - **Styling:** Tailwind CSS with centralized global tokens
 - **Interactive islands:** React 18, hydrated on demand with `client:*`
-- **Search:** Pagefind static indexing (`npm run pagefind:index`)
+- **Search:** Pagefind static indexing (auto via `npm run build`, manual rerun `npm run search:index`)
 - **Images:** `@astrojs/image` powered by Sharp for responsive, optimized media
 - **Content collections:** Strongly typed blog + marketing collections ready for
   MDX adoption
@@ -96,9 +96,9 @@ scaffolding.
    npm run format:check   # Formatting verification for CI or pre-push checks
    npm run typecheck      # Astro's type- and content-aware analysis
    npm run test           # Aggregated lint + typecheck gate mirroring CI
-   npm run build          # Static production build (dist/)
+   npm run build          # Static production build + sitemap/robots/pagefind smoke tests
    npm run preview        # Serve the production build locally
-   npm run pagefind:index # Build + generate static search index in dist/
+   npm run search:index   # Rebuild only the Pagefind index (dist/ must already exist)
    ```
 
    Husky runs `lint-staged` automatically on commit, so the majority of files are
@@ -143,9 +143,10 @@ scaffolding.
 
 - Drop MDX/Markdown files into `src/content/blog` or `src/content/marketing`. The
   Zod schemas in `src/content/config.ts` guarantee consistent frontmatter.
-- `npm run build` emits static HTML to `dist/`. Running `npm run pagefind:index`
-  immediately afterwards generates a searchable index consumed client-side with
-  zero additional infrastructure.
+- `npm run build` emits static HTML to `dist/` **and** chains the sitemap,
+  robots.txt, Pagefind index, and smoke checks automatically.
+- `npm run search:index` re-runs Pagefind against the existing `dist/` output for
+  quick search-only refreshes without touching the Astro build.
 - React islands live in `src/components/islands/` and can be imported into any
   `.astro` template with hydration directives like `client:load` or
   `client:visible`.

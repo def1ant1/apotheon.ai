@@ -15,13 +15,14 @@ executes automatically for pull requests and pushes to `main`.
    feedback loops. Cache keys are derived from `package-lock.json` so upgrades
    automatically invalidate stale packages.
 3. **Core quality gates.** Each job runs `npm ci`, `npm run lint`,
-   `npm run typecheck`, `npm run test`, and `npm run build` in order. Tests are
-   intentionally redundant with lint/typecheck to guard against future script
-   changes.
-4. **Extended assurance.** On the Node 20 shard we build the Pagefind index,
-   enforce Lighthouse performance budgets, perform an OWASP ZAP baseline scan,
-   and execute Gitleaks secret detection. Their artifacts are uploaded for
-   manual triage while failures block the pipeline by design.
+   `npm run typecheck`, `npm run test`, and `npm run build` in order. The
+   bundled `npm run build` now wraps the Astro export, robots.txt generation,
+   Pagefind indexing, and smoke verification so deployments always ship complete
+   SEO artifacts.
+4. **Extended assurance.** On the Node 20 shard we enforce Lighthouse
+   performance budgets, perform an OWASP ZAP baseline scan, and execute Gitleaks
+   secret detection. Their artifacts are uploaded for manual triage while
+   failures block the pipeline by design.
 
 ## Performance budgets and Lighthouse
 
@@ -70,12 +71,13 @@ To tune allowlists or add bespoke rules, edit `.gitleaks.toml` and run the same
 script locally. Always prefer targeted regexes over broad allowlists to avoid
 masking legitimate leaks.
 
-## Search index verification
+## SEO asset verification
 
-The workflow calls `npm run pagefind:index` to guarantee that our static search
-index continues to build cleanly. The resulting `dist/pagefind` directory is
-saved as a GitHub artifact, making it easy to debug issues without re-running a
-full build.
+`npm run build` runs Astro, regenerates `robots.txt`, reindexes Pagefind, and
+executes `scripts/seo/verify-dist.mjs`. The verification script asserts that the
+sitemap, robots directives, and search index exist and contain expected routes.
+The resulting `dist/pagefind` directory is saved as a GitHub artifact, making it
+easy to debug issues without re-running a full build.
 
 ## Artifact handling
 
@@ -89,7 +91,6 @@ and review the bundled HTML/JSON reports.
 2. Run the quality gates: `npm run lint`, `npm run typecheck`, `npm run test`,
    and `npm run build`.
 3. (Optional but recommended) Execute the extended checks:
-   - `npm run pagefind:index`
    - `npm run lighthouse:ci`
    - `npm run zap:baseline`
    - `npm run gitleaks:ci`
