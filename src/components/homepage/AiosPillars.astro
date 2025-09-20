@@ -1,0 +1,20 @@
+---
+import AiosPillarsSection from './AiosPillarsSection';
+
+import type { HomepagePillar } from '@content/homepage';
+
+interface Props {
+  heading: string;
+  description?: string;
+  pillars: ReadonlyArray<HomepagePillar>;
+}
+
+const { heading, description, pillars } = Astro.props as Props;
+---
+
+<!--
+  Wrapper exists primarily to document responsive intent within the Astro layer while delegating the
+  actual markup to a shared React implementation. This keeps production, Ladle, and Vitest renders in
+  lockstep without shipping extra hydration scripts.
+-->
+<AiosPillarsSection {heading} {description} {pillars} />
