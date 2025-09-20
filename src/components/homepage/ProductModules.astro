@@ -1,0 +1,20 @@
+---
+import ProductModulesSection from './ProductModulesSection';
+
+import type { HomepageModule } from '@content/homepage';
+
+interface Props {
+  heading: string;
+  description?: string;
+  modules: ReadonlyArray<HomepageModule>;
+}
+
+const { heading, description, modules } = Astro.props as Props;
+---
+
+<!--
+  Astro shell mirrors the pillars component: we lean on a React implementation for shared SSR,
+  stories, and tests while documenting intent here. Modules render after pillars to honor the epic
+  outline and to help search engines parse topical hierarchy.
+-->
+<ProductModulesSection {heading} {description} {modules} />

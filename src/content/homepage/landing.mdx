@@ -24,6 +24,39 @@ supportingBullets:
   - icon: 'sparkles'
     title: 'Iterate without limits'
     description: 'Composable pipelines let product, security, and ops teams ship daily.'
+# Ordered AIOS pillars. Arrange by strategic priority so downstream surfaces inherit the ranking.
+pillars:
+  - label: 'Autonomous governance'
+    tagline: 'Machine-audited controls for every launch gate.'
+    longForm: 'Map policies to runtime behaviors with enforced audit trails, automated attestation packets, and real-time evidence lockers ready for regulators.'
+    # Icon slug matches a file within public/static/icons/brand/. Designers can swap the SVG without touching content.
+    icon: 'themis'
+  - label: 'Observability mesh'
+    tagline: 'Full-fidelity telemetry stitched across models and humans.'
+    longForm: 'Fuse foundation model, API, and human-in-the-loop signals into a unified command center that flags drift and triages incident response automatically.'
+    icon: 'hermes'
+  - label: 'Adaptive orchestration'
+    tagline: 'Pipeline intelligence that optimizes itself per tenant.'
+    longForm: 'Continuously learns from usage, cost, and trust feedback to re-route workloads, pre-provision capacity, and personalize safety rails without engineering toil.'
+    icon: 'morpheus'
+  - label: 'Lifecycle automation'
+    tagline: 'Enterprise release cadence without regression roulette.'
+    longForm: 'Blueprints codify data onboarding, evaluation, and red-teaming so every ship stays compliant while unlocking minutes-not-months iteration speed.'
+    icon: 'clio'
+# Modules pair to deep-dive pages. Keep names aligned with IA and prefer on-site href targets.
+modules:
+  - name: 'Governance Lakehouse'
+    summary: 'Unifies policies, risk scoring, and mitigation tasks so legal, security, and product teams collaborate from the same source of truth.'
+    href: '/solutions/governance-lakehouse'
+    icon: 'themis'
+  - name: 'Observability Fabric'
+    summary: 'Streams token-level telemetry, feedback queues, and anomaly detection to keep every agentic workflow measurable and improvable.'
+    href: '/solutions/observability-fabric'
+    icon: 'hermes'
+  - name: 'Automation Studio'
+    summary: 'No-code and code-native builders orchestrate human reviews, multi-model routing, and escalation runbooks with enterprise-grade RBAC.'
+    href: '/solutions/automation-studio'
+    icon: 'mnemosyne'
 # Hero image asset stored under src/assets/homepage. Value matches file name.
 # `npm run ensure:homepage-hero-media` drops a placeholder when artwork is missing.
 heroMedia:
