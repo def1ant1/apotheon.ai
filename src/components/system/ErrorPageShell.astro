@@ -1,0 +1,58 @@
+---
+/**
+ * Enterprise-ready error presentation shell used by static HTTP error pages (404, 500, etc.).
+ * We centralize typography/layout here so future surfaces (maintenance mode banners, outage dashboards)
+ * can opt-in without duplicating Tailwind tokens. This component intentionally exports a highly
+ * declarative API (props + slots) so automation pipelines can synthesize additional variants later.
+ */
+interface Props {
+  code: string;
+  title: string;
+  description: string;
+}
+
+const { code, title, description } = Astro.props;
+---
+
+<section
+  class="mx-auto flex max-w-2xl flex-col items-start gap-6 rounded-lg border border-slate-800/80 bg-slate-950/80 p-8 text-left shadow-xl shadow-black/20 backdrop-blur"
+>
+  <!--
+    The prominent status code acts as an immediate heuristic for stakeholders triaging incidents.
+    We keep the tokenized color usage aligned with the rest of the design system to avoid
+    divergence when themes are extended by automation.
+  -->
+  <p class="text-sm font-semibold uppercase tracking-wide text-slate-400">{code}</p>
+
+  <div class="flex flex-col gap-4">
+    <h1 class="text-4xl font-black text-white">{title}</h1>
+
+    <p class="text-base leading-relaxed text-slate-300">{description}</p>
+
+    <!--
+      A named slot provides room for richer context such as runbooks, status widgets, or
+      automation-generated advisories. The block only renders when populated so simple
+      pages (e.g., 404) stay minimal.
+    -->
+    {
+      Astro.slots.has('body') && (
+        <div class="flex flex-col gap-3 text-sm text-slate-200">
+          <slot name="body" />
+        </div>
+      )
+    }
+  </div>
+
+  <!--
+    Action slot encourages consistent CTA styling while remaining flexible. Downstream
+    automation can inject context-aware links (Statuspage, incident trackers) without
+    editing every error page individually.
+  -->
+  {
+    Astro.slots.has('actions') && (
+      <div class="flex flex-wrap gap-3">
+        <slot name="actions" />
+      </div>
+    )
+  }
+</section>
