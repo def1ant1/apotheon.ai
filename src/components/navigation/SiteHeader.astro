@@ -1,81 +1,15 @@
 ---
-import { getCollection } from 'astro:content';
-
+import { getValidatedNavigationGroups } from './navigationData';
 import MobileNavigationDrawer from '../islands/MobileNavigationDrawer';
-import RadixNavigationMenu, {
-  navigationMenuGroups,
-  type NavigationMenuGroup,
-  type NavigationMenuLink,
-} from '../islands/RadixNavigationMenu';
+import RadixNavigationMenu, { type NavigationMenuGroup } from '../islands/RadixNavigationMenu';
 
 /**
- * Marketing routes double as our canonical IA map, so we derive navigation hrefs from the
- * collection whenever possible. This keeps dropdowns, breadcrumbs, and landing pages in sync
- * without manual auditing.
+ * Consolidated navigation data lives in `navigationData.ts`. Centralizing the lookup allows the
+ * header, footer, Ladle stories, and any future surfaces to hydrate from a single validation
+ * pipeline while still receiving strongly typed objects.
  */
-const marketingEntries = await getCollection('marketing');
-
-const knownInternalHrefs = new Set<string>();
-
-for (const group of navigationMenuGroups) {
-  for (const link of group.links) {
-    if (link.href.startsWith('/')) {
-      knownInternalHrefs.add(link.href);
-    }
-  }
-}
-
-const marketingHrefLookup = new Map<string, string>();
-
-for (const entry of marketingEntries) {
-  const slugPath = `/${entry.slug}`.replace(/\/+/g, '/').replace(/\/$/, '');
-
-  if (knownInternalHrefs.has(slugPath)) {
-    marketingHrefLookup.set(slugPath, slugPath);
-  }
-}
-
-const EXTERNAL_LINK_PATTERN = /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i;
-
-function resolveInternalHref(href: string): string | null {
-  const normalized = `/${href.replace(/^\/+/u, '').replace(/\/$/u, '')}`;
-  return marketingHrefLookup.get(normalized) ?? null;
-}
-
-/**
- * Copy the exported data into a mutable array before validating links. We intentionally avoid
- * mutating `navigationMenuGroups` directly so stories and other Astro islands can keep consuming the
- * shared export without accidentally inheriting header-specific transformations.
- */
-const validatedGroups: NavigationMenuGroup[] = [];
-
-for (const group of navigationMenuGroups) {
-  const links: NavigationMenuLink[] = [];
-
-  for (const link of group.links) {
-    if (EXTERNAL_LINK_PATTERN.test(link.href)) {
-      links.push(link);
-      continue;
-    }
-
-    const canonicalHref = resolveInternalHref(link.href);
-
-    if (!canonicalHref) {
-      console.warn(
-        `navigation: skipping "${link.label}" because ${link.href} does not resolve to a marketing entry`,
-      );
-      continue;
-    }
-
-    links.push({ ...link, href: canonicalHref });
-  }
-
-  if (links.length > 0) {
-    validatedGroups.push({ ...group, links });
-  }
-}
-
-const sanitizedMenuGroups: ReadonlyArray<NavigationMenuGroup> = validatedGroups;
+const sanitizedMenuGroups: ReadonlyArray<NavigationMenuGroup> =
+  await getValidatedNavigationGroups();
 ---
 
 <header

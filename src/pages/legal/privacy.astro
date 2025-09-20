@@ -1,0 +1,45 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const pageTitle = 'Privacy Policy';
+const description =
+  'How Apotheon.ai protects customer data, handles DSAR workflows, and meets jurisdictional requirements.';
+---
+
+<BaseLayout title={`${pageTitle} — Apotheon.ai`} {description}>
+  <!--
+    This placeholder keeps the marketing site free from 404s while legal finalizes the production
+    policy language. Embed high-level guidance so product managers understand the scope before
+    routing questions to counsel.
+  -->
+  <section class="flex flex-col gap-space-md">
+    <header class="space-y-space-2xs">
+      <p class="text-caption uppercase tracking-wide text-ink-muted">Governance Draft</p>
+      <h1 class="text-display-xl font-bold text-ink-primary">{pageTitle}</h1>
+      <p class="max-w-prose text-body text-ink-secondary">
+        The canonical privacy narrative will publish here once the redlines from Security, Legal,
+        and Regional Compliance land. Track the governing document in our contract repository and
+        link the signed PDF when available. Until then, reference the bullet points below when
+        fielding customer questionnaires.
+      </p>
+    </header>
+
+    <div
+      class="space-y-space-sm rounded-radius-xl border border-border-subtle/60 bg-surface-base/80 p-space-lg shadow-elevation-1"
+    >
+      <h2 class="text-title-md font-semibold text-ink-primary">Interim Commitments</h2>
+      <ul class="list-disc space-y-space-2xs pl-6 text-body-sm text-ink-secondary">
+        <li>Zero retention of uploaded training data beyond contractually defined windows.</li>
+        <li>Regional data residency honored via edge partitioning (EU, US, APAC).</li>
+        <li>DSAR requests route through the Worker queue documented in the RevOps runbook.</li>
+        <li>Incident notifications delivered within 24 hours of detection via signed webhook.</li>
+      </ul>
+    </div>
+
+    <p class="text-body-sm text-ink-muted">
+      Need the signed policy? Ping <a class="font-semibold" href="mailto:legal@apotheon.ai"
+        >legal@apotheon.ai</a
+      > with your deal context and region so the correct jurisdictional annex is attached automatically.
+    </p>
+  </section>
+</BaseLayout>

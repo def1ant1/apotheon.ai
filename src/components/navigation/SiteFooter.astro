@@ -1,0 +1,139 @@
+---
+import { footerContact, footerLegalLinks, getFooterColumns } from './navigationData';
+
+const navigationColumns = await getFooterColumns();
+const currentYear = new Date().getFullYear();
+---
+
+<footer
+  role="contentinfo"
+  class="border-t border-border-subtle/60 bg-surface-raised/40 text-body-sm text-ink-secondary"
+>
+  <div class="mx-auto flex w-full max-w-6xl flex-col gap-space-xl px-gutter-inline py-space-2xl">
+    <!--
+      Navigation columns consume the same data contract as the header. This keeps the IA consistent
+      across surfaces and ensures CMS-driven updates flow into the footer without manual edits.
+    -->
+    <div
+      class="grid gap-space-lg sm:grid-cols-2 lg:grid-cols-[repeat(4,minmax(0,1fr))] xl:gap-space-xl"
+    >
+      {
+        navigationColumns.map((column) => {
+          const headingId = `footer-${column.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+
+          return (
+            <nav aria-labelledby={headingId} class="space-y-space-xs">
+              <h2 id={headingId} class="text-title-md font-semibold text-ink-primary">
+                {column.title}
+              </h2>
+              {column.summary && <p class="text-body-sm text-ink-muted">{column.summary}</p>}
+              <ul class="space-y-space-3xs">
+                {column.links.map((link) => (
+                  <li>
+                    <a
+                      class="inline-flex items-center gap-space-3xs text-body-sm font-semibold text-ink-secondary transition-colors hover:text-accent-brand"
+                      href={link.href}
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          );
+        })
+      }
+
+      <nav aria-labelledby="footer-legal" class="space-y-space-xs">
+        <h2 id="footer-legal" class="text-title-md font-semibold text-ink-primary">Legal</h2>
+        <p class="text-body-sm text-ink-muted">
+          Policy documents stay versioned alongside the marketing IA so governance stakeholders
+          track exactly which commitments ship with each release.
+        </p>
+        <ul class="space-y-space-3xs">
+          {
+            footerLegalLinks.map((link) => (
+              <li>
+                <a
+                  class="inline-flex items-center gap-space-3xs text-body-sm font-semibold text-ink-secondary transition-colors hover:text-accent-brand"
+                  href={link.href}
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </div>
+
+    <!--
+      Contact block doubles as the connective tissue for CRM automation. We intentionally break the
+      address into discrete lines and keep interactive elements (`mailto`, `tel`) accessible so the
+      marketing site, PDFs, and JSON-LD feeds can reuse the same metadata without reformatting.
+    -->
+    <section
+      aria-labelledby="footer-contact"
+      class="flex flex-col gap-space-sm rounded-radius-xl border border-border-subtle/60 bg-surface-base/70 p-space-lg shadow-elevation-1"
+    >
+      <div>
+        <h2 id="footer-contact" class="text-title-md font-semibold text-ink-primary">
+          Contact Apotheon.ai
+        </h2>
+        <p class="text-body-sm text-ink-muted">
+          Reach out to route opportunities into the orchestration queue. Automated intake ensures
+          every request hits the correct RevOps workflow without manual triage.
+        </p>
+      </div>
+
+      <div
+        class="flex flex-col gap-space-3xs sm:flex-row sm:flex-wrap sm:items-start sm:gap-space-lg"
+      >
+        <address class="not-italic">
+          <span class="block font-semibold text-ink-primary">{footerContact.organization}</span>
+          {
+            footerContact.addressLines.map((line) => (
+              <span class="block text-body-sm text-ink-secondary">{line}</span>
+            ))
+          }
+        </address>
+
+        <dl class="flex flex-col gap-space-3xs">
+          <div>
+            <dt class="text-caption uppercase tracking-wide text-ink-muted">Email</dt>
+            <dd>
+              <a class="text-body-sm font-semibold" href={`mailto:${footerContact.email}`}>
+                {footerContact.email}
+              </a>
+            </dd>
+          </div>
+          <div>
+            <dt class="text-caption uppercase tracking-wide text-ink-muted">Phone</dt>
+            <dd>
+              <a class="text-body-sm font-semibold" href={`tel:${footerContact.phone}`}>
+                {footerContact.phone}
+              </a>
+            </dd>
+          </div>
+          <div>
+            <dt class="text-caption uppercase tracking-wide text-ink-muted">Office Hours</dt>
+            <dd class="text-body-sm font-semibold text-ink-secondary">
+              {footerContact.officeHours}
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <div
+      class="flex flex-col gap-space-3xs text-caption text-ink-muted sm:flex-row sm:items-center sm:justify-between"
+    >
+      <p>© {currentYear} Apotheon.ai — Astro powered, edge-ready delivery.</p>
+      <p>
+        Pagefind search indexes, sitemaps, and robots.txt regenerate during CI/CD via
+        <code>npm run build</code>, ensuring the static bundle remains search-friendly without a
+        custom backend.
+      </p>
+    </div>
+  </div>
+</footer>

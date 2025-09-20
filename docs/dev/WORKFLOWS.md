@@ -85,6 +85,13 @@ shell (`src/components/system/ErrorPageShell.astro`) or the `404`/`500` routes c
   - `npm run test:e2e` runs the Playwright smoke test that opens the drawer, tabs through the stack, and verifies focus restoration on close.
 - **Release checklist:** Run `npm run lint`, `npm run typecheck`, `npm run test`, and `npm run test:e2e` before shipping navigation changes so desktop + mobile paths stay green together.
 
+## Global Footer & Trust Signals
+
+- **Single entry point:** `src/components/navigation/SiteFooter.astro` renders the footer across every layout. The component imports `global.css` indirectly via `BaseLayout`, so token updates cascade without per-page overrides.
+- **Shared data contract:** Link columns hydrate from `getFooterColumns()` in `src/components/navigation/navigationData.ts`. The helper reuses `navigationMenuGroups` plus `astro:content` validation, so editing the marketing collection automatically updates both header and footer IA.
+- **Legal + governance:** Policy links and metadata (`footerLegalLinks`, `footerContact`) also live in `navigationData.ts`. Update the constants in tandem with the legal Astro pages to avoid broken routes. Commit notes should mention the effective policy date so compliance can reconcile release tags.
+- **Automation alignment:** When changing footer data, rerun the full release gate—`npm run lint`, `npm run typecheck`, `npm run test`, and `npm run build`—to exercise navigation validation and ensure the static export remains consistent. The build step reindexes Pagefind and regenerates robots metadata, so we never ship stale search artifacts.
+
 ## Breadcrumb Automation
 
 - **Central helpers:** `src/utils/breadcrumbs.ts` exposes section-aware factories (`createMarketingEntryTrail`, `createBlogPostTrail`, etc.) so templates never hand-build crumb arrays. When new IA nodes appear, add the section metadata to `SECTION_CONFIG`, expose a dedicated helper if needed, and capture a regression fixture in `src/utils/breadcrumbs.test.ts` before wiring the template.
