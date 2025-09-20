@@ -1,6 +1,7 @@
 import { z, defineCollection } from 'astro:content';
 
 import { homepageCollection } from './homepage';
+import { industriesCollection } from './industries';
 import { solutionCollection } from './solutions';
 
 // Blog articles will live in `src/content/blog`. The schema is designed so
@@ -94,4 +95,24 @@ export const collections = {
   marketing: marketingCollection,
   homepage: homepageCollection,
   solutions: solutionCollection,
+  /**
+   * Industries collection powering the /industries routes.
+   *
+   * Each MDX file follows the typed schema exported from
+   * `src/content/industries/index.ts`, meaning editors must populate:
+   * - `hero` metadata with an icon slug tied to `src/components/icons` so the
+   *   page hero renders a pre-approved SVG alongside the copy.
+   * - `pressures` describing quantifiable sector headwinds that the layout
+   *   surfaces immediately after the hero.
+   * - `complianceHighlights` calling out frameworks, attestations, and
+   *   supporting evidence that risk stakeholders expect.
+   * - `solutionMap` entries that reference existing solution slugs; the schema
+   *   validates the slug against `src/content/solutions` to prevent broken
+   *   cross-links.
+   * - `useCases` detailing persona-specific workflows that benefit from the
+   *   platform.
+   * - `ctas` that include both a demo-oriented CTA and a whitepaper download to
+   *   support hand-raisers and async researchers.
+   */
+  industries: industriesCollection,
 };

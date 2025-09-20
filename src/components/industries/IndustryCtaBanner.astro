@@ -1,0 +1,56 @@
+---
+import type { IndustryCtaGroup } from './types';
+
+interface Props {
+  ctas: IndustryCtaGroup;
+}
+
+const { ctas } = Astro.props as Props;
+const sectionId = 'industry-cta-banner';
+---
+
+<section
+  id={sectionId}
+  aria-labelledby={`${sectionId}-heading`}
+  class="space-y-6 rounded-3xl border border-indigo-500/50 bg-indigo-500/10 p-8 shadow-lg ring-1 ring-indigo-500/30"
+  data-analytics-region="industry-cta"
+>
+  <!--
+    CTA banner keeps both demo and whitepaper options visible without requiring
+    client-side toggles. Buttons remain server-rendered anchors so analytics can
+    attribute conversions without extra instrumentation.
+  -->
+  <header class="space-y-2">
+    <h2 id={`${sectionId}-heading`} class="text-2xl font-semibold text-white md:text-3xl">
+      Continue the conversation
+    </h2>
+    <p class="text-base text-indigo-100">
+      Choose between a guided platform walkthrough or self-serve research packet—both reinforce the
+      compliance story above.
+    </p>
+  </header>
+
+  <div class="flex flex-col gap-4 md:flex-row">
+    <a
+      class="inline-flex items-center justify-center gap-2 rounded-xl border border-indigo-400/60 bg-indigo-500/30 px-6 py-3 text-center text-base font-semibold text-white shadow-lg transition hover:bg-indigo-500/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+      href={ctas.demo.href}
+      aria-label={ctas.demo.ariaLabel ?? `${ctas.demo.label} - demo CTA`}
+      data-cta="demo"
+    >
+      {ctas.demo.label}
+    </a>
+    <a
+      class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200/20 bg-slate-900/40 px-6 py-3 text-center text-base font-semibold text-indigo-100 shadow-lg transition hover:border-indigo-300/50 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-200"
+      href={ctas.whitepaper.href}
+      aria-label={ctas.whitepaper.ariaLabel ?? `${ctas.whitepaper.label} - whitepaper CTA`}
+      data-cta="whitepaper"
+    >
+      {ctas.whitepaper.label}
+    </a>
+  </div>
+
+  <div class="space-y-2 text-sm text-indigo-100/90">
+    {ctas.demo.description ? <p>{ctas.demo.description}</p> : null}
+    {ctas.whitepaper.description ? <p>{ctas.whitepaper.description}</p> : null}
+  </div>
+</section>

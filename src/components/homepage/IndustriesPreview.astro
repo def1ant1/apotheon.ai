@@ -17,9 +17,9 @@ const { overrides } = Astro.props as Props;
  */
 const DEFAULT_HEADING = 'Industries moving fastest with Apotheon.ai';
 const DEFAULT_INTRO =
-  'Each card links into a longer-form industry playbook managed through the marketing collection. Preview highlights stay short to reduce homepage scroll debt.';
+  'Each card links into a longer-form industry playbook sourced from the structured industries collection. Preview highlights stay short to reduce homepage scroll debt.';
 
-// Fetch and normalize the marketing entries at build time. Because Astro caches
+// Fetch and normalize the structured industry entries at build time. Because Astro caches
 // `getCollection` results per build, rerunning `npm run build` after content
 // changes is sufficient to refresh the preview and regenerate Pagefind indexes.
 const industries = await loadIndustriesPreviewCards(INDUSTRIES_PREVIEW_LIMIT);
@@ -88,7 +88,7 @@ const introCopy = overrides?.intro?.trim().length ? overrides.intro : DEFAULT_IN
 
   <!--
     NOTE ON CACHING: This section depends on Astro's static generation cache.
-    When marketing ships new industries, re-run `npm run build` so `getCollection`
+    When the industries collection changes, re-run `npm run build` so `getCollection`
     refreshes and Pagefind indexes the new cards. Additional pagination hooks can
     be layered later without changing this component contract.
   -->

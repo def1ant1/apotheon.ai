@@ -1,0 +1,50 @@
+---
+import { resolveIndustryIcon } from './icon-map';
+
+import type { IndustryHeroContent } from './types';
+
+interface Props {
+  hero: IndustryHeroContent;
+  title: string;
+}
+
+const { hero, title } = Astro.props as Props;
+const HeroIcon = resolveIndustryIcon(hero.icon);
+const headingId = 'industry-hero-heading';
+const descriptionId = 'industry-hero-description';
+---
+
+<header
+  class="relative isolate overflow-hidden rounded-3xl border border-slate-800 bg-slate-950/70 p-10 shadow-xl ring-1 ring-slate-900/60"
+  aria-labelledby={headingId}
+  aria-describedby={descriptionId}
+  data-analytics-region="industry-hero"
+>
+  <!--
+    Accessibility note: the hero uses a semantic <header> landmark with aria hooks so
+    assistive technologies reliably announce the sector headline before scanning the
+    rest of the narrative. Copy and buttons remain server-rendered to avoid client
+    hydration and keep content indexable.
+  -->
+  <div class="flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
+    <div class="max-w-3xl space-y-4">
+      <p class="text-xs font-semibold uppercase tracking-[0.4rem] text-indigo-300">
+        {hero.eyebrow}
+      </p>
+      <h1 id={headingId} class="text-4xl font-semibold text-white md:text-5xl">
+        {hero.headline}
+      </h1>
+      <p id={descriptionId} class="text-lg leading-relaxed text-slate-300 md:text-xl">
+        {hero.copy}
+      </p>
+    </div>
+    <div
+      class="flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl border border-indigo-500/40 bg-indigo-500/10"
+    >
+      <!-- Icon is rendered server-side to keep the layout hydration-free while still
+           exposing decorative affordances for sighted users. -->
+      <HeroIcon className="h-12 w-12 text-indigo-200" aria-hidden="true" focusable="false" />
+      <span class="sr-only">{title} industry icon</span>
+    </div>
+  </div>
+</header>

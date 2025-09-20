@@ -1,0 +1,71 @@
+# Industries Editorial Playbook
+
+Industry narratives moved into the dedicated `src/content/industries` collection so editors capture compliance-first messaging without touching templates. Every entry is validated by Zod at build time and rendered through hydration-free Astro components.
+
+## Schema Overview
+
+Each MDX file must satisfy the schema exported from `src/content/industries/index.ts`:
+
+- `title` – Human-readable page title shared with metadata and breadcrumbs.
+- `order` – Integer used for landing-page ordering.
+- `featured` – Boolean flag that adds “Priority vertical” styling on list views.
+- `hero` – Object containing `eyebrow`, `headline`, `copy`, and an `icon` slug. Icons map to SVG components defined in `src/components/icons` via `src/components/industries/icon-map.ts`.
+- `pressures` – Array of three (or more) sector headwinds with optional `metric` proof points.
+- `complianceHighlights` – Array that records the framework, Apotheon.ai coverage, and optional evidence string (attestation name, control IDs, etc.).
+- `solutionMap` – Array of objects with a `slug` that must match an entry in `src/content/solutions`, plus `positioning` and optional `outcome`. Builds fail if a slug is unknown.
+- `useCases` – Persona-aligned scenarios describing how the platform activates within the sector.
+- `ctas` – Object containing `demo` and `whitepaper` CTA definitions (label, href, optional description/aria label).
+- `seo.description` – Optional meta-description override when the hero copy is not SEO ready.
+
+Inline HTML comments inside each MDX file capture tone guidance (e.g., compliance-first language, keyword density targets, regulator messaging). Preserve and update those comments when revising copy so future authors inherit the editorial guardrails.
+
+## Icon Directory
+
+Use the following icon slugs inside `hero.icon`:
+
+| Slug            | Component                   | Usage Notes                             |
+| --------------- | --------------------------- | --------------------------------------- |
+| `finance`       | `IndustryFinanceIcon`       | Financial services, banking, insurance  |
+| `healthcare`    | `IndustryHealthcareIcon`    | Provider, payer, life sciences          |
+| `public-sector` | `IndustryPublicSectorIcon`  | Federal, state, municipal missions      |
+| `energy`        | `IndustryEnergyIcon`        | Utility and energy transformation       |
+| `manufacturing` | `IndustryManufacturingIcon` | Industrial, logistics, and supply chain |
+| `transport`     | `IndustryTransportIcon`     | Aviation, rail, autonomous mobility     |
+
+Icons render server-side and never hydrate; no additional directives are required. Open a follow-up ticket before adding new icons so the shared map and documentation stay in sync.
+
+## Editorial Workflow
+
+1. Duplicate an existing MDX file in `src/content/industries/` to inherit inline tone/compliance comments.
+2. Update frontmatter fields:
+   - Align `pressures` and `complianceHighlights` with the current GTM storyline and include a measurable `metric` wherever possible.
+   - Reference canonical solution slugs in `solutionMap`. Run `npm run typecheck`—the schema refuses to build when slugs are missing or misspelled.
+   - Refresh `ctas` to point at the latest demo flow and gated asset.
+3. Adjust or append body comments documenting tone, keyword density, and compliance messaging decisions.
+4. Run the release gate locally:
+   ```bash
+   npm run lint
+   npm run typecheck
+   npm run test
+   npm run test:e2e
+   npm run build
+   npm run ladle:build
+   ```
+5. Capture any notable decisions (new frameworks, solution pairings, regulatory notes) in the pull-request summary so GTM and compliance stakeholders can cross-check quickly.
+
+## Template Behavior
+
+`src/pages/industries/[sector].astro` renders structured data via dedicated components:
+
+1. `<IndustryHero>` – Surfaces hero copy + icon with semantic landmarks.
+2. `<IndustryPressures>` – Lists market pressures as a definition list with optional metrics.
+3. `<IndustrySolutionMap>` – Auto-links validated solution references.
+4. `<IndustryUseCases>` – Highlights persona-specific workflows.
+5. `<IndustryCompliance>` – Calls out frameworks and evidence strings.
+6. `<IndustryCtaBanner>` – Offers both demo and whitepaper CTAs.
+
+The landing page (`src/pages/industries/index.astro`) pulls from the same collection, rendering icons on every card and exposing analytics-friendly IDs (`industry-card-<slug>`). No manual updates are required when adding or reordering industries.
+
+## Release Gate Reminder
+
+Industry changes ship only after running the full command set listed above. The Vitest suite under `src/components/industries/__tests__/` snapshots each section and confirms solution lookups remain accurate, providing fast feedback during editorial cycles.
