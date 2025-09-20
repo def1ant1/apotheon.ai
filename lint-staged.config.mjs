@@ -9,7 +9,7 @@ const prettierTargets = '**/*.{astro,css,html,js,json,md,mdx,ts,tsx,yaml,yml}';
 export default {
   'assets/brand-icons/raw/**/*.svg': ['npm run icons:build'],
   [eslintTargets]: [
-    "eslint --no-ignore --max-warnings=0 --fix --ignore-pattern '!.ladle/**/*'",
+    "eslint --no-ignore --max-warnings=0 --fix --ignore-pattern '!.ladle/**/*' --ignore-pattern 'scripts/utils/**/*.d.ts'",
   ],
   [styleTargets]: ['stylelint --fix'],
   [prettierTargets]: ['prettier --write'],

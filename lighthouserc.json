@@ -2,12 +2,22 @@
   "ci": {
     "collect": {
       "staticDistDir": "./dist",
-      "url": ["/"],
+      "url": [
+        "/",
+        "/solutions/",
+        "/solutions/atlas/",
+        "/solutions/automation-studio/",
+        "/solutions/clio/",
+        "/solutions/governance-lakehouse/",
+        "/solutions/nova/",
+        "/solutions/observability-fabric/"
+      ],
       "numberOfRuns": 1,
       "settings": {
         "preset": "desktop",
         "formFactor": "desktop",
-        "throttlingMethod": "simulate"
+        "throttlingMethod": "simulate",
+        "chromeFlags": "--headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --user-data-dir=/tmp/lhci-chrome"
       },
       "budgets": [
         {
@@ -28,6 +38,13 @@
             { "metric": "interactive", "budget": 3500 },
             { "metric": "experimental-interaction-to-next-paint", "budget": 200 }
           ]
+        },
+        {
+          "path": "/solutions/*",
+          "resourceSizes": [
+            { "resourceType": "script", "budget": 50 },
+            { "resourceType": "stylesheet", "budget": 50 }
+          ]
         }
       ]
     },
@@ -36,7 +53,7 @@
         "categories:performance": ["error", { "minScore": 0.9 }],
         "categories:accessibility": ["error", { "minScore": 0.95 }],
         "categories:best-practices": ["error", { "minScore": 0.95 }],
-        "categories:seo": ["warn", { "minScore": 0.9 }],
+        "categories:seo": ["error", { "minScore": 0.9 }],
         "largest-contentful-paint": ["error", { "maxNumericValue": 2500 }],
         "cumulative-layout-shift": ["error", { "maxNumericValue": 0.1 }],
         "total-blocking-time": ["error", { "maxNumericValue": 150 }],
