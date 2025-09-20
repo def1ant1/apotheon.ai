@@ -5,7 +5,7 @@ import { defineCollection, z } from 'astro:content';
  * without touching Astro layouts. The schema intentionally mirrors the design system props
  * consumed by `HomepageHero.astro`.
  */
-const homepageSchema = z.object({
+export const homepageSchema = z.object({
   /**
    * Eyebrow kicker that primes the hero narrative before the headline.
    * Editors typically use 1-3 words that align to current campaigns.
@@ -66,6 +66,34 @@ const homepageSchema = z.object({
     .min(1)
     .max(5)
     .describe('Array of supporting bullet points reinforcing the hero promise'),
+  /**
+   * Benefit cards quantify business impact in a scannable grid. Keep titles short (≤ 35 chars),
+   * anchor proof points in measurable outcomes, and pair each with an attributable metric so
+   * RevOps can reconcile claims during diligence.
+   */
+  benefits: z
+    .array(
+      z.object({
+        /** Short label rendered as the benefit card heading (e.g., ROI, Security). */
+        title: z.string().min(1).describe('Benefit title surfaced as the card heading'),
+        /**
+         * Narrative proof point that explains how the platform delivers the outcome. Favor
+         * customer-ready language and cap at two sentences to preserve balance with the metric.
+         */
+        proofPoint: z
+          .string()
+          .min(1)
+          .describe('Supporting copy articulating how the benefit manifests operationally'),
+        /** Quantified result (percentage, multiplier, timeline) that anchors the claim. */
+        metric: z
+          .string()
+          .min(1)
+          .describe('Metric string rendered in the emphasized data point slot'),
+      }),
+    )
+    .min(3)
+    .max(6)
+    .describe('Curated set of benefits rendered below the hero to reinforce enterprise ROI'),
   /**
    * Hero media drives first impression + LCP. Source should resolve via Vite import.
    */
@@ -172,6 +200,72 @@ const homepageSchema = z.object({
     })
     .optional()
     .describe('Homepage industries preview copy overrides managed by marketing'),
+  /**
+   * CTA banners extend the hero conversions deeper on the page. Each entry mirrors the UX blocks
+   * rendered below the benefits grid so marketing can independently evolve messaging cadence.
+   */
+  ctaBanners: z
+    .object({
+      /** Investor banner prioritizes diligence resources and IR outreach details. */
+      investor: z
+        .object({
+          /** Banner headline rendered as an <h2>. Keep ≤ 60 characters for balance. */
+          heading: z.string().min(1).describe('Investor banner headline copy'),
+          /** Primary paragraph setting expectations for the linked resource bundle. */
+          body: z
+            .string()
+            .min(1)
+            .describe('Body copy framing what investors receive after engaging the CTA'),
+          /** Optional supporting note for deadlines, SLAs, or eligibility qualifiers. */
+          secondaryText: z
+            .string()
+            .min(1)
+            .optional()
+            .describe('Optional secondary line for IR office hours or disclosure reminders'),
+          /** Button metadata reused across hero + banners to keep analytics instrumentation aligned. */
+          cta: z
+            .object({
+              label: z.string().min(1).describe('Visible CTA label copy'),
+              href: z.string().min(1).describe('Destination URL for the investor CTA'),
+              ariaLabel: z
+                .string()
+                .min(1)
+                .describe('Accessible label describing the investor-focused action'),
+            })
+            .describe('Configuration for the investor banner button'),
+        })
+        .describe('Investor enablement banner copy + CTA metadata'),
+      /** Demo banner routes prospects into guided evaluations managed by RevOps. */
+      demo: z
+        .object({
+          /** Banner headline rendered as an <h2>. */
+          heading: z.string().min(1).describe('Demo banner headline copy'),
+          /** Supporting copy that frames expectations (hands-on lab, guided tour, etc.). */
+          body: z
+            .string()
+            .min(1)
+            .describe('Body copy clarifying how the demo request will be fulfilled'),
+          /** Optional note for response times or prerequisites. */
+          secondaryText: z
+            .string()
+            .min(1)
+            .optional()
+            .describe('Optional secondary message for SLA or qualification guidance'),
+          /** CTA metadata ensures accessible labels remain in sync with analytics tracking. */
+          cta: z
+            .object({
+              label: z.string().min(1).describe('Visible CTA label copy'),
+              href: z.string().min(1).describe('Destination URL for the demo CTA'),
+              ariaLabel: z
+                .string()
+                .min(1)
+                .describe('Accessible label for assistive technology users'),
+            })
+            .describe('Configuration for the demo banner button'),
+        })
+        .describe('Demo request banner copy + CTA metadata'),
+    })
+    .describe('Pair of lower-funnel CTA banners rendered after the benefits grid'),
 });
 
 export const homepageCollection = defineCollection({
@@ -185,3 +279,7 @@ export type HomepageHeroContent = z.infer<typeof homepageSchema>;
 export type HomepagePillar = HomepageHeroContent['pillars'][number];
 export type HomepageModule = HomepageHeroContent['modules'][number];
 export type HomepageIndustriesPreview = NonNullable<HomepageHeroContent['industriesPreview']>;
+export type HomepageBenefit = HomepageHeroContent['benefits'][number];
+export type HomepageCtaBanners = HomepageHeroContent['ctaBanners'];
+export type HomepageInvestorBanner = HomepageCtaBanners['investor'];
+export type HomepageDemoBanner = HomepageCtaBanners['demo'];

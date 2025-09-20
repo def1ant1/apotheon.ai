@@ -2,8 +2,11 @@
 import { getEntry } from 'astro:content';
 
 import AiosPillars from '../components/homepage/AiosPillars.astro';
+import DemoBanner from '../components/homepage/DemoBanner.astro';
 import HomepageHero from '../components/homepage/HomepageHero.astro';
 import IndustriesPreview from '../components/homepage/IndustriesPreview.astro';
+import InvestorBanner from '../components/homepage/InvestorBanner.astro';
+import PlatformBenefits from '../components/homepage/PlatformBenefits.astro';
 import ProductModules from '../components/homepage/ProductModules.astro';
 import LiveClock from '../components/islands/LiveClock';
 import { homepageEntryId } from '../content/homepage';
@@ -41,6 +44,15 @@ const heroMetaDescription =
         />
       ) : null
     }
+
+    {
+      homepageEntry.data.benefits?.length ? (
+        <PlatformBenefits benefits={homepageEntry.data.benefits} />
+      ) : null
+    }
+
+    <InvestorBanner banner={homepageEntry.data.ctaBanners.investor} />
+    <DemoBanner banner={homepageEntry.data.ctaBanners.demo} />
 
     <!--
       Industries preview pulls directly from src/content/marketing/industries via the shared
