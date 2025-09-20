@@ -147,10 +147,13 @@ export function RadixNavigationMenu({
         <span>Global sections with fly-out detail panels</span>
       </VisuallyHidden>
 
-      <NavigationMenu.List className="navigation-list">
+      <NavigationMenu.List className="navigation-list" style={{ gap: 'var(--space-lg)' }}>
         {menuGroups.map((group) => (
           <NavigationMenu.Item key={group.label}>
-            <NavigationMenu.Trigger className="navigation-trigger group">
+            <NavigationMenu.Trigger
+              className="navigation-trigger group"
+              style={{ minHeight: '3rem', paddingInline: 'var(--space-lg)' }}
+            >
               {group.label}
               <span aria-hidden className="navigation-trigger__chevron">
                 ▾

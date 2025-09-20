@@ -14,6 +14,7 @@ dist-ssr
 artifacts
 .cache/
 .lighthouseci/
+test-results/
 
 # Astro build output
 .astro/

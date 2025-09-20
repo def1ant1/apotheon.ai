@@ -100,11 +100,11 @@ code {
 }
 
 .navigation-list {
-  @apply flex flex-wrap items-center justify-center gap-space-sm;
+  @apply flex flex-wrap items-center justify-center gap-space-lg;
 }
 
 .navigation-trigger {
-  @apply inline-flex items-center gap-space-3xs rounded-radius-pill border border-transparent bg-transparent px-space-sm py-space-2xs font-semibold text-ink-muted transition-colors duration-200 hover:text-ink-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-brand data-[state=open]:border-border-strong data-[state=open]:bg-surface-overlay/80 data-[state=open]:text-ink-primary;
+  @apply inline-flex h-12 min-w-[3rem] items-center gap-space-3xs rounded-radius-pill border border-transparent bg-transparent px-space-lg font-semibold text-ink-muted transition-colors duration-200 hover:text-ink-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-brand data-[state=open]:border-border-strong data-[state=open]:bg-surface-overlay/80 data-[state=open]:text-ink-primary;
 }
 
 .navigation-trigger__chevron {
