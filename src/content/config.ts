@@ -81,6 +81,10 @@ const marketingCollection = defineCollection({
       .default(0)
       .describe('Controls navigation ordering without renaming files'),
     featured: z.boolean().default(false),
+    draft: z
+      .boolean()
+      .default(false)
+      .describe('Toggle to hide unpublished marketing entries from navigation + homepage previews'),
   }),
 });
 

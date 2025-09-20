@@ -65,6 +65,7 @@ shell (`src/components/system/ErrorPageShell.astro`) or the `404`/`500` routes c
 - **Author workflow:** Drop an MDX file into the appropriate folder, run `npm run typecheck` to verify schema compliance, and execute `npm run build` to regenerate the static routes. Index pages (`/solutions`, `/industries`, `/about`) automatically enumerate new entries and feed breadcrumb metadata to upcoming navigation helpers.
 - **Reusable components:** Shared hero, CTA rows, and shell metadata live in `src/components/marketing/`. Follow the inline comments for SEO, accessibility, and performance guidance before extending any template.
 - **Automation-first mindset:** The marketing pipeline avoids manual routing. Editors should not touch files under `src/pages/solutions/`, `src/pages/industries/`, or `src/pages/about/` unless evolving the templates for the entire section.
+- **Homepage industries preview contract:** The homepage preview at `src/components/homepage/IndustriesPreview.astro` queries the `marketing` collection for `/industries/*` entries, so content authors update only the MDX files in `src/content/marketing/industries`. After shipping a new industry or adjusting ordering copy, run `npm run build` to regenerate the static site and refresh Pagefind indexes, then execute `npm run lint`, `npm run typecheck`, `npm run test`, `npm run test:e2e`, and a final `npm run build` to confirm automated checks and the regenerated search index all stay green before merging.
 
 ## Homepage Content Pipeline
 

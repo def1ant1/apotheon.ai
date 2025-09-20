@@ -1,0 +1,95 @@
+---
+import { INDUSTRIES_PREVIEW_LIMIT, loadIndustriesPreviewCards } from './industries-preview-data';
+
+import type { HomepageIndustriesPreview } from '@content/homepage';
+
+interface Props {
+  /** Optional copy overrides sourced from the homepage content schema */
+  overrides?: HomepageIndustriesPreview | null;
+}
+
+const { overrides } = Astro.props as Props;
+
+/**
+ * Default heading/intro appear when marketing does not provide overrides. We
+ * keep the strings colocated with the component so design + engineering can
+ * iterate without touching the structured content contract.
+ */
+const DEFAULT_HEADING = 'Industries moving fastest with Apotheon.ai';
+const DEFAULT_INTRO =
+  'Each card links into a longer-form industry playbook managed through the marketing collection. Preview highlights stay short to reduce homepage scroll debt.';
+
+// Fetch and normalize the marketing entries at build time. Because Astro caches
+// `getCollection` results per build, rerunning `npm run build` after content
+// changes is sufficient to refresh the preview and regenerate Pagefind indexes.
+const industries = await loadIndustriesPreviewCards(INDUSTRIES_PREVIEW_LIMIT);
+
+// Bail out early when no industries exist. Returning `null` keeps consumers from
+// rendering an empty section while preserving Astro's server-side rendering flow.
+if (!industries.length) {
+  return null;
+}
+
+const headingId = 'industries-preview-heading';
+const descriptionId = 'industries-preview-intro';
+const headingCopy = overrides?.headline?.trim().length ? overrides.headline : DEFAULT_HEADING;
+const introCopy = overrides?.intro?.trim().length ? overrides.intro : DEFAULT_INTRO;
+---
+
+<section
+  id="industries-preview"
+  class="space-y-8 rounded-3xl border border-slate-800/70 bg-slate-950/60 p-8 shadow-xl ring-1 ring-slate-900/60"
+  aria-labelledby={headingId}
+  aria-describedby={descriptionId}
+  data-analytics-region="homepage-industries-preview"
+>
+  <header class="max-w-3xl space-y-3">
+    <h2 id={headingId} class="text-3xl font-semibold text-white md:text-4xl">
+      {headingCopy}
+    </h2>
+    <p id={descriptionId} class="text-base text-slate-300 md:text-lg">
+      {introCopy}
+    </p>
+  </header>
+
+  <!--
+    Cards mirror the product modules grid to keep the homepage visual language
+    consistent. Pagination intentionally does not appear here; we cap at six
+    entries so the homepage stays scannable and defer full exploration to the
+    dedicated /industries/ route.
+  -->
+  <ul class="grid gap-6 md:grid-cols-2 xl:grid-cols-3" data-testid="industries-preview-list">
+    {
+      industries.map((industry) => (
+        <li class="group" data-card-container="industry" data-order={industry.order}>
+          <a
+            class="flex h-full flex-col gap-4 rounded-2xl border border-slate-800/80 bg-slate-900/60 p-6 shadow-lg ring-1 ring-slate-800/70 transition hover:border-indigo-500/50 hover:ring-indigo-500/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-400"
+            href={industry.href}
+            data-card="industry"
+          >
+            <div class="space-y-2">
+              <span class="text-xs font-semibold uppercase tracking-[0.35rem] text-indigo-300">
+                Industry
+              </span>
+              <h3 class="text-xl font-semibold text-white">{industry.title}</h3>
+            </div>
+            <p class="text-sm leading-relaxed text-slate-400 md:text-base">{industry.summary}</p>
+            <span class="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-indigo-200">
+              Explore industry
+              <span aria-hidden class="text-lg">
+                →
+              </span>
+            </span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+
+  <!--
+    NOTE ON CACHING: This section depends on Astro's static generation cache.
+    When marketing ships new industries, re-run `npm run build` so `getCollection`
+    refreshes and Pagefind indexes the new cards. Additional pagination hooks can
+    be layered later without changing this component contract.
+  -->
+</section>
