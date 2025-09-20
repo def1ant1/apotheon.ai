@@ -1,0 +1,96 @@
+---
+import {
+  BREADCRUMB_ARIA_LABEL,
+  normalizeTrail,
+  serializeTrailToJsonLd,
+} from '../../utils/breadcrumbs';
+
+import type { BreadcrumbTrail } from '../../utils/breadcrumbs';
+
+interface BreadcrumbsProps {
+  /**
+   * Ordered crumb definitions describing the current page's ancestry.
+   * Each object should minimally include a `label`; helpers in `src/utils/breadcrumbs`
+   * generate these arrays automatically from content collections to avoid manual drift.
+   */
+  trail: BreadcrumbTrail;
+  /**
+   * Optional absolute origin used to expand relative hrefs inside the JSON-LD payload.
+   * Defaults to the Astro config/site metadata so local previews and production builds
+   * emit identical structured data.
+   */
+  baseHref?: string;
+  /**
+   * Optional id forwarded to the `<nav>` element so layouts can target specific breadcrumb
+   * instances (e.g., skip links or automated visual regression hooks).
+   */
+  id?: string;
+  /**
+   * Additional CSS classes merged onto the `<nav>` for layout control. We expose this hook so
+   * templates can align breadcrumbs with existing typography scales without duplicating markup.
+   */
+  class?: string;
+}
+
+const { trail, baseHref, id, class: className } = Astro.props as BreadcrumbsProps;
+
+// Normalize incoming data to guarantee we announce "Home" first and mark the terminal crumb
+// with `aria-current="page"`. Marketing helpers return normalized arrays, but this guard keeps
+// the component reusable for future CMS integrations.
+const resolvedTrail = normalizeTrail(trail);
+
+// Prefer caller-provided baseHref when generating JSON-LD so server renders and preview URLs stay
+// consistent. Falling back to Astro.site or Astro.url keeps local dev usable without extra props.
+const canonicalOrigin = baseHref ?? Astro.site?.origin ?? Astro.url?.origin;
+
+// Deterministic JSON serialization ensures caching layers and snapshot tests stay stable.
+const jsonLd = serializeTrailToJsonLd(resolvedTrail, canonicalOrigin);
+
+const baseNavClasses =
+  'flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.35rem] text-slate-400';
+const navClasses = className ? `${baseNavClasses} ${className}` : baseNavClasses;
+
+const shouldRender = resolvedTrail.length > 1;
+---
+
+{
+  shouldRender && (
+    <Fragment>
+      <nav aria-label={BREADCRUMB_ARIA_LABEL} class={navClasses} id={id}>
+        <ol class="flex flex-wrap items-center gap-2">
+          {resolvedTrail.map((segment, index) => {
+            const isLast = index === resolvedTrail.length - 1;
+            const isCurrent = isLast || segment.isCurrentPage;
+            return (
+              <li class="flex items-center gap-2">
+                {isCurrent ? (
+                  <span aria-current="page" class="font-semibold text-white">
+                    {segment.label}
+                  </span>
+                ) : segment.href ? (
+                  <a class="transition hover:text-white" href={segment.href}>
+                    {segment.label}
+                  </a>
+                ) : (
+                  <span class="text-slate-300">{segment.label}</span>
+                )}
+                {!isLast && (
+                  <span aria-hidden="true" class="text-slate-600">
+                    /
+                  </span>
+                )}
+              </li>
+            );
+          })}
+        </ol>
+      </nav>
+
+      {/**
+       * Embedding JSON-LD alongside the nav keeps schema + UI changes in lockstep. Search engines
+       * accept the script anywhere in the document, so rendering it adjacent to the nav ensures
+       * editorial updates never forget to adjust structured data.
+       */}
+      <script is:inline type="application/ld+json" set:text={jsonLd} />
+    </Fragment>
+  )
+}

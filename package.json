@@ -21,7 +21,8 @@
     "ladle": "ladle serve --config ladle.config.mjs",
     "ladle:build": "ladle build --config ladle.config.mjs --outDir dist/ladle",
     "ladle:ci": "npm run ladle:build && node ./scripts/ci/ladle-ci.mjs",
-    "test": "npm run lint && npm run typecheck && npm run ladle:ci",
+    "test": "npm run lint && npm run typecheck && npm run test:unit && npm run ladle:ci",
+    "test:unit": "vitest run",
     "prepare": "husky install",
     "pagefind:index": "astro build && pagefind --site dist",
     "lighthouse:ci": "node ./scripts/ci/lighthouse-ci.mjs",
@@ -82,6 +83,7 @@
     "stylelint-order": "^7.0.0",
     "svgo": "^4.0.0",
     "tailwindcss": "^3.4.12",
-    "typescript": "^5.6.2"
+    "typescript": "^5.6.2",
+    "vitest": "^2.1.3"
   }
 }

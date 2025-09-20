@@ -35,6 +35,13 @@ is a safe fallback after cloning from a shallow checkout.
 - **Reusable components:** Shared hero, CTA rows, and shell metadata live in `src/components/marketing/`. Follow the inline comments for SEO, accessibility, and performance guidance before extending any template.
 - **Automation-first mindset:** The marketing pipeline avoids manual routing. Editors should not touch files under `src/pages/solutions/`, `src/pages/industries/`, or `src/pages/about/` unless evolving the templates for the entire section.
 
+## Breadcrumb Automation
+
+- **Central helpers:** `src/utils/breadcrumbs.ts` exposes section-aware factories (`createMarketingEntryTrail`, `createBlogPostTrail`, etc.) so templates never hand-build crumb arrays. When new IA nodes appear, add the section metadata to `SECTION_CONFIG`, expose a dedicated helper if needed, and capture a regression fixture in `src/utils/breadcrumbs.test.ts` before wiring the template.
+- **Reusable component:** `src/components/navigation/Breadcrumbs.astro` renders both the accessible `<nav>` and synchronized JSON-LD. Pass collection-derived trails and (optionally) a `baseHref` when working in contexts without `Astro.site` configured.
+- **Testing strategy:** `npm run test:unit` runs the Vitest suite validating JSON-LD payloads, aria labels, and representative trails for each section. Update or add fixtures alongside helper changes to keep automation honest.
+- **Review checklist:** After editing breadcrumb logic, re-run `npm run lint`, `npm run typecheck`, `npm run test`, and `npm run build` so accessibility, schema, and build gates all stay green.
+
 ## Blog Content Pipeline
 
 - **Collections + schema:** Blog MDX files live in `src/content/blog/`. Frontmatter fields (`title`, `description`, `publishDate`,

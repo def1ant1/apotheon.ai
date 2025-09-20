@@ -4,6 +4,7 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 import MarketingCtaRow from '../../components/marketing/MarketingCtaRow.astro';
 import MarketingHero from '../../components/marketing/MarketingHero.astro';
 import MarketingShell from '../../components/marketing/MarketingShell.astro';
+import { createMarketingEntryTrail } from '../../utils/breadcrumbs';
 
 export async function getStaticPaths() {
   const entries = await getCollection('marketing', ({ id }) => id.startsWith('industries/'));
@@ -20,15 +21,11 @@ interface Props {
 const { entry } = Astro.props as Props;
 const { data } = entry;
 const { Content } = await entry.render();
-const slugSegment = entry.slug.split('/').pop() ?? entry.id;
 const heroCopy =
   data.summary ??
   'Discover how Apotheon.ai adapts the platform to meet compliance, performance, and mission outcomes across industries.';
 const heroCtaLabel = data.heroCtaLabel ?? 'Talk with an industry specialist';
-const breadcrumbs = [
-  { href: '/industries/', label: 'Industries' },
-  { href: `/industries/${slugSegment}/`, label: data.title },
-];
+const breadcrumbs = createMarketingEntryTrail(entry);
 ---
 
 <MarketingShell title={data.title} description={heroCopy} {breadcrumbs}>

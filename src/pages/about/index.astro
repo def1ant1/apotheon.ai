@@ -4,6 +4,7 @@ import { getCollection } from 'astro:content';
 import MarketingCtaRow from '../../components/marketing/MarketingCtaRow.astro';
 import MarketingHero from '../../components/marketing/MarketingHero.astro';
 import MarketingShell from '../../components/marketing/MarketingShell.astro';
+import { createMarketingIndexTrail } from '../../utils/breadcrumbs';
 
 const aboutEntries = await getCollection('marketing', ({ id }) => id.startsWith('about/'));
 const aboutPages = aboutEntries
@@ -19,7 +20,7 @@ const aboutPages = aboutEntries
 
 const heroCopy =
   'Learn how Apotheon.ai operates, who leads the mission, and the best ways to partner with our teams.';
-const breadcrumbs = [{ href: '/about/', label: 'About' }];
+const breadcrumbs = createMarketingIndexTrail('about');
 ---
 
 <MarketingShell title="About Apotheon.ai" description={heroCopy} {breadcrumbs}>
