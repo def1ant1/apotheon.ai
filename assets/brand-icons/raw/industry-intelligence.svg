@@ -1,0 +1,17 @@
+<!--
+  Intelligence glyph emphasising connected analysis and governed sharing.
+  Node constellation reflects fused data sources and compartmented dissemination.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <title>Intelligence industry glyph</title>
+  <!-- Core analytic nodes -->
+  <circle cx="12" cy="7" r="2.25" stroke="#4338CA" />
+  <circle cx="7" cy="14.5" r="1.85" stroke="#0EA5E9" />
+  <circle cx="17" cy="15.5" r="1.85" stroke="#0EA5E9" />
+  <!-- Secure linkages showing governed sharing -->
+  <path d="M10.5 8.8l-2.4 3.1" stroke="#0F172A" />
+  <path d="M13.5 8.8l2.3 3.4" stroke="#0F172A" />
+  <path d="M8.5 16.35l6.75.9" stroke="#4338CA" />
+  <!-- Halo denoting compartmented oversight -->
+  <path d="M6.5 5.5c1.4-1.9 3.6-3 5.5-3s4.1 1.1 5.5 3" stroke="#0EA5E9" />
+</svg>

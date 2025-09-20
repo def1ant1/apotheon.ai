@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
+import { INDUSTRY_ICON_SLUGS } from '../../../content/industries/iconSlugs';
+import { resolveIndustryIcon } from '../icon-map';
+
 import type {
   IndustryComplianceHighlight,
   IndustryCtaGroup,
@@ -138,4 +141,28 @@ describe('Industry section view models', () => {
   it('snapshots CTA configuration', () => {
     expect(ctas).toMatchSnapshot();
   });
+
+  it('tracks the registered industry icon slugs for schema parity', () => {
+    expect(INDUSTRY_ICON_SLUGS).toMatchSnapshot('industry-icon-slugs');
+  });
+
+  it.each(INDUSTRY_ICON_SLUGS)(
+    'resolves an icon component for %s',
+    (slug: (typeof INDUSTRY_ICON_SLUGS)[number]) => {
+      /**
+       * The icon resolver must always return a renderable component. Some of our
+       * generated icons use `forwardRef`, which returns a React element factory
+       * object with a `render` method instead of a bare function. We normalize the
+       * assertion to cover both patterns without coupling the test to React
+       * internals.
+       */
+      const IconComponent = resolveIndustryIcon(slug);
+      expect(IconComponent).toBeTruthy();
+      if (typeof IconComponent === 'object') {
+        expect('render' in IconComponent).toBe(true);
+      } else {
+        expect(typeof IconComponent).toBe('function');
+      }
+    },
+  );
 });

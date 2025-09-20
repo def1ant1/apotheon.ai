@@ -1,0 +1,20 @@
+<!--
+  Legal glyph highlighting balance, precedent, and governed outcomes.
+  Scales reinforce confidentiality and equitable automation.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <title>Legal services industry glyph</title>
+  <!-- Pillar anchoring the automation storyline -->
+  <path d="M12 4.5v11.5" stroke="#0F172A" />
+  <!-- Balanced crossbar representing precedent and governance -->
+  <path d="M6 7.75h12" stroke="#0EA5E9" />
+  <!-- Left scale pan and suspension -->
+  <path d="M8.5 7.75l-2 4.25h4l-2-4.25z" stroke="#4338CA" />
+  <path d="M8.5 7.75v-2" stroke="#0F172A" />
+  <!-- Right scale pan and suspension -->
+  <path d="M15.5 7.75l-2 4.25h4l-2-4.25z" stroke="#4338CA" />
+  <path d="M15.5 7.75v-2" stroke="#0F172A" />
+  <!-- Foundation emphasising defensible operations -->
+  <path d="M7.5 18.5h9" stroke="#0EA5E9" />
+  <path d="M9.5 18.5v1.75h5v-1.75" stroke="#0F172A" />
+</svg>
