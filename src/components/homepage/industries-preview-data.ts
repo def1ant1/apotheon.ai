@@ -1,19 +1,13 @@
 import { getCollection } from 'astro:content';
 
+import type { IndustryEntry } from '../../content/industries';
+
 /**
  * Maximum number of industry cards surfaced on the homepage preview.
  * We intentionally keep the value low to avoid overwhelming visitors and to
  * signal that deeper exploration lives on the canonical /industries index.
  */
 export const INDUSTRIES_PREVIEW_LIMIT = 6;
-
-/**
- * Default summary copy used when an industry MDX file omits a custom summary.
- * Centralizing the fallback here ensures marketing can update the message once
- * without touching Astro templates or duplicating strings across components.
- */
-const DEFAULT_INDUSTRY_SUMMARY =
-  'Sector playbooks covering rollout patterns, compliance checkpoints, and mission-ready automations.';
 
 /**
  * Public shape consumed by the homepage industries preview component. The
@@ -29,63 +23,30 @@ export interface IndustryPreviewCard {
   href: string;
   /** Numerical ordering flag that lets marketing rearrange emphasis */
   order: number;
+  /** Icon slug surfaced on list cards to visually reinforce the sector */
+  icon: IndustryEntry['data']['hero']['icon'];
 }
 
-/**
- * Coerce a marketing entry into the lightweight card contract used on the
- * homepage. We resolve the href relative to the industries index and provide a
- * defensive fallback when frontmatter omits optional fields.
- */
-interface MarketingIndustryEntry {
-  id: string;
-  slug: string;
-  data: {
-    title: string;
-    summary?: string;
-    order?: number;
-    draft: boolean;
-  };
-}
-
-function isMarketingIndustryEntry(entry: unknown): entry is MarketingIndustryEntry {
-  if (typeof entry !== 'object' || entry === null) {
-    return false;
-  }
-
-  const candidate = entry as Record<string, unknown>;
-  const data = candidate.data as Record<string, unknown> | undefined;
-
-  return (
-    typeof candidate.id === 'string' &&
-    typeof candidate.slug === 'string' &&
-    typeof data === 'object' &&
-    data !== null &&
-    typeof data.title === 'string' &&
-    typeof data.draft === 'boolean' &&
-    (typeof data.order === 'number' || typeof data.order === 'undefined') &&
-    (typeof data.summary === 'string' || typeof data.summary === 'undefined')
-  );
-}
-
-function mapToIndustryPreviewCard(entry: MarketingIndustryEntry): IndustryPreviewCard {
-  const slugTerminal = entry.slug.split('/').pop() ?? entry.id;
+function mapToIndustryPreviewCard(entry: IndustryEntry): IndustryPreviewCard {
+  const slugTerminal = entry.slug;
 
   return {
     title: entry.data.title,
-    summary: entry.data.summary ?? DEFAULT_INDUSTRY_SUMMARY,
+    summary: entry.data.hero.copy,
     href: `/industries/${slugTerminal}/`,
-    order: entry.data.order ?? 0,
+    order: entry.data.order,
+    icon: entry.data.hero.icon,
   };
 }
 
 /**
- * Resolve the latest marketing industries destined for the homepage preview.
+ * Resolve the latest industries destined for the homepage preview.
  *
  * The helper centralizes the following behaviors:
- * - Scopes the query to the `industries/` directory so other marketing content
- *   never pollutes the card set.
+ * - Scopes the query to the dedicated industries collection so other marketing
+ *   content never pollutes the card set.
  * - Filters out unpublished drafts surfaced through the shared `draft` flag so
- *   marketing can stage updates safely.
+ *   editors can stage updates safely.
  * - Sorts by the shared `order` metadata to keep emphasis consistent with
  *   navigation, campaign landing pages, and investor collateral.
  * - Caps the result set based on `INDUSTRIES_PREVIEW_LIMIT` so the homepage
@@ -99,14 +60,9 @@ function mapToIndustryPreviewCard(entry: MarketingIndustryEntry): IndustryPrevie
 export async function loadIndustriesPreviewCards(
   limit: number = INDUSTRIES_PREVIEW_LIMIT,
 ): Promise<IndustryPreviewCard[]> {
-  const rawEntries = (await getCollection('marketing')) as unknown[];
-
-  const normalizedEntries = rawEntries.filter(isMarketingIndustryEntry);
-
-  const industryEntries = normalizedEntries.filter((entry) => entry.id.startsWith('industries/'));
+  const industryEntries = await getCollection('industries', ({ data }) => !data.draft);
 
   const publishedIndustries = industryEntries
-    .filter((entry) => !entry.data.draft)
     .map(mapToIndustryPreviewCard)
     .sort((a, b) => (a.order === b.order ? a.title.localeCompare(b.title) : a.order - b.order));
 

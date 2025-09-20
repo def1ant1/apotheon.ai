@@ -1,20 +1,22 @@
 ---
 import { getCollection } from 'astro:content';
 
+import { resolveIndustryIcon } from '../../components/industries/icon-map';
 import MarketingCtaRow from '../../components/marketing/MarketingCtaRow.astro';
 import MarketingHero from '../../components/marketing/MarketingHero.astro';
 import MarketingShell from '../../components/marketing/MarketingShell.astro';
 import { createMarketingIndexTrail } from '../../utils/breadcrumbs';
 
-const industryEntries = await getCollection('marketing', ({ id }) => id.startsWith('industries/'));
+const industryEntries = await getCollection('industries', ({ data }) => !data.draft);
 const industries = industryEntries
   .map((entry) => ({
     title: entry.data.title,
-    summary:
-      entry.data.summary ?? 'Sector guidance for procurement, compliance, and customer success.',
-    href: `/industries/${entry.slug.split('/').pop() ?? entry.id}/`,
+    summary: entry.data.hero.copy,
+    href: `/industries/${entry.slug}/`,
     featured: entry.data.featured,
-    order: entry.data.order ?? 0,
+    order: entry.data.order,
+    icon: entry.data.hero.icon,
+    slug: entry.slug,
   }))
   .sort((a, b) => (a.order === b.order ? a.title.localeCompare(b.title) : a.order - b.order));
 
@@ -38,27 +40,36 @@ const breadcrumbs = createMarketingIndexTrail('industries');
   <section class="flex flex-col gap-6">
     <h2 class="text-2xl font-semibold text-white">Industry guides</h2>
     <p class="text-sm text-slate-400">
-      Each card links to an MDX-driven narrative covering data sourcing, onboarding, and mission
-      outcomes. Authors append new cards by dropping MDX files into <code
-        >src/content/marketing/industries</code
-      >.
+      Each card resolves from <code>src/content/industries</code> so editors manage tone, keywords, and
+      compliance promises without touching templates.
     </p>
     <div class="grid gap-4 md:grid-cols-3">
       {
-        industries.map((industry) => (
-          <a
-            class={`flex flex-col gap-3 rounded-2xl border border-slate-800 bg-slate-950/40 p-6 transition hover:border-indigo-500 ${
-              industry.featured ? 'ring-1 ring-indigo-500/40' : ''
-            }`}
-            href={industry.href}
-          >
-            <span class="text-xs uppercase tracking-[0.35rem] text-indigo-300">
-              {industry.featured ? 'Priority vertical' : 'Industry'}
-            </span>
-            <span class="text-lg font-semibold text-white">{industry.title}</span>
-            <span class="text-sm text-slate-300">{industry.summary}</span>
-          </a>
-        ))
+        industries.map((industry) => {
+          const Icon = resolveIndustryIcon(industry.icon);
+          return (
+            <a
+              class={`flex h-full flex-col gap-3 rounded-2xl border border-slate-800 bg-slate-950/40 p-6 transition hover:border-indigo-500 ${
+                industry.featured ? 'ring-1 ring-indigo-500/40' : ''
+              }`}
+              href={industry.href}
+              id={`industry-card-${industry.slug}`}
+              data-analytics-id={`industry-card-${industry.slug}`}
+            >
+              <span class="text-xs uppercase tracking-[0.35rem] text-indigo-300">
+                {industry.featured ? 'Priority vertical' : 'Industry'}
+              </span>
+              <div class="flex items-center gap-3">
+                <div class="flex h-12 w-12 items-center justify-center rounded-xl border border-indigo-500/40 bg-indigo-500/10">
+                  <Icon className="h-6 w-6 text-indigo-200" aria-hidden="true" focusable="false" />
+                  <span class="sr-only">{industry.title} icon</span>
+                </div>
+                <span class="text-lg font-semibold text-white">{industry.title}</span>
+              </div>
+              <span class="text-sm text-slate-300">{industry.summary}</span>
+            </a>
+          );
+        })
       }
     </div>
   </section>

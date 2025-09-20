@@ -1,76 +1,47 @@
 ---
 import { getCollection, type CollectionEntry } from 'astro:content';
 
-import MarketingCtaRow from '../../components/marketing/MarketingCtaRow.astro';
-import MarketingHero from '../../components/marketing/MarketingHero.astro';
+import IndustryCompliance from '../../components/industries/IndustryCompliance.astro';
+import IndustryCtaBanner from '../../components/industries/IndustryCtaBanner.astro';
+import IndustryHero from '../../components/industries/IndustryHero.astro';
+import IndustryPressures from '../../components/industries/IndustryPressures.astro';
+import IndustrySolutionMap from '../../components/industries/IndustrySolutionMap.astro';
+import IndustryUseCases from '../../components/industries/IndustryUseCases.astro';
 import MarketingShell from '../../components/marketing/MarketingShell.astro';
-import { createMarketingEntryTrail } from '../../utils/breadcrumbs';
+import { normalizeTrail } from '../../utils/breadcrumbs';
 
 export async function getStaticPaths() {
-  const entries = await getCollection('marketing', ({ id }) => id.startsWith('industries/'));
+  const entries = await getCollection('industries', ({ data }) => !data.draft);
   return entries.map((entry) => ({
-    params: { sector: entry.slug.split('/').pop() ?? entry.id },
+    params: { sector: entry.slug },
     props: { entry },
   }));
 }
 
 interface Props {
-  entry: CollectionEntry<'marketing'>;
+  entry: CollectionEntry<'industries'>;
 }
 
 const { entry } = Astro.props as Props;
 const { data } = entry;
-const { Content } = await entry.render();
-const heroCopy =
-  data.summary ??
-  'Discover how Apotheon.ai adapts the platform to meet compliance, performance, and mission outcomes across industries.';
-const heroCtaLabel = data.heroCtaLabel ?? 'Talk with an industry specialist';
-const breadcrumbs = createMarketingEntryTrail(entry);
+const solutions = await getCollection('solutions', ({ data }) => !data.draft);
+const breadcrumbs = normalizeTrail([
+  { label: 'Industries', href: '/industries/' },
+  { label: data.title, href: `/industries/${entry.slug}/` },
+]);
+const pageDescription = data.seo?.description ?? data.hero.copy;
 ---
 
-<MarketingShell title={data.title} description={heroCopy} {breadcrumbs}>
-  <MarketingHero
-    eyebrow="Industries"
-    headline={data.title}
-    copy={heroCopy}
-    cta={{
-      label: heroCtaLabel,
-      href: '/about/contact/',
-      description: 'Route to the vertical experts that manage compliance alignment.',
-    }}
-  />
-
+<MarketingShell title={data.title} description={pageDescription} {breadcrumbs}>
   <!--
-    Industry pages lean heavily on proof points and compliance assurances. When adding new sections,
-    prioritize headings that align with RFP requirements (security, onboarding, support, outcomes).
+    Each section below renders from structured frontmatter so industry editors ship updates without
+    touching templates. Ordering mirrors the briefing narrative requested by enterprise procurement:
+    hero → pressures → solution mapping → use cases → compliance → conversion banner.
   -->
-  <article
-    class="prose prose-invert prose-headings:font-semibold prose-headings:text-white prose-p:text-slate-200 prose-a:text-indigo-300 max-w-none"
-  >
-    <Content />
-  </article>
-
-  <MarketingCtaRow
-    items={[
-      {
-        title: 'Book a compliance review',
-        description: 'Map regulatory obligations to Apotheon.ai controls with our governance team.',
-        href: '/about/contact/',
-        label: 'Schedule a review',
-      },
-      {
-        title: 'Explore solution capabilities',
-        description: 'Pair this industry story with the platform modules built for your teams.',
-        href: '/solutions/',
-        label: 'See platform modules',
-      },
-      {
-        title: 'Download procurement toolkit',
-        description:
-          'Access security attestations, reference architectures, and deployment checklists.',
-        href: '/about/company/',
-        label: 'Open toolkit overview',
-      },
-    ]}
-  />
+  <IndustryHero hero={data.hero} title={data.title} />
+  <IndustryPressures pressures={data.pressures} />
+  <IndustrySolutionMap solutionMap={data.solutionMap} {solutions} />
+  <IndustryUseCases useCases={data.useCases} />
+  <IndustryCompliance complianceHighlights={data.complianceHighlights} />
+  <IndustryCtaBanner ctas={data.ctas} />
 </MarketingShell>
