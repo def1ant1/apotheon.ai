@@ -1,0 +1,47 @@
+---
+import type { SolutionEntry } from '../../content/solutions';
+
+export interface Props {
+  id?: string;
+  title?: string;
+  steps: SolutionEntry['data']['howItWorks'];
+}
+
+const {
+  id = 'solutions-how-it-works',
+  title = 'How it works',
+  steps,
+} = Astro.props satisfies Props;
+const headingId = `${id}-heading`;
+---
+
+<!--
+  HowItWorks leans on an ordered list so the chronological nature of the process is explicit.
+  Step metadata includes optional duration and owner strings rendered as muted captions.
+  We attach data-analytics attributes so instrumentation can measure step completion focus without hydration.
+-->
+<section {id} aria-labelledby={headingId} class="flex flex-col gap-6">
+  <h2 id={headingId} class="text-3xl font-bold text-white">{title}</h2>
+  <ol class="grid gap-6 md:grid-cols-3">
+    {
+      steps.map((step, index) => (
+        <li
+          class="flex flex-col gap-2 rounded-2xl border border-slate-800/70 bg-slate-950/60 p-6"
+          data-analytics-index={index + 1}
+        >
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-semibold uppercase tracking-wider text-indigo-200">
+              Step {index + 1}
+            </span>
+            {step.duration && <span class="text-xs text-slate-400">{step.duration}</span>}
+          </div>
+          <h3 class="text-xl font-semibold text-white">{step.title}</h3>
+          <p class="text-sm text-slate-300">{step.description}</p>
+          {step.owner && (
+            <p class="text-xs uppercase tracking-wide text-slate-400">Owner: {step.owner}</p>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+</section>

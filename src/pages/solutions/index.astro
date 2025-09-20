@@ -6,12 +6,12 @@ import MarketingHero from '../../components/marketing/MarketingHero.astro';
 import MarketingShell from '../../components/marketing/MarketingShell.astro';
 import { createMarketingIndexTrail } from '../../utils/breadcrumbs';
 
-const solutionEntries = await getCollection('marketing', ({ id }) => id.startsWith('solutions/'));
+const solutionEntries = await getCollection('solutions', ({ data }) => !data.draft);
 const solutions = solutionEntries
   .map((entry) => ({
     title: entry.data.title,
-    summary: entry.data.summary ?? 'Composable module tailored for revenue, data, or AI teams.',
-    href: `/solutions/${entry.slug.split('/').pop() ?? entry.id}/`,
+    summary: entry.data.overview.summary,
+    href: `/solutions/${entry.slug}/`,
     featured: entry.data.featured,
     order: entry.data.order ?? 0,
   }))
@@ -38,7 +38,7 @@ const breadcrumbs = createMarketingIndexTrail('solutions');
     The nav grid doubles as a sitemap for search engines and helps Pagefind index short descriptions.
     Future breadcrumb helpers can consume the `breadcrumbs` constant defined above.
   -->
-  <section class="flex flex-col gap-6">
+  <section id="solutions-catalog" class="flex flex-col gap-6">
     <h2 class="text-2xl font-semibold text-white">Solution catalog</h2>
     <div class="grid gap-4 md:grid-cols-3">
       {

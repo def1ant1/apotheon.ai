@@ -29,7 +29,10 @@ function normalizeInternalHref(href: string): string {
  * collection routes as the content library scales.
  */
 async function buildMarketingHrefLookup(): Promise<Map<string, string>> {
-  const marketingEntries = (await getCollection('marketing')) as ReadonlyArray<MarketingSlugEntry>;
+  const marketingEntries = (await getCollection('marketing')) as ReadonlyArray<unknown>;
+  const solutionEntries = (await getCollection('solutions')) as ReadonlyArray<unknown>;
+  const marketingSlugs = marketingEntries.filter(isEntryWithSlug).map((entry) => entry.slug);
+  const solutionSlugs = solutionEntries.filter(isPublishedSolutionEntry).map((entry) => entry.slug);
 
   const relevantMarketingSlugs = new Map<string, string>();
   const trackedInternalLinks = new Set<string>();
@@ -42,27 +45,34 @@ async function buildMarketingHrefLookup(): Promise<Map<string, string>> {
     }
   }
 
-  for (const entry of marketingEntries) {
-    if (!isMarketingEntry(entry)) {
-      continue;
-    }
-
-    const { slug } = entry;
+  const registerSlug = (slug: string) => {
     const slugPath = normalizeInternalHref(slug);
 
     if (trackedInternalLinks.has(slugPath)) {
       relevantMarketingSlugs.set(slugPath, slugPath);
     }
+  };
+
+  for (const slug of marketingSlugs) {
+    registerSlug(slug);
+  }
+
+  for (const slug of solutionSlugs) {
+    registerSlug(`solutions/${slug}`);
   }
 
   return relevantMarketingSlugs;
 }
 
-interface MarketingSlugEntry {
+interface EntryWithSlug {
   readonly slug: string;
 }
 
-function isMarketingEntry(candidate: unknown): candidate is MarketingSlugEntry {
+interface SolutionLikeEntry extends EntryWithSlug {
+  readonly data?: { draft?: boolean };
+}
+
+function isEntryWithSlug(candidate: unknown): candidate is EntryWithSlug {
   if (typeof candidate !== 'object' || candidate === null) {
     return false;
   }
@@ -70,6 +80,22 @@ function isMarketingEntry(candidate: unknown): candidate is MarketingSlugEntry {
   const { slug } = candidate as { slug?: unknown };
 
   return typeof slug === 'string' && slug.length > 0;
+}
+
+function isPublishedSolutionEntry(candidate: unknown): candidate is SolutionLikeEntry {
+  if (!isEntryWithSlug(candidate)) {
+    return false;
+  }
+
+  const data = (candidate as { data?: unknown }).data;
+
+  if (typeof data !== 'object' || data === null) {
+    return false;
+  }
+
+  const { draft } = data as { draft?: unknown };
+
+  return draft !== true;
 }
 
 /**

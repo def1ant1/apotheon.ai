@@ -1,0 +1,56 @@
+---
+import type { SolutionEntry } from '../../content/solutions';
+
+export interface Props {
+  id?: string;
+  banner: SolutionEntry['data']['finalCta'];
+}
+
+const { id = 'solutions-final-cta', banner } = Astro.props satisfies Props;
+const headingId = `${id}-heading`;
+
+const buttonBaseClass =
+  'inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-200';
+---
+
+<!--
+  SolutionCtaBanner closes the narrative with a high-intent CTA. The component mirrors hero styling so the
+  start and end of the page feel related. Because both primary and optional secondary CTAs are simple anchors,
+  downstream analytics can attach instrumentation without hydration or additional JavaScript bundles.
+-->
+<section
+  {id}
+  aria-labelledby={headingId}
+  class="flex flex-col gap-4 rounded-3xl border border-indigo-500/60 bg-indigo-950/70 p-10 text-white shadow-2xl shadow-indigo-900/40"
+>
+  <h2 id={headingId} class="text-3xl font-bold">{banner.headline}</h2>
+  <p class="max-w-3xl text-base text-indigo-100">{banner.copy}</p>
+  <div class="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+    <a
+      class={`${buttonBaseClass} bg-white text-indigo-700 hover:bg-indigo-100`}
+      href={banner.primaryCta.href}
+    >
+      {banner.primaryCta.label}
+    </a>
+    {
+      banner.primaryCta.description && (
+        <span class="text-sm text-indigo-100/80">{banner.primaryCta.description}</span>
+      )
+    }
+    {
+      banner.secondaryCta && (
+        <a
+          class={`${buttonBaseClass} border border-white/50 bg-transparent text-white hover:border-white`}
+          href={banner.secondaryCta.href}
+        >
+          {banner.secondaryCta.label}
+        </a>
+      )
+    }
+  </div>
+  {
+    banner.secondaryCta?.description && (
+      <p class="text-sm text-indigo-100/80">{banner.secondaryCta.description}</p>
+    )
+  }
+</section>

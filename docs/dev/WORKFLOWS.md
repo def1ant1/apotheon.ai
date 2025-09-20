@@ -58,10 +58,10 @@ shell (`src/components/system/ErrorPageShell.astro`) or the `404`/`500` routes c
    when making notable UX changes.
 5. After validation, stop the preview server with `Ctrl+C` so the next command session can reuse the port.
 
-## Marketing Content Pipeline
+-## Marketing Content Pipeline
 
-- **Content collections:** Marketing MDX lives in `src/content/marketing` under `solutions/`, `industries/`, and `about/`. Each file only needs the existing schema fields (`title`, `summary`, `heroCtaLabel`, `order`, `featured`), and richly commented sections describe which Astro layout slots they target. New files are auto-discovered by the dynamic routes created in `src/pages/solutions/[product].astro`, `src/pages/industries/[sector].astro`, and `src/pages/about/[page].astro`.
-- **Solution inventory alignment:** Homepage product modules now deep link into the governance, observability, and automation solution entries (`governance-lakehouse`, `observability-fabric`, `automation-studio`). Keep these MDX files updated in tandem with homepage copy changes so `getStaticPaths` continues generating valid routes without manual intervention.
+- **Content collections:** Marketing MDX lives in `src/content/marketing` under `industries/` and `about/`, while structured solution content now resides in `src/content/solutions/`. The new schema (documented in [`docs/dev/SOLUTIONS.md`](./SOLUTIONS.md)) captures hero metadata, overview summaries, feature bullets, lifecycle steps, use cases, cross-links, and final CTA copy so the Astro templates stay hydration-free.
+- **Solution inventory alignment:** Homepage product modules still deep link into the governance, observability, and automation solution entries (`governance-lakehouse`, `observability-fabric`, `automation-studio`). Keep the structured solution entries updated in tandem with homepage copy changes so `getStaticPaths` continues generating valid routes without manual intervention.
 - **Author workflow:** Drop an MDX file into the appropriate folder, run `npm run typecheck` to verify schema compliance, and execute `npm run build` to regenerate the static routes. Index pages (`/solutions`, `/industries`, `/about`) automatically enumerate new entries and feed breadcrumb metadata to upcoming navigation helpers.
 - **Reusable components:** Shared hero, CTA rows, and shell metadata live in `src/components/marketing/`. Follow the inline comments for SEO, accessibility, and performance guidance before extending any template.
 - **Automation-first mindset:** The marketing pipeline avoids manual routing. Editors should not touch files under `src/pages/solutions/`, `src/pages/industries/`, or `src/pages/about/` unless evolving the templates for the entire section.

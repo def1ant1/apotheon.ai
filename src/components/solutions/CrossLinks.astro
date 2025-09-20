@@ -1,0 +1,44 @@
+---
+import type { SolutionEntry } from '../../content/solutions';
+
+export interface Props {
+  id?: string;
+  title?: string;
+  links: SolutionEntry['data']['crossLinks'];
+}
+
+const {
+  id = 'solutions-cross-links',
+  title = 'Related resources',
+  links,
+} = Astro.props satisfies Props;
+const headingId = `${id}-heading`;
+---
+
+<!--
+  CrossLinks drives cross-navigation between solutions, industries, and docs.
+  Each link is a semantic list item containing a heading, supporting description, and anchor.
+  The anchor includes a descriptive label for analytics and accessibility without requiring JS enhancements.
+-->
+<section {id} aria-labelledby={headingId} class="flex flex-col gap-6">
+  <h2 id={headingId} class="text-3xl font-bold text-white">{title}</h2>
+  <ul class="grid gap-6 md:grid-cols-3">
+    {
+      links.map((link, index) => (
+        <li
+          class="flex flex-col gap-3 rounded-2xl border border-slate-800/80 bg-slate-950/60 p-6"
+          data-analytics-index={index + 1}
+        >
+          <h3 class="text-xl font-semibold text-white">{link.title}</h3>
+          <p class="text-sm text-slate-300">{link.description}</p>
+          <a
+            class="text-sm font-semibold text-indigo-300 underline underline-offset-4 hover:text-indigo-200"
+            href={link.href}
+          >
+            {link.label}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>

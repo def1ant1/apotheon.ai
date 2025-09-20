@@ -1,0 +1,39 @@
+---
+import type { SolutionEntry } from '../../content/solutions';
+
+export interface Props {
+  id?: string;
+  title?: string;
+  useCases: SolutionEntry['data']['useCases'];
+}
+
+const { id = 'solutions-use-cases', title = 'Use cases', useCases } = Astro.props satisfies Props;
+const headingId = `${id}-heading`;
+---
+
+<!--
+  UseCases speaks directly to personas. We render a list of cards with persona tags so sales and marketing teams
+  can reuse the copy in outbound campaigns. Because the data lives in the content collection, editors never touch the template.
+-->
+<section {id} aria-labelledby={headingId} class="flex flex-col gap-6">
+  <h2 id={headingId} class="text-3xl font-bold text-white">{title}</h2>
+  <ul class="grid gap-6 md:grid-cols-3">
+    {
+      useCases.map((useCase, index) => (
+        <li
+          class="flex flex-col gap-3 rounded-2xl border border-slate-800/80 bg-slate-950/60 p-6"
+          data-analytics-index={index + 1}
+        >
+          <h3 class="text-xl font-semibold text-white">{useCase.title}</h3>
+          {useCase.persona && (
+            <p class="text-xs uppercase tracking-wide text-indigo-200">
+              Persona: {useCase.persona}
+            </p>
+          )}
+          <p class="text-sm text-slate-300">{useCase.description}</p>
+          {useCase.outcome && <p class="text-sm text-slate-400">Outcome: {useCase.outcome}</p>}
+        </li>
+      ))
+    }
+  </ul>
+</section>
