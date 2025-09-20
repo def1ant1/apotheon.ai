@@ -1,7 +1,7 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
 test.describe('mobile navigation drawer', () => {
-  test('cycles focus through links and restores the trigger', async ({ page }) => {
+  test('cycles focus through links and restores the trigger', async ({ page }: { page: Page }) => {
     await page.goto('/');
 
     await page.waitForSelector('[data-mobile-nav-ready="true"]');

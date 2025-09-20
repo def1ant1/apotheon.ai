@@ -45,3 +45,5 @@ public/favicon.ico
 public/maskable-icon-192x192.png
 public/maskable-icon-512x512.png
 public/mstile-150x150.png
+# Homepage hero artwork is generated automatically to avoid committing binary assets.
+src/assets/homepage/hero-base.png

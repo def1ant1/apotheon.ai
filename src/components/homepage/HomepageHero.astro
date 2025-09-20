@@ -1,0 +1,176 @@
+---
+import { Image } from '@astrojs/image/components';
+import { getImage } from 'astro:assets';
+
+import type { HomepageHeroContent } from '@content/homepage';
+
+type StaticImageMetadata = {
+  src: string;
+  width: number;
+  height: number;
+  format: string;
+};
+
+type StaticImageModule = {
+  default: StaticImageMetadata;
+};
+
+interface Props {
+  hero: HomepageHeroContent;
+}
+
+const { hero } = Astro.props as Props;
+
+/**
+ * Import every homepage asset eagerly so MDX frontmatter only has to reference the file name.
+ * This keeps the editorial workflow declarative while enabling @astrojs/image optimizations.
+ */
+const heroMediaKey = `../../assets/homepage/${hero.heroMedia.src}`;
+const heroImage: StaticImageMetadata =
+  import.meta.env.MODE === 'test'
+    ? {
+        src: `/assets/homepage/${hero.heroMedia.src}`,
+        width: hero.heroMedia.width,
+        height: hero.heroMedia.height,
+        format: hero.heroMedia.src.split('.').pop() ?? 'png',
+      }
+    : (() => {
+        const heroMediaModules = import.meta.glob<StaticImageModule>(
+          '../../assets/homepage/*.{png,jpg,jpeg,webp,avif}',
+          { eager: true },
+        );
+        const heroMediaModule = heroMediaModules[heroMediaKey];
+        if (!heroMediaModule) {
+          throw new Error(
+            `Homepage hero media not found for key "${heroMediaKey}". Ensure src/assets/homepage contains ${hero.heroMedia.src}.`,
+          );
+        }
+        return heroMediaModule.default;
+      })();
+type GetImageSource = Parameters<typeof getImage>[0]['src'];
+const heroImageSource = heroImage as unknown as GetImageSource;
+const responsiveSizes = '(min-width: 1280px) 44vw, (min-width: 768px) 60vw, 94vw';
+
+const heroPreload = hero.heroMedia.preload
+  ? await getImage({
+      // Match the layout width to reduce content flashes on initial render.
+      src: heroImageSource,
+      width: hero.heroMedia.width,
+      format: 'avif',
+    })
+  : null;
+
+const heroPreloadLink = heroPreload
+  ? {
+      href: heroPreload.src,
+      imagesrcset:
+        typeof heroPreload.attributes?.srcset === 'string'
+          ? heroPreload.attributes.srcset
+          : undefined,
+      imagesizes:
+        typeof heroPreload.attributes?.sizes === 'string'
+          ? heroPreload.attributes.sizes
+          : responsiveSizes,
+    }
+  : null;
+---
+
+<!-- Emit an explicit AVIF preload so browsers fetch the smallest derivative as early as possible. -->{
+  heroPreloadLink && (
+    <link
+      rel="preload"
+      as="image"
+      href={heroPreloadLink.href}
+      imagesizes={heroPreloadLink.imagesizes}
+      imagesrcset={heroPreloadLink.imagesrcset ?? undefined}
+      type="image/avif"
+    />
+  )
+}
+<section
+  id="homepage-hero"
+  class="relative isolate overflow-hidden rounded-3xl border border-slate-800 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-8 shadow-2xl ring-1 ring-slate-800/60 md:p-12"
+  data-analytics-region="homepage-hero"
+>
+  <!-- Layout: a responsive split grid ensures copy is readable on small screens while allocating predictable space for media at desktop breakpoints. -->
+  <div class="grid gap-12 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-center">
+    <div class="space-y-6" data-analytics-block="hero-copy">
+      <p class="text-sm font-semibold uppercase tracking-[0.35rem] text-sky-400">
+        {hero.eyebrow}
+      </p>
+      <h1 class="text-4xl font-black leading-tight text-white md:text-5xl lg:text-6xl">
+        {hero.headline}
+      </h1>
+      <div class="max-w-2xl text-base text-slate-300 md:text-lg">
+        <slot />
+      </div>
+      <div class="flex flex-wrap gap-3" data-analytics-block="hero-ctas">
+        <a
+          id="cta-investor"
+          class="inline-flex items-center justify-center rounded-full border border-sky-400 bg-sky-500 px-5 py-3 text-sm font-semibold uppercase tracking-wide text-slate-950 transition hover:bg-sky-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300"
+          data-analytics-id="homepage-hero-investor"
+          href={hero.investorCta.href}
+          aria-label={hero.investorCta.ariaLabel}
+        >
+          {hero.investorCta.label}
+        </a>
+        <a
+          id="cta-demo"
+          class="inline-flex items-center justify-center rounded-full border border-slate-700 px-5 py-3 text-sm font-semibold uppercase tracking-wide text-slate-200 transition hover:border-slate-500 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-200"
+          data-analytics-id="homepage-hero-demo"
+          href={hero.demoCta.href}
+          aria-label={hero.demoCta.ariaLabel}
+        >
+          {hero.demoCta.label}
+        </a>
+      </div>
+      <ul
+        class="grid gap-3 text-left text-sm text-slate-300 md:grid-cols-2"
+        data-analytics-block="hero-bullets"
+      >
+        {
+          hero.supportingBullets.map((bullet) => (
+            <li
+              class="flex items-start gap-3 rounded-2xl border border-slate-800/60 bg-slate-900/40 p-4 backdrop-blur"
+              data-analytics-id={`homepage-hero-bullet-${bullet.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+            >
+              <span class="mt-1 inline-flex h-8 w-8 flex-none items-center justify-center rounded-full bg-sky-500/10 text-sky-300">
+                {bullet.icon ? (
+                  <span aria-hidden="true">{bullet.icon}</span>
+                ) : (
+                  <span class="sr-only">Bullet</span>
+                )}
+              </span>
+              <span class="space-y-1">
+                <strong class="block font-semibold text-slate-100">{bullet.title}</strong>
+                <span class="block text-slate-400">{bullet.description}</span>
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <div class="relative" data-analytics-block="hero-media">
+      <!-- Media wrapper uses aspect-ratio to lock dimensions and avoid CLS when responsive images hydrate. -->
+      <div
+        class="relative overflow-hidden rounded-3xl border border-slate-800/80 bg-slate-900/60 shadow-xl"
+      >
+        <!-- The Image component also emits a fallback preload; keeping it enabled preserves legacy browsers. -->
+        <Image
+          src={heroImageSource}
+          alt={hero.heroMedia.alt}
+          width={hero.heroMedia.width}
+          height={hero.heroMedia.height}
+          loading="eager"
+          decoding="async"
+          formats={['avif', 'webp', 'png']}
+          sizes={responsiveSizes}
+          class="h-full w-full object-cover"
+          pictureClass="block"
+          imgClass="h-full w-full object-cover"
+          preload={hero.heroMedia.preload}
+        />
+      </div>
+    </div>
+  </div>
+</section>
