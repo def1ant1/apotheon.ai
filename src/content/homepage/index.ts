@@ -150,6 +150,28 @@ const homepageSchema = z.object({
     )
     .min(1)
     .describe('Collection of primary product modules rendered as linked cards'),
+  /**
+   * Optional copy overrides for the industries preview that surfaces below the modules grid.
+   * Marketing can update the heading and intro copy here to align homepage messaging with
+   * active campaigns without touching Astro templates.
+   */
+  industriesPreview: z
+    .object({
+      /** Overrides the default industries preview heading rendered in the <h2>. */
+      headline: z
+        .string()
+        .min(1)
+        .optional()
+        .describe('Custom heading copy for the homepage industries preview block'),
+      /** Optional paragraph rendered under the heading to frame the industry cards. */
+      intro: z
+        .string()
+        .min(1)
+        .optional()
+        .describe('Supporting paragraph introducing the industry cards'),
+    })
+    .optional()
+    .describe('Homepage industries preview copy overrides managed by marketing'),
 });
 
 export const homepageCollection = defineCollection({
@@ -162,3 +184,4 @@ export const homepageEntryId = 'landing';
 export type HomepageHeroContent = z.infer<typeof homepageSchema>;
 export type HomepagePillar = HomepageHeroContent['pillars'][number];
 export type HomepageModule = HomepageHeroContent['modules'][number];
+export type HomepageIndustriesPreview = NonNullable<HomepageHeroContent['industriesPreview']>;
