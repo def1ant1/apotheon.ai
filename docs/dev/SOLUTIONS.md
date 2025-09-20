@@ -7,35 +7,37 @@ Each entry is a Markdown or MDX file whose frontmatter must satisfy the schema d
 
 ## Required Frontmatter Fields
 
-| Field             | Type                | Purpose                                                                             |
-| ----------------- | ------------------- | ----------------------------------------------------------------------------------- |
-| `title`           | `string`            | Human-readable page title rendered in metadata and hero headings.                   |
-| `order`           | `number`            | Controls ordering on `/solutions`. Lower numbers render first.                      |
-| `featured`        | `boolean`           | Toggles featured styling on the landing grid and hero outline.                      |
-| `hero`            | `object`            | Contains `eyebrow`, `headline`, `copy`, and CTA metadata for the hero banner.       |
-| `overview`        | `object`            | Supplies a summary paragraph and optional bullets rendered directly under the hero. |
-| `keyFeatures`     | `array`             | Three or more feature bullets with optional quantitative evidence.                  |
-| `howItWorks`      | `array`             | Ordered lifecycle steps with optional `duration` and `owner` metadata.              |
-| `useCases`        | `array`             | Persona-focused scenarios including optional `outcome` proof points.                |
-| `crossLinks`      | `array`             | Related resources surfaced as semantic list items with descriptive labels.          |
-| `finalCta`        | `object`            | Closing CTA banner copy and button metadata.                                        |
-| `seo.description` | `string` (optional) | Overrides the meta description; defaults to the overview summary.                   |
-| `draft`           | `boolean`           | Draft entries are ignored by `getStaticPaths` and hidden from the index page.       |
+| Field             | Type                | Purpose                                                                                 |
+| ----------------- | ------------------- | --------------------------------------------------------------------------------------- |
+| `title`           | `string`            | Human-readable page title rendered in metadata and hero headings.                       |
+| `order`           | `number`            | Controls ordering on `/solutions`. Lower numbers render first.                          |
+| `featured`        | `boolean`           | Toggles featured styling on the landing grid and hero outline.                          |
+| `hero`            | `object`            | Contains `eyebrow`, `headline`, `copy`, and CTA metadata for the hero banner.           |
+| `overview`        | `object`            | Supplies a summary paragraph and optional bullets rendered directly under the hero.     |
+| `keyFeatures`     | `array`             | Three or more feature bullets with optional quantitative evidence.                      |
+| `howItWorks`      | `array`             | Ordered lifecycle steps with optional `duration` and `owner` metadata.                  |
+| `diagram`         | `object`            | Architecture diagram metadata (`slug`, `alt`, `caption`) rendered after “How it works”. |
+| `useCases`        | `array`             | Persona-focused scenarios including optional `outcome` proof points.                    |
+| `crossLinks`      | `array`             | Related resources surfaced as semantic list items with descriptive labels.              |
+| `finalCta`        | `object`            | Closing CTA banner copy and button metadata.                                            |
+| `seo.description` | `string` (optional) | Overrides the meta description; defaults to the overview summary.                       |
+| `draft`           | `boolean`           | Draft entries are ignored by `getStaticPaths` and hidden from the index page.           |
 
 ## Authoring Workflow
 
-1. **Duplicate an existing entry** to inherit inline editorial notes. Update all frontmatter
-   fields; empty arrays will fail `npm run typecheck` because the templates expect every
-   section to render.
-2. **Keep CTA destinations relative** (`/about/contact/`, `/solutions/nova/`, etc.) so the
-   navigation validator can confirm routes resolve within the static export.
-3. **Run `npm run typecheck`** to validate the schema and `npm run lint` to ensure comments
-   and copy adhere to repository conventions.
-4. **Preview locally** via `npm run dev -- --host 0.0.0.0` and visit `/solutions/<slug>/` to
-   confirm hero, overview, feature grid, lifecycle steps, use cases, cross-links, and the
-   final CTA all render with the expected copy.
-5. **Execute the release gate** before merging: `npm run lint`, `npm run typecheck`,
-   `npm run test`, `npm run test:e2e`, `npm run build`, and `npm run ladle:build`.
+1. **Duplicate an existing entry** to inherit inline editorial notes. Update all frontmatter fields; empty arrays will fail `npm run typecheck` because the templates expect every section to render.
+2. **Keep CTA destinations relative** (`/about/contact/`, `/solutions/nova/`, etc.) so the navigation validator can confirm routes resolve within the static export.
+3. **Maintain architecture diagrams** by editing the raw SVG under `assets/solutions-diagrams/raw/<slug>.svg`, then run `npm run diagrams:build` to regenerate the optimized asset. `npm run diagrams:lint` (invoked inside the main lint script) will fail if optimized exports drift from the raw source.
+4. **Run `npm run typecheck`** to validate the schema and `npm run lint` to ensure comments, diagrams, and copy adhere to repository conventions. The lint task now chains `npm run diagrams:lint`, `npm run icons:lint`, and the style/ESLint suites.
+5. **Preview locally** via `npm run dev -- --host 0.0.0.0` and visit `/solutions/<slug>/` to confirm hero, overview, architecture diagram, feature grid, lifecycle steps, use cases, cross-links, and the final CTA all render with the expected copy.
+6. **Execute the release gate** before merging: `npm run lint`, `npm run typecheck`, `npm run test`, `npm run test:e2e`, `npm run build`, and `npm run ladle:build`. For brand QA, run `npm run icons:lint` and `npm run brand:contrast` whenever artwork or palette tokens change.
+
+## Architecture Diagram Workflow
+
+- Raw SVG artwork lives under `assets/solutions-diagrams/raw/`. Commit updates here and let automation write to `public/static/diagrams/solutions/`.
+- `npm run diagrams:build` optimizes every raw asset with SVGO, while `npm run diagrams:lint` verifies the committed output stays in sync during CI.
+- The `SolutionDiagram` Astro component inlines the optimized SVG, exposes alt text through `role="img"`, and surfaces captions for additional context. Vitest verifies both the schema and rendered markup so accessibility regressions fail fast.
+- Playwright checks the detail page for a visible diagram with the expected accessible name and caption, and Ladle ships a “Diagram gallery” story so design can review the artifacts without standing up a local dev server.
 
 ## Editorial Guardrails
 
