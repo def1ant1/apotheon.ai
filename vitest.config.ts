@@ -21,6 +21,7 @@ const astroAssetsModulePath = fileURLToPath(
 const astroContentModulePath = fileURLToPath(
   new URL('./node_modules/astro/dist/content/index.js', import.meta.url),
 );
+const contentDirectory = fileURLToPath(new URL('./src/content', import.meta.url));
 
 export default defineConfig(async () => {
   const root = dirname(fileURLToPath(new URL(import.meta.url)));
@@ -41,11 +42,13 @@ export default defineConfig(async () => {
       alias: {
         'astro:assets': astroAssetsModulePath,
         'astro:content': astroContentModulePath,
+        '@content': contentDirectory,
       },
     },
     test: {
       environment: 'jsdom',
       exclude: ['tests/e2e/**', 'node_modules/**', 'dist/**'],
+      setupFiles: ['vitest.setup.ts'],
     },
   };
 });

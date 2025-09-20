@@ -1,0 +1,58 @@
+---
+import type { HomepageBenefit } from '@content/homepage';
+
+interface Props {
+  benefits: ReadonlyArray<HomepageBenefit>;
+}
+
+const { benefits } = Astro.props as Props;
+const headingId = 'platform-benefits-heading';
+const descriptionId = 'platform-benefits-description';
+---
+
+<!--
+  Benefits render as a semantic region so assistive technology can jump directly to the ROI grid.
+  Tailwind tokens mirror the rest of the homepage cards for consistency and fast theming updates.
+-->
+<section
+  aria-labelledby={headingId}
+  aria-describedby={descriptionId}
+  class="space-y-8 rounded-3xl border border-slate-800/70 bg-slate-950/60 p-8 shadow-xl ring-1 ring-slate-900/60"
+  data-analytics-region="homepage-platform-benefits"
+>
+  <header class="max-w-3xl space-y-3">
+    <h2 id={headingId} class="text-3xl font-semibold text-white md:text-4xl">
+      Platform outcomes enterprise teams expect
+    </h2>
+    <p id={descriptionId} class="text-base text-slate-300 md:text-lg">
+      Quantified signals from design partners keep the narrative grounded. Refresh quarterly with
+      the latest RevOps benchmarks to maintain credibility through fundraising cycles.
+    </p>
+  </header>
+
+  <!--
+    Responsive grid collapses to a single column on narrow breakpoints without layout shift. We lock
+    card heights using min-h so metrics stay aligned even as copy length evolves.
+  -->
+  <ul class="grid gap-6 md:grid-cols-2 xl:grid-cols-4" data-analytics-block="benefit-cards">
+    {
+      benefits.map((benefit) => (
+        <li
+          class="group flex h-full min-h-[260px] flex-col justify-between gap-4 rounded-2xl border border-slate-800/80 bg-slate-900/60 p-6 shadow-lg ring-1 ring-slate-800/70 transition hover:border-sky-500/50 hover:ring-sky-500/40"
+          data-analytics-id={`homepage-benefit-${benefit.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+        >
+          <div class="space-y-3">
+            <h3 class="text-xl font-semibold text-white">{benefit.title}</h3>
+            <p class="text-sm leading-relaxed text-slate-400 md:text-base">{benefit.proofPoint}</p>
+          </div>
+          <p
+            class="text-2xl font-bold text-sky-300 md:text-3xl"
+            aria-label={`Result: ${benefit.metric}`}
+          >
+            {benefit.metric}
+          </p>
+        </li>
+      ))
+    }
+  </ul>
+</section>

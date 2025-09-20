@@ -1,5 +1,6 @@
 import { getCollection } from 'astro:content';
 
+import { footerContact } from './contactMetadata';
 import {
   navigationMenuGroups,
   type NavigationMenuGroup,
@@ -195,10 +196,4 @@ export const footerLegalLinks: ReadonlyArray<FooterLink> = [
  * Contact metadata powers both the footer and future CRM automations. We break the address into
  * discrete lines so downstream consumers can render microformats or JSON-LD without parsing strings.
  */
-export const footerContact = {
-  organization: 'Apotheon.ai',
-  email: 'hello@apotheon.ai',
-  phone: '+1-206-555-0188',
-  addressLines: ['2211 Meridian Avenue', 'Suite 500', 'Seattle, WA 98101'],
-  officeHours: 'Mon–Fri, 8:00–18:00 PT',
-} as const;
+export { footerContact };
