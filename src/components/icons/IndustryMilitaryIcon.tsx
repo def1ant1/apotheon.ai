@@ -33,14 +33,8 @@ export const IndustryMilitaryIcon = forwardRef<SVGSVGElement, IconProps>(
         {...props}
       >
         {title ? <title id={labelledBy}>{title}</title> : null}
-        <path
-          stroke="#0f172a"
-          d="m12 3.5 7 2.75v5.25c0 4.45-3 7.55-7 8.75-4-1.2-7-4.3-7-8.75V6.25z"
-        />
-        <path
-          stroke="#4338ca"
-          d="m12 8.25 1 1.95 2.15.3L13.6 12l.37 2.1L12 12.95l-1.97 1.15.37-2.1-1.55-1.5 2.15-.3z"
-        />
+        <path stroke="#0f172a" d="m12 3.5 7 2.75v5.25c0 4.45-3 7.55-7 8.75-4-1.2-7-4.3-7-8.75V6.25z" />
+        <path stroke="#4338ca" d="m12 8.25 1 1.95 2.15.3L13.6 12l.37 2.1L12 12.95l-1.97 1.15.37-2.1-1.55-1.5 2.15-.3z" />
         <path stroke="#0ea5e9" d="M8.5 14.75c1 1.4 2.2 2.3 3.5 2.7 1.3-.4 2.5-1.3 3.5-2.7" />
       </svg>
     );

@@ -34,10 +34,7 @@ export const HermesIcon = forwardRef<SVGSVGElement, IconProps>(
       >
         {title ? <title id={labelledBy}>{title}</title> : null}
         <path stroke="#0f172a" d="M12 4.5v15" />
-        <path
-          stroke="#0ea5e9"
-          d="M8.5 7.75c1.2-1.1 2.6-1.1 3.5 0s2.3 1.1 3.5 0M8.5 12c1.2-1.1 2.6-1.1 3.5 0s2.3 1.1 3.5 0"
-        />
+        <path stroke="#0ea5e9" d="M8.5 7.75c1.2-1.1 2.6-1.1 3.5 0s2.3 1.1 3.5 0M8.5 12c1.2-1.1 2.6-1.1 3.5 0s2.3 1.1 3.5 0" />
         <path stroke="#312e81" d="m6 6.25 2.5 1.5L6 9.25m12-3-2.5 1.5 2.5 1.5m-9 9.5h6" />
       </svg>
     );

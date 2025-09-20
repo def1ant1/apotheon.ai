@@ -35,10 +35,7 @@ export const ThemisIcon = forwardRef<SVGSVGElement, IconProps>(
         {title ? <title id={labelledBy}>{title}</title> : null}
         <path stroke="#0f172a" d="M12 4.25v14.5" />
         <path stroke="#312e81" d="M8 6.75h8" />
-        <path
-          stroke="#4338ca"
-          d="M7 6.75 5.25 11a2.25 2.25 0 0 0 4.5 0zm10 0L15.25 11a2.25 2.25 0 0 0 4.5 0z"
-        />
+        <path stroke="#4338ca" d="M7 6.75 5.25 11a2.25 2.25 0 0 0 4.5 0zm10 0L15.25 11a2.25 2.25 0 0 0 4.5 0z" />
         <path stroke="#0f172a" d="M8.5 19.75h7" />
       </svg>
     );

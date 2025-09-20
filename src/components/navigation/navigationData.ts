@@ -24,17 +24,19 @@ function normalizeInternalHref(href: string): string {
 }
 
 /**
- * Derives a set of canonical marketing slugs that also exist inside the primary navigation array.
- * We scope the lookup to known hrefs so the validator avoids storing thousands of unrelated
- * collection routes as the content library scales.
+ * Derives a set of canonical content slugs (marketing, solutions, and industries) that also exist
+ * inside the primary navigation array. We scope the lookup to known hrefs so the validator avoids
+ * storing thousands of unrelated collection routes as the content library scales.
  */
-async function buildMarketingHrefLookup(): Promise<Map<string, string>> {
+async function buildContentHrefLookup(): Promise<Map<string, string>> {
   const marketingEntries = (await getCollection('marketing')) as ReadonlyArray<unknown>;
   const solutionEntries = (await getCollection('solutions')) as ReadonlyArray<unknown>;
+  const industryEntries = (await getCollection('industries')) as ReadonlyArray<unknown>;
   const marketingSlugs = marketingEntries.filter(isEntryWithSlug).map((entry) => entry.slug);
   const solutionSlugs = solutionEntries.filter(isPublishedSolutionEntry).map((entry) => entry.slug);
+  const industrySlugs = industryEntries.filter(isPublishedIndustryEntry).map((entry) => entry.slug);
 
-  const relevantMarketingSlugs = new Map<string, string>();
+  const relevantContentSlugs = new Map<string, string>();
   const trackedInternalLinks = new Set<string>();
 
   for (const group of navigationMenuGroups) {
@@ -49,7 +51,7 @@ async function buildMarketingHrefLookup(): Promise<Map<string, string>> {
     const slugPath = normalizeInternalHref(slug);
 
     if (trackedInternalLinks.has(slugPath)) {
-      relevantMarketingSlugs.set(slugPath, slugPath);
+      relevantContentSlugs.set(slugPath, slugPath);
     }
   };
 
@@ -61,14 +63,23 @@ async function buildMarketingHrefLookup(): Promise<Map<string, string>> {
     registerSlug(`solutions/${slug}`);
   }
 
-  return relevantMarketingSlugs;
+  for (const slug of industrySlugs) {
+    registerSlug(`industries/${slug}`);
+  }
+
+  return relevantContentSlugs;
 }
 
 interface EntryWithSlug {
   readonly slug: string;
 }
 
-interface SolutionLikeEntry extends EntryWithSlug {
+/**
+ * Draft-aware entry contract shared across solutions and industries collections. Centralizing the
+ * shape lets us reuse a single type guard when additional content buckets (e.g., case studies)
+ * eventually plug into the navigation validator.
+ */
+interface DraftableEntry extends EntryWithSlug {
   readonly data?: { draft?: boolean };
 }
 
@@ -82,12 +93,22 @@ function isEntryWithSlug(candidate: unknown): candidate is EntryWithSlug {
   return typeof slug === 'string' && slug.length > 0;
 }
 
-function isPublishedSolutionEntry(candidate: unknown): candidate is SolutionLikeEntry {
+/**
+ * Defensive helper that confirms the candidate exposes a slug and either omits the draft flag or
+ * explicitly marks it as `false`. Returning early when the data blob is malformed prevents
+ * TypeScript from widening every candidate to `any`, which keeps the downstream map/filter logic
+ * type-safe.
+ */
+function isPublishedDraftableEntry(candidate: unknown): candidate is DraftableEntry {
   if (!isEntryWithSlug(candidate)) {
     return false;
   }
 
   const data = (candidate as { data?: unknown }).data;
+
+  if (data === undefined) {
+    return true;
+  }
 
   if (typeof data !== 'object' || data === null) {
     return false;
@@ -98,6 +119,14 @@ function isPublishedSolutionEntry(candidate: unknown): candidate is SolutionLike
   return draft !== true;
 }
 
+function isPublishedSolutionEntry(candidate: unknown): candidate is DraftableEntry {
+  return isPublishedDraftableEntry(candidate);
+}
+
+function isPublishedIndustryEntry(candidate: unknown): candidate is DraftableEntry {
+  return isPublishedDraftableEntry(candidate);
+}
+
 /**
  * Centralized sanitizer that mirrors the header’s historical behavior. We clone the exported data
  * structure from the Radix navigation island, resolve all internal hrefs against the marketing
@@ -105,7 +134,7 @@ function isPublishedSolutionEntry(candidate: unknown): candidate is SolutionLike
  * so downstream consumers can iterate freely without mutating the shared singleton.
  */
 export async function getValidatedNavigationGroups(): Promise<ReadonlyArray<NavigationMenuGroup>> {
-  const marketingHrefLookup = await buildMarketingHrefLookup();
+  const contentHrefLookup = await buildContentHrefLookup();
 
   const validatedGroups: NavigationMenuGroup[] = [];
 
@@ -118,11 +147,11 @@ export async function getValidatedNavigationGroups(): Promise<ReadonlyArray<Navi
         continue;
       }
 
-      const canonicalHref = marketingHrefLookup.get(normalizeInternalHref(link.href));
+      const canonicalHref = contentHrefLookup.get(normalizeInternalHref(link.href));
 
       if (!canonicalHref) {
         console.warn(
-          `navigation: skipping "${link.label}" because ${link.href} does not resolve to a marketing entry`,
+          `navigation: skipping "${link.label}" because ${link.href} does not resolve to a supported content entry`,
         );
         continue;
       }
