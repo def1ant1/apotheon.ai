@@ -19,25 +19,37 @@ import { forwardRef, useMemo, type ComponentPropsWithoutRef, type ElementRef } f
  * consoles) so they can stay aligned without copy/pasting array literals. Treat it as the single
  * source of truth for top-level IA buckets.
  */
-export const navigationMenuGroups = [
+export interface NavigationMenuLink {
+  label: string;
+  href: string;
+  description: string;
+}
+
+export interface NavigationMenuGroup {
+  label: string;
+  description: string;
+  links: ReadonlyArray<NavigationMenuLink>;
+}
+
+export const navigationMenuGroups: ReadonlyArray<NavigationMenuGroup> = [
   {
     label: 'Platform',
     description: 'Deep dives into the Apotheon.ai operating system and its modular AI surfaces.',
     links: [
       {
-        label: 'AIOS Overview',
+        label: 'Clio Orchestration',
         href: '/solutions/clio',
         description: 'Systems thinking behind our cognitive orchestration layer.',
       },
       {
-        label: 'Secure Integrations',
-        href: '/solutions/hermes',
-        description: 'Enterprise ingress/egress pipelines with signed artifact distribution.',
+        label: 'Atlas Activation',
+        href: '/solutions/atlas',
+        description: 'Real-time data activation pipelines governed by policy-aware workflows.',
       },
       {
-        label: 'Continuous Learning',
-        href: '/solutions/mnemosyne',
-        description: 'Feedback ingestion loops that stay compliant while improving accuracy.',
+        label: 'Nova Workbench',
+        href: '/solutions/nova',
+        description: 'Secure experimentation playgrounds for shipping regulated AI features.',
       },
     ],
   },
@@ -51,13 +63,13 @@ export const navigationMenuGroups = [
         description: 'Augment clinical operations with AI guardrails and observability.',
       },
       {
-        label: 'Finance',
-        href: '/industries/finance',
+        label: 'Financial Services',
+        href: '/industries/financial-services',
         description: 'Accelerate underwriting decisions without compromising compliance.',
       },
       {
-        label: 'Government',
-        href: '/industries/government',
+        label: 'Public Sector',
+        href: '/industries/public-sector',
         description: 'Deliver mission-ready intelligence workflows at the edge.',
       },
     ],
@@ -68,13 +80,13 @@ export const navigationMenuGroups = [
     links: [
       {
         label: 'About Apotheon.ai',
-        href: '/about/history',
+        href: '/about/company',
         description: 'Research pedigree, team structure, and governance disciplines.',
       },
       {
-        label: 'Investors',
-        href: '/about/investors',
-        description: 'Structured diligence, metrics, and defensibility overview.',
+        label: 'Careers',
+        href: '/about/careers',
+        description: 'Hiring roadmaps and the interview experience for prospective teammates.',
       },
       {
         label: 'Contact',
@@ -83,15 +95,40 @@ export const navigationMenuGroups = [
       },
     ],
   },
-] as const;
+];
 
-export function RadixNavigationMenu() {
+export interface RadixNavigationMenuProps {
+  /**
+   * Optional override that lets Astro surfaces validate or filter navigation data before hydrating
+   * the island. Keeping the prop read-only discourages mutation and ensures memoization remains
+   * stable even when parents re-render.
+   */
+  readonly groups?: ReadonlyArray<NavigationMenuGroup>;
+  /**
+   * Consumers may merge bespoke layout utilities (e.g., flex direction on sticky headers) without
+   * repeating the base `navigation-surface` class baked into the global stylesheet.
+   */
+  readonly className?: string;
+}
+
+export function RadixNavigationMenu({
+  groups = navigationMenuGroups,
+  className,
+}: RadixNavigationMenuProps = {}) {
   /**
    * Define navigation content as data first. This keeps the JSX lean and allows us to
    * generate both the trigger labels and panel content from a single source of truth.
    * Doing so avoids manual duplication whenever sections or routes evolve.
    */
-  const menuGroups = useMemo(() => navigationMenuGroups, []);
+  const menuGroups = useMemo(() => groups, [groups]);
+
+  const rootClassName = useMemo(
+    () =>
+      ['navigation-surface', className]
+        .filter((value): value is string => Boolean(value && value.trim().length > 0))
+        .join(' '),
+    [className],
+  );
 
   return (
     <NavigationMenu.Root
@@ -100,7 +137,7 @@ export function RadixNavigationMenu() {
        * Tailwind tokens reference centralized design scales so we never hand-roll pixel values.
        */
       aria-label="Primary"
-      className="navigation-surface"
+      className={rootClassName}
     >
       <VisuallyHidden>
         {/*
