@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const pageTitle = 'Responsible AI Charter';
+const description =
+  'Principles governing AI experimentation, human-in-the-loop safety, and production rollout reviews.';
+---
+
+<BaseLayout title={`${pageTitle} — Apotheon.ai`} {description}>
+  <!--
+    Document the interim Responsible AI commitments that leadership already approved. When the final
+    charter clears compliance review, swap this scaffold with the notarized markdown or embed the
+    signed PDF. Keep the summary below updated so GTM teams know how to position governance.
+  -->
+  <section class="flex flex-col gap-space-md">
+    <header class="space-y-space-2xs">
+      <p class="text-caption uppercase tracking-wide text-ink-muted">Governance Draft</p>
+      <h1 class="text-display-xl font-bold text-ink-primary">{pageTitle}</h1>
+      <p class="max-w-prose text-body text-ink-secondary">
+        Apotheon.ai treats Responsible AI as a product requirement. The bullets below describe the
+        operating guardrails that product, applied science, and GTM already follow. Formal language
+        is forthcoming, but these tenets should guide roadmap decisions today.
+      </p>
+    </header>
+
+    <div
+      class="space-y-space-sm rounded-radius-xl border border-border-subtle/60 bg-surface-base/80 p-space-lg shadow-elevation-1"
+    >
+      <h2 class="text-title-md font-semibold text-ink-primary">Guiding Tenets</h2>
+      <ul class="list-disc space-y-space-2xs pl-6 text-body-sm text-ink-secondary">
+        <li>Mandatory human-in-the-loop review before shipping AI-generated customer content.</li>
+        <li>
+          Comprehensive audit trails streamed to the governance lakehouse for every inference call.
+        </li>
+        <li>
+          Bias + fairness evaluations run automatically during CI with redline thresholds per
+          industry.
+        </li>
+        <li>Rollback plans codified in runbooks so any model can revert within five minutes.</li>
+      </ul>
+    </div>
+
+    <p class="text-body-sm text-ink-muted">
+      Questions about experimentation policy? Email <a
+        class="font-semibold"
+        href="mailto:responsible-ai@apotheon.ai">responsible-ai@apotheon.ai</a
+      >
+      and copy the product owner to log context in the governance tracker.
+    </p>
+  </section>
+</BaseLayout>
