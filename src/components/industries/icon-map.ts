@@ -1,8 +1,12 @@
 import {
   IndustryEnergyIcon,
   IndustryFinanceIcon,
+  IndustryGovernmentIcon,
   IndustryHealthcareIcon,
+  IndustryIntelligenceIcon,
+  IndustryLawIcon,
   IndustryManufacturingIcon,
+  IndustryMilitaryIcon,
   IndustryPublicSectorIcon,
   IndustryTransportIcon,
 } from '../icons';
@@ -19,6 +23,10 @@ const iconMap: Record<IndustryIconSlug, IndustryIconComponent> = {
   energy: IndustryEnergyIcon,
   manufacturing: IndustryManufacturingIcon,
   transport: IndustryTransportIcon,
+  law: IndustryLawIcon,
+  government: IndustryGovernmentIcon,
+  military: IndustryMilitaryIcon,
+  intelligence: IndustryIntelligenceIcon,
 };
 
 export function resolveIndustryIcon(slug: IndustryIconSlug): IndustryIconComponent {

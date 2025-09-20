@@ -60,9 +60,12 @@ function mapToIndustryPreviewCard(entry: IndustryEntry): IndustryPreviewCard {
 export async function loadIndustriesPreviewCards(
   limit: number = INDUSTRIES_PREVIEW_LIMIT,
 ): Promise<IndustryPreviewCard[]> {
-  const industryEntries = await getCollection('industries', ({ data }) => !data.draft);
+  const industryEntries = await getCollection(
+    'industries',
+    (entry): entry is IndustryEntry => !entry.data.draft,
+  );
 
-  const publishedIndustries = industryEntries
+  const publishedIndustries: IndustryPreviewCard[] = industryEntries
     .map(mapToIndustryPreviewCard)
     .sort((a, b) => (a.order === b.order ? a.title.localeCompare(b.title) : a.order - b.order));
 

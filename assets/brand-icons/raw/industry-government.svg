@@ -1,0 +1,17 @@
+<!--
+  Government services glyph symbolizing responsive civic infrastructure.
+  The dome and pillars highlight transparency, accessibility, and resilience.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <title>Government services industry glyph</title>
+  <!-- Dome representing civic mandates -->
+  <path d="M12 4.5c-3.2 0-5.75 2.55-5.75 5.7V11h11.5V10.2c0-3.15-2.55-5.7-5.75-5.7z" stroke="#0EA5E9" />
+  <!-- Pillars showing coordinated delivery -->
+  <path d="M7.5 11v6.5" stroke="#0F172A" />
+  <path d="M10.5 11v6.5" stroke="#4338CA" />
+  <path d="M13.5 11v6.5" stroke="#4338CA" />
+  <path d="M16.5 11v6.5" stroke="#0F172A" />
+  <!-- Base referencing transparent service platforms -->
+  <path d="M6 17.5h12" stroke="#0EA5E9" />
+  <path d="M5.25 19.5h13.5" stroke="#0F172A" />
+</svg>

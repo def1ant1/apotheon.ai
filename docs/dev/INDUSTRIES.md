@@ -23,16 +23,22 @@ Inline HTML comments inside each MDX file capture tone guidance (e.g., complianc
 
 Use the following icon slugs inside `hero.icon`:
 
-| Slug            | Component                   | Usage Notes                             |
-| --------------- | --------------------------- | --------------------------------------- |
-| `finance`       | `IndustryFinanceIcon`       | Financial services, banking, insurance  |
-| `healthcare`    | `IndustryHealthcareIcon`    | Provider, payer, life sciences          |
-| `public-sector` | `IndustryPublicSectorIcon`  | Federal, state, municipal missions      |
-| `energy`        | `IndustryEnergyIcon`        | Utility and energy transformation       |
-| `manufacturing` | `IndustryManufacturingIcon` | Industrial, logistics, and supply chain |
-| `transport`     | `IndustryTransportIcon`     | Aviation, rail, autonomous mobility     |
+| Slug            | Component                   | Usage Notes                                    |
+| --------------- | --------------------------- | ---------------------------------------------- |
+| `finance`       | `IndustryFinanceIcon`       | Financial services, banking, insurance         |
+| `healthcare`    | `IndustryHealthcareIcon`    | Provider, payer, life sciences                 |
+| `public-sector` | `IndustryPublicSectorIcon`  | Federal, state, municipal missions             |
+| `energy`        | `IndustryEnergyIcon`        | Utility and energy transformation              |
+| `manufacturing` | `IndustryManufacturingIcon` | Industrial, logistics, and supply chain        |
+| `transport`     | `IndustryTransportIcon`     | Aviation, rail, autonomous mobility            |
+| `law`           | `IndustryLawIcon`           | Law firms, corporate counsel, regulatory teams |
+| `government`    | `IndustryGovernmentIcon`    | State, local, and civic digital services       |
+| `military`      | `IndustryMilitaryIcon`      | Defense mission systems and software factories |
+| `intelligence`  | `IndustryIntelligenceIcon`  | National and commercial intelligence programs  |
 
 Icons render server-side and never hydrate; no additional directives are required. Open a follow-up ticket before adding new icons so the shared map and documentation stay in sync.
+
+> **Automation reminder:** add the raw SVG under `assets/brand-icons/raw/`, run `npm run icons:build`, and append the slug to `src/content/industries/iconSlugs.ts` so validation stays automatic.
 
 ## Editorial Workflow
 

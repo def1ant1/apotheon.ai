@@ -90,3 +90,18 @@ exports[`Industry section view models > snapshots the hero payload 1`] = `
   "title": "Finance Intelligence",
 }
 `;
+
+exports[`Industry section view models > tracks the registered industry icon slugs for schema parity > industry-icon-slugs 1`] = `
+[
+  "finance",
+  "healthcare",
+  "public-sector",
+  "energy",
+  "manufacturing",
+  "transport",
+  "law",
+  "government",
+  "military",
+  "intelligence",
+]
+`;

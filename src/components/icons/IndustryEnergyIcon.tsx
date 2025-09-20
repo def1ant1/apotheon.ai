@@ -33,10 +33,7 @@ export const IndustryEnergyIcon = forwardRef<SVGSVGElement, IconProps>(
         {...props}
       >
         {title ? <title id={labelledBy}>{title}</title> : null}
-        <path
-          stroke="#0ea5e9"
-          d="m12 4.5-2.25 5h-5l4 2.5-1.5 4.75L12 14.5l4.75 2.25-1.5-4.75 4-2.5h-5Z"
-        />
+        <path stroke="#0ea5e9" d="m12 4.5-2.25 5h-5l4 2.5-1.5 4.75L12 14.5l4.75 2.25-1.5-4.75 4-2.5h-5Z" />
         <path stroke="#f97316" d="M12 10.5 10.75 13h2L12 15.5" />
       </svg>
     );

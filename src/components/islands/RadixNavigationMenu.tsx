@@ -68,7 +68,27 @@ export const navigationMenuGroups: ReadonlyArray<NavigationMenuGroup> = [
         description: 'Accelerate underwriting decisions without compromising compliance.',
       },
       {
-        label: 'Public Sector',
+        label: 'Legal Services',
+        href: '/industries/law',
+        description: 'Modernize confidential matter delivery with privileged AI workflows.',
+      },
+      {
+        label: 'Government Digital Services',
+        href: '/industries/government',
+        description: 'Rebuild constituent experiences with zero-trust automation and transparency.',
+      },
+      {
+        label: 'Defense & Military',
+        href: '/industries/military',
+        description: 'Deploy IL5-ready mission systems with RMF automation and observability.',
+      },
+      {
+        label: 'Intelligence',
+        href: '/industries/intelligence',
+        description: 'Fuse multi-source intelligence with ICD-aligned governance and automation.',
+      },
+      {
+        label: 'Public Sector Missions',
         href: '/industries/public-sector',
         description: 'Deliver mission-ready intelligence workflows at the edge.',
       },

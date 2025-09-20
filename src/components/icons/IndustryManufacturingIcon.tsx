@@ -33,10 +33,7 @@ export const IndustryManufacturingIcon = forwardRef<SVGSVGElement, IconProps>(
         {...props}
       >
         {title ? <title id={labelledBy}>{title}</title> : null}
-        <path
-          stroke="#312e81"
-          d="M12 6.25A3.75 3.75 0 1 1 8.25 10 3.75 3.75 0 0 1 12 6.25m0-2.5v2.5m0 7.5v2.5m5-5h2.5m-15 0H6m10.4-4.4 1.8-1.8m-9.4 9.4L7 16.25m0-11.2 1.8 1.8m9.4 9.4-1.8-1.8"
-        />
+        <path stroke="#312e81" d="M12 6.25A3.75 3.75 0 1 1 8.25 10 3.75 3.75 0 0 1 12 6.25m0-2.5v2.5m0 7.5v2.5m5-5h2.5m-15 0H6m10.4-4.4 1.8-1.8m-9.4 9.4L7 16.25m0-11.2 1.8 1.8m9.4 9.4-1.8-1.8" />
         <path stroke="#0f172a" d="M4 17.75h16" />
         <circle cx="7.5" cy="19.5" r="1" stroke="#0ea5e9" />
         <circle cx="12" cy="19.5" r="1" stroke="#0ea5e9" />
