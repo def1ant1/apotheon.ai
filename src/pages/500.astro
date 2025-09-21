@@ -1,6 +1,14 @@
 ---
 import ErrorPageShell from '../components/system/ErrorPageShell.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
+
+const seo = {
+  title: "We're working on a fix",
+  description: 'Service disruption runbooks are in motion.',
+  path: '/500',
+  trailingSlash: false,
+  noindex: true,
+};
 ---
 
 <!--
@@ -10,7 +18,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   Keeping the page static ensures incident responders and customers receive a predictable, cached response
   even if the origin remains degraded.
 -->
-<BaseLayout title="We're working on a fix" description="Service disruption runbooks are in motion.">
+<BaseLayout {seo}>
   <ErrorPageShell
     code="500"
     title="Something broke on our side"

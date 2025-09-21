@@ -7,7 +7,7 @@
       "@layouts/*": ["src/layouts/*"],
       "@content/*": ["src/content/*"]
     },
-    "types": ["@types/node", "@playwright/test"]
+    "types": ["astro/client", "@types/node", "@playwright/test"]
   },
   "include": [
     "src",

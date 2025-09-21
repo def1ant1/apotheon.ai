@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../navigation/Breadcrumbs.astro';
 
 import type { BreadcrumbTrail } from '../../utils/breadcrumbs';
+import type { PageSeoInput } from '../../utils/seo';
 
 interface Props {
   title: string;
@@ -13,14 +14,25 @@ interface Props {
    * `src/utils/breadcrumbs`.
    */
   breadcrumbs?: BreadcrumbTrail;
+  /**
+   * Optional SEO overrides (e.g., custom OpenGraph payloads). Most pages should rely on the base
+   * title/description defaults to keep metadata uniform.
+   */
+  seo?: Partial<PageSeoInput>;
 }
 
-const { title, description, breadcrumbs = [] } = Astro.props as Props;
+const { title, description, breadcrumbs = [], seo: seoOverrides } = Astro.props as Props;
 
-const normalizedTitle = `${title} | Apotheon.ai`;
 const metaDescription =
   description ??
   'Composable marketing surfaces render statically for global performance while capturing enterprise-ready storytelling.';
+
+const pageSeo: PageSeoInput = {
+  ...seoOverrides,
+  title: seoOverrides?.title ?? title,
+  description: seoOverrides?.description ?? metaDescription,
+  path: seoOverrides?.path ?? Astro.url.pathname,
+};
 ---
 
 {
@@ -30,7 +42,9 @@ const metaDescription =
   handles canonical document order (breadcrumbs → hero → content → CTAs).
 */
 }
-<BaseLayout title={normalizedTitle} description={metaDescription}>
+<BaseLayout seo={pageSeo}>
+  {/** Forward optional head slot content (structured data, meta overrides) to BaseLayout. */}
+  <slot name="head" slot="head" />
   <section class="mx-auto flex w-full max-w-5xl flex-col gap-12 px-6 pb-16">
     {breadcrumbs.length > 0 && <Breadcrumbs class="mt-6" trail={breadcrumbs} />}
 

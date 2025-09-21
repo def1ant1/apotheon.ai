@@ -3,9 +3,11 @@ import { getCollection } from 'astro:content';
 
 import BlogIndex from '../../components/islands/BlogIndex';
 import Breadcrumbs from '../../components/navigation/Breadcrumbs.astro';
+import SchemaScript from '../../components/seo/SchemaScript.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { collectUniqueTags, sortBlogPostsByPublishDate } from '../../utils/blog';
 import { createBlogIndexTrail } from '../../utils/breadcrumbs';
+import { buildBreadcrumbSchema } from '../../utils/seo';
 
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
 const posts = sortBlogPostsByPublishDate(allPosts, 'desc');
@@ -23,12 +25,23 @@ const listingPosts = posts.map((post) => ({
 }));
 
 const breadcrumbs = createBlogIndexTrail();
+const siteOrigin = Astro.site?.origin ?? Astro.url.origin;
+const seo = {
+  title: 'Apotheon.ai Blog',
+  description:
+    'Enterprise AI governance, delivery, and platform engineering guides from the Apotheon.ai field team.',
+  path: '/blog/',
+  openGraph: {
+    type: 'website',
+    section: 'Insights',
+  },
+};
+
+const breadcrumbSchema = buildBreadcrumbSchema(breadcrumbs, siteOrigin);
 ---
 
-<BaseLayout
-  title="Apotheon.ai Blog"
-  description="Enterprise AI governance, delivery, and platform engineering guides from the Apotheon.ai field team."
->
+<BaseLayout {seo}>
+  <SchemaScript slot="head" schema={breadcrumbSchema} />
   <Breadcrumbs
     baseHref={Astro.site?.origin ?? Astro.url.origin}
     class="mx-auto w-full max-w-5xl px-6 pt-12"

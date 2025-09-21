@@ -5,7 +5,9 @@ import ContactForm from '../../components/islands/ContactForm';
 import MarketingCtaRow from '../../components/marketing/MarketingCtaRow.astro';
 import MarketingHero from '../../components/marketing/MarketingHero.astro';
 import MarketingShell from '../../components/marketing/MarketingShell.astro';
+import SchemaScript from '../../components/seo/SchemaScript.astro';
 import { createMarketingEntryTrail } from '../../utils/breadcrumbs';
+import { buildBreadcrumbSchema, buildFaqSchema } from '../../utils/seo';
 
 export async function getStaticPaths() {
   const entries = await getCollection('marketing', ({ id }) => id.startsWith('about/'));
@@ -28,9 +30,32 @@ const heroCopy =
   'Understand the teams, history, and culture powering Apotheon.ai as we scale enterprise platforms.';
 const heroCtaLabel = data.heroCtaLabel ?? 'Connect with us';
 const breadcrumbs = createMarketingEntryTrail(entry);
+const siteOrigin = Astro.site?.origin ?? Astro.url.origin;
+const breadcrumbSchema = buildBreadcrumbSchema(breadcrumbs, siteOrigin);
+const faqSchema = isContactPage
+  ? buildFaqSchema([
+      {
+        question: 'How quickly will Apotheon.ai respond to my inquiry?',
+        answer:
+          'Revenue operations monitors the intake queue continuously and routes messages to the appropriate solution engineering pod within minutes.',
+      },
+      {
+        question: 'Who should use the contact form versus emailing directly?',
+        answer:
+          'Platform evaluations, strategic partnerships, and investor outreach should start with the form so automation captures context, audit signals, and verification artifacts automatically.',
+      },
+      {
+        question: 'Is there a direct email address for urgent conversations?',
+        answer:
+          'Yes. Email revops@apotheon.ai for time-sensitive requests—the shared inbox automation attaches each thread to your submission record for tracking.',
+      },
+    ])
+  : null;
+const schemaPayload = faqSchema ? [breadcrumbSchema, faqSchema] : breadcrumbSchema;
 ---
 
 <MarketingShell title={data.title} description={heroCopy} {breadcrumbs}>
+  <SchemaScript slot="head" schema={schemaPayload} />
   <MarketingHero
     eyebrow="About"
     headline={data.title}

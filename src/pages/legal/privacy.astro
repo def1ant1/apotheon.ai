@@ -1,12 +1,29 @@
 ---
+import SchemaScript from '../../components/seo/SchemaScript.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { buildBreadcrumbSchema } from '../../utils/seo';
 
 const pageTitle = 'Privacy Policy';
 const description =
   'How Apotheon.ai protects customer data, handles DSAR workflows, and meets jurisdictional requirements.';
+const seo = {
+  title: pageTitle,
+  description,
+  path: '/legal/privacy/',
+};
+const siteOrigin = Astro.site?.origin ?? Astro.url.origin;
+const breadcrumbSchema = buildBreadcrumbSchema(
+  [
+    { label: 'Home', href: '/' },
+    { label: 'Legal', href: '/legal/' },
+    { label: pageTitle, href: '/legal/privacy/' },
+  ],
+  siteOrigin,
+);
 ---
 
-<BaseLayout title={`${pageTitle} — Apotheon.ai`} {description}>
+<BaseLayout {seo}>
+  <SchemaScript slot="head" schema={breadcrumbSchema} />
   <!--
     This placeholder keeps the marketing site free from 404s while legal finalizes the production
     policy language. Embed high-level guidance so product managers understand the scope before

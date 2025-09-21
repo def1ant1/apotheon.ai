@@ -5,7 +5,9 @@ import { resolveIndustryIcon } from '../../components/industries/icon-map';
 import MarketingCtaRow from '../../components/marketing/MarketingCtaRow.astro';
 import MarketingHero from '../../components/marketing/MarketingHero.astro';
 import MarketingShell from '../../components/marketing/MarketingShell.astro';
+import SchemaScript from '../../components/seo/SchemaScript.astro';
 import { createMarketingIndexTrail } from '../../utils/breadcrumbs';
+import { buildBreadcrumbSchema } from '../../utils/seo';
 
 const industryEntries = await getCollection('industries', ({ data }) => !data.draft);
 const industries = industryEntries
@@ -23,9 +25,11 @@ const industries = industryEntries
 const heroCopy =
   'Assess how Apotheon.ai adapts the platform for the regulations and missions you manage.';
 const breadcrumbs = createMarketingIndexTrail('industries');
+const breadcrumbSchema = buildBreadcrumbSchema(breadcrumbs, Astro.site?.origin ?? Astro.url.origin);
 ---
 
 <MarketingShell title="Industries" description={heroCopy} {breadcrumbs}>
+  <SchemaScript slot="head" schema={breadcrumbSchema} />
   <MarketingHero
     eyebrow="Industries"
     headline="Purpose-built industry playbooks"

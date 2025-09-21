@@ -4,11 +4,12 @@ import { getCollection, getEntryBySlug } from 'astro:content';
 
 import AuthorBio from '../../components/blog/AuthorBio.astro';
 import RelatedPosts from '../../components/blog/RelatedPosts.astro';
-import SchemaScript from '../../components/blog/SchemaScript.astro';
 import Breadcrumbs from '../../components/navigation/Breadcrumbs.astro';
+import SchemaScript from '../../components/seo/SchemaScript.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { resolveOgImage, scoreRelatedPosts } from '../../utils/blog';
 import { createBlogPostTrail } from '../../utils/breadcrumbs';
+import { buildArticleSchema, buildBreadcrumbSchema } from '../../utils/seo';
 
 export async function getStaticPaths() {
   const entries = await getCollection('blog', ({ data }) => !data.draft);
@@ -37,51 +38,40 @@ const relatedPosts = scoreRelatedPosts(entry, publishedEntries, 3);
 const siteOrigin = Astro.site?.origin ?? Astro.url.origin;
 const canonicalUrl = new URL(`/blog/${entry.slug}/`, siteOrigin).href;
 const { url: ogImageUrl, alt: ogImageAlt } = resolveOgImage(entry, siteOrigin);
+const breadcrumbs = createBlogPostTrail(entry);
 
-const articleSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'Article',
-  mainEntityOfPage: {
-    '@type': 'WebPage',
-    '@id': canonicalUrl,
-  },
-  headline: entry.data.title,
+const seo = {
+  title: entry.data.title,
   description: entry.data.description,
-  datePublished: entry.data.publishDate.toISOString(),
-  dateModified: (entry.data.updatedDate ?? entry.data.publishDate).toISOString(),
-  author: {
-    '@type': 'Person',
-    name: entry.data.author.name,
-    ...(entry.data.author.title ? { jobTitle: entry.data.author.title } : {}),
+  path: `/blog/${entry.slug}/`,
+  openGraph: {
+    type: 'article',
+    images: [{ url: ogImageUrl, alt: ogImageAlt }],
+    publishedTime: entry.data.publishDate,
+    modifiedTime: entry.data.updatedDate ?? entry.data.publishDate,
+    tags: entry.data.tags,
+    section: 'Insights',
   },
-  publisher: {
-    '@type': 'Organization',
-    name: 'Apotheon.ai',
-  },
-  keywords: entry.data.tags.join(', '),
-  timeRequired: `PT${entry.data.estimatedReadingMinutes}M`,
-  isAccessibleForFree: true,
-  image: ogImageUrl,
 };
 
-const breadcrumbs = createBlogPostTrail(entry);
+const articleSchema = buildArticleSchema({
+  headline: entry.data.title,
+  description: entry.data.description,
+  url: canonicalUrl,
+  publishedTime: entry.data.publishDate,
+  modifiedTime: entry.data.updatedDate ?? entry.data.publishDate,
+  authorName: entry.data.author.name,
+  authorTitle: entry.data.author.title,
+  image: ogImageUrl,
+  tags: entry.data.tags,
+  readingTimeMinutes: entry.data.estimatedReadingMinutes,
+});
+const breadcrumbSchema = buildBreadcrumbSchema(breadcrumbs, siteOrigin);
 ---
 
-<BaseLayout title={entry.data.title} description={entry.data.description}>
+<BaseLayout {seo}>
   <Fragment slot="head">
-    <SchemaScript schema={articleSchema} />
-    <link rel="canonical" href={canonicalUrl} />
-    <meta property="og:type" content="article" />
-    <meta property="og:title" content={entry.data.title} />
-    <meta property="og:description" content={entry.data.description} />
-    <meta property="og:url" content={canonicalUrl} />
-    <meta property="og:image" content={ogImageUrl} />
-    <meta property="og:image:alt" content={ogImageAlt} />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={entry.data.title} />
-    <meta name="twitter:description" content={entry.data.description} />
-    <meta name="twitter:image" content={ogImageUrl} />
-    <!-- TODO(Epic-14): Swap the static OG meta tags with Worker-generated payloads once the automation ships. -->
+    <SchemaScript schema={[articleSchema, breadcrumbSchema]} />
   </Fragment>
   <Breadcrumbs
     baseHref={Astro.site?.origin ?? Astro.url.origin}

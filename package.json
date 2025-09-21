@@ -32,7 +32,7 @@
     "pretest:e2e": "npm run ensure:homepage-hero-media",
     "prepare": "husky install",
     "pagefind:index": "npm run search:index",
-    "postbuild:seo": "node ./scripts/seo/generate-robots.mjs",
+    "postbuild:seo": "node ./scripts/seo/generate-sitemap.mjs && node ./scripts/seo/generate-robots.mjs",
     "search:index": "node ./scripts/search/postbuild.mjs",
     "seo:verify": "node ./scripts/seo/verify-dist.mjs",
     "lighthouse:ci": "node ./scripts/ci/lighthouse-ci.mjs",

@@ -8,7 +8,9 @@ import IndustryPressures from '../../components/industries/IndustryPressures.ast
 import IndustrySolutionMap from '../../components/industries/IndustrySolutionMap.astro';
 import IndustryUseCases from '../../components/industries/IndustryUseCases.astro';
 import MarketingShell from '../../components/marketing/MarketingShell.astro';
+import SchemaScript from '../../components/seo/SchemaScript.astro';
 import { normalizeTrail } from '../../utils/breadcrumbs';
+import { buildBreadcrumbSchema } from '../../utils/seo';
 
 export async function getStaticPaths() {
   const entries = await getCollection('industries', ({ data }) => !data.draft);
@@ -30,9 +32,21 @@ const breadcrumbs = normalizeTrail([
   { label: data.title, href: `/industries/${entry.slug}/` },
 ]);
 const pageDescription = data.seo?.description ?? data.hero.copy;
+const siteOrigin = Astro.site?.origin ?? Astro.url.origin;
+const seo = {
+  title: data.title,
+  description: pageDescription,
+  path: `/industries/${entry.slug}/`,
+  openGraph: {
+    type: 'website',
+    section: 'Industries',
+  },
+};
+const breadcrumbSchema = buildBreadcrumbSchema(breadcrumbs, siteOrigin);
 ---
 
-<MarketingShell title={data.title} description={pageDescription} {breadcrumbs}>
+<MarketingShell title={data.title} description={pageDescription} {breadcrumbs} {seo}>
+  <SchemaScript slot="head" schema={breadcrumbSchema} />
   <!--
     Each section below renders from structured frontmatter so industry editors ship updates without
     touching templates. Ordering mirrors the briefing narrative requested by enterprise procurement:

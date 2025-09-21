@@ -2,6 +2,7 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 
 import MarketingShell from '../../components/marketing/MarketingShell.astro';
+import SchemaScript from '../../components/seo/SchemaScript.astro';
 import CrossLinks from '../../components/solutions/CrossLinks.astro';
 import HowItWorks from '../../components/solutions/HowItWorks.astro';
 import KeyFeatures from '../../components/solutions/KeyFeatures.astro';
@@ -10,6 +11,7 @@ import SolutionDiagram from '../../components/solutions/SolutionDiagram.astro';
 import SolutionHero from '../../components/solutions/SolutionHero.astro';
 import UseCases from '../../components/solutions/UseCases.astro';
 import { createSolutionsEntryTrail } from '../../utils/breadcrumbs';
+import { buildBreadcrumbSchema, buildSoftwareApplicationSchema } from '../../utils/seo';
 
 export async function getStaticPaths() {
   const entries = await getCollection('solutions', ({ data }) => !data.draft);
@@ -27,9 +29,49 @@ const { entry } = Astro.props as Props;
 const { data } = entry;
 const description = data.seo?.description ?? data.overview.summary;
 const breadcrumbs = createSolutionsEntryTrail(entry);
+const siteOrigin = Astro.site?.origin ?? Astro.url.origin;
+const canonicalUrl = new URL(`/solutions/${entry.slug}/`, siteOrigin).toString();
+const diagramImageUrl = data.diagram
+  ? new URL(`/static/diagrams/solutions/${data.diagram.slug}.svg`, siteOrigin).toString()
+  : undefined;
+const seo = {
+  title: data.title,
+  description,
+  path: `/solutions/${entry.slug}/`,
+  openGraph: {
+    type: 'website',
+    images: diagramImageUrl
+      ? [
+          {
+            url: diagramImageUrl,
+            alt: data.diagram?.alt,
+          },
+        ]
+      : undefined,
+    section: 'Solutions',
+  },
+};
+
+const softwareSchema = buildSoftwareApplicationSchema({
+  name: data.title,
+  description,
+  url: canonicalUrl,
+  offersUrl: data.hero.primaryCta?.href
+    ? new URL(data.hero.primaryCta.href, siteOrigin).toString()
+    : undefined,
+  image: diagramImageUrl
+    ? {
+        url: diagramImageUrl,
+        alt: data.diagram?.alt,
+      }
+    : undefined,
+  featureList: data.keyFeatures.map((feature) => feature.title),
+});
+const breadcrumbSchema = buildBreadcrumbSchema(breadcrumbs, siteOrigin);
 ---
 
-<MarketingShell title={data.title} {description} {breadcrumbs}>
+<MarketingShell title={data.title} {description} {breadcrumbs} {seo}>
+  <SchemaScript slot="head" schema={[softwareSchema, breadcrumbSchema]} />
   <div class="flex flex-col gap-16">
     <SolutionHero
       id="solutions-hero"

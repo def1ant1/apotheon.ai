@@ -2,6 +2,7 @@
 import { promises as fs } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { JSDOM } from 'jsdom';
 
 import {
   SEO_MANIFEST,
@@ -54,6 +55,83 @@ async function collectSitemapRoutes() {
   }
 
   return routeSet;
+}
+
+async function collectHtmlFiles(directory) {
+  const entries = await fs.readdir(directory, { withFileTypes: true });
+  const files = [];
+  for (const entry of entries) {
+    if (entry.name.startsWith('.')) continue;
+    const entryPath = join(directory, entry.name);
+    if (entry.isDirectory()) {
+      const nested = await collectHtmlFiles(entryPath);
+      files.push(...nested);
+    } else if (entry.isFile() && entry.name.endsWith('.html')) {
+      files.push(entryPath);
+    }
+  }
+  return files;
+}
+
+function deriveRouteFromHtmlFile(filePath) {
+  const relativePath = filePath.replace(distDir, '').replace(/\\/g, '/');
+  if (relativePath === '/index.html') {
+    return '/';
+  }
+  if (relativePath.endsWith('/index.html')) {
+    return relativePath.replace('/index.html', '/');
+  }
+  return relativePath.replace(/\.html$/u, '');
+}
+
+async function verifyHtmlMetadata() {
+  const htmlFiles = await collectHtmlFiles(distDir);
+  for (const filePath of htmlFiles) {
+    const route = deriveRouteFromHtmlFile(filePath);
+    if (isRouteExcluded(route)) {
+      continue;
+    }
+
+    const html = await readText(filePath);
+    const dom = new JSDOM(html);
+    const { document } = dom.window;
+
+    const canonicalLink = document.querySelector('link[rel="canonical"]');
+    if (!canonicalLink) {
+      throw new Error(`Missing canonical link in ${filePath}`);
+    }
+    const canonicalHref = canonicalLink.getAttribute('href');
+    if (!canonicalHref) {
+      throw new Error(`Canonical link is empty in ${filePath}`);
+    }
+    try {
+      new URL(canonicalHref);
+    } catch (error) {
+      throw new Error(`Canonical link is not an absolute URL in ${filePath}: ${canonicalHref}`, { cause: error });
+    }
+
+    const descriptionMeta = document.querySelector('meta[name="description"]');
+    if (!descriptionMeta || !descriptionMeta.getAttribute('content')) {
+      throw new Error(`Missing meta description in ${filePath}`);
+    }
+
+    const schemaNodes = [...document.querySelectorAll('script[type="application/ld+json"]')];
+    if (schemaNodes.length === 0) {
+      throw new Error(`Structured data scripts missing in ${filePath}`);
+    }
+    for (const node of schemaNodes) {
+      const payload = node.textContent?.trim();
+      if (!payload) {
+        throw new Error(`Empty JSON-LD payload detected in ${filePath}`);
+      }
+      try {
+        JSON.parse(payload);
+      } catch (error) {
+        throw new Error(`Invalid JSON-LD payload in ${filePath}`, { cause: error });
+      }
+    }
+  }
+  console.info('[verify] HTML metadata checks passed.');
 }
 
 async function verifySitemap() {
@@ -128,6 +206,7 @@ async function main() {
   await verifySitemap();
   await verifyRobots();
   await verifyPagefind();
+  await verifyHtmlMetadata();
   console.info('[verify] SEO smoke checks passed.');
 }
 

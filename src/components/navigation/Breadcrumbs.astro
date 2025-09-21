@@ -1,9 +1,7 @@
 ---
-import {
-  BREADCRUMB_ARIA_LABEL,
-  normalizeTrail,
-  serializeTrailToJsonLd,
-} from '../../utils/breadcrumbs';
+import { BREADCRUMB_ARIA_LABEL, normalizeTrail } from '../../utils/breadcrumbs';
+import { buildBreadcrumbSchema } from '../../utils/seo';
+import SchemaScript from '../seo/SchemaScript.astro';
 
 import type { BreadcrumbTrail } from '../../utils/breadcrumbs';
 
@@ -44,7 +42,7 @@ const resolvedTrail = normalizeTrail(trail);
 const canonicalOrigin = baseHref ?? Astro.site?.origin ?? Astro.url?.origin;
 
 // Deterministic JSON serialization ensures caching layers and snapshot tests stay stable.
-const jsonLd = serializeTrailToJsonLd(resolvedTrail, canonicalOrigin);
+const breadcrumbSchema = buildBreadcrumbSchema(resolvedTrail, canonicalOrigin);
 
 const baseNavClasses =
   'flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.35rem] text-slate-400';
@@ -90,7 +88,7 @@ const shouldRender = resolvedTrail.length > 1;
        * accept the script anywhere in the document, so rendering it adjacent to the nav ensures
        * editorial updates never forget to adjust structured data.
        */}
-      <script is:inline type="application/ld+json" set:text={jsonLd} />
+      <SchemaScript schema={breadcrumbSchema} />
     </Fragment>
   )
 }

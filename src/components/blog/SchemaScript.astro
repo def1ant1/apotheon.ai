@@ -1,26 +1,9 @@
 ---
-/* eslint-disable astro/no-set-html-directive -- Component sanitizes JSON-LD payloads before injecting them into the head. */
-/**
- * Declarative wrapper for injecting structured data into the document head.
- * Accepts a single schema object or an array to minimize manual script tags.
- */
-import { buildSchemaScriptHtml, type StructuredSchema } from '../../utils/blog';
+import SeoSchemaScript from '../seo/SchemaScript.astro';
 
-type Props = {
-  schema: StructuredSchema | StructuredSchema[];
-  type?: string;
-};
+type Props = Parameters<typeof SeoSchemaScript>[0];
 
-const { schema, type = 'application/ld+json' } = Astro.props as Props;
-const inlineSchemaHtml = buildSchemaScriptHtml(schema, type);
+const props = Astro.props as Props;
 ---
 
-<Fragment set:html={inlineSchemaHtml} />
-
-<!--
-  Usage:
-  ```astro
-  <SchemaScript slot="head" schema={articleSchema} />
-  ```
-  Provide an array to `schema` when you need to emit Article + Breadcrumb data in one call.
--->
+<SeoSchemaScript {...props} />
