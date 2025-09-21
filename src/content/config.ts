@@ -3,6 +3,7 @@ import { z, defineCollection } from 'astro:content';
 import { homepageCollection } from './homepage';
 import { industriesCollection } from './industries';
 import { solutionCollection } from './solutions';
+import { whitepaperCollection } from './whitepapers';
 
 // Blog articles will live in `src/content/blog`. The schema is designed so
 // teams can progressively enhance metadata without migrations.
@@ -142,4 +143,14 @@ export const collections = {
    *   support hand-raisers and async researchers.
    */
   industries: industriesCollection,
+  /**
+   * Whitepapers collection powers the gated asset library and the delivery Worker.
+   *
+   * Each MDX entry defines:
+   * - `asset` metadata so Workers can verify checksums and generate signed URLs.
+   * - `gatingNotes` with reviewer checklists that lifecycle owners initial before
+   *   publishing the PDF.
+   * - `lifecycle` controls to embargo or sunset assets without manual route edits.
+   */
+  whitepapers: whitepaperCollection,
 };

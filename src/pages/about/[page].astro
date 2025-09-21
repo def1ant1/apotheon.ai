@@ -2,6 +2,7 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 
 import ContactForm from '../../components/islands/ContactForm';
+import WhitepaperRequestForm from '../../components/islands/WhitepaperRequestForm';
 import MarketingCtaRow from '../../components/marketing/MarketingCtaRow.astro';
 import MarketingHero from '../../components/marketing/MarketingHero.astro';
 import MarketingShell from '../../components/marketing/MarketingShell.astro';
@@ -25,10 +26,11 @@ const { entry } = Astro.props as Props;
 const { data } = entry;
 const { Content } = await entry.render();
 const isContactPage = entry.slug === 'about/contact';
+const isWhitepaperPage = entry.slug === 'about/white-papers';
 const heroCopy =
   data.summary ??
   'Understand the teams, history, and culture powering Apotheon.ai as we scale enterprise platforms.';
-const heroCtaLabel = data.heroCtaLabel ?? 'Connect with us';
+const heroCtaLabel = data.heroCtaLabel ?? (isWhitepaperPage ? 'Browse assets' : 'Connect with us');
 const breadcrumbs = createMarketingEntryTrail(entry);
 const siteOrigin = Astro.site?.origin ?? Astro.url.origin;
 const breadcrumbSchema = buildBreadcrumbSchema(breadcrumbs, siteOrigin);
@@ -62,8 +64,10 @@ const schemaPayload = faqSchema ? [breadcrumbSchema, faqSchema] : breadcrumbSche
     copy={heroCopy}
     cta={{
       label: heroCtaLabel,
-      href: '/about/contact/',
-      description: 'Direct message routes into the RevOps-managed intake queue.',
+      href: isWhitepaperPage ? '#whitepaper-request' : '/about/contact/',
+      description: isWhitepaperPage
+        ? 'Jump directly to the gated asset request workflow powered by the delivery Worker.'
+        : 'Direct message routes into the RevOps-managed intake queue.',
     }}
   />
 
@@ -87,6 +91,25 @@ const schemaPayload = faqSchema ? [breadcrumbSchema, faqSchema] : breadcrumbSche
           and audit trails managed by the Cloudflare Worker launched in this change.
         </p>
         <ContactForm client:load />
+      </section>
+    )
+  }
+
+  {
+    isWhitepaperPage && (
+      <section id="whitepaper-request" class="mt-12 grid gap-6">
+        <h2 class="text-2xl font-semibold text-white">Request enterprise whitepapers</h2>
+        <p class="max-w-3xl text-slate-300">
+          Select the guide that aligns with your initiative, confirm compliance context, and our
+          Cloudflare Worker will issue a short-lived signed URL after Turnstile verification and MX
+          checks.
+        </p>
+        <WhitepaperRequestForm client:load />
+        <p class="text-sm text-slate-500">
+          {/* Automation reminder: Marketing automation should pull download events from the data layer to enrich nurture KPIs. */}
+          Submission analytics stream into the global <code>dataLayer</code> so marketing ops can
+          reconcile nurture performance against the Worker audit ledger.
+        </p>
       </section>
     )
   }

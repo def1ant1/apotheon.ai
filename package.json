@@ -6,11 +6,11 @@
   "scripts": {
     "dev": "astro dev",
     "dev:https": "node ./scripts/dev-https.mjs",
-    "predev": "npm run ensure:homepage-hero-media",
+    "predev": "npm run ensure:homepage-hero-media && npm run ensure:whitepapers",
     "build": "npm run build:static && npm run postbuild:seo && npm run search:index && npm run seo:verify",
     "build:static": "astro build",
-    "prebuild": "npm run ensure:homepage-hero-media && npm run diagrams:build && npm run brand:favicons",
-    "prebuild:static": "npm run ensure:homepage-hero-media && npm run diagrams:build",
+    "prebuild": "npm run ensure:homepage-hero-media && npm run ensure:whitepapers && npm run diagrams:build && npm run brand:favicons",
+    "prebuild:static": "npm run ensure:homepage-hero-media && npm run ensure:whitepapers && npm run diagrams:build",
     "preview": "astro preview --host",
     "typecheck": "astro check",
     "check": "npm run typecheck",
@@ -41,6 +41,7 @@
     "brand:contrast": "node ./scripts/brand/contrast-audit.mjs",
     "brand:favicons": "node ./scripts/brand/generate-favicons.mjs",
     "ensure:homepage-hero-media": "node ./scripts/content/ensure-homepage-hero-media.mjs",
+    "ensure:whitepapers": "node ./scripts/content/ensure-whitepapers.mjs",
     "workers:deploy": "node ./scripts/ci/deploy-workers.mjs",
     "workers:preview": "wrangler dev --config wrangler.toml"
   },

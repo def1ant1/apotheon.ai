@@ -24,6 +24,7 @@ declare global {
 
   interface ImportMetaEnv {
     readonly PUBLIC_CONTACT_ENDPOINT: string;
+    readonly PUBLIC_WHITEPAPER_ENDPOINT?: string;
     readonly PUBLIC_TURNSTILE_SITE_KEY: string;
     readonly PUBLIC_OG_IMAGE_WORKER?: string;
   }
@@ -48,6 +49,7 @@ declare global {
       reset(widgetId?: string): void;
     };
     __CONTACT_FORM_SET_TOKEN__?: (value: string) => void;
+    __WHITEPAPER_FORM_SET_TOKEN__?: (value: string) => void;
   }
 }
 

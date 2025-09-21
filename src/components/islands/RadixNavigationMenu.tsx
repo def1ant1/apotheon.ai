@@ -109,6 +109,11 @@ export const navigationMenuGroups: ReadonlyArray<NavigationMenuGroup> = [
         description: 'Hiring roadmaps and the interview experience for prospective teammates.',
       },
       {
+        label: 'Whitepapers',
+        href: '/about/white-papers',
+        description: 'Download compliance-ready research and rollout playbooks.',
+      },
+      {
         label: 'Contact',
         href: '/about/contact',
         description: 'Edge-secured intake routing leads to the Cloudflare Worker API.',
