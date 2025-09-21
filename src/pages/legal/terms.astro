@@ -1,12 +1,29 @@
 ---
+import SchemaScript from '../../components/seo/SchemaScript.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { buildBreadcrumbSchema } from '../../utils/seo';
 
 const pageTitle = 'Terms of Service';
 const description =
   'Master subscription agreement scaffold outlining platform access, SLAs, and billing expectations.';
+const seo = {
+  title: pageTitle,
+  description,
+  path: '/legal/terms/',
+};
+const siteOrigin = Astro.site?.origin ?? Astro.url.origin;
+const breadcrumbSchema = buildBreadcrumbSchema(
+  [
+    { label: 'Home', href: '/' },
+    { label: 'Legal', href: '/legal/' },
+    { label: pageTitle, href: '/legal/terms/' },
+  ],
+  siteOrigin,
+);
 ---
 
-<BaseLayout title={`${pageTitle} — Apotheon.ai`} {description}>
+<BaseLayout {seo}>
+  <SchemaScript slot="head" schema={breadcrumbSchema} />
   <!--
     Use the same tonal footprint as other legal placeholders so updates remain predictable. When the
     negotiated MSA publishes, replace the content block below with the official clauses and ensure the

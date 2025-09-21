@@ -4,7 +4,9 @@ import { getCollection } from 'astro:content';
 import MarketingCtaRow from '../../components/marketing/MarketingCtaRow.astro';
 import MarketingHero from '../../components/marketing/MarketingHero.astro';
 import MarketingShell from '../../components/marketing/MarketingShell.astro';
+import SchemaScript from '../../components/seo/SchemaScript.astro';
 import { createMarketingIndexTrail } from '../../utils/breadcrumbs';
+import { buildBreadcrumbSchema } from '../../utils/seo';
 
 const solutionEntries = await getCollection('solutions', ({ data }) => !data.draft);
 const solutions = solutionEntries
@@ -20,9 +22,11 @@ const solutions = solutionEntries
 const heroCopy =
   'Select an Apotheon.ai solution to deep dive into architecture, governance, and rollout guidance.';
 const breadcrumbs = createMarketingIndexTrail('solutions');
+const breadcrumbSchema = buildBreadcrumbSchema(breadcrumbs, Astro.site?.origin ?? Astro.url.origin);
 ---
 
 <MarketingShell title="Solutions" description={heroCopy} {breadcrumbs}>
+  <SchemaScript slot="head" schema={breadcrumbSchema} />
   <MarketingHero
     eyebrow="Solutions"
     headline="Launch-ready platform accelerators"

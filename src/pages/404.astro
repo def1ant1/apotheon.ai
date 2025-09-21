@@ -1,9 +1,17 @@
 ---
 import ErrorPageShell from '../components/system/ErrorPageShell.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
+
+const seo = {
+  title: 'Page not found',
+  description: 'Nothing to see here just yet.',
+  path: '/404',
+  trailingSlash: false,
+  noindex: true,
+};
 ---
 
-<BaseLayout title="Page not found" description="Nothing to see here just yet.">
+<BaseLayout {seo}>
   <ErrorPageShell
     code="404"
     title="This page hasn't shipped yet"

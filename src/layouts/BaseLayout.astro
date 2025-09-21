@@ -3,11 +3,25 @@ import '../styles/global.css';
 
 import SiteFooter from '../components/navigation/SiteFooter.astro';
 import SiteHeader from '../components/navigation/SiteHeader.astro';
+import { createPageSeo, type PageSeoInput } from '../utils/seo';
 
-const {
-  title = 'Apotheon.ai Platform',
-  description = 'Composable Astro architecture ready for enterprise-scale experiences.',
-} = Astro.props;
+interface Props {
+  seo: PageSeoInput;
+}
+
+const { seo } = Astro.props as Props;
+
+const metadata = createPageSeo(
+  {
+    ...seo,
+    // Default to Astro.url.pathname when callers omit a canonical path override.
+    path: seo.path ?? Astro.url.pathname,
+  },
+  {
+    site: Astro.site ?? Astro.url,
+    currentPath: Astro.url.pathname,
+  },
+);
 ---
 
 <!doctype html>
@@ -15,8 +29,31 @@ const {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
-    <meta name="description" content={description} />
+    <!--
+      Metadata is composed via src/utils/seo.ts so every page inherits consistent
+      canonical URLs, OpenGraph payloads, and hreflang alternates. Adjust the
+      helper when we introduce new channels (e.g., locale expansions) rather
+      than sprinkling manual tags through templates.
+    -->
+    <title>{metadata.title}</title>
+    {
+      metadata.metaTags.map((tag) => (
+        <meta
+          {...(tag.name ? { name: tag.name } : {})}
+          {...(tag.property ? { property: tag.property } : {})}
+          content={tag.content}
+        />
+      ))
+    }
+    {
+      metadata.linkTags.map((link) => (
+        <link
+          rel={link.rel}
+          href={link.href}
+          {...(link.hreflang ? { hreflang: link.hreflang } : {})}
+        />
+      ))
+    }
     <!--
       Favicon + PWA metadata is regenerated via `npm run brand:favicons`.
       The command ensures every browser (desktop, mobile, pinned tabs) pulls the

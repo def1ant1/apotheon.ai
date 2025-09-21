@@ -57,6 +57,13 @@ async function main() {
   const stage = resolveDeploymentStage();
   const policies = resolveRobotsPolicies(stage);
   const sitemapUrl = getSitemapIndexUrl();
+  const sitemapFiles = await fs.readdir(distDir);
+  const sitemapUrls = sitemapFiles
+    .filter((file) => file.endsWith('.xml') && file.startsWith('sitemap'))
+    .map((file) => new URL(file, SEO_MANIFEST.site).toString());
+  if (!sitemapUrls.includes(sitemapUrl)) {
+    sitemapUrls.unshift(sitemapUrl);
+  }
   const derivedDisallows = SEO_MANIFEST.routes.exclusionPatterns
     .map((pattern) => {
       const candidate = deriveRobotsPathFromPattern(pattern);
@@ -89,7 +96,9 @@ async function main() {
     lines.push('');
   }
 
-  lines.push(`Sitemap: ${sitemapUrl}`);
+  for (const url of new Set(sitemapUrls)) {
+    lines.push(`Sitemap: ${url}`);
+  }
   lines.push('');
 
   await fs.mkdir(dirname(robotsPath), { recursive: true });

@@ -1,7 +1,6 @@
 import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
 
 import {
-  buildSchemaScriptHtml,
   collectUniqueTags,
   filterBlogPostsByTag,
   resolveOgImage,
@@ -10,6 +9,7 @@ import {
   type BlogCollectionEntry,
   type BlogEntryData,
 } from '../../src/utils/blog';
+import { buildSchemaScriptHtml } from '../../src/utils/seo';
 
 type EntryOverrides = {
   slug?: string;

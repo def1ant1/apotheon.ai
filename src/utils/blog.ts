@@ -6,11 +6,6 @@ export type BlogAuthorMetadata = BlogEntryData['author'];
 export type BlogOpenGraphMetadata = BlogEntryData['openGraph'];
 
 /**
- * Minimal contract for structured data objects used by SchemaScript.
- */
-export type StructuredSchema = Record<string, unknown>;
-
-/**
  * Supported publish date sorting directions.
  */
 export type PublishDateSort = 'asc' | 'desc';
@@ -147,17 +142,6 @@ export function resolveOgImage(
   return { url: resolvedUrl, alt: altText };
 }
 
-/**
- * Shared utility used by SchemaScript. Serialises schema objects into inline
- * `<script>` elements while escaping characters that could terminate the tag.
- */
-export function buildSchemaScriptHtml(
-  schema: StructuredSchema | StructuredSchema[],
-  type = 'application/ld+json',
-): string {
-  const schemas = Array.isArray(schema) ? schema : [schema];
-  return schemas
-    .map((schemaItem) => JSON.stringify(schemaItem).replace(/</g, '\\u003C'))
-    .map((payload) => `<script type="${type}">${payload}</script>`)
-    .join('');
-}
+// Schema helpers now live in src/utils/seo.ts. Blog utilities intentionally
+// remain focused on content-specific behavior (tag sorting, OG image
+// resolution, etc.).
