@@ -1,6 +1,7 @@
 ---
 import { getCollection, type CollectionEntry } from 'astro:content';
 
+import ContactForm from '../../components/islands/ContactForm';
 import MarketingCtaRow from '../../components/marketing/MarketingCtaRow.astro';
 import MarketingHero from '../../components/marketing/MarketingHero.astro';
 import MarketingShell from '../../components/marketing/MarketingShell.astro';
@@ -21,6 +22,7 @@ interface Props {
 const { entry } = Astro.props as Props;
 const { data } = entry;
 const { Content } = await entry.render();
+const isContactPage = entry.slug === 'about/contact';
 const heroCopy =
   data.summary ??
   'Understand the teams, history, and culture powering Apotheon.ai as we scale enterprise platforms.';
@@ -50,6 +52,19 @@ const breadcrumbs = createMarketingEntryTrail(entry);
   >
     <Content />
   </article>
+
+  {
+    isContactPage && (
+      <section class="mt-12 grid gap-6">
+        <h2 class="text-2xl font-semibold text-white">Engage with our enterprise concierge</h2>
+        <p class="max-w-3xl text-slate-300">
+          Submissions sync directly into RevOps-owned systems with rate limiting, domain vetting,
+          and audit trails managed by the Cloudflare Worker launched in this change.
+        </p>
+        <ContactForm client:load />
+      </section>
+    )
+  }
 
   <MarketingCtaRow
     items={[
