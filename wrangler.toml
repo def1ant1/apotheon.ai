@@ -1,0 +1,42 @@
+name = "apotheon-csp-report-handler"
+account_id = "00000000000000000000000000000000"
+main = "workers/csp-report-handler.ts"
+compatibility_date = "2024-10-08"
+compatibility_flags = ["nodejs_compat"]
+usage_model = "bundled"
+
+[[routes]]
+pattern = "csp.apotheon.ai/report"
+custom_domain = true
+
+# Multi-worker configuration so both the legacy CSP endpoint and the new contact
+# intake worker deploy from a single codebase. The `services` stanza requires
+# Wrangler v3.55+.
+[[services]]
+name = "apotheon-contact-intake"
+main = "workers/contact.ts"
+usage_model = "standard"
+compatibility_date = "2024-10-08"
+migrations_dir = "workers/migrations/contact"
+
+[[services.routes]]
+pattern = "apotheon.ai/api/contact"
+custom_domain = true
+
+[[services.routes]]
+pattern = "contact.apotheon.ai/*"
+custom_domain = true
+
+[[services.kv_namespaces]]
+binding = "CONTACT_RATE_LIMIT"
+id = "00000000000000000000000000000000"
+preview_id = "11111111111111111111111111111111"
+
+[[services.d1_databases]]
+binding = "CONTACT_AUDIT_DB"
+database_name = "apotheon-contact"
+database_id = "00000000-0000-0000-0000-000000000000"
+
+[vars]
+CONTACT_BLOCKLIST = ""
+CONTACT_ALLOWLIST = ""

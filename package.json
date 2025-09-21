@@ -40,7 +40,9 @@
     "gitleaks:ci": "node ./scripts/ci/gitleaks-ci.mjs",
     "brand:contrast": "node ./scripts/brand/contrast-audit.mjs",
     "brand:favicons": "node ./scripts/brand/generate-favicons.mjs",
-    "ensure:homepage-hero-media": "node ./scripts/content/ensure-homepage-hero-media.mjs"
+    "ensure:homepage-hero-media": "node ./scripts/content/ensure-homepage-hero-media.mjs",
+    "workers:deploy": "node ./scripts/ci/deploy-workers.mjs",
+    "workers:preview": "wrangler dev --config wrangler.toml"
   },
   "dependencies": {
     "@astrojs/image": "^0.10.0",
@@ -105,6 +107,8 @@
     "typescript": "^5.6.2",
     "vitest": "^2.1.3",
     "yaml": "^2.8.1",
-    "zod": "^3.25.76"
+    "zod": "^3.25.76",
+    "@cloudflare/workers-types": "^4.20241004.0",
+    "wrangler": "^3.77.0"
   }
 }
