@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">OG artwork for AI vendor scorecards</title>
+  <desc id="desc">Executive style card with matrix elements and headline for AI vendor governance.</desc>
+  <defs>
+    <linearGradient id="ogBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e3a8a" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#ogBg)" rx="36" />
+  <rect x="80" y="120" width="640" height="360" fill="#172554" opacity="0.55" rx="24" />
+  <g fill="none" stroke="#38bdf8" stroke-width="3" opacity="0.7">
+    <path d="M80 240h640" />
+    <path d="M80 360h640" />
+    <path d="M293 120v360" />
+    <path d="M506 120v360" />
+  </g>
+  <g fill="#fbbf24" opacity="0.9">
+    <circle cx="293" cy="240" r="16" />
+    <circle cx="506" cy="360" r="16" />
+    <circle cx="720" cy="420" r="16" />
+  </g>
+  <g font-family="'Inter', 'Segoe UI', sans-serif" fill="#e0f2fe">
+    <text x="760" y="180" font-size="56" font-weight="700">AI Vendor</text>
+    <text x="760" y="250" font-size="56" font-weight="700">Scorecards</text>
+    <text x="760" y="320" font-size="28" opacity="0.85">Controls • Automation • Transparency</text>
+    <text x="760" y="380" font-size="24" opacity="0.7">Apotheon.ai Insights</text>
+  </g>
+</svg>

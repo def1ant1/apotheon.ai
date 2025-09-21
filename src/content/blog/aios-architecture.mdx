@@ -1,0 +1,73 @@
+---
+title: 'Inside the Apotheon AI Operating System Architecture'
+description: 'Dissecting the modular services, pipelines, and governance controls that power regulated generative AI deployments.'
+publishDate: 2024-07-08
+updatedDate: 2024-07-09
+heroImage: '/images/blog/aios-architecture.svg'
+heroImageAlt: 'Layered diagram illustrating control planes, data planes, and experience surfaces within the AIOS'
+tags:
+  - aios
+  - architecture
+  - platform-engineering
+estimatedReadingMinutes: 9
+author:
+  name: 'Rahul Patel'
+  title: 'Chief Architect'
+  bio: 'Rahul leads the system design group that evolves Apotheon.ai’s AI operating system for enterprise-grade reliability.'
+  links:
+    - label: 'Engineering Playbooks'
+      url: 'https://apotheon.ai/resources/aios'
+openGraph:
+  image: '/images/og/blog/aios-architecture.svg'
+  alt: 'AI operating system blueprint showing governance, orchestration, and delivery layers'
+  generatorRequestId: 'aios-architecture-v1'
+draft: false
+---
+
+{/* editorial: tone="Technical, decisive" keywords="AI operating system, architecture, control plane" */}
+
+## Platform principles
+
+The AIOS is intentionally modular so enterprises can compose capabilities without re-platforming legacy estates. Every service aligns to one of three planes:
+
+1. **Experience plane** — Customer-facing interfaces, including Radix-powered consoles and embedded analytics widgets.
+2. **Orchestration plane** — Workflow engines, guardrail services, and delivery automation triggered by GitOps.
+3. **Data plane** — Feature stores, evaluation sandboxes, and model registries hardened with column-level lineage.
+
+> "If a capability cannot be proven deterministic, it does not belong in the control plane." — Rahul Patel
+
+### Control plane diagram
+
+```text
+          +------------------------------+
+          |        Control Plane         |
+          |  - Policy compiler           |
+          |  - Feature flag coordinator  |
+          |  - OG asset Worker (Epic 14) |
+          +------------------------------+
+                     ||
+    +----------------++----------------+
+    |                                  |
++----------+                      +-----------+
+| Data API |                      | Model API |
++----------+                      +-----------+
+    ||                                   ||
+    VV                                   VV
+ Feature Store                    Evaluation Lab
+```
+
+### Automation hooks
+
+- **OG artwork pipeline** — Each blog entry references a `generatorRequestId`. Once Epic 14 lands, the Worker will accept these identifiers, synthesize OpenGraph art, and update feeds in one sweep.
+- **Observability** — Distributed tracing spans wrap every ingestion and inference service. Exporters are preconfigured for OpenTelemetry and Splunk Enterprise.
+- **Compliance as code** — Policies compile into Rego modules and TypeScript validators. The same bundles feed CI checks, runtime enforcement, and audit exports.
+
+### Implementation backlog
+
+| Epic                       | Dependency            | Owner         | Target |
+| -------------------------- | --------------------- | ------------- | ------ |
+| 12: Multi-region inference | Platform Networking   | SRE Guild     | Q3     |
+| 13: Autonomous rollback    | Release Engineering   | Core Platform | Q3     |
+| 14: OG Worker automation   | Marketing Engineering | Web Platform  | Q4     |
+
+The architecture is ready for production pilots today. Follow the breadcrumbs in `/docs` for environment-specific overlays, and subscribe to the feeds to watch the backlog converge in real time.

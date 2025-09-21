@@ -1,0 +1,64 @@
+---
+title: 'Welcome to the Apotheon.ai Insights Hub'
+description: 'Our launch collection pairs automation-first publishing with enterprise AI guidance so every stakeholder can ship safely.'
+publishDate: 2024-07-08
+heroImage: '/images/blog/welcome-insights.svg'
+heroImageAlt: 'Launch illustration showing interconnected teams orbiting a shared AI operating system'
+tags:
+  - launch
+  - platform-engineering
+  - governance
+estimatedReadingMinutes: 6
+author:
+  name: 'Lena Cho'
+  title: 'VP, Product and Platform'
+  bio: 'Lena steers the Apotheon.ai product roadmap, blending platform rigor with the enablement programs enterprises need to scale AI responsibly.'
+  links:
+    - label: 'LinkedIn'
+      url: 'https://www.linkedin.com/in/lenacho-apotheon'
+openGraph:
+  image: '/images/og/blog/welcome-insights.svg'
+  alt: 'Apotheon.ai blog launch artwork highlighting platform automation pillars'
+  generatorRequestId: 'launch-series-og-welcome'
+draft: false
+---
+
+{/* editorial: tone="Welcoming, authoritative" keywords="Apotheon.ai blog launch, enterprise AI, governance" */}
+
+> “Enterprise AI only scales when every launch is auditable by default.” — Apotheon.ai Field Guide, 2024 Edition
+
+## Why we built an automation-first editorial stack
+
+Our delivery teams despise manual content pipelines almost as much as brittle AI workflows. The blog ships with the same guardrails we deploy in customer environments:
+
+- **Typed content collections** enforce hero art, author data, and OpenGraph contracts so no release lacks polish.
+- **CI-integrated linting** runs Vitest, Playwright, and type checks on every branch—mirroring the release gate we run for production infrastructure.
+- **Search automation** leans on Pagefind to re-index automatically after `npm run build`, meaning knowledge management stays in sync with our launch cadence.
+
+```text
++----------------------+       +-------------------+
+|  Markdown + MDX PRs  | ----> |  Content schema   |
++----------------------+       +-------------------+
+          |                               |
+          v                               v
+  +----------------+          +------------------------+
+  |  CI Gate (QA)  |  --->    |  Static deploy + RSS   |
+  +----------------+          +------------------------+
+```
+
+## What you will find here
+
+1. **AIOS architecture deep dives** that break down the operating system powering regulated launches.
+2. **Continuous learning playbooks** balancing reinforcement learning with compliance.
+3. **Integration governance** references that keep vendor ecosystems observable.
+4. **Industry spotlights** showcasing sector-specific results—starting with healthcare.
+
+Each article inherits shared components for author bios, structured data, and related content scoring. The new `/blog` index lets you filter by tag or sort by publish date without leaving the page.
+
+## How to contribute
+
+1. Clone the repo, add your MDX file under `src/content/blog/`, and follow the inline metadata prompts.
+2. Run `npm run lint`, `npm run typecheck`, `npm run test`, `npm run test:e2e`, and `npm run build` locally to mirror the release gate.
+3. Attach diagrams, quotes, and CTA guidance inline—automation will pull the rest together.
+
+We cannot wait to build this library with you. Subscribe via RSS or Atom, and ping the platform team if you want to pilot the upcoming OG artwork Worker referenced in each file.

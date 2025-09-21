@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 840" role="img" aria-labelledby="title desc">
+  <title id="title">Lightweight assurance workflow illustration</title>
+  <desc id="desc">Checklist cards connected by automation cues to represent prompt assurance playbooks.</desc>
+  <defs>
+    <linearGradient id="assuranceBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#10b981" />
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="840" fill="url(#assuranceBg)" rx="48" />
+  <g fill="#0f172a" opacity="0.4">
+    <rect x="220" y="180" width="360" height="420" rx="24" />
+    <rect x="620" y="260" width="360" height="420" rx="24" />
+    <rect x="1020" y="200" width="360" height="420" rx="24" />
+  </g>
+  <g stroke="#a7f3d0" stroke-width="6" stroke-linecap="round" opacity="0.9">
+    <path d="M580 390h40" />
+    <path d="M980 390h40" />
+    <path d="M410 630l-40 60" />
+    <path d="M810 630l-40 60" />
+  </g>
+  <g font-family="'Inter', 'Segoe UI', sans-serif" font-weight="600" fill="#ecfdf5" font-size="40">
+    <text x="260" y="260">Prompt</text>
+    <text x="260" y="320">Review</text>
+    <text x="660" y="340">Risk</text>
+    <text x="660" y="400">Controls</text>
+    <text x="1060" y="280">Automation</text>
+    <text x="1060" y="340">Backlog</text>
+  </g>
+  <g fill="#facc15">
+    <circle cx="400" cy="360" r="22" />
+    <circle cx="800" cy="440" r="22" />
+    <circle cx="1200" cy="320" r="22" />
+  </g>
+</svg>

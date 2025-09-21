@@ -1,0 +1,64 @@
+---
+title: 'Continuous Learning That Respects Enterprise Guardrails'
+description: 'How Apotheon.ai deploys reinforcement learning loops without compromising auditability or regulatory posture.'
+publishDate: 2024-07-10
+heroImage: '/images/blog/continuous-learning.svg'
+heroImageAlt: 'Feedback loop diagram showing human review and automated evaluation closing the loop for AI models'
+tags:
+  - continuous-learning
+  - governance
+  - mlops
+estimatedReadingMinutes: 8
+author:
+  name: 'Mira Alvarez'
+  title: 'Director of Machine Learning Operations'
+  bio: 'Mira coordinates the human-in-the-loop and telemetry pipelines that transform user feedback into production-grade safeguards.'
+  links:
+    - label: 'MLOps Field Notes'
+      url: 'https://apotheon.ai/resources/mlops'
+openGraph:
+  image: '/images/og/blog/continuous-learning.svg'
+  alt: 'Circular reinforcement learning workflow aligning telemetry, review boards, and deployment'
+  generatorRequestId: 'continuous-learning-launch'
+draft: false
+---
+
+{/* editorial: tone="Pragmatic, operational" keywords="continuous learning, reinforcement learning, enterprise guardrails" */}
+
+## Feedback loops must be auditable
+
+Continuous learning cannot devolve into opaque experimentation. Apotheon.ai anchors every loop to three checkpoints:
+
+- **Signal collection** — Pagefind analytics, in-product surveys, and API logs land in a centralized telemetry lake with per-tenant partitions.
+- **Evaluation** — Automated scorers measure drift, bias, and hallucination rates; escalations spawn tickets routed to responsible reviewers.
+- **Deployment** — Feature flags manage gradual rollouts with rollback hooks tied to the AIOS control plane.
+
+> “If you cannot answer who reviewed a model change and when, the change should not ship.”
+
+### Loop orchestration snapshot
+
+```mermaid
+flowchart LR
+  signal[Signal Capture] --> review[Policy Review]
+  review --> training[RLHF Training]
+  training --> staging[Shadow Deploy]
+  staging --> guardrails[Guardrail Tests]
+  guardrails --> release[Progressive Release]
+  release --> signal
+```
+
+### Metrics dashboard
+
+| KPI              | Target       | Automation                                 |
+| ---------------- | ------------ | ------------------------------------------ |
+| Review SLA       | < 24 hours   | PagerDuty escalation from governance queue |
+| Drift detection  | < 15 minutes | Streaming detectors wired to OpenTelemetry |
+| Rollback latency | < 5 minutes  | GitOps pipeline with verified rollbacks    |
+
+### Launch checklist
+
+1. Verify all RLHF datasets are cataloged with retention schedules.
+2. Confirm product and legal teams signed off on the upcoming change set.
+3. Capture before/after metrics in the shared Looker dashboard for historical audits.
+
+The launch posts now give you recipes for hooking these controls into the AIOS. Stay tuned for automation scripts that push reinforcement learning events into the same OG Worker queue shipping social art.

@@ -4,7 +4,7 @@
  * Declarative wrapper for injecting structured data into the document head.
  * Accepts a single schema object or an array to minimize manual script tags.
  */
-type StructuredSchema = Record<string, unknown>;
+import { buildSchemaScriptHtml, type StructuredSchema } from '../../utils/blog';
 
 type Props = {
   schema: StructuredSchema | StructuredSchema[];
@@ -12,11 +12,7 @@ type Props = {
 };
 
 const { schema, type = 'application/ld+json' } = Astro.props as Props;
-const schemas = Array.isArray(schema) ? schema : [schema];
-const inlineSchemaHtml = schemas
-  .map((schemaItem) => JSON.stringify(schemaItem).replace(/</g, '\\u003C'))
-  .map((payload) => `<script type="${type}">${payload}</script>`)
-  .join('');
+const inlineSchemaHtml = buildSchemaScriptHtml(schema, type);
 ---
 
 <Fragment set:html={inlineSchemaHtml} />

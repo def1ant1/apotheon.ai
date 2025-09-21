@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 840" role="img" aria-labelledby="title desc">
+  <title id="title">Continuous learning feedback loop illustration</title>
+  <desc id="desc">Circular arrows showing feedback, evaluation, and deployment stages for reinforcement learning.</desc>
+  <defs>
+    <linearGradient id="clBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#2563eb" />
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="840" fill="url(#clBg)" rx="48" />
+  <g fill="none" stroke="#fcd34d" stroke-width="18" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M800 220c160 0 280 120 280 220s-120 220-280 220-280-120-280-220 120-220 280-220z" opacity="0.35" />
+  </g>
+  <g fill="none" stroke="#38bdf8" stroke-width="8" stroke-linecap="round" marker-end="url(#arrowhead)">
+    <defs>
+      <marker id="arrowhead" markerWidth="12" markerHeight="12" refX="6" refY="6" orient="auto-start-reverse">
+        <path d="M0,0 L12,6 L0,12 Z" fill="#38bdf8" />
+      </marker>
+    </defs>
+    <path d="M920 260c140 60 140 260 0 320" />
+    <path d="M680 580c-140-60-140-260 0-320" />
+    <path d="M800 200v40" />
+    <path d="M800 600v40" />
+  </g>
+  <g font-family="'Inter', 'Segoe UI', sans-serif" font-weight="600" fill="#e0f2fe" font-size="44" text-anchor="middle">
+    <text x="800" y="220">Signal</text>
+    <text x="1060" y="420">Evaluate</text>
+    <text x="800" y="640">Deploy</text>
+    <text x="540" y="420">Feedback</text>
+  </g>
+</svg>

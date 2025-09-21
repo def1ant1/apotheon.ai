@@ -51,4 +51,5 @@ ships with inline comments—treat this document as the narrative companion for 
 ## Support
 
 Questions? Drop them in `#content-systems` on Slack or open a GitHub Discussion tagged `blog`. Continuous improvement notes
-should land in this document or inline in the starter MDX files so automation has one canonical source of truth.
+should land in this document, `docs/dev/BLOG.md`, or inline in the starter MDX files so automation has one canonical source of
+truth.

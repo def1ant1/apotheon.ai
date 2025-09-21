@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 840" role="img" aria-labelledby="title desc">
+  <title id="title">Apotheon.ai insights launch illustration</title>
+  <desc id="desc">Orbiting teams connected to a central AI operating system, symbolizing collaboration and automation.</desc>
+  <defs>
+    <radialGradient id="welcomeBg" cx="50%" cy="45%" r="75%">
+      <stop offset="0%" stop-color="#1e293b" />
+      <stop offset="100%" stop-color="#312e81" />
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="840" fill="url(#welcomeBg)" rx="48" />
+  <circle cx="800" cy="420" r="220" fill="#1d4ed8" opacity="0.35" />
+  <circle cx="800" cy="420" r="160" fill="#22d3ee" opacity="0.2" />
+  <circle cx="800" cy="420" r="110" fill="#0f172a" opacity="0.85" />
+  <g stroke="#38bdf8" stroke-width="6" stroke-linecap="round" fill="none">
+    <path d="M800 200L1080 140" />
+    <path d="M800 200L520 160" />
+    <path d="M800 640L1080 700" />
+    <path d="M800 640L520 700" />
+  </g>
+  <g fill="#38bdf8">
+    <circle cx="1080" cy="140" r="30" />
+    <circle cx="520" cy="160" r="30" />
+    <circle cx="520" cy="700" r="30" />
+    <circle cx="1080" cy="700" r="30" />
+  </g>
+  <g font-family="'Inter', 'Segoe UI', sans-serif" font-size="42" font-weight="600" fill="#f8fafc" text-anchor="middle">
+    <text x="800" y="430">AI Operating System</text>
+    <text x="1080" y="140">Marketing</text>
+    <text x="520" y="160">Product</text>
+    <text x="520" y="700">Security</text>
+    <text x="1080" y="700">Delivery</text>
+  </g>
+</svg>

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 840" role="img" aria-labelledby="title desc">
+  <title id="title">Healthcare AI spotlight illustration</title>
+  <desc id="desc">Clinicians reviewing dashboards with compliance indicators and AI insights.</desc>
+  <defs>
+    <linearGradient id="hcBg" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#0ea5e9" />
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="840" fill="url(#hcBg)" rx="48" />
+  <g fill="#0f172a" opacity="0.35">
+    <rect x="240" y="200" width="1120" height="440" rx="32" />
+  </g>
+  <g fill="#f8fafc" opacity="0.9">
+    <rect x="320" y="240" width="280" height="320" rx="24" />
+    <rect x="640" y="240" width="480" height="220" rx="24" />
+    <rect x="640" y="500" width="480" height="120" rx="24" />
+  </g>
+  <g fill="#0ea5e9">
+    <circle cx="420" cy="320" r="38" />
+    <circle cx="420" cy="420" r="20" />
+  </g>
+  <g stroke="#22d3ee" stroke-width="6" stroke-linecap="round">
+    <path d="M420 360v100" />
+    <path d="M680 290h280" />
+    <path d="M680 340h220" />
+    <path d="M680 540h320" />
+  </g>
+  <g font-family="'Inter', 'Segoe UI', sans-serif" font-size="36" font-weight="600" fill="#082f49">
+    <text x="680" y="610">Audit Ready</text>
+  </g>
+  <g font-family="'Inter', 'Segoe UI', sans-serif" font-size="40" font-weight="600" fill="#f8fafc">
+    <text x="320" y="720">Clinician Workflow</text>
+    <text x="1080" y="720">Patient Outcomes</text>
+  </g>
+</svg>

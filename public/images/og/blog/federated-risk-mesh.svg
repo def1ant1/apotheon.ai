@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">OG artwork for federated risk mesh article</title>
+  <desc id="desc">Network mesh graphic highlighting responsible AI governance.</desc>
+  <defs>
+    <radialGradient id="meshBg" cx="50%" cy="50%" r="75%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e3a8a" />
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#meshBg)" rx="36" />
+  <g fill="none" stroke="#38bdf8" stroke-width="4" opacity="0.75">
+    <path d="M200 180l160 120 160-120 160 120 160-120 160 120" />
+    <path d="M200 320l160 120 160-120 160 120 160-120 160 120" />
+  </g>
+  <g fill="#fbbf24" opacity="0.9">
+    <circle cx="360" cy="300" r="18" />
+    <circle cx="520" cy="180" r="18" />
+    <circle cx="680" cy="300" r="18" />
+    <circle cx="840" cy="180" r="18" />
+  </g>
+  <g font-family="'Inter', 'Segoe UI', sans-serif" fill="#e2e8f0">
+    <text x="120" y="180" font-size="24" opacity="0.7">Responsible AI</text>
+    <text x="120" y="220" font-size="56" font-weight="700">Federated Risk Mesh</text>
+    <text x="120" y="280" font-size="28" opacity="0.85">Decentralize oversight without losing control</text>
+  </g>
+</svg>

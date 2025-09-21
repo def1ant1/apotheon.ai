@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">OG artwork for continuous learning article</title>
+  <desc id="desc">Circular loop showing signal, evaluate, deploy, and feedback stages.</desc>
+  <defs>
+    <linearGradient id="clOgBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#2563eb" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#clOgBg)" rx="36" />
+  <g fill="none" stroke="#38bdf8" stroke-width="14" stroke-linecap="round">
+    <path d="M600 180c140 0 240 100 240 195s-100 195-240 195-240-100-240-195 100-195 240-195z" opacity="0.35" />
+  </g>
+  <g fill="#facc15">
+    <circle cx="600" cy="180" r="18" />
+    <circle cx="840" cy="375" r="18" />
+    <circle cx="600" cy="570" r="18" />
+    <circle cx="360" cy="375" r="18" />
+  </g>
+  <g font-family="'Inter', 'Segoe UI', sans-serif" fill="#e0f2fe" text-anchor="middle" font-size="40" font-weight="600">
+    <text x="600" y="170">Signal</text>
+    <text x="840" y="365">Evaluate</text>
+    <text x="600" y="560">Deploy</text>
+    <text x="360" y="365">Feedback</text>
+  </g>
+</svg>
