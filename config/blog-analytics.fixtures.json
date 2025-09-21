@@ -1,0 +1,34 @@
+[
+  {
+    "slug": "welcome",
+    "eventType": "article_view",
+    "totalEvents": 120,
+    "uniqueSessions": 95,
+    "domainClassification": "allow",
+    "eventDate": "2024-10-01"
+  },
+  {
+    "slug": "continuous-learning",
+    "eventType": "conversion",
+    "totalEvents": 18,
+    "uniqueSessions": 12,
+    "domainClassification": "allow",
+    "eventDate": "2024-10-01"
+  },
+  {
+    "slug": "continuous-learning",
+    "eventType": "interaction",
+    "totalEvents": 45,
+    "uniqueSessions": 33,
+    "domainClassification": "review",
+    "eventDate": "2024-10-01"
+  },
+  {
+    "slug": "integration-governance",
+    "eventType": "article_view",
+    "totalEvents": 88,
+    "uniqueSessions": 70,
+    "domainClassification": "review",
+    "eventDate": "2024-09-28"
+  }
+]

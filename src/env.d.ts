@@ -27,6 +27,7 @@ declare global {
     readonly PUBLIC_WHITEPAPER_ENDPOINT?: string;
     readonly PUBLIC_TURNSTILE_SITE_KEY: string;
     readonly PUBLIC_OG_IMAGE_WORKER?: string;
+    readonly PUBLIC_BLOG_ANALYTICS_ENDPOINT?: string;
   }
 
   interface ImportMeta {

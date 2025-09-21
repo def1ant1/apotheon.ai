@@ -9,8 +9,8 @@
     "predev": "npm run ensure:homepage-hero-media && npm run ensure:history-media && npm run ensure:whitepapers",
     "build": "npm run build:static && npm run postbuild:seo && npm run search:index && npm run seo:verify",
     "build:static": "astro build",
-    "prebuild": "npm run ensure:homepage-hero-media && npm run ensure:history-media && npm run ensure:whitepapers && npm run diagrams:build && npm run brand:favicons",
-    "prebuild:static": "npm run ensure:homepage-hero-media && npm run ensure:history-media && npm run ensure:whitepapers && npm run diagrams:build",
+    "prebuild": "npm run ensure:homepage-hero-media && npm run ensure:history-media && npm run ensure:whitepapers && npm run diagrams:build && npm run brand:favicons && npm run content:blog-recommendations",
+    "prebuild:static": "npm run ensure:homepage-hero-media && npm run ensure:history-media && npm run ensure:whitepapers && npm run diagrams:build && npm run content:blog-recommendations",
     "preview": "astro preview --host",
     "typecheck": "astro check",
     "check": "npm run typecheck",
@@ -43,6 +43,7 @@
     "ensure:homepage-hero-media": "node ./scripts/content/ensure-homepage-hero-media.mjs",
     "ensure:history-media": "node ./scripts/content/ensure-history-media.mjs",
     "ensure:whitepapers": "node ./scripts/content/ensure-whitepapers.mjs",
+    "content:blog-recommendations": "node ./scripts/content/build-blog-recommendations.mjs",
     "workers:deploy": "node ./scripts/ci/deploy-workers.mjs",
     "workers:preview": "wrangler dev --config wrangler.toml"
   },
@@ -111,6 +112,7 @@
     "yaml": "^2.8.1",
     "zod": "^3.25.76",
     "@cloudflare/workers-types": "^4.20241004.0",
-    "wrangler": "^3.77.0"
+    "wrangler": "^3.77.0",
+    "tsx": "^4.19.1"
   }
 }

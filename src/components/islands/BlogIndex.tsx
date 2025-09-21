@@ -1,4 +1,6 @@
-import { useEffect, useId, useMemo, useState } from 'react';
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
+
+type BlogAnalyticsEventType = 'article_view' | 'interaction' | 'conversion';
 
 type BlogListPost = {
   slug: string;
@@ -44,12 +46,93 @@ const BlogIndex = ({ posts, tags }: Props) => {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [selectedTag, setSelectedTag] = useState<string>('all');
   const [isHydrated, setIsHydrated] = useState(false);
+  const sessionIdRef = useRef<string | null>(null);
   const tagSelectId = useId();
   const sortSelectId = useId();
 
+  const generateSessionId = useCallback(() => {
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+      return crypto.randomUUID();
+    }
+    return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+  }, []);
+
+  // Persist a deterministic session identifier so Worker-side rollups can
+  // approximate unique visitors. Session storage keeps it confined to the
+  // current tab while remaining resilient to SPA navigations.
+  const resolveSessionId = useCallback(() => {
+    if (sessionIdRef.current) return sessionIdRef.current;
+    if (typeof window === 'undefined') return null;
+
+    try {
+      const STORAGE_KEY = 'apotheon.blog.session';
+      const existing = window.sessionStorage.getItem(STORAGE_KEY);
+      if (existing) {
+        sessionIdRef.current = existing;
+        return existing;
+      }
+      const fresh = generateSessionId();
+      window.sessionStorage.setItem(STORAGE_KEY, fresh);
+      sessionIdRef.current = fresh;
+      return fresh;
+    } catch (error) {
+      console.warn('[blog-analytics] unable to persist session id', error);
+      const fallback = generateSessionId();
+      sessionIdRef.current = fallback;
+      return fallback;
+    }
+  }, [generateSessionId]);
+
+  // Centralized analytics helper mirrors the patterns used by the contact +
+  // whitepaper islands. By pushing to `dataLayer` and the Worker simultaneously
+  // we keep marketing's GTM recipes intact while unlocking richer D1 datasets.
+  const dispatchAnalytics = useCallback(
+    (eventType: BlogAnalyticsEventType, detail: Record<string, unknown>) => {
+      if (typeof window === 'undefined') return;
+
+      const sessionId = resolveSessionId();
+      if (!sessionId) return;
+
+      const payload = {
+        dataset: 'blog',
+        events: [
+          {
+            type: eventType,
+            slug: typeof detail.slug === 'string' ? detail.slug : (detail.currentSlug ?? 'index'),
+            sessionId,
+            occurredAt: new Date().toISOString(),
+            identity: {
+              domain: detail.domain?.toString(),
+            },
+            metadata: detail,
+          },
+        ],
+      };
+
+      window.dataLayer = Array.isArray(window.dataLayer) ? window.dataLayer : [];
+      window.dataLayer.push({ event: `blog_${eventType}`, ...detail });
+
+      const endpoint = import.meta.env.PUBLIC_BLOG_ANALYTICS_ENDPOINT ?? '/api/blog/analytics';
+      void fetch(endpoint, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(payload),
+        keepalive: true,
+      }).catch((error) => {
+        console.warn('[blog-analytics] beacon failed', error);
+      });
+    },
+    [resolveSessionId],
+  );
+
   useEffect(() => {
     setIsHydrated(true);
-  }, []);
+    dispatchAnalytics('interaction', {
+      action: 'index_view',
+      visibleCount: posts.length,
+      slug: 'index',
+    });
+  }, [dispatchAnalytics, posts.length]);
 
   const sortedPosts = useMemo(() => sortByDate(posts, sortOrder), [posts, sortOrder]);
   const visiblePosts = useMemo(
@@ -88,7 +171,15 @@ const BlogIndex = ({ posts, tags }: Props) => {
             className="min-w-[12rem] rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-400/40"
             id={tagSelectId}
             name="tag"
-            onChange={(event) => setSelectedTag(event.target.value)}
+            onChange={(event) => {
+              const value = event.target.value;
+              setSelectedTag(value);
+              dispatchAnalytics('interaction', {
+                action: 'filter_change',
+                tag: value,
+                slug: 'index',
+              });
+            }}
             value={selectedTag}
           >
             <option value="all">All tags</option>
@@ -110,7 +201,15 @@ const BlogIndex = ({ posts, tags }: Props) => {
             className="min-w-[12rem] rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-400/40"
             id={sortSelectId}
             name="sort"
-            onChange={(event) => setSortOrder(event.target.value as 'asc' | 'desc')}
+            onChange={(event) => {
+              const value = event.target.value as 'asc' | 'desc';
+              setSortOrder(value);
+              dispatchAnalytics('interaction', {
+                action: 'sort_change',
+                direction: value,
+                slug: 'index',
+              });
+            }}
             value={sortOrder}
           >
             <option value="desc">Newest first</option>
@@ -155,7 +254,17 @@ const BlogIndex = ({ posts, tags }: Props) => {
                     {dateFormatter.format(publishDate)}
                   </time>
                   <h2 className="text-2xl font-semibold text-white">
-                    <a className="hover:text-sky-200" href={`/blog/${post.slug}`}>
+                    <a
+                      className="hover:text-sky-200"
+                      href={`/blog/${post.slug}`}
+                      onClick={() =>
+                        dispatchAnalytics('interaction', {
+                          action: 'index_article_click',
+                          slug: post.slug,
+                          title: post.title,
+                        })
+                      }
+                    >
                       {post.title}
                     </a>
                   </h2>

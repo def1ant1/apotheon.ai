@@ -1,0 +1,74 @@
+{
+  "generatedAt": "2025-09-21T23:33:56.237Z",
+  "metadata": {
+    "decayHalfLifeDays": 14,
+    "eventWeights": {
+      "article_view": 1,
+      "interaction": 3,
+      "conversion": 7
+    }
+  },
+  "aggregates": [
+    {
+      "slug": "welcome",
+      "eventType": "article_view",
+      "totalEvents": 120,
+      "uniqueSessions": 95,
+      "domainClassification": "allow",
+      "eventDate": "2024-10-01"
+    },
+    {
+      "slug": "continuous-learning",
+      "eventType": "conversion",
+      "totalEvents": 18,
+      "uniqueSessions": 12,
+      "domainClassification": "allow",
+      "eventDate": "2024-10-01"
+    },
+    {
+      "slug": "continuous-learning",
+      "eventType": "interaction",
+      "totalEvents": 45,
+      "uniqueSessions": 33,
+      "domainClassification": "review",
+      "eventDate": "2024-10-01"
+    },
+    {
+      "slug": "integration-governance",
+      "eventType": "article_view",
+      "totalEvents": 88,
+      "uniqueSessions": 70,
+      "domainClassification": "review",
+      "eventDate": "2024-09-28"
+    }
+  ],
+  "topArticles": [
+    {
+      "slug": "continuous-learning",
+      "score": 0.000007812419296761371,
+      "breakdown": {
+        "article_view": 0,
+        "interaction": 0.000004089053504262335,
+        "conversion": 0.0000037233657924990365
+      }
+    },
+    {
+      "slug": "welcome",
+      "score": 0.0000037122843466880277,
+      "breakdown": {
+        "article_view": 0.0000037122843466880277,
+        "interaction": 0,
+        "conversion": 0
+      }
+    },
+    {
+      "slug": "integration-governance",
+      "score": 0.0000023497686568658927,
+      "breakdown": {
+        "article_view": 0.0000023497686568658927,
+        "interaction": 0,
+        "conversion": 0
+      }
+    }
+  ]
+}
