@@ -47,7 +47,7 @@ export const SEO_MANIFEST = Object.freeze({
      * the generated sitemap and robots outputs. Keep this list lean: it exists
      * to detect accidental regressions rather than mirror the full route map.
      */
-    criticalPaths: Object.freeze(['/', '/about/', '/blog/'])
+    criticalPaths: Object.freeze(['/', '/about/', '/about/history/', '/blog/'])
   },
   robots: {
     /**

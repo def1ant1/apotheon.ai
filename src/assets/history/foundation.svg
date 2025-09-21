@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900" role="img" aria-labelledby="title desc">
+  <title id="title">Foundational research lab formalized</title>
+  <desc id="desc">Abstract illustration representing collaborative research disciplines converging around an audit ledger.</desc>
+  <defs>
+    <linearGradient id="foundation-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+    <linearGradient id="foundation-ring" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#22d3ee" />
+      <stop offset="100%" stop-color="#0ea5e9" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="900" fill="url(#foundation-bg)" rx="48" />
+  <g fill="none" stroke-width="18" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="400" cy="340" r="140" stroke="#38bdf8" opacity="0.75" />
+    <circle cx="800" cy="340" r="140" stroke="#38bdf8" opacity="0.4" />
+    <circle cx="600" cy="560" r="180" stroke="url(#foundation-ring)" />
+  </g>
+  <rect x="420" y="320" width="360" height="220" rx="28" fill="#0f172a" opacity="0.8" />
+  <g fill="#f8fafc" font-family="'Inter', 'Segoe UI', sans-serif">
+    <text x="600" y="410" font-size="42" text-anchor="middle" opacity="0.92">Audit Ledger</text>
+    <text x="600" y="470" font-size="28" text-anchor="middle" opacity="0.7">Research • Governance • Ops</text>
+  </g>
+  <g stroke="#22d3ee" stroke-width="8" stroke-dasharray="12 18" opacity="0.65">
+    <path d="M400 340 Q600 200 800 340" />
+    <path d="M400 340 Q600 480 800 340" />
+    <path d="M600 560 Q600 420 600 340" />
+  </g>
+</svg>

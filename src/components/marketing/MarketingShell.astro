@@ -45,6 +45,8 @@ const pageSeo: PageSeoInput = {
 <BaseLayout seo={pageSeo}>
   {/** Forward optional head slot content (structured data, meta overrides) to BaseLayout. */}
   <slot name="head" slot="head" />
+  {/** Allow pages to inject pre-header affordances such as skip links. */}
+  <slot name="preheader" slot="preheader" />
   <section class="mx-auto flex w-full max-w-5xl flex-col gap-12 px-6 pb-16">
     {breadcrumbs.length > 0 && <Breadcrumbs class="mt-6" trail={breadcrumbs} />}
 

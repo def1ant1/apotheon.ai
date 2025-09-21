@@ -80,6 +80,7 @@ const metadata = createPageSeo(
       directive. Astro keeps the markup static until `client:idle` fires, which means crawlers and
       low-power devices still receive accessible fallback navigation.
     -->
+    <slot name="preheader" />
     <SiteHeader />
     <main id="main">
       <slot />

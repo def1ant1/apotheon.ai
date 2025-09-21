@@ -1,0 +1,102 @@
+---
+import { getCollection } from 'astro:content';
+
+import Timeline from '../../components/history/Timeline.astro';
+import MarketingCtaRow from '../../components/marketing/MarketingCtaRow.astro';
+import MarketingHero from '../../components/marketing/MarketingHero.astro';
+import MarketingShell from '../../components/marketing/MarketingShell.astro';
+import SchemaScript from '../../components/seo/SchemaScript.astro';
+import { createMarketingEntryTrail } from '../../utils/breadcrumbs';
+import { buildTimelineSchema, getTimelineMilestones } from '../../utils/history';
+import { buildBreadcrumbSchema, type StructuredSchema } from '../../utils/seo';
+
+const marketingEntries = await getCollection(
+  'marketing',
+  (entry) => entry.slug === 'about/history',
+);
+const historyEntry = marketingEntries[0];
+
+if (!historyEntry) {
+  throw new Error(
+    'Missing marketing content entry for about/history. Add src/content/marketing/about/history.mdx.',
+  );
+}
+
+const { data } = historyEntry;
+const { Content } = await historyEntry.render();
+const heroCopy =
+  data.summary ??
+  'Track how Apotheon.ai scaled from research collective to enterprise platform with verifiable evidence at every release gate.';
+const heroCtaLabel = data.heroCtaLabel ?? 'Review historical sourcing policies';
+const breadcrumbs = createMarketingEntryTrail(historyEntry);
+const siteOrigin = Astro.site ?? new URL(Astro.url.origin);
+const timelineMilestones = await getTimelineMilestones();
+const timelineSchema = buildTimelineSchema(timelineMilestones, siteOrigin);
+const breadcrumbSchema = buildBreadcrumbSchema(breadcrumbs, siteOrigin.origin);
+const schemaPayload: StructuredSchema[] = [
+  breadcrumbSchema,
+  timelineSchema as unknown as StructuredSchema,
+];
+---
+
+<MarketingShell title={data.title} description={heroCopy} {breadcrumbs}>
+  <a
+    slot="preheader"
+    class="timeline-skip-link sr-only focus:not-sr-only focus:absolute focus:left-6 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-sky-900 focus:px-5 focus:py-3 focus:text-sm focus:font-semibold focus:text-white"
+    href="#timeline-related-links"
+  >
+    Skip timeline and jump to related resources
+  </a>
+  <SchemaScript slot="head" schema={schemaPayload} />
+  <MarketingHero
+    eyebrow="About"
+    headline={data.title}
+    copy={heroCopy}
+    cta={{
+      label: heroCtaLabel,
+      href: '#company-timeline-heading',
+      description: 'Jump straight to the verified milestone list.',
+    }}
+  />
+
+  <article
+    class="prose prose-invert prose-headings:font-semibold prose-headings:text-white prose-p:text-slate-200 prose-a:text-sky-300 max-w-none"
+  >
+    <Content />
+  </article>
+
+  <Timeline milestones={timelineMilestones} skipTargetId="timeline-related-links" />
+
+  <section id="timeline-related-links" class="space-y-6">
+    <h2 class="text-2xl font-semibold text-white">Continue exploring enterprise readiness</h2>
+    <p class="max-w-3xl text-slate-300">
+      These surfaces expand on the timeline by diving into regulated industry playbooks and the
+      platform capabilities most referenced by our milestone program owners.
+    </p>
+    <MarketingCtaRow
+      items={[
+        {
+          title: 'Governance Lakehouse',
+          description:
+            'See how evidence automation and audit trails from the timeline surface inside the flagship governance solution.',
+          href: '/solutions/governance-lakehouse/',
+          label: 'Inspect governance solution',
+        },
+        {
+          title: 'Automation Studio',
+          description:
+            'Explore the orchestration toolkit that powers cross-team launches referenced in multiple milestones above.',
+          href: '/solutions/automation-studio/',
+          label: 'Review automation workflows',
+        },
+        {
+          title: 'Regulated industries',
+          description:
+            'Correlate timeline events with the vertical launch playbooks spanning healthcare, finance, public sector, and beyond.',
+          href: '/industries/',
+          label: 'Browse industry playbooks',
+        },
+      ]}
+    />
+  </section>
+</MarketingShell>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900" role="img" aria-labelledby="title desc">
+  <title id="title">Governance automation lab operationalized with regulator access</title>
+  <desc id="desc">Illustration of layered dashboards and compliance signals representing transparent governance controls.</desc>
+  <defs>
+    <linearGradient id="governance-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#020617" />
+      <stop offset="100%" stop-color="#111827" />
+    </linearGradient>
+    <linearGradient id="governance-panel" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#0ea5e9" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="900" fill="url(#governance-bg)" rx="48" />
+  <g opacity="0.85">
+    <rect x="220" y="220" width="760" height="460" rx="32" fill="#0b1120" stroke="#1e293b" stroke-width="8" />
+    <rect x="260" y="260" width="680" height="120" rx="20" fill="#111c2e" stroke="#1f2937" stroke-width="6" />
+    <rect x="260" y="410" width="680" height="220" rx="24" fill="#0f172a" stroke="#1f2937" stroke-width="6" />
+  </g>
+  <g font-family="'Inter', 'Segoe UI', sans-serif" fill="#e0f2fe">
+    <text x="300" y="328" font-size="28" opacity="0.9">Regulator session</text>
+    <text x="300" y="358" font-size="20" opacity="0.6">Live audit escort</text>
+    <text x="300" y="470" font-size="32" opacity="0.92">Automation Lab Oversight</text>
+    <text x="300" y="514" font-size="22" opacity="0.6">Control room telemetry, remediation ledger, and approvals</text>
+  </g>
+  <g transform="translate(300 540)" fill="none" stroke-linecap="round">
+    <rect x="0" y="0" width="520" height="28" rx="14" fill="#132033" />
+    <rect x="0" y="60" width="420" height="28" rx="14" fill="#132033" />
+    <rect x="0" y="120" width="470" height="28" rx="14" fill="#132033" />
+    <rect x="0" y="180" width="360" height="28" rx="14" fill="#132033" />
+    <rect x="0" y="240" width="520" height="28" rx="14" fill="#132033" />
+    <line x1="10" y1="14" x2="180" y2="14" stroke="url(#governance-panel)" stroke-width="10" />
+    <line x1="10" y1="74" x2="280" y2="74" stroke="#38bdf8" stroke-width="10" opacity="0.8" />
+    <line x1="10" y1="134" x2="240" y2="134" stroke="#38bdf8" stroke-width="10" opacity="0.7" />
+    <line x1="10" y1="194" x2="320" y2="194" stroke="#38bdf8" stroke-width="10" opacity="0.85" />
+    <line x1="10" y1="254" x2="200" y2="254" stroke="#38bdf8" stroke-width="10" opacity="0.6" />
+  </g>
+  <g transform="translate(880 220)" fill="url(#governance-panel)" opacity="0.9">
+    <rect x="0" y="0" width="140" height="60" rx="12" />
+    <text x="70" y="38" text-anchor="middle" font-family="'Inter', 'Segoe UI', sans-serif" font-size="24" fill="#f8fafc">CSP</text>
+  </g>
+  <g transform="translate(900 340)" fill="none" stroke="#22d3ee" stroke-width="10" stroke-linecap="round">
+    <circle cx="0" cy="0" r="36" opacity="0.8" />
+    <path d="M-32 -10 L-10 12 L34 -28" />
+  </g>
+</svg>

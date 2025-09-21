@@ -1,0 +1,18 @@
+{
+  "asset": "expansion.svg",
+  "hash": "e6279a5556010a9bed5fe1281f200294287b979890a698964c5f3bfc4bd5d5c4",
+  "generatedAt": "2025-09-21T22:16:38.021Z",
+  "validatedAspectRatio": 1.3333333333333333,
+  "viewBox": {
+    "minX": 0,
+    "minY": 0,
+    "width": 1200,
+    "height": 900
+  },
+  "dimensions": {
+    "width": 1200,
+    "height": 900
+  },
+  "credit": "Pending compliance verification",
+  "generatedBy": "scripts/content/ensure-history-media.mjs"
+}
