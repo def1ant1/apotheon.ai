@@ -18,7 +18,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npm run dev -- --host 127.0.0.1 --port 43210',
+    command: 'npm run dev -- --host 127.0.0.1 --port 43210 --no-dev-toolbar',
     url: 'http://127.0.0.1:43210',
     reuseExistingServer: !process.env.CI,
     stdout: 'pipe',
