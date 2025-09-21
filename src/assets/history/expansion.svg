@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900" role="img" aria-labelledby="title desc">
+  <title id="title">Global observability mesh shipped to first IL5 tenant</title>
+  <desc id="desc">Stylized world map with synchronized telemetry arcs showing cross-region monitoring.</desc>
+  <defs>
+    <radialGradient id="expansion-bg" cx="50%" cy="45%" r="80%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#020617" />
+    </radialGradient>
+    <linearGradient id="expansion-arc" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#22d3ee" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="900" fill="url(#expansion-bg)" rx="48" />
+  <g fill="#0f172a" stroke="#1f2937" stroke-width="2" opacity="0.75">
+    <rect x="140" y="220" width="920" height="460" rx="32" />
+  </g>
+  <g stroke="url(#expansion-arc)" stroke-width="10" stroke-linecap="round" fill="none">
+    <path d="M240 540 Q600 300 960 520" opacity="0.85" />
+    <path d="M320 460 Q600 260 880 480" opacity="0.65" />
+    <path d="M280 380 Q600 240 920 420" opacity="0.45" />
+  </g>
+  <g fill="#bae6fd" opacity="0.9">
+    <circle cx="300" cy="500" r="18" />
+    <circle cx="420" cy="420" r="16" />
+    <circle cx="600" cy="340" r="20" />
+    <circle cx="780" cy="420" r="16" />
+    <circle cx="920" cy="520" r="18" />
+  </g>
+  <g fill="#f8fafc" font-family="'Inter', 'Segoe UI', sans-serif" text-anchor="middle">
+    <text x="600" y="620" font-size="34" opacity="0.85">IL5 Telemetry Federation</text>
+    <text x="600" y="668" font-size="24" opacity="0.65">Continuous controls validation across mission partners</text>
+  </g>
+  <g stroke="#38bdf8" stroke-dasharray="6 14" stroke-width="6" opacity="0.5">
+    <path d="M300 500 L420 420 L600 340 L780 420 L920 520" />
+  </g>
+</svg>

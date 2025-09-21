@@ -30,7 +30,7 @@ export const WHITEPAPER_MANIFEST: ReadonlyArray<WhitepaperManifestEntry> = [
     industries: ['intelligence', 'public-sector', 'military'],
     asset: {
       objectKey: 'whitepapers/apotheon-sovereign-ai-assurance.pdf',
-      checksum: '8da50dab10a535fc2ece307fac2bdf7e2f054ca44688f8c0032216c15cb30475',
+      checksum: 'db33b7391ee4987410d0e620921f225a8f75aa39d960c0c716194d97f84fa27e',
       contentType: 'application/pdf',
       pageCount: 32,
     },
@@ -66,7 +66,7 @@ export const WHITEPAPER_MANIFEST: ReadonlyArray<WhitepaperManifestEntry> = [
     industries: ['financial-services', 'healthcare', 'government'],
     asset: {
       objectKey: 'whitepapers/apotheon-strategic-automation-playbook.pdf',
-      checksum: '8da50dab10a535fc2ece307fac2bdf7e2f054ca44688f8c0032216c15cb30475',
+      checksum: 'db33b7391ee4987410d0e620921f225a8f75aa39d960c0c716194d97f84fa27e',
       contentType: 'application/pdf',
       pageCount: 36,
     },

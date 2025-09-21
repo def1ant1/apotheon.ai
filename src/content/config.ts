@@ -1,5 +1,6 @@
 import { z, defineCollection } from 'astro:content';
 
+import { historyCollection } from './history';
 import { homepageCollection } from './homepage';
 import { industriesCollection } from './industries';
 import { solutionCollection } from './solutions';
@@ -122,6 +123,11 @@ export const collections = {
   blog: blogCollection,
   marketing: marketingCollection,
   homepage: homepageCollection,
+  /**
+   * Company history timeline used by /about/history and internal knowledge bases. Each entry maps to
+   * a milestone with sourcing metadata so Schema.org payloads and analytics stay consistent.
+   */
+  history: historyCollection,
   solutions: solutionCollection,
   /**
    * Industries collection powering the /industries routes.

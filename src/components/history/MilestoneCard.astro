@@ -1,0 +1,132 @@
+---
+import type { TimelineMilestone } from '../../utils/history';
+
+interface Props {
+  milestone: TimelineMilestone;
+  position: number;
+}
+
+const { milestone, position } = Astro.props as Props;
+const mediaModules = import.meta.glob<{ default: string }>('../../assets/history/*.svg', {
+  eager: true,
+});
+const provenanceModules = import.meta.glob<{
+  default: {
+    dimensions: { width: number; height: number };
+  };
+}>('../../assets/history/*.svg.provenance.json', { eager: true });
+
+const mediaKey = `../../assets/history/${milestone.media.src}`;
+const mediaModule = mediaModules[mediaKey];
+const provenanceKey = `${mediaKey}.provenance.json`;
+const provenanceModule = provenanceModules[provenanceKey];
+
+if (!mediaModule) {
+  throw new Error(
+    `Timeline media asset ${milestone.media.src} is missing. Run npm run ensure:history-media to validate SVG placeholders and provenance manifests.`,
+  );
+}
+
+const mediaSrc = mediaModule.default;
+const dimensions = provenanceModule?.default.dimensions ?? { width: 1200, height: 900 };
+const captionSegments = [
+  milestone.media.caption,
+  milestone.media.credit ? `Source: ${milestone.media.credit}` : null,
+]
+  .filter((value): value is string => Boolean(value && value.trim().length > 0))
+  .join(' — ');
+const Content = milestone.Content;
+---
+
+<li
+  id={milestone.id}
+  class="relative flex flex-col gap-6 rounded-3xl border border-slate-800/70 bg-slate-950/70 p-6 shadow-lg ring-1 ring-slate-900/60"
+  data-program-area={milestone.programArea}
+  data-position={position}
+  data-animate="timeline-card"
+  data-visible="true"
+>
+  <!--
+    Year + program area render in the header so executives scanning the page can immediately anchor
+    milestones to delivery roadmaps. The <time> element improves semantics for screen readers while
+    giving search crawlers an explicit ISO date to parse.
+  -->
+  <header class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+    <div>
+      <p class="text-xs uppercase tracking-[0.35rem] text-sky-300">{milestone.programArea}</p>
+      <h3
+        class="text-2xl font-semibold text-white"
+        aria-label={`${milestone.year} ${milestone.headline}`}
+      >
+        <time datetime={`${milestone.year}-01-01`} class="font-semibold text-sky-200">
+          {milestone.year}
+        </time>
+        <span class="ml-3 text-white">{milestone.headline}</span>
+      </h3>
+    </div>
+    <span class="text-sm text-slate-400" aria-hidden="true">
+      {position.toString().padStart(2, '0')}
+    </span>
+  </header>
+
+  <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:items-start">
+    <figure
+      class="group relative overflow-hidden rounded-2xl border border-slate-800/60 bg-slate-900/50"
+    >
+      <!--
+        Media renders as inline SVG assets to respect compliance requirements forbidding binary
+        payloads in version control. Provenance manifests expose dimensions harvested by the
+        ensure-history-media script so we can preserve aspect ratios without hard-coding values in
+        templates.
+      -->
+      <img
+        src={mediaSrc}
+        alt={milestone.media.alt}
+        width={dimensions.width}
+        height={dimensions.height}
+        loading="lazy"
+        decoding="async"
+        class="h-full w-full object-cover transition duration-700 ease-out group-hover:scale-[1.02]"
+      />
+      {
+        captionSegments && (
+          <figcaption class="mt-3 text-xs text-slate-400">{captionSegments}</figcaption>
+        )
+      }
+    </figure>
+
+    <div class="space-y-4 text-slate-200">
+      <p class="text-base leading-relaxed text-slate-200">{milestone.narrative}</p>
+      <!--
+        MDX body copy streams here so editors can layer extended narratives, source citations, or
+        callouts without modifying the component. The slot remains server-rendered which keeps search
+        engine visibility intact even when JavaScript is disabled.
+      -->
+      <Content />
+    </div>
+  </div>
+</li>
+
+<style>
+  li[data-animate='timeline-card'] {
+    --card-translate: 16px;
+    opacity: 1;
+    transform: translateY(0);
+    transition:
+      transform 700ms ease,
+      opacity 700ms ease;
+  }
+
+  li[data-animate='timeline-card']:not([data-visible='true']) {
+    opacity: 0;
+    transform: translateY(var(--card-translate));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    li[data-animate='timeline-card'] {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>

@@ -1,0 +1,133 @@
+---
+import MilestoneCard from './MilestoneCard.astro';
+
+import type { TimelineMilestone } from '../../utils/history';
+
+interface Props {
+  milestones: ReadonlyArray<TimelineMilestone>;
+  /** Optional skip target id for the "Skip timeline" link. */
+  skipTargetId?: string;
+}
+
+const { milestones, skipTargetId = 'timeline-related-links' } = Astro.props as Props;
+const headingId = 'company-timeline-heading';
+const descriptionId = 'company-timeline-description';
+const listId = 'company-timeline-list';
+const navId = 'company-timeline-nav';
+---
+
+<section
+  class="grid gap-12 lg:gap-16"
+  aria-labelledby={headingId}
+  aria-describedby={descriptionId}
+  data-analytics-region="company-history"
+>
+  <div
+    class="grid gap-8 rounded-3xl border border-slate-700/40 bg-gradient-to-br from-slate-950/90 to-slate-900/70 p-10 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:items-start"
+  >
+    <div class="space-y-4">
+      <p class="text-xs font-semibold uppercase tracking-[0.35rem] text-sky-400">Company history</p>
+      <h2 id={headingId} class="text-3xl font-semibold text-white md:text-4xl">
+        Mission discipline across every growth stage
+      </h2>
+      <p id={descriptionId} class="max-w-3xl text-base leading-relaxed text-slate-300 md:text-lg">
+        Each milestone below links to primary source evidence so diligence teams, investors, and
+        regulators can audit Apotheon.ai’s delivery cadence without manual document hunts.
+      </p>
+      <a
+        class="timeline-secondary-skip inline-flex items-center gap-2 text-sm font-semibold text-sky-300 underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-300"
+        href={`#${skipTargetId}`}
+      >
+        Skip timeline and jump to related resources
+      </a>
+    </div>
+    <nav
+      id={navId}
+      aria-label="Timeline quick links"
+      class="flex flex-col gap-4 rounded-2xl border border-slate-700/60 bg-slate-950/70 p-6"
+    >
+      <h3 class="text-sm font-semibold uppercase tracking-[0.2rem] text-slate-200">Jump to year</h3>
+      <ul class="grid max-h-72 gap-3 overflow-y-auto pr-2 lg:max-h-72">
+        {
+          milestones.map((milestone) => (
+            <li>
+              <a
+                class="flex flex-col rounded-2xl border border-transparent bg-slate-900/60 px-4 py-3 text-slate-200 transition hover:border-sky-300/60 hover:bg-slate-900/85 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300"
+                href={milestone.href}
+              >
+                <span class="text-base font-semibold text-sky-300">{milestone.year}</span>
+                <span class="text-xs text-slate-400">{milestone.headline}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+
+  <ol id={listId} class="grid list-none gap-10 p-0" aria-labelledby={headingId}>
+    {
+      milestones.map((milestone, index) => (
+        <MilestoneCard milestone={milestone} position={index + 1} />
+      ))
+    }
+  </ol>
+</section>
+
+<script is:inline>
+  /**
+   * Lightweight progressive enhancement: we lazily observe milestone cards and toggle the
+   * `data-visible` attribute once they enter the viewport. Browsers with reduced motion preferences
+   * skip the observer entirely to respect user settings.
+   */
+  const runTimelineEnhancements = () => {
+    const script = document.currentScript;
+    const timelineSection = script?.closest('section');
+    const cards = timelineSection?.querySelectorAll('[data-animate="timeline-card"]') ?? [];
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!timelineSection || cards.length === 0) {
+      return;
+    }
+
+    if (prefersReducedMotion) {
+      cards.forEach((card) => card.setAttribute('data-visible', 'true'));
+      return;
+    }
+
+    const isCardCurrentlyVisible = (card) => {
+      const rect = card.getBoundingClientRect();
+      return rect.top < window.innerHeight && rect.bottom > 0;
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.setAttribute('data-visible', 'true');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.35 },
+    );
+
+    cards.forEach((card) => {
+      if (isCardCurrentlyVisible(card)) {
+        card.setAttribute('data-visible', 'true');
+        return;
+      }
+
+      card.setAttribute('data-visible', 'false');
+      observer.observe(card);
+    });
+  };
+
+  if (typeof window !== 'undefined') {
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      runTimelineEnhancements();
+    } else {
+      window.addEventListener('DOMContentLoaded', runTimelineEnhancements, { once: true });
+    }
+  }
+</script>

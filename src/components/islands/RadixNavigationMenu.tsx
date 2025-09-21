@@ -114,6 +114,11 @@ export const navigationMenuGroups: ReadonlyArray<NavigationMenuGroup> = [
         description: 'Download compliance-ready research and rollout playbooks.',
       },
       {
+        label: 'History & Milestones',
+        href: '/about/history',
+        description: 'Audit the evidence-backed company timeline and sourcing discipline.',
+      },
+      {
         label: 'Contact',
         href: '/about/contact',
         description: 'Edge-secured intake routing leads to the Cloudflare Worker API.',
