@@ -9,34 +9,35 @@ usage_model = "bundled"
 pattern = "csp.apotheon.ai/report"
 custom_domain = true
 
-# Multi-worker configuration so both the legacy CSP endpoint and the new contact
-# intake worker deploy from a single codebase. The `services` stanza requires
-# Wrangler v3.55+.
-[[services]]
+# The default configuration above deploys the CSP ingestion Worker. Additional
+# Workers are represented as dedicated `env.*` sections below so Wrangler can
+# deploy each entry point by invoking `wrangler deploy --env <name>`.
+
+[env.contact_intake]
 name = "apotheon-contact-intake"
 main = "workers/contact.ts"
 usage_model = "standard"
 compatibility_date = "2024-10-08"
 migrations_dir = "workers/migrations/contact"
 
-[[services.routes]]
+[[env.contact_intake.routes]]
 pattern = "apotheon.ai/api/contact"
 custom_domain = true
 
-[[services.routes]]
+[[env.contact_intake.routes]]
 pattern = "contact.apotheon.ai/*"
 custom_domain = true
 
-[[services.kv_namespaces]]
+[[env.contact_intake.kv_namespaces]]
 binding = "CONTACT_RATE_LIMIT"
 id = "00000000000000000000000000000000"
 preview_id = "11111111111111111111111111111111"
 
-[[services.d1_databases]]
+[[env.contact_intake.d1_databases]]
 binding = "CONTACT_AUDIT_DB"
 database_name = "apotheon-contact"
 database_id = "00000000-0000-0000-0000-000000000000"
 
-[vars]
+[env.contact_intake.vars]
 CONTACT_BLOCKLIST = ""
 CONTACT_ALLOWLIST = ""

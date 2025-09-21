@@ -29,9 +29,10 @@ pre-production environments.
   Worker. Replace the placeholder account, KV namespace, and D1 identifiers with
   production values. Secrets such as `TURNSTILE_SECRET` are stored via
   `wrangler secret put`.
-- `npm run workers:deploy` calls `wrangler deploy --config wrangler.toml`,
-  publishing both Workers (Wrangler v3.55+ automatically handles the
-  multi-service stanza).
+- `npm run workers:deploy` now inspects the Wrangler config, deploys the default
+  CSP Worker, and then deploys each `[env.<name>]` Worker (for contact this is
+  `env.contact_intake`). Adding new Workers only requires updating the config;
+  the script automatically discovers additional environments.
 - GitHub Actions (`.github/workflows/ci.yml`) includes a `deploy-workers`
   job that executes on pushes to `main`. It uses `cloudflare/wrangler-action` so
   both the CSP report endpoint and the contact intake Worker ship together.
