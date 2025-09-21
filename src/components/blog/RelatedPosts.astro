@@ -47,6 +47,9 @@ const dateFormatter = new Intl.DateTimeFormat('en', {
             <a
               class="mt-4 text-sm font-semibold text-sky-300 group-hover:text-sky-200"
               href={`/blog/${post.slug}`}
+              data-blog-related-link
+              data-blog-related-slug={post.slug}
+              data-blog-related-title={post.data.title}
             >
               Read article →
             </a>

@@ -72,3 +72,25 @@ preview_bucket_name = "apotheon-whitepapers-preview"
 WHITEPAPER_BLOCKLIST = ""
 WHITEPAPER_ALLOWLIST = ""
 WHITEPAPER_SIGNING_TTL_SECONDS = "900"
+
+[env.blog_analytics]
+name = "apotheon-blog-analytics"
+main = "workers/blog-analytics.ts"
+usage_model = "standard"
+compatibility_date = "2024-10-08"
+migrations_dir = "workers/migrations/blog-analytics"
+
+[[env.blog_analytics.routes]]
+pattern = "analytics.apotheon.ai/*"
+custom_domain = true
+
+[[env.blog_analytics.d1_databases]]
+binding = "BLOG_ANALYTICS_DB"
+database_name = "apotheon-blog-analytics"
+database_id = "00000000-0000-0000-0000-000000000002"
+
+[env.blog_analytics.vars]
+BLOG_ANALYTICS_ALLOWED_ORIGINS = "https://apotheon.ai,https://www.apotheon.ai"
+BLOG_ANALYTICS_DATA_RETENTION_DAYS = "180"
+# Secrets managed via `wrangler secret put BLOG_ANALYTICS_BI_API_KEY` to keep BI
+# credentials out of version control.

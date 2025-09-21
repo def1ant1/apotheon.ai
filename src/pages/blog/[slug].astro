@@ -39,6 +39,8 @@ const siteOrigin = Astro.site?.origin ?? Astro.url.origin;
 const canonicalUrl = new URL(`/blog/${entry.slug}/`, siteOrigin).href;
 const { url: ogImageUrl, alt: ogImageAlt } = resolveOgImage(entry, siteOrigin);
 const breadcrumbs = createBlogPostTrail(entry);
+const analyticsEndpoint = import.meta.env.PUBLIC_BLOG_ANALYTICS_ENDPOINT ?? '/api/blog/analytics';
+const publishIso = new Date(entry.data.publishDate).toISOString();
 
 const seo = {
   title: entry.data.title,
@@ -135,5 +137,18 @@ const breadcrumbSchema = buildBreadcrumbSchema(breadcrumbs, siteOrigin);
     }
 
     <RelatedPosts posts={relatedPosts} />
+    <!-- Sentinel lets the inline module fire a conversion event once visitors reach the footer. -->
+    <div aria-hidden="true" data-blog-analytics="read-depth"></div>
   </article>
+  <div
+    aria-hidden="true"
+    data-blog-analytics-config
+    data-endpoint={analyticsEndpoint}
+    data-publish-date={publishIso}
+    data-slug={entry.slug}
+    data-tags={JSON.stringify(entry.data.tags)}
+    data-title={entry.data.title}
+  >
+  </div>
+  <script src="/scripts/blog-analytics.js" type="module"></script>
 </BaseLayout>
