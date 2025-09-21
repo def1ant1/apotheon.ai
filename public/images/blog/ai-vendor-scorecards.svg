@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 840" role="img" aria-labelledby="title desc">
+  <title id="title">AI vendor scorecard illustration</title>
+  <desc id="desc">A layered grid representing governance pillars, vendor tiers, and automation signals.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e3a8a" />
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="840" fill="url(#bg)" rx="48" />
+  <g fill="none" stroke="#38bdf8" stroke-width="4" stroke-linejoin="round" opacity="0.8">
+    <rect x="160" y="160" width="1280" height="520" rx="32" />
+    <path d="M160 360h1280" />
+    <path d="M160 520h1280" />
+    <path d="M480 160v520" />
+    <path d="M880 160v520" />
+  </g>
+  <g font-family="'Inter', 'Segoe UI', sans-serif" font-size="48" font-weight="600" fill="#e0f2fe" text-anchor="middle">
+    <text x="320" y="320">Risk</text>
+    <text x="320" y="480">Controls</text>
+    <text x="320" y="640">Automation</text>
+    <text x="680" y="240">Tier 1</text>
+    <text x="1080" y="240">Tier 2</text>
+    <text x="1480" y="240">Tier 3</text>
+  </g>
+  <g fill="#fbbf24" opacity="0.9">
+    <circle cx="680" cy="360" r="26" />
+    <circle cx="1080" cy="520" r="26" />
+    <circle cx="1480" cy="680" r="26" />
+  </g>
+</svg>

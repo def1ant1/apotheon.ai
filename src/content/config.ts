@@ -13,16 +13,21 @@ const blogCollection = defineCollection({
     description: z.string().max(160).describe('Meta description for SEO + social cards'),
     publishDate: z.date().describe('ISO publish date for chronological sorting'),
     updatedDate: z.date().optional().describe('Optional last updated date for release notes'),
-    heroImage: z.string().optional().describe('Path to hero image processed by @astrojs/image'),
+    heroImage: z
+      .string()
+      .min(1)
+      .describe(
+        'Path to hero image processed by @astrojs/image. Required so every launch post ships with art.',
+      ),
     heroImageAlt: z
       .string()
-      .optional()
+      .min(1)
       .describe('Plain-language alt text accompanying heroImage for accessibility compliance'),
     tags: z
-      .array(z.string())
-      .default([])
+      .array(z.string().min(1))
+      .min(1)
       .describe(
-        'Search facets + related content scoring (lowercase kebab-case values recommended)',
+        'Search facets + related content scoring (lowercase kebab-case values recommended). Empty arrays fail validation.',
       ),
     estimatedReadingMinutes: z
       .number()
@@ -62,6 +67,28 @@ const blogCollection = defineCollection({
       .describe(
         'Structured author metadata keeps layout + JSON-LD in sync without per-page overrides',
       ),
+    openGraph: z
+      .object({
+        image: z
+          .string()
+          .min(1)
+          .describe(
+            'Absolute or relative path to the social card artwork surfaced in meta tags + feeds',
+          ),
+        alt: z
+          .string()
+          .min(1)
+          .describe(
+            'Description read by screen readers + surfaced in Schema.org markup for OG images',
+          ),
+        generatorRequestId: z
+          .string()
+          .optional()
+          .describe(
+            'Optional identifier tying the artwork back to the upcoming OG Worker (Epic 14) so we can reconcile generation logs.',
+          ),
+      })
+      .describe('OpenGraph artwork references keep marketing previews consistent across channels.'),
     draft: z
       .boolean()
       .default(false)

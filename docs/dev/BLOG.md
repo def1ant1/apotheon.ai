@@ -1,0 +1,34 @@
+# Blog Delivery Workflow
+
+This playbook documents how Apotheon.ai ships enterprise-ready blog content without manual busywork. Use it alongside `docs/content/BLOG_EDITORIAL.md` for narrative guidance—the checklist below focuses on developer automation.
+
+## Authoring workflow
+
+1. **Start from the schema** – Every article lives in `src/content/blog/` and must satisfy the collection defined in `src/content/config.ts`. Required frontmatter now includes hero imagery, OpenGraph artwork metadata, tags, and a `generatorRequestId` placeholder for the upcoming OG Worker (Epic 14).
+2. **Capture tone + keywords inline** – Immediately after the frontmatter, add an HTML comment such as `<!-- editorial: tone="Confident" keywords="governance, ai ops" -->`. Content linting asserts that the cue exists so editors, SEO, and marketing automation stay aligned.
+3. **Reference reusable assets** – Store hero art in `public/images/blog/` and social images in `public/images/og/blog/`. Use descriptive alt text; the blog post template surfaces it in the figure caption and in JSON-LD.
+4. **Embed visuals** – Diagrams, quotes, and tables belong in the MDX body. Favor accessible representations (` ```text` diagrams, semantic tables) so we avoid adding dependencies for chart rendering.
+
+## Content linting + validation
+
+- `npm run lint` executes ESLint, Stylelint, and MDX linting. Schema violations surface as TypeScript errors thanks to the `defineCollection` contract.
+- `npm run typecheck` ensures Astro components, including the new `BlogIndex` island, continue to compile with strict settings.
+- `npm run test` runs Vitest suites covering blog utilities (`scoreRelatedPosts`, `buildSchemaScriptHtml`, etc.).
+- `npm run test:e2e` runs Playwright scenarios that validate the `/blog` index filters, article metadata, and feed endpoints (`/rss.xml`, `/atom.xml`).
+- `npm run build` compiles the static site and triggers Pagefind indexing so the search experience captures new metadata facets automatically.
+
+## Review expectations
+
+- **Metadata completeness** – Reviewers confirm hero art exists, OpenGraph payloads reference the correct assets, and estimated reading times are realistic.
+- **Automation hooks** – Leave the `openGraph.generatorRequestId` populated. Once Epic 14 lands the Worker will consume these IDs to render social cards automatically; comments in `src/utils/blog.ts` and the feed endpoints highlight the TODO.
+- **Accessibility + structure** – Verify headings form a logical outline, blockquotes include citations, and tables/diagrams remain readable without color.
+- **Testing receipts** – Pull requests should list the release gate commands in the description. CI enforces them, but local runs catch regressions earlier.
+
+## Quick links
+
+- Schema source: [`src/content/config.ts`](../../src/content/config.ts)
+- Blog helpers: [`src/utils/blog.ts`](../../src/utils/blog.ts)
+- Interactive index island: [`src/components/islands/BlogIndex.tsx`](../../src/components/islands/BlogIndex.tsx)
+- OG feed endpoints: [`src/pages/rss.xml.ts`](../../src/pages/rss.xml.ts) / [`src/pages/atom.xml.ts`](../../src/pages/atom.xml.ts)
+
+Treat this document as the canonical reference for engineering-focused blog contributions. Submit updates whenever we add automation or expand the content contract.

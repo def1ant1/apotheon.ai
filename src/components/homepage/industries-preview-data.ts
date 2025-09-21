@@ -1,7 +1,5 @@
 import { getCollection } from 'astro:content';
 
-import type { IndustryEntry } from '../../content/industries';
-
 /**
  * Maximum number of industry cards surfaced on the homepage preview.
  * We intentionally keep the value low to avoid overwhelming visitors and to
@@ -24,10 +22,23 @@ export interface IndustryPreviewCard {
   /** Numerical ordering flag that lets marketing rearrange emphasis */
   order: number;
   /** Icon slug surfaced on list cards to visually reinforce the sector */
-  icon: IndustryEntry['data']['hero']['icon'];
+  icon: string;
 }
 
-function mapToIndustryPreviewCard(entry: IndustryEntry): IndustryPreviewCard {
+interface IndustryEntryLite {
+  slug: string;
+  data: {
+    title: string;
+    hero: {
+      copy: string;
+      icon: string;
+    };
+    order: number;
+    draft?: boolean;
+  };
+}
+
+function mapToIndustryPreviewCard(entry: IndustryEntryLite): IndustryPreviewCard {
   const slugTerminal = entry.slug;
 
   return {
@@ -60,8 +71,8 @@ function mapToIndustryPreviewCard(entry: IndustryEntry): IndustryPreviewCard {
 export async function loadIndustriesPreviewCards(
   limit: number = INDUSTRIES_PREVIEW_LIMIT,
 ): Promise<IndustryPreviewCard[]> {
-  const allEntries = await getCollection<'industries'>('industries');
-  const industryEntries = allEntries.filter((entry): entry is IndustryEntry => !entry.data.draft);
+  const allEntries = (await getCollection('industries')) as IndustryEntryLite[];
+  const industryEntries = allEntries.filter((entry) => !entry.data.draft);
 
   const publishedIndustries: IndustryPreviewCard[] = industryEntries
     .map((industry) => mapToIndustryPreviewCard(industry))

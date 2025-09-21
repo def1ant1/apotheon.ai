@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 840" role="img" aria-labelledby="title desc">
+  <title id="title">Integration governance matrix illustration</title>
+  <desc id="desc">Matrix of vendor tiers connected to automated policy checks and monitoring signals.</desc>
+  <defs>
+    <linearGradient id="igBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#9333ea" />
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="840" fill="url(#igBg)" rx="48" />
+  <g fill="none" stroke="#a855f7" stroke-width="4" opacity="0.8">
+    <rect x="220" y="180" width="1160" height="480" rx="28" />
+    <path d="M220 320h1160" />
+    <path d="M220 460h1160" />
+    <path d="M540 180v480" />
+    <path d="M920 180v480" />
+  </g>
+  <g font-family="'Inter', 'Segoe UI', sans-serif" font-weight="600" fill="#f5f3ff" font-size="42" text-anchor="middle">
+    <text x="380" y="270">Tier 0</text>
+    <text x="700" y="270">Tier 1</text>
+    <text x="1080" y="270">Tier 2</text>
+    <text x="1400" y="270">Tier 3</text>
+    <text x="140" y="360" transform="rotate(-90 140 360)">Intake</text>
+    <text x="140" y="500" transform="rotate(-90 140 500)">Runtime</text>
+    <text x="140" y="640" transform="rotate(-90 140 640)">Lifecycle</text>
+  </g>
+  <g fill="#fbbf24">
+    <circle cx="540" cy="320" r="24" />
+    <circle cx="920" cy="460" r="24" />
+    <circle cx="1240" cy="600" r="24" />
+  </g>
+  <g stroke="#22d3ee" stroke-width="6" stroke-linecap="round">
+    <path d="M540 320C700 240 840 240 920 320" />
+    <path d="M920 460C1080 540 1240 540 1320 480" />
+  </g>
+</svg>
