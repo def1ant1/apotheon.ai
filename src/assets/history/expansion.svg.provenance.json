@@ -14,5 +14,5 @@
     "height": 900
   },
   "credit": "Pending compliance verification",
-  "generatedBy": "scripts/content/ensure-history-media.mjs"
+  "generatedBy": "scripts/content/ensure-history-media.ts"
 }

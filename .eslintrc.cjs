@@ -108,6 +108,8 @@ module.exports = {
           '^@testing-library/',
           '^@radix-ui/react-dialog$',
           '^astro/dist/runtime/server/render/index.js$',
+          '^@resvg/resvg-js$',
+          '^satori$',
         ],
       },
     ],
@@ -146,6 +148,25 @@ module.exports = {
         // Hooks guardrails ensure React islands remain deterministic.
         'react-hooks/exhaustive-deps': 'warn',
         'react-hooks/rules-of-hooks': 'error',
+      },
+    },
+    {
+      // Node-based automation scripts run under tsx with full type safety.
+      files: ['scripts/**/*.ts'],
+      parser: '@typescript-eslint/parser',
+      parserOptions: {
+        project: projectTsconfig,
+        tsconfigRootDir: __dirname,
+      },
+      plugins: ['@typescript-eslint'],
+      extends: ['plugin:@typescript-eslint/recommended', 'plugin:@typescript-eslint/recommended-requiring-type-checking'],
+      rules: {
+        '@typescript-eslint/consistent-type-imports': [
+          'warn',
+          { prefer: 'type-imports', disallowTypeAnnotations: false },
+        ],
+        '@typescript-eslint/no-floating-promises': 'error',
+        '@typescript-eslint/no-var-requires': 'error',
       },
     },
     {

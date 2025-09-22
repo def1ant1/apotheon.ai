@@ -30,11 +30,10 @@ export const GET: APIRoute = async ({ site }) => {
 
   const updated = posts[0]?.data.updatedDate ?? posts[0]?.data.publishDate ?? new Date();
 
-  const items = posts
-    .map((entry) => {
+  const renderedItems = await Promise.all(
+    posts.map(async (entry) => {
       const url = new URL(`/blog/${entry.slug}/`, siteUrl).href;
-      const { url: ogImageUrl, alt: ogImageAlt } = resolveOgImage(entry, siteUrl.href);
-      // TODO(Epic-14): Transition enclosure URLs to Worker-generated assets once Epic 14 lands.
+      const { url: ogImageUrl, alt: ogImageAlt } = await resolveOgImage(entry, siteUrl.href);
       return `  <entry>
     <id>${escapeXml(url)}</id>
     <title>${escapeXml(entry.data.title)}</title>
@@ -45,8 +44,10 @@ export const GET: APIRoute = async ({ site }) => {
     <content type="html">${escapeXml(entry.data.description)}</content>
     <link rel="enclosure" type="image/svg+xml" href="${escapeXml(ogImageUrl)}" title="${escapeXml(ogImageAlt)}" />
   </entry>`;
-    })
-    .join('\n');
+    }),
+  );
+
+  const items = renderedItems.join('\n');
 
   const atom = `<?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">

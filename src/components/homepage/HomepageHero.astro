@@ -21,6 +21,16 @@ interface Props {
 
 const { hero } = Astro.props as Props;
 
+const heroManifestSource = (globalThis as Record<string, unknown>).__APOTHEON_IMAGE_MANIFEST__;
+const rawImageManifest =
+  typeof heroManifestSource === 'string'
+    ? JSON.parse(heroManifestSource)
+    : ((heroManifestSource as { assets?: Record<string, unknown> } | undefined) ?? { assets: {} });
+const manifestKey = `homepage/${hero.heroMedia.src.replace(/\.[^.]+$/, '')}`;
+const manifestEntry = rawImageManifest.assets?.[manifestKey];
+const heroShouldPreload = hero.heroMedia.preload ?? manifestEntry?.preload ?? false;
+const heroLcpCandidate = manifestEntry?.lcpCandidate ?? false;
+
 /**
  * Import every homepage asset eagerly so MDX frontmatter only has to reference the file name.
  * This keeps the editorial workflow declarative while enabling @astrojs/image optimizations.
@@ -51,14 +61,21 @@ type GetImageSource = Parameters<typeof getImage>[0]['src'];
 const heroImageSource = heroImage as unknown as GetImageSource;
 const responsiveSizes = '(min-width: 1280px) 44vw, (min-width: 768px) 60vw, 94vw';
 
-const heroPreload = hero.heroMedia.preload
-  ? await getImage({
+type GeneratedImage = Awaited<ReturnType<typeof getImage>>;
+
+let heroPreload: GeneratedImage | null = null;
+if (heroShouldPreload) {
+  try {
+    heroPreload = await getImage({
       // Match the layout width to reduce content flashes on initial render.
       src: heroImageSource,
       width: hero.heroMedia.width,
       format: 'avif',
-    })
-  : null;
+    });
+  } catch (error) {
+    console.warn('[homepage-hero] Skipping AVIF preload generation: %s', error);
+  }
+}
 
 const heroPreloadLink = heroPreload
   ? {
@@ -150,7 +167,11 @@ const heroPreloadLink = heroPreload
         }
       </ul>
     </div>
-    <div class="relative" data-analytics-block="hero-media">
+    <div
+      class="relative"
+      data-analytics-block="hero-media"
+      data-lcp-candidate={heroLcpCandidate ? 'true' : undefined}
+    >
       <!-- Media wrapper uses aspect-ratio to lock dimensions and avoid CLS when responsive images hydrate. -->
       <div
         class="relative overflow-hidden rounded-3xl border border-slate-800/80 bg-slate-900/60 shadow-xl"

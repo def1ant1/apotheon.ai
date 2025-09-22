@@ -37,7 +37,7 @@ const relatedPosts = scoreRelatedPosts(entry, publishedEntries, 3);
 
 const siteOrigin = Astro.site?.origin ?? Astro.url.origin;
 const canonicalUrl = new URL(`/blog/${entry.slug}/`, siteOrigin).href;
-const { url: ogImageUrl, alt: ogImageAlt } = resolveOgImage(entry, siteOrigin);
+const { url: ogImageUrl, alt: ogImageAlt } = await resolveOgImage(entry, siteOrigin);
 const breadcrumbs = createBlogPostTrail(entry);
 const analyticsEndpoint = import.meta.env.PUBLIC_BLOG_ANALYTICS_ENDPOINT ?? '/api/blog/analytics';
 const publishIso = new Date(entry.data.publishDate).toISOString();

@@ -9,6 +9,7 @@ import {
   type BlogCollectionEntry,
   type BlogEntryData,
 } from '../../src/utils/blog';
+import * as ogModule from '../../src/utils/og';
 import { buildSchemaScriptHtml } from '../../src/utils/seo';
 
 type EntryOverrides = {
@@ -174,25 +175,42 @@ describe('blog utilities', () => {
     });
 
     afterEach(() => {
+      vi.restoreAllMocks();
       vi.unstubAllEnvs();
     });
 
-    it('returns absolute URLs when no worker is configured', () => {
+    it('returns absolute URLs when no worker is configured', async () => {
       const entry = createEntry({ slug: 'welcome' });
-      const result = resolveOgImage(entry, 'https://example.com');
+      const result = await resolveOgImage(entry, 'https://example.com');
       expect(result.url).toBe('https://example.com/images/og/blog/welcome.svg');
       expect(result.alt).toBe('OG');
     });
 
-    it('builds worker URLs when the endpoint is provided', () => {
+    it('builds worker URLs when the endpoint is provided', async () => {
       vi.stubEnv('PUBLIC_OG_IMAGE_WORKER', 'https://og-worker.example.com');
+      vi.stubEnv('OG_IMAGE_SIGNING_KEY', 'test-secret');
+      const ensureSpy = vi.spyOn(ogModule, 'ensureOgAsset').mockResolvedValue({
+        key: 'blog::welcome::default',
+        scope: 'blog',
+        slug: 'welcome',
+        variant: 'default',
+        url: 'https://og-worker.example.com/og/blog/welcome?signature=fake',
+        workerEndpoint: 'https://og-worker.example.com',
+        signature: 'fake',
+        expiresAt: new Date(Date.now() + 1_000_000).toISOString(),
+        generatedAt: new Date().toISOString(),
+        width: 1200,
+        height: 630,
+        format: 'image/png',
+        source: 'https://example.com/images/og/blog/welcome.svg',
+        lcpCandidate: true,
+      });
       const entry = createEntry({ slug: 'welcome', data: { title: 'Worker Test' } });
-      const result = resolveOgImage(entry, 'https://example.com');
-      expect(result.url).toContain('https://og-worker.example.com/og/blog/welcome');
-      expect(result.url).toContain(
-        'source=https%3A%2F%2Fexample.com%2Fimages%2Fog%2Fblog%2Fwelcome.svg',
+      const result = await resolveOgImage(entry, 'https://example.com');
+      expect(result.url).toBe('https://og-worker.example.com/og/blog/welcome?signature=fake');
+      expect(ensureSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ slug: 'welcome', title: 'Worker Test' }),
       );
-      expect(result.url).toContain('title=Worker+Test');
     });
   });
 });
