@@ -1,3 +1,5 @@
+import { ensureOgAsset } from './og';
+
 import type { CollectionEntry, InferEntrySchema } from 'astro:content';
 
 export type BlogCollectionEntry = CollectionEntry<'blog'>;
@@ -120,10 +122,10 @@ function isAbsoluteUrl(url: string): boolean {
  * provided the function returns the Worker URL so integration tests can assert
  * the placeholder wiring; otherwise it falls back to the curated asset.
  */
-export function resolveOgImage(
+export async function resolveOgImage(
   entry: BlogCollectionEntry,
   siteOrigin: string,
-): { url: string; alt: string } {
+): Promise<{ url: string; alt: string }> {
   const candidate = entry.data.openGraph?.image ?? entry.data.heroImage;
   const altText = entry.data.openGraph?.alt ?? entry.data.heroImageAlt;
   const baseUrl = siteOrigin ?? '';
@@ -131,12 +133,29 @@ export function resolveOgImage(
   let resolvedUrl = isAbsoluteUrl(candidate) ? candidate : new URL(candidate, baseUrl).href;
 
   const workerEndpoint = import.meta.env.PUBLIC_OG_IMAGE_WORKER;
-  if (workerEndpoint) {
-    const workerUrl = new URL(`/og/blog/${entry.slug}`, workerEndpoint);
-    workerUrl.searchParams.set('source', resolvedUrl);
-    workerUrl.searchParams.set('title', entry.data.title);
-    // TODO(Epic-14): Replace this placeholder with a fetch that triggers image generation and persists the response URL.
-    resolvedUrl = workerUrl.toString();
+  const signingKey = import.meta.env.OG_IMAGE_SIGNING_KEY ?? process.env.OG_IMAGE_SIGNING_KEY;
+
+  if (!workerEndpoint || !signingKey) {
+    return { url: resolvedUrl, alt: altText };
+  }
+
+  try {
+    const asset = await ensureOgAsset({
+      workerEndpoint,
+      signingKey,
+      scope: 'blog',
+      slug: entry.slug,
+      title: entry.data.title,
+      subtitle: entry.data.description,
+      eyebrow: 'Apotheon.ai Insights',
+      accent: '#38bdf8',
+      theme: 'dark',
+      source: resolvedUrl,
+      lcpCandidate: entry.data.draft !== true,
+    });
+    resolvedUrl = asset.url;
+  } catch (error) {
+    console.warn('[og] Falling back to curated asset for %s: %s', entry.slug, error);
   }
 
   return { url: resolvedUrl, alt: altText };

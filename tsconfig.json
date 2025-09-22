@@ -5,13 +5,16 @@
     "paths": {
       "@components/*": ["src/components/*"],
       "@layouts/*": ["src/layouts/*"],
-      "@content/*": ["src/content/*"]
+      "@content/*": ["src/content/*"],
+      "satori": ["src/types/stubs/satori"],
+      "@resvg/resvg-js": ["src/types/stubs/resvg"]
     },
-    "types": ["astro/client", "@types/node", "@playwright/test"]
+    "types": ["astro/client", "@types/node", "@playwright/test", "src/types/og-worker"]
   },
   "include": [
     "src",
     "workers",
+    "scripts",
     "tests",
     ".ladle",
     "astro.config.mjs",

@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "assets": {
+    "homepage/hero-base": {
+      "base": "src/assets/homepage/hero-base.png",
+      "derivatives": {},
+      "preload": true,
+      "lcpCandidate": true,
+      "width": 1,
+      "height": 1,
+      "checksum": "3d7c44a28efd8a761f6a69f30460d6fb3e5b805fca8363d1032d421ba1a7bc02"
+    },
+    "history/expansion": {
+      "base": "src/assets/history/expansion.svg",
+      "derivatives": {
+        "avif": "public/generated/history/expansion.avif",
+        "webp": "public/generated/history/expansion.webp"
+      },
+      "preload": true,
+      "lcpCandidate": true,
+      "width": 1200,
+      "height": 900,
+      "checksum": "e6279a5556010a9bed5fe1281f200294287b979890a698964c5f3bfc4bd5d5c4"
+    },
+    "history/foundation": {
+      "base": "src/assets/history/foundation.svg",
+      "derivatives": {
+        "avif": "public/generated/history/foundation.avif",
+        "webp": "public/generated/history/foundation.webp"
+      },
+      "preload": true,
+      "lcpCandidate": true,
+      "width": 1200,
+      "height": 900,
+      "checksum": "a99eb5a143ab854c41fe47e072b71b7dde76c576b1af6a2177f482f4dab07811"
+    },
+    "history/governance": {
+      "base": "src/assets/history/governance.svg",
+      "derivatives": {
+        "avif": "public/generated/history/governance.avif",
+        "webp": "public/generated/history/governance.webp"
+      },
+      "preload": true,
+      "lcpCandidate": true,
+      "width": 1200,
+      "height": 900,
+      "checksum": "005172e433b105e7959ee25223e03e71e72486659daf2bb975b345677e03fce4"
+    }
+  }
+}

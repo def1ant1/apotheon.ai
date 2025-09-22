@@ -146,3 +146,29 @@ SEO_MONITOR_COVERAGE_ERROR_THRESHOLD = "0"
 # Secrets managed via `wrangler secret put SEO_MONITOR_CRUX_API_KEY`,
 # `wrangler secret put SEO_MONITOR_SEARCH_CONSOLE_TOKEN`, and
 # `wrangler secret put SEO_MONITOR_ALERT_WEBHOOK`.
+
+[env.og_images]
+name = "apotheon-og-images"
+main = "workers/og-images.ts"
+usage_model = "standard"
+compatibility_date = "2024-10-08"
+migrations_dir = "workers/migrations/og-images"
+
+[[env.og_images.routes]]
+pattern = "og.apotheon.ai/*"
+custom_domain = true
+
+[[env.og_images.kv_namespaces]]
+binding = "OG_IMAGE_CACHE"
+id = "00000000000000000000000000000006"
+preview_id = "11111111111111111111111111111116"
+
+[[env.og_images.d1_databases]]
+binding = "OG_IMAGE_ASSET_DB"
+database_name = "apotheon-og-assets"
+database_id = "00000000-0000-0000-0000-000000000006"
+
+[env.og_images.vars]
+OG_IMAGE_CACHE_TTL_SECONDS = "604800"
+OG_IMAGE_ALLOWED_SCOPES = "blog,marketing"
+OG_IMAGE_ALLOWED_THEMES = "dark,light"

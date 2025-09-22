@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import mdx from '@astrojs/mdx';
@@ -19,6 +21,18 @@ import {
   SEO_MANIFEST,
   createRouteExclusionPredicate
 } from './config/seo/manifest.mjs';
+
+function loadImageOptimizationManifest() {
+  try {
+    const contents = readFileSync(new URL('./src/generated/image-optimization.manifest.json', import.meta.url), 'utf8');
+    return JSON.parse(contents);
+  } catch (error) {
+    console.warn('[astro-config] Unable to load image optimization manifest:', error);
+    return { version: 1, assets: {} };
+  }
+}
+
+const IMAGE_OPTIMIZATION_MANIFEST = loadImageOptimizationManifest();
 
 const enableHttps = process.env.ASTRO_DEV_HTTPS === 'true';
 const httpsOptions = enableHttps ? resolveDevHttpsConfig() ?? true : undefined;
@@ -117,10 +131,16 @@ export default defineConfig({
       headers: devServerHeaders
     },
     build: {
-      target: 'esnext'
+      target: 'esnext',
+      rollupOptions: {
+        external: ['@resvg/resvg-js', 'satori']
+      }
     },
     ssr: {
-      external: ['sharp']
+      external: ['sharp', '@resvg/resvg-js', 'satori']
+    },
+    define: {
+      __APOTHEON_IMAGE_MANIFEST__: JSON.stringify(IMAGE_OPTIMIZATION_MANIFEST)
     }
   }
 });

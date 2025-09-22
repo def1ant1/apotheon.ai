@@ -30,6 +30,35 @@ const metadata = createPageSeo(
     locale: explicitLocale ?? resolveLocaleFromPath(Astro.url.pathname),
   },
 );
+
+interface ImageManifestAsset {
+  base: string;
+  derivatives?: Record<string, string>;
+  preload?: boolean;
+  lcpCandidate?: boolean;
+  width?: number;
+  height?: number;
+  checksum?: string;
+}
+
+interface ImageManifest {
+  version: number;
+  assets: Record<string, ImageManifestAsset>;
+}
+const imageManifestSource = (globalThis as { __APOTHEON_IMAGE_MANIFEST__?: unknown })
+  .__APOTHEON_IMAGE_MANIFEST__;
+const fallbackManifest: ImageManifest = { version: 0, assets: {} };
+const rawImageManifest: ImageManifest =
+  typeof imageManifestSource === 'string'
+    ? (JSON.parse(imageManifestSource) as ImageManifest)
+    : ((imageManifestSource as ImageManifest | undefined) ?? fallbackManifest);
+
+const imagePreloads = Object.values(rawImageManifest.assets).filter(
+  (asset) => asset.preload === true,
+);
+const lcpCandidates = Object.entries(rawImageManifest.assets)
+  .filter(([, asset]) => asset.lcpCandidate === true)
+  .map(([key]) => key);
 ---
 
 <!doctype html>
@@ -76,13 +105,26 @@ const metadata = createPageSeo(
     <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#4F46E5" />
     <meta name="theme-color" content="#4F46E5" />
     <meta name="msapplication-TileColor" content="#111827" />
+    {
+      imagePreloads.length > 0 && (
+        <meta
+          name="apotheon:preload-assets"
+          content={imagePreloads.map((asset) => asset.base).join(',')}
+        />
+      )
+    }
+    {
+      lcpCandidates.length > 0 && (
+        <meta name="apotheon:lcp-candidates" content={lcpCandidates.join(',')} />
+      )
+    }
     <!--
       Fonts are imported via src/styles/global.css using @fontsource-variable/inter
       so we never punch holes in the CSP for third-party font CDNs.
     -->
     <slot name="head" />
   </head>
-  <body class="font-sans">
+  <body class="font-sans" data-lcp-candidates={lcpCandidates.join(',')}>
     <!--
       Centralized header renders once per layout so every route inherits the Radix menu hydration
       directive. Astro keeps the markup static until `client:idle` fires, which means crawlers and

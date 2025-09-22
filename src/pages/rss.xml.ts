@@ -27,11 +27,10 @@ export const GET: APIRoute = async ({ site }) => {
   );
   const siteUrl = site ?? new URL('https://apotheon.ai');
 
-  const items = posts
-    .map((entry) => {
+  const renderedItems = await Promise.all(
+    posts.map(async (entry) => {
       const url = new URL(`/blog/${entry.slug}/`, siteUrl).href;
-      const { url: ogImageUrl } = resolveOgImage(entry, siteUrl.href);
-      // TODO(Epic-14): Swap `resolveOgImage` fallback logic with Worker-generated social art once the automation is live.
+      const { url: ogImageUrl } = await resolveOgImage(entry, siteUrl.href);
       return `    <item>
       <title>${escapeXml(entry.data.title)}</title>
       <link>${escapeXml(url)}</link>
@@ -40,8 +39,10 @@ export const GET: APIRoute = async ({ site }) => {
       <pubDate>${entry.data.publishDate.toUTCString()}</pubDate>
       <enclosure url="${escapeXml(ogImageUrl)}" type="image/svg+xml" />
     </item>`;
-    })
-    .join('\n');
+    }),
+  );
+
+  const items = renderedItems.join('\n');
 
   const rss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">

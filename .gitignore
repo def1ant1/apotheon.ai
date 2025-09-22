@@ -47,3 +47,9 @@ public/maskable-icon-512x512.png
 public/mstile-150x150.png
 # Homepage hero artwork is generated automatically to avoid committing binary assets.
 src/assets/homepage/hero-base.png
+# Derivatives for hero/history media are generated on demand and should never be tracked.
+src/assets/homepage/*.avif
+src/assets/homepage/*.webp
+src/assets/history/*.avif
+src/assets/history/*.webp
+public/generated/history/
