@@ -9,7 +9,7 @@ import SchemaScript from '../../components/seo/SchemaScript.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { resolveOgImage, scoreRelatedPosts } from '../../utils/blog';
 import { createBlogPostTrail } from '../../utils/breadcrumbs';
-import { buildArticleSchema, buildBreadcrumbSchema } from '../../utils/seo';
+import { buildArticleSchema, buildBreadcrumbSchema, resolveLocaleFromPath } from '../../utils/seo';
 
 export async function getStaticPaths() {
   const entries = await getCollection('blog', ({ data }) => !data.draft);
@@ -42,10 +42,12 @@ const breadcrumbs = createBlogPostTrail(entry);
 const analyticsEndpoint = import.meta.env.PUBLIC_BLOG_ANALYTICS_ENDPOINT ?? '/api/blog/analytics';
 const publishIso = new Date(entry.data.publishDate).toISOString();
 
+const pageLocale = resolveLocaleFromPath(Astro.url.pathname) ?? 'en-US';
 const seo = {
   title: entry.data.title,
   description: entry.data.description,
   path: `/blog/${entry.slug}/`,
+  locale: pageLocale,
   openGraph: {
     type: 'article',
     images: [{ url: ogImageUrl, alt: ogImageAlt }],
@@ -67,11 +69,12 @@ const articleSchema = buildArticleSchema({
   image: ogImageUrl,
   tags: entry.data.tags,
   readingTimeMinutes: entry.data.estimatedReadingMinutes,
+  locale: pageLocale,
 });
-const breadcrumbSchema = buildBreadcrumbSchema(breadcrumbs, siteOrigin);
+const breadcrumbSchema = buildBreadcrumbSchema(breadcrumbs, siteOrigin, pageLocale);
 ---
 
-<BaseLayout {seo}>
+<BaseLayout {seo} locale={pageLocale}>
   <Fragment slot="head">
     <SchemaScript schema={[articleSchema, breadcrumbSchema]} />
   </Fragment>

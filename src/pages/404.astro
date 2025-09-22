@@ -1,17 +1,20 @@
 ---
 import ErrorPageShell from '../components/system/ErrorPageShell.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { resolveLocaleFromPath } from '../utils/seo';
 
+const pageLocale = resolveLocaleFromPath(Astro.url.pathname) ?? 'en-US';
 const seo = {
   title: 'Page not found',
   description: 'Nothing to see here just yet.',
   path: '/404',
   trailingSlash: false,
   noindex: true,
+  locale: pageLocale,
 };
 ---
 
-<BaseLayout {seo}>
+<BaseLayout {seo} locale={pageLocale}>
   <ErrorPageShell
     code="404"
     title="This page hasn't shipped yet"

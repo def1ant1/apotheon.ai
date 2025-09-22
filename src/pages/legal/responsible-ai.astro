@@ -1,15 +1,17 @@
 ---
 import SchemaScript from '../../components/seo/SchemaScript.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { buildBreadcrumbSchema } from '../../utils/seo';
+import { buildBreadcrumbSchema, resolveLocaleFromPath } from '../../utils/seo';
 
 const pageTitle = 'Responsible AI Charter';
 const description =
   'Principles governing AI experimentation, human-in-the-loop safety, and production rollout reviews.';
+const pageLocale = resolveLocaleFromPath(Astro.url.pathname) ?? 'en-US';
 const seo = {
   title: pageTitle,
   description,
   path: '/legal/responsible-ai/',
+  locale: pageLocale,
 };
 const siteOrigin = Astro.site?.origin ?? Astro.url.origin;
 const breadcrumbSchema = buildBreadcrumbSchema(
@@ -19,10 +21,11 @@ const breadcrumbSchema = buildBreadcrumbSchema(
     { label: pageTitle, href: '/legal/responsible-ai/' },
   ],
   siteOrigin,
+  pageLocale,
 );
 ---
 
-<BaseLayout {seo}>
+<BaseLayout {seo} locale={pageLocale}>
   <SchemaScript slot="head" schema={breadcrumbSchema} />
   <!--
     Document the interim Responsible AI commitments that leadership already approved. When the final

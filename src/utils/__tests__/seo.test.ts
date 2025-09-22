@@ -40,6 +40,9 @@ describe('createPageSeo', () => {
     );
     expect(metadata.openGraph.images[0]?.url).toBe('https://cdn.example.com/og.png');
     expect(metadata.twitter.card).toBe('summary_large_image');
+    expect(metadata.locale).toBe('en-US');
+    expect(metadata.openGraph.locale).toBe('en_US');
+    expect(metadata.hreflangs.some((alternate) => alternate.locale === 'x-default')).toBe(true);
   });
 
   it('supports explicit canonical URLs and noindex directives', () => {
@@ -57,6 +60,30 @@ describe('createPageSeo', () => {
     const robotsMeta = metadata.metaTags.find((tag) => tag.name === 'robots');
     expect(robotsMeta?.content).toBe('noindex, nofollow');
   });
+
+  it('merges explicit alternate locales into hreflang metadata', () => {
+    const metadata = createPageSeo(
+      {
+        title: 'Global landing',
+        description: 'Locale coverage test.',
+        path: '/global/',
+        alternates: [
+          {
+            locale: 'fr-FR',
+            path: '/fr/global/',
+          },
+        ],
+      },
+      { site: SITE_ORIGIN },
+    );
+
+    const hreflangLocales = metadata.hreflangs.map((entry) => entry.locale);
+    expect(hreflangLocales).toContain('fr-FR');
+    const ogAlternateLocales = metadata.metaTags
+      .filter((tag) => tag.property === 'og:locale:alternate')
+      .map((tag) => tag.content);
+    expect(ogAlternateLocales).toContain('fr_FR');
+  });
 });
 
 describe('structured data builders', () => {
@@ -73,6 +100,7 @@ describe('structured data builders', () => {
       name: 'Apotheon.ai',
       url: SITE_ORIGIN,
       logo: `${SITE_ORIGIN}/logo.svg`,
+      inLanguage: 'en-US',
     });
   });
 
@@ -96,6 +124,7 @@ describe('structured data builders', () => {
         url: `${SITE_ORIGIN}/about/contact/`,
       },
       featureList: ['Experiment tracking', 'Guardrail automation'],
+      inLanguage: 'en-US',
     });
   });
 
@@ -122,6 +151,7 @@ describe('structured data builders', () => {
       author: {
         name: 'Jordan Rivera',
       },
+      inLanguage: 'en-US',
     });
   });
 
@@ -137,6 +167,7 @@ describe('structured data builders', () => {
 
     expect(schema).toMatchObject({
       '@type': 'BreadcrumbList',
+      inLanguage: 'en-US',
     });
     expect(schema.itemListElement).toHaveLength(3);
   });
@@ -156,6 +187,7 @@ describe('structured data builders', () => {
           name: 'How fast is onboarding?',
         },
       ],
+      inLanguage: 'en-US',
     });
   });
 
@@ -168,6 +200,7 @@ describe('structured data builders', () => {
     expect(schema).toMatchObject({
       '@type': 'WebSite',
       url: SITE_ORIGIN,
+      inLanguage: 'en-US',
     });
   });
 });

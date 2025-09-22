@@ -4,6 +4,14 @@ test.describe('seo metadata', () => {
   test('home page exposes canonical link and structured data', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /https:\/\/.*\//);
+    await expect(page.locator('link[rel="alternate"][hreflang="x-default"]')).toHaveAttribute(
+      'href',
+      /https:\/\/.*\//,
+    );
+    await expect(page.locator('link[rel="alternate"][hreflang="en-US"]')).toHaveAttribute(
+      'href',
+      /https:\/\/.*\//,
+    );
     const description = await page.locator('meta[name="description"]').getAttribute('content');
     expect(description).toBeTruthy();
     expect(description).toMatch(

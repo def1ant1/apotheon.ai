@@ -3,6 +3,29 @@
  * and CI smoke tests. Consolidating this manifest keeps sitemap and robots
  * automation in lockstep while documenting the rationale for our defaults.
  */
+const PRIMARY_SITE_ORIGIN = 'https://apotheon.ai';
+
+const SEARCH_CONSOLE_PROPERTY_IDS = Object.freeze({
+  /**
+   * Production Search Console property reflects the canonical marketing domain.
+   * Locales inherit this ID unless they explicitly override it (e.g. geo-
+   * specific ccTLDs). Keep the ID stable so historical reports remain intact.
+   */
+  production: 'sc-domain:apotheon.ai',
+  /**
+   * Staging Search Console property mirrors the preview environment. We keep a
+   * dedicated property so experimental locales or IA changes can be verified
+   * without impacting the production property history.
+   */
+  staging: 'sc-domain:staging.apotheon.ai',
+  /**
+   * Preview property is used by CI smoke tests and ad-hoc environments. When we
+   * light up a new locale we can point the Worker automation at this property
+   * until we are ready for a production cut-over.
+   */
+  preview: 'sc-domain:preview.apotheon.ai',
+});
+
 export const SEO_MANIFEST = Object.freeze({
   /**
    * Canonical production origin for absolute URLs. Astro's sitemap integration
@@ -10,7 +33,63 @@ export const SEO_MANIFEST = Object.freeze({
    * needs it to emit `Sitemap:` hints. Update this once the production domain
    * changes; all automation will pick it up automatically.
    */
-  site: new URL('https://apotheon.ai'),
+  site: new URL(PRIMARY_SITE_ORIGIN),
+  locales: Object.freeze({
+    /**
+     * Default locale applied when templates omit an explicit locale override.
+     * Keep this aligned with the language negotiated by the CDN to ensure the
+     * HTML `lang` attribute, canonical URLs, and schema payloads remain in
+     * lockstep.
+     */
+    default: 'en-US',
+    /**
+     * Central registry of every locale the marketing surface supports. Locale
+     * definitions include:
+     * - `origin`: protocol + host used for canonical URLs in that locale.
+     * - `pathPrefix`: root segment prepended to localized routes.
+     * - `hrefLang`: hreflang token injected into `<link rel="alternate">` tags.
+     * - `searchConsole`: per-stage property IDs for automation scripts.
+     * Update this object when introducing a new locale so sitemap, robots,
+     * structured data, and monitoring automation all receive the new metadata
+     * automatically.
+     */
+    definitions: Object.freeze({
+      'en-US': Object.freeze({
+        code: 'en-US',
+        label: 'English (United States)',
+        origin: new URL(PRIMARY_SITE_ORIGIN),
+        /**
+         * Root-level pages live directly under `/`. Non-default locales should
+         * use a locale-specific prefix (for example `/fr/`).
+         */
+        pathPrefix: '/',
+        /**
+         * hreflang token surfaced in `<link rel="alternate">` tags as well as
+         * sitemap `<xhtml:link>` entries.
+         */
+        hrefLang: 'en-US',
+        /**
+         * Search Console properties keyed by deployment stage. Localised
+         * domains can override specific stages (e.g. ccTLD staging hosts) while
+         * inheriting the defaults for the rest.
+         */
+        searchConsole: Object.freeze({ ...SEARCH_CONSOLE_PROPERTY_IDS }),
+      }),
+    }),
+    hreflang: Object.freeze({
+      /**
+       * Locale clusters ensure hreflang alternates are generated symmetrically
+       * across language variants. Each cluster enumerates locales that serve
+       * the same canonical content in different languages.
+       */
+      clusters: Object.freeze([Object.freeze(['en-US'])]),
+      /**
+       * Locale whose canonical URL should be re-used for the `x-default`
+       * alternate when search engines need a fallback.
+       */
+      xDefault: 'en-US',
+    }),
+  }),
   sitemap: {
     /**
      * Entry limit well below the 50k hard ceiling imposed by the sitemap
@@ -31,6 +110,30 @@ export const SEO_MANIFEST = Object.freeze({
       priority: 0.7
     }
   },
+  searchConsole: Object.freeze({
+    /**
+     * Stage-aware Search Console property IDs used by automation scripts.
+     * Defaults mirror the locale-level configuration but remain at the top
+     * level so CI tasks without locale context can still resolve credentials.
+     */
+    stages: Object.freeze({
+      production: Object.freeze({
+        propertyId: SEARCH_CONSOLE_PROPERTY_IDS.production,
+        description:
+          'Primary property for the production marketing domain. Core Web Vitals + coverage reports are sourced here.',
+      }),
+      staging: Object.freeze({
+        propertyId: SEARCH_CONSOLE_PROPERTY_IDS.staging,
+        description:
+          'Staging property ensures experiments and QA crawls do not pollute the production Search Console history.',
+      }),
+      preview: Object.freeze({
+        propertyId: SEARCH_CONSOLE_PROPERTY_IDS.preview,
+        description:
+          'Ephemeral preview property used by CI smoke tests. Useful when validating new locales prior to launch.',
+      }),
+    }),
+  }),
   routes: {
     /**
      * Regex patterns describing routes that must never appear in the sitemap
