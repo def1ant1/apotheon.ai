@@ -28,6 +28,15 @@ export interface LocaleAlternate {
   path?: string;
 }
 
+type LocaleDefinition = {
+  code?: string;
+  label?: string;
+  origin?: URL;
+  pathPrefix?: string;
+  hrefLang?: string;
+  searchConsole?: Record<string, string>;
+};
+
 /**
  * Caller-provided inputs used to derive document-level metadata.
  */
@@ -150,20 +159,186 @@ export interface PageSeoMetadata {
   noindex: boolean;
 }
 
+const LOCALE_DEFINITIONS: Record<string, LocaleDefinition> =
+  SEO_MANIFEST.locales?.definitions ?? {};
+const DEFAULT_LOCALE = SEO_MANIFEST.locales?.default ?? 'en-US';
+const HREFLANG_CLUSTERS: string[][] = Array.from(
+  SEO_MANIFEST.locales?.hreflang?.clusters ?? [],
+  (cluster) => [...cluster],
+);
+const X_DEFAULT_LOCALE = SEO_MANIFEST.locales?.hreflang?.xDefault ?? DEFAULT_LOCALE;
+
+const LOCALE_LOOKUP = new Map<string, string>();
+const LOCALE_PATH_PREFIXES: Array<{ code: string; prefix: string }> = [];
+
+for (const [code, definition] of Object.entries(LOCALE_DEFINITIONS)) {
+  const canonicalCode = (definition.code ?? code).toString();
+  const normalisedCanonical = canonicalCode.replace(/_/g, '-');
+  LOCALE_LOOKUP.set(code.toLowerCase(), canonicalCode);
+  LOCALE_LOOKUP.set(normalisedCanonical.toLowerCase(), canonicalCode);
+  LOCALE_LOOKUP.set(canonicalCode.toLowerCase(), canonicalCode);
+  const baseLanguage = canonicalCode.split(/[-_]/u)[0];
+  if (baseLanguage) {
+    LOCALE_LOOKUP.set(baseLanguage.toLowerCase(), canonicalCode);
+  }
+  if (definition.hrefLang) {
+    LOCALE_LOOKUP.set(String(definition.hrefLang).toLowerCase(), canonicalCode);
+  }
+  if (definition.code && definition.code !== code) {
+    LOCALE_LOOKUP.set(String(definition.code).toLowerCase(), canonicalCode);
+  }
+
+  LOCALE_PATH_PREFIXES.push({
+    code: canonicalCode,
+    prefix: normalisePathPrefix(definition.pathPrefix ?? '/'),
+  });
+}
+
+if (!LOCALE_LOOKUP.has(DEFAULT_LOCALE.toLowerCase())) {
+  LOCALE_LOOKUP.set(DEFAULT_LOCALE.toLowerCase(), DEFAULT_LOCALE);
+}
+
+if (LOCALE_PATH_PREFIXES.length === 0) {
+  LOCALE_PATH_PREFIXES.push({ code: DEFAULT_LOCALE, prefix: normalisePathPrefix('/') });
+}
+
+LOCALE_PATH_PREFIXES.sort((a, b) => b.prefix.length - a.prefix.length);
+
 const DEFAULT_SITE_NAME = 'Apotheon.ai';
 const DEFAULT_TWITTER_CARD: ResolvedTwitterMetadata['card'] = 'summary_large_image';
-const DEFAULT_LOCALE = 'en-US';
 
-function normaliseSiteUrl(candidate?: string | URL | null): URL {
+function normaliseSiteUrl(candidate?: string | URL | null, fallback?: URL): URL {
   if (!candidate) {
-    return new URL(SEO_MANIFEST.site);
+    const base = fallback ?? SEO_MANIFEST.site;
+    return base instanceof URL ? new URL(base.toString()) : new URL(String(base));
   }
 
   if (candidate instanceof URL) {
-    return candidate;
+    return new URL(candidate.toString());
   }
 
   return new URL(candidate);
+}
+
+function normalisePathPrefix(prefix?: string): string {
+  if (!prefix) {
+    return '/';
+  }
+
+  const trimmed = prefix.trim();
+  if (!trimmed || trimmed === '/') {
+    return '/';
+  }
+
+  const withLeadingSlash = ensureLeadingSlash(trimmed);
+  return withLeadingSlash.endsWith('/') ? withLeadingSlash : `${withLeadingSlash}/`;
+}
+
+function getLocaleDefinition(locale: string): LocaleDefinition | undefined {
+  return LOCALE_DEFINITIONS[locale] ?? undefined;
+}
+
+function resolveLocaleCode(locale?: string): string {
+  if (!locale) {
+    return DEFAULT_LOCALE;
+  }
+
+  const normalisedRaw = locale.replace(/_/g, '-');
+  const normalised = normalisedRaw.toLowerCase();
+  const resolved = LOCALE_LOOKUP.get(normalised) ?? LOCALE_LOOKUP.get(locale.toLowerCase());
+  if (resolved) {
+    return resolved;
+  }
+
+  if (LOCALE_DEFINITIONS[locale]) {
+    return locale;
+  }
+
+  if (LOCALE_DEFINITIONS[normalisedRaw]) {
+    return normalisedRaw;
+  }
+
+  if (normalisedRaw.includes('-')) {
+    const [language, region] = normalisedRaw.split('-');
+    if (language && region) {
+      return `${language.toLowerCase()}-${region.toUpperCase()}`;
+    }
+  }
+
+  if (normalisedRaw) {
+    return normalisedRaw;
+  }
+
+  return DEFAULT_LOCALE;
+}
+
+function formatOpenGraphLocale(locale: string): string {
+  return locale.replace(/-/g, '_');
+}
+
+function resolveLocaleCluster(locale: string): string[] {
+  const resolved = resolveLocaleCode(locale);
+  const target = resolved.toLowerCase();
+
+  for (const cluster of HREFLANG_CLUSTERS) {
+    const normalisedCluster = cluster.map((entry) => resolveLocaleCode(entry));
+    if (normalisedCluster.some((entry) => entry.toLowerCase() === target)) {
+      return normalisedCluster;
+    }
+  }
+
+  return [resolved];
+}
+
+export function resolveLocaleFromPath(path?: string | null): string | undefined {
+  if (!path) {
+    return undefined;
+  }
+
+  const normalisedPath = ensureLeadingSlash(path);
+  for (const { code, prefix } of LOCALE_PATH_PREFIXES) {
+    if (prefix === '/') {
+      return code;
+    }
+
+    if (normalisedPath === prefix.slice(0, -1) || normalisedPath.startsWith(prefix)) {
+      return code;
+    }
+  }
+
+  return undefined;
+}
+
+function stripLocalePrefix(pathname: string, localeDefinition?: LocaleDefinition): string {
+  const prefix = normalisePathPrefix(localeDefinition?.pathPrefix ?? '/');
+  const normalisedPath = ensureLeadingSlash(pathname);
+
+  if (prefix === '/') {
+    return normalisedPath;
+  }
+
+  if (normalisedPath === prefix.slice(0, -1)) {
+    return '/';
+  }
+
+  if (normalisedPath.startsWith(prefix)) {
+    const remainder = normalisedPath.slice(prefix.length - 1);
+    return ensureLeadingSlash(remainder);
+  }
+
+  return normalisedPath;
+}
+
+function applyLocalePrefix(route: string, localeDefinition?: LocaleDefinition): string {
+  const prefix = normalisePathPrefix(localeDefinition?.pathPrefix ?? '/');
+  const cleanRoute = ensureLeadingSlash(route).replace(/\/+/g, '/');
+
+  if (prefix === '/') {
+    return cleanRoute;
+  }
+
+  const trimmedRoute = cleanRoute.startsWith('/') ? cleanRoute.slice(1) : cleanRoute;
+  return `${prefix}${trimmedRoute}`;
 }
 
 function ensureLeadingSlash(path: string): string {
@@ -217,11 +392,13 @@ function resolveCanonical({
 }
 
 function resolveLocaleCandidate(locale?: string): string {
-  if (!locale) {
-    return DEFAULT_LOCALE;
+  const resolved = resolveLocaleCode(locale);
+  const definition = getLocaleDefinition(resolved);
+  if (definition?.code) {
+    return definition.code;
   }
 
-  return locale.includes('-') ? locale : `${locale}-${locale.toUpperCase()}`;
+  return resolved;
 }
 
 function toIsoString(value?: string | Date | null): string | undefined {
@@ -234,48 +411,144 @@ function toIsoString(value?: string | Date | null): string | undefined {
   return new Date(value).toISOString();
 }
 
-function buildAlternateHref(alternate: LocaleAlternate, site: URL, canonicalUrl: string): string {
-  if (alternate.href) {
-    return new URL(alternate.href, site).toString();
-  }
-  if (alternate.path) {
-    const normalised = ensureTrailingSlash(ensureLeadingSlash(alternate.path), true);
-    return new URL(normalised, site).toString();
-  }
-  return canonicalUrl;
+function resolveHrefLang(locale: string): string {
+  const definition = getLocaleDefinition(locale);
+  return definition?.hrefLang ?? resolveLocaleCandidate(locale);
 }
 
-function buildHreflangAlternates(
-  canonicalUrl: string,
-  site: URL,
-  locale: string,
-  alternates: LocaleAlternate[] = [],
-): HreflangAlternate[] {
-  const canonicalEntry: HreflangAlternate = {
-    locale,
-    href: canonicalUrl,
-    isDefault: true,
-  };
+function buildLocaleHref({
+  alternate,
+  localeDefinition,
+  routeKey,
+  trailingSlash,
+  fallbackOrigin,
+}: {
+  alternate?: LocaleAlternate;
+  localeDefinition?: LocaleDefinition;
+  routeKey: string;
+  trailingSlash: boolean;
+  fallbackOrigin: URL;
+}): string {
+  const origin = localeDefinition?.origin
+    ? new URL(localeDefinition.origin.toString())
+    : new URL(fallbackOrigin.toString());
+
+  if (alternate?.href) {
+    return new URL(alternate.href, origin).toString();
+  }
+
+  if (alternate?.path) {
+    const normalised = ensureTrailingSlash(ensureLeadingSlash(alternate.path), trailingSlash);
+    return new URL(normalised, origin).toString();
+  }
+
+  const derivedPath = applyLocalePrefix(routeKey, localeDefinition);
+  const normalisedPath = ensureTrailingSlash(derivedPath, trailingSlash);
+  return new URL(normalisedPath, origin).toString();
+}
+
+function buildHreflangAlternates({
+  canonicalUrl,
+  localeCode,
+  canonicalDefinition,
+  explicitAlternates = [],
+  routeKey,
+  trailingSlash,
+}: {
+  canonicalUrl: string;
+  localeCode: string;
+  canonicalDefinition?: LocaleDefinition;
+  explicitAlternates?: LocaleAlternate[];
+  routeKey: string;
+  trailingSlash: boolean;
+}): HreflangAlternate[] {
+  const canonicalHrefLang = resolveHrefLang(localeCode);
+  const canonicalOrigin = canonicalDefinition?.origin
+    ? new URL(canonicalDefinition.origin.toString())
+    : normaliseSiteUrl(undefined);
 
   const entries = new Map<string, HreflangAlternate>();
-  entries.set(locale.toLowerCase(), canonicalEntry);
+  entries.set(canonicalHrefLang.toLowerCase(), {
+    locale: canonicalHrefLang,
+    href: canonicalUrl,
+    isDefault: true,
+  });
 
-  for (const alternate of alternates) {
-    if (!alternate?.locale) {
+  const overrides = new Map<string, LocaleAlternate>();
+  for (const alternate of explicitAlternates ?? []) {
+    if (!alternate?.locale) continue;
+    const lower = alternate.locale.toLowerCase();
+    overrides.set(lower, alternate);
+    const resolvedCode = resolveLocaleCode(alternate.locale);
+    overrides.set(resolvedCode.toLowerCase(), alternate);
+    const definition = getLocaleDefinition(resolvedCode);
+    if (definition?.hrefLang) {
+      overrides.set(definition.hrefLang.toLowerCase(), alternate);
+    }
+  }
+
+  const cluster = resolveLocaleCluster(localeCode);
+  for (const clusterLocale of cluster) {
+    const clusterHrefLang = resolveHrefLang(clusterLocale);
+    const key = clusterHrefLang.toLowerCase();
+    if (entries.has(key)) {
       continue;
     }
-    const href = buildAlternateHref(alternate, site, canonicalUrl);
-    entries.set(alternate.locale.toLowerCase(), {
-      locale: alternate.locale,
+
+    const override = overrides.get(key) ?? overrides.get(clusterLocale.toLowerCase());
+    const href = buildLocaleHref({
+      alternate: override,
+      localeDefinition: getLocaleDefinition(clusterLocale),
+      routeKey,
+      trailingSlash,
+      fallbackOrigin: canonicalOrigin,
+    });
+
+    entries.set(key, {
+      locale: clusterHrefLang,
+      href,
+      isDefault: false,
+    });
+  }
+
+  for (const [key, alternate] of overrides.entries()) {
+    if (entries.has(key)) {
+      continue;
+    }
+
+    const resolvedCode = resolveLocaleCode(alternate.locale);
+    const hrefLang = resolveHrefLang(resolvedCode);
+    if (entries.has(hrefLang.toLowerCase())) {
+      continue;
+    }
+
+    const href = buildLocaleHref({
+      alternate,
+      localeDefinition: getLocaleDefinition(resolvedCode),
+      routeKey,
+      trailingSlash,
+      fallbackOrigin: canonicalOrigin,
+    });
+
+    entries.set(hrefLang.toLowerCase(), {
+      locale: hrefLang,
       href,
       isDefault: false,
     });
   }
 
   if (!entries.has('x-default')) {
+    const xDefaultCode = resolveLocaleCode(X_DEFAULT_LOCALE);
+    const href = buildLocaleHref({
+      alternate: overrides.get('x-default'),
+      localeDefinition: getLocaleDefinition(xDefaultCode) ?? canonicalDefinition,
+      routeKey,
+      trailingSlash,
+      fallbackOrigin: canonicalOrigin,
+    });
     entries.set('x-default', {
       locale: 'x-default',
-      href: canonicalUrl,
+      href,
       isDefault: true,
     });
   }
@@ -287,7 +560,7 @@ function resolveOpenGraphMetadata(
   input: PageSeoInput,
   canonicalUrl: string,
   siteName: string,
-  locale: string,
+  localeCode: string,
 ): ResolvedOpenGraphMetadata {
   const images: SeoImage[] = [];
   if (input.openGraph?.images?.length) {
@@ -296,7 +569,8 @@ function resolveOpenGraphMetadata(
     images.push(input.openGraph.image);
   }
 
-  const ogLocale = resolveLocaleCandidate(input.openGraph?.locale ?? locale);
+  const ogLocaleCode = resolveLocaleCode(input.openGraph?.locale ?? localeCode);
+  const ogLocale = formatOpenGraphLocale(ogLocaleCode);
   const ogTitle = input.openGraph?.title ?? input.title;
   const ogDescription = input.openGraph?.description ?? input.description;
 
@@ -345,6 +619,17 @@ function buildMetaTags(metadata: PageSeoMetadata): MetaTagDescriptor[] {
     { name: 'twitter:title', content: metadata.twitter.title },
     { name: 'twitter:description', content: metadata.twitter.description },
   ];
+
+  metadata.hreflangs
+    .filter((alternate) => alternate.locale !== 'x-default')
+    .forEach((alternate) => {
+      const alternateLocaleCode = resolveLocaleCode(alternate.locale);
+      const formatted = formatOpenGraphLocale(alternateLocaleCode);
+      if (formatted === metadata.openGraph.locale) {
+        return;
+      }
+      tags.push({ property: 'og:locale:alternate', content: formatted });
+    });
 
   if (metadata.twitter.site) {
     tags.push({ name: 'twitter:site', content: metadata.twitter.site });
@@ -404,14 +689,25 @@ export function createPageSeo(
   {
     site,
     currentPath,
+    locale: runtimeLocale,
   }: {
     site?: string | URL | null;
     currentPath?: string;
+    locale?: string;
   } = {},
 ): PageSeoMetadata {
-  const siteUrl = normaliseSiteUrl(site);
+  const runtimeSite = site ? normaliseSiteUrl(site) : undefined;
   const siteName = input.siteName ?? DEFAULT_SITE_NAME;
-  const locale = resolveLocaleCandidate(input.locale ?? DEFAULT_LOCALE);
+  const pathDerivedLocale = resolveLocaleFromPath(input.path ?? currentPath ?? undefined);
+  const localeCode = resolveLocaleCode(
+    input.locale ?? runtimeLocale ?? pathDerivedLocale ?? DEFAULT_LOCALE,
+  );
+  const localeDefinition = getLocaleDefinition(localeCode);
+  const locale = resolveLocaleCandidate(localeCode);
+  const localeOrigin = localeDefinition?.origin
+    ? new URL(localeDefinition.origin.toString())
+    : undefined;
+  const siteUrl = localeOrigin ?? runtimeSite ?? normaliseSiteUrl(undefined);
   const canonicalUrl = resolveCanonical({
     path: input.path,
     canonicalUrl: input.canonicalUrl,
@@ -420,9 +716,18 @@ export function createPageSeo(
     fallbackPath: currentPath,
   });
 
-  const openGraph = resolveOpenGraphMetadata(input, canonicalUrl, siteName, locale);
+  const routeKey = stripLocalePrefix(new URL(canonicalUrl).pathname, localeDefinition);
+  const trailingSlash = input.trailingSlash ?? true;
+  const openGraph = resolveOpenGraphMetadata(input, canonicalUrl, siteName, localeCode);
   const twitter = resolveTwitterMetadata(input, openGraph);
-  const hreflangs = buildHreflangAlternates(canonicalUrl, siteUrl, locale, input.alternates);
+  const hreflangs = buildHreflangAlternates({
+    canonicalUrl,
+    localeCode,
+    canonicalDefinition: localeDefinition,
+    explicitAlternates: input.alternates,
+    routeKey,
+    trailingSlash,
+  });
 
   const metadata: PageSeoMetadata = {
     title: `${input.title} | ${siteName}`,
@@ -464,12 +769,15 @@ export function buildOrganizationSchema({
   url = SEO_MANIFEST.site.toString(),
   logo,
   sameAs = [],
+  locale = DEFAULT_LOCALE,
 }: {
   name?: string;
   url?: string;
   logo?: string;
   sameAs?: string[];
+  locale?: string;
 } = {}): StructuredSchema {
+  const language = resolveLocaleCandidate(locale);
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
@@ -477,6 +785,7 @@ export function buildOrganizationSchema({
     url,
     ...(logo ? { logo } : {}),
     ...(sameAs.length ? { sameAs } : {}),
+    ...(language ? { inLanguage: language } : {}),
   };
 }
 
@@ -485,12 +794,15 @@ export function buildWebsiteSchema({
   url = SEO_MANIFEST.site.toString(),
   description,
   searchUrl,
+  locale = DEFAULT_LOCALE,
 }: {
   name?: string;
   url?: string;
   description?: string;
   searchUrl?: string;
+  locale?: string;
 } = {}): StructuredSchema {
+  const language = resolveLocaleCandidate(locale);
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
@@ -506,17 +818,21 @@ export function buildWebsiteSchema({
           },
         }
       : {}),
+    ...(language ? { inLanguage: language } : {}),
   };
 }
 
 export function buildBreadcrumbSchema(
   trail: BreadcrumbTrail,
   site?: string | URL,
+  locale: string = DEFAULT_LOCALE,
 ): StructuredSchema {
   const siteUrl = site ? normaliseSiteUrl(site) : undefined;
+  const language = resolveLocaleCandidate(locale);
   return {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
+    ...(language ? { inLanguage: language } : {}),
     itemListElement: trail.map((segment, index) => {
       const position = index + 1;
       const base = {
@@ -545,6 +861,7 @@ export function buildSoftwareApplicationSchema({
   image,
   featureList = [],
   releaseNotes,
+  locale = DEFAULT_LOCALE,
 }: {
   name: string;
   description: string;
@@ -555,7 +872,9 @@ export function buildSoftwareApplicationSchema({
   image?: SeoImage;
   featureList?: string[];
   releaseNotes?: string;
+  locale?: string;
 }): StructuredSchema {
+  const language = resolveLocaleCandidate(locale);
   const schema: StructuredSchema = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
@@ -573,6 +892,7 @@ export function buildSoftwareApplicationSchema({
       ...(offersUrl ? { url: offersUrl } : {}),
     },
     isAccessibleForFree: false,
+    ...(language ? { inLanguage: language } : {}),
   };
 
   if (image) {
@@ -602,6 +922,7 @@ export function buildArticleSchema({
   tags = [],
   readingTimeMinutes,
   publisherName = DEFAULT_SITE_NAME,
+  locale = DEFAULT_LOCALE,
 }: {
   headline: string;
   description: string;
@@ -614,7 +935,9 @@ export function buildArticleSchema({
   tags?: string[];
   readingTimeMinutes?: number;
   publisherName?: string;
+  locale?: string;
 }): StructuredSchema {
+  const language = resolveLocaleCandidate(locale);
   return {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -639,15 +962,19 @@ export function buildArticleSchema({
     ...(readingTimeMinutes ? { timeRequired: `PT${Math.round(readingTimeMinutes)}M` } : {}),
     ...(image ? { image } : {}),
     isAccessibleForFree: true,
+    ...(language ? { inLanguage: language } : {}),
   };
 }
 
 export function buildFaqSchema(
   faqEntries: Array<{ question: string; answer: string }>,
+  locale: string = DEFAULT_LOCALE,
 ): StructuredSchema {
+  const language = resolveLocaleCandidate(locale);
   return {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
+    ...(language ? { inLanguage: language } : {}),
     mainEntity: faqEntries.map((entry) => ({
       '@type': 'Question',
       name: entry.question,

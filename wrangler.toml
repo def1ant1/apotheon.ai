@@ -94,3 +94,26 @@ BLOG_ANALYTICS_ALLOWED_ORIGINS = "https://apotheon.ai,https://www.apotheon.ai"
 BLOG_ANALYTICS_DATA_RETENTION_DAYS = "180"
 # Secrets managed via `wrangler secret put BLOG_ANALYTICS_BI_API_KEY` to keep BI
 # credentials out of version control.
+
+[env.seo_monitor]
+name = "apotheon-seo-monitor"
+main = "workers/seo-monitor.ts"
+usage_model = "standard"
+compatibility_date = "2024-10-08"
+migrations_dir = "workers/migrations/seo-monitor"
+
+[[env.seo_monitor.triggers]]
+crons = ["0 */6 * * *"]
+
+[[env.seo_monitor.d1_databases]]
+binding = "SEO_MONITOR_DB"
+database_name = "apotheon-seo-monitor"
+database_id = "00000000-0000-0000-0000-000000000003"
+
+[env.seo_monitor.vars]
+SEO_MONITOR_CRUX_COLLECTION = "ALL_FORM_FACTORS"
+SEO_MONITOR_PROPERTY_STAGE = "production"
+SEO_MONITOR_COVERAGE_ERROR_THRESHOLD = "0"
+# Secrets managed via `wrangler secret put SEO_MONITOR_CRUX_API_KEY`,
+# `wrangler secret put SEO_MONITOR_SEARCH_CONSOLE_TOKEN`, and
+# `wrangler secret put SEO_MONITOR_ALERT_WEBHOOK`.

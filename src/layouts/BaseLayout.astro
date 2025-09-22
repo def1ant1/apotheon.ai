@@ -3,13 +3,19 @@ import '../styles/global.css';
 
 import SiteFooter from '../components/navigation/SiteFooter.astro';
 import SiteHeader from '../components/navigation/SiteHeader.astro';
-import { createPageSeo, type PageSeoInput } from '../utils/seo';
+import { createPageSeo, resolveLocaleFromPath, type PageSeoInput } from '../utils/seo';
 
 interface Props {
   seo: PageSeoInput;
+  /**
+   * Optional locale override supplied by page shells. When omitted we infer the locale from the
+   * current pathname using the manifest definitions so canonical URLs + hreflang tags stay aligned
+   * with the directory structure.
+   */
+  locale?: string;
 }
 
-const { seo } = Astro.props as Props;
+const { seo, locale: explicitLocale } = Astro.props as Props;
 
 const metadata = createPageSeo(
   {
@@ -20,12 +26,13 @@ const metadata = createPageSeo(
   {
     site: Astro.site ?? Astro.url,
     currentPath: Astro.url.pathname,
+    locale: explicitLocale ?? resolveLocaleFromPath(Astro.url.pathname),
   },
 );
 ---
 
 <!doctype html>
-<html lang="en" data-theme="night">
+<html lang={metadata.locale} data-theme="night">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

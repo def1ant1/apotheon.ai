@@ -1,15 +1,17 @@
 ---
 import SchemaScript from '../../components/seo/SchemaScript.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { buildBreadcrumbSchema } from '../../utils/seo';
+import { buildBreadcrumbSchema, resolveLocaleFromPath } from '../../utils/seo';
 
 const pageTitle = 'Terms of Service';
 const description =
   'Master subscription agreement scaffold outlining platform access, SLAs, and billing expectations.';
+const pageLocale = resolveLocaleFromPath(Astro.url.pathname) ?? 'en-US';
 const seo = {
   title: pageTitle,
   description,
   path: '/legal/terms/',
+  locale: pageLocale,
 };
 const siteOrigin = Astro.site?.origin ?? Astro.url.origin;
 const breadcrumbSchema = buildBreadcrumbSchema(
@@ -19,10 +21,11 @@ const breadcrumbSchema = buildBreadcrumbSchema(
     { label: pageTitle, href: '/legal/terms/' },
   ],
   siteOrigin,
+  pageLocale,
 );
 ---
 
-<BaseLayout {seo}>
+<BaseLayout {seo} locale={pageLocale}>
   <SchemaScript slot="head" schema={breadcrumbSchema} />
   <!--
     Use the same tonal footprint as other legal placeholders so updates remain predictable. When the

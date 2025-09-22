@@ -30,7 +30,30 @@ const seo = createPageSeo(
 `BaseLayout.astro` consumes this output and renders deterministic head markup.
 When you need to override metadata for a route, pass overrides via the `seo`
 prop exposed by `MarketingShell` or call `createPageSeo` directly if you are
-using the base layout without an intermediate shell.
+using the base layout without an intermediate shell. Locale-aware metadata is
+automatically derived from [`config/seo/manifest.mjs`](../../config/seo/manifest.mjs):
+
+- `resolveLocaleFromPath` inspects the manifest path prefixes so layouts can
+  infer the language from the current route. Shells should forward the resolved
+  locale to `BaseLayout` so canonical URLs, hreflang alternates, and structured
+  data stay aligned.
+- Locale definitions specify the origin, path prefix, and Search Console
+  property IDs for every language. Update this manifest first when adding a new
+  locale so downstream automation (sitemaps, Search Console monitoring,
+  Playwright checks) pick up the change automatically.
+
+### Provisioning a new locale
+
+1. Add a definition inside `SEO_MANIFEST.locales.definitions` with the locale
+   code, `hrefLang`, path prefix, and per-stage Search Console property IDs.
+2. Create translated routes under the configured prefix and ensure they render
+   via `BaseLayout` (directly or through `MarketingShell`).
+3. Run `npm run build` to regenerate sitemaps, hreflang matrices, and robots
+   directives. Inspect `dist/sitemap-pages*.xml` to confirm alternate links are
+   present for the new locale.
+4. Execute `npm run seo:monitor:dry-run` to verify the scheduled Worker can pull
+   Core Web Vitals and Search Console coverage for the new property before
+   production deployment.
 
 ## Structured data builders
 
@@ -67,9 +90,12 @@ tag generation outside `BaseLayout`; that prevents drift.
 
 `scripts/seo/generate-sitemap.mjs` inspects the static `dist/` output, merges in
 blog publish dates from the content collection, and emits chunked sitemap files
-alongside `sitemap-index.xml`. `scripts/seo/generate-robots.mjs` reads the same
-manifest and injects `Sitemap:` pointers for every generated XML file. Both
-scripts run via `npm run build` so the artefacts stay fresh on every deploy.
+alongside `sitemap-index.xml`. `scripts/seo/generate-hreflang.mjs` augments each
+chunk with `<xhtml:link>` alternates for every locale cluster defined in the
+manifest and fails the build if a translation is missing. Finally,
+`scripts/seo/generate-robots.mjs` reads the same manifest and injects
+`Sitemap:` pointers for every generated XML file. All three scripts run via
+`npm run build` so the artefacts stay fresh on every deploy.
 
 ## Pagefind canonical URLs
 
@@ -90,6 +116,8 @@ Run the following commands before merging SEO-affecting changes:
 - `npm run build` (generates sitemap/robots and rebuilds the Pagefind index)
 - `npm run ladle:build`
 - `npm run lighthouse:ci` (refreshes performance/SEO budgets)
+- `npm run seo:monitor:dry-run` (executes the scheduled Worker with an in-memory
+  D1 stub to ensure API tokens and thresholds are valid)
 
 CI also executes `npm run seo:verify`, which now checks that every HTML page has
 a canonical link, meta description, and at least one JSON-LD script. Use the
@@ -98,3 +126,47 @@ command locally if you touch layout logic or content collections.
 When introducing new schema objects or metadata hooks, update this document with
 the rationale so future contributors maintain parity between templates,
 automation, and smoke tests.
+
+## Search Console automation & monitoring
+
+The scheduled Worker defined in [`workers/seo-monitor.ts`](../../workers/seo-monitor.ts)
+pulls two streams of telemetry every six hours:
+
+1. Core Web Vitals (LCP, INP, CLS) via the CrUX API for each locale origin.
+2. Search Console coverage summaries for the per-stage property IDs configured
+   in `config/seo/manifest.mjs`.
+
+Snapshots are persisted to the D1 database initialised by
+[`workers/migrations/seo-monitor/0001_init.sql`](../../workers/migrations/seo-monitor/0001_init.sql),
+providing historical context for regressions. Thresholds default to the Core Web
+Vitals “good” budget (LCP ≤ 2.5s, INP ≤ 200ms, CLS ≤ 0.1) with zero tolerance for
+coverage errors; override them by setting environment variables on the Worker
+(`SEO_MONITOR_LCP_THRESHOLD`, `SEO_MONITOR_INP_THRESHOLD`,
+`SEO_MONITOR_CLS_THRESHOLD`, `SEO_MONITOR_COVERAGE_ERROR_THRESHOLD`). Alerts are
+dispatched via `SEO_MONITOR_ALERT_WEBHOOK` and logged to the `seo_monitor_alerts`
+table for auditing.
+
+### Onboarding checklist
+
+1. Provision D1 and bind it as `SEO_MONITOR_DB` (see `wrangler.toml`).
+2. Store secrets using Wrangler:
+   - `wrangler secret put SEO_MONITOR_CRUX_API_KEY`
+   - `wrangler secret put SEO_MONITOR_SEARCH_CONSOLE_TOKEN`
+   - `wrangler secret put SEO_MONITOR_ALERT_WEBHOOK`
+3. Set optional vars for stage selection or thresholds if the defaults are too
+   strict.
+4. Dry-run locally with `npm run seo:monitor:dry-run` to validate credentials.
+5. Deploy via `npm run workers:deploy` once metrics look healthy.
+
+### Troubleshooting
+
+- **Hreflang validation failures:** the build will surface the offending route
+  and missing locales. Ensure translated pages exist under the correct prefix
+  and that the manifest cluster includes only active locales.
+- **CrUX API errors:** confirm the API key has Chrome UX Report access and that
+  the locale definition points at a public origin.
+- **Search Console authentication issues:** tokens must have the
+  `https://www.googleapis.com/auth/webmasters.readonly` scope. Regenerate via
+  service account workflows if responses return 401/403.
+- **Alert floods:** adjust thresholds via Worker vars if experiments temporarily
+  breach budgets, and remember to reset them afterwards.

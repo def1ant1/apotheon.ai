@@ -1,9 +1,9 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { resolveLocaleFromPath, type PageSeoInput } from '../../utils/seo';
 import Breadcrumbs from '../navigation/Breadcrumbs.astro';
 
 import type { BreadcrumbTrail } from '../../utils/breadcrumbs';
-import type { PageSeoInput } from '../../utils/seo';
 
 interface Props {
   title: string;
@@ -33,6 +33,8 @@ const pageSeo: PageSeoInput = {
   description: seoOverrides?.description ?? metaDescription,
   path: seoOverrides?.path ?? Astro.url.pathname,
 };
+
+const runtimeLocale = pageSeo.locale ?? resolveLocaleFromPath(Astro.url.pathname);
 ---
 
 {
@@ -42,7 +44,7 @@ const pageSeo: PageSeoInput = {
   handles canonical document order (breadcrumbs → hero → content → CTAs).
 */
 }
-<BaseLayout seo={pageSeo}>
+<BaseLayout seo={pageSeo} locale={runtimeLocale}>
   {/** Forward optional head slot content (structured data, meta overrides) to BaseLayout. */}
   <slot name="head" slot="head" />
   {/** Allow pages to inject pre-header affordances such as skip links. */}

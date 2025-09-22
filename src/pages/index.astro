@@ -12,7 +12,12 @@ import LiveClock from '../components/islands/LiveClock';
 import SchemaScript from '../components/seo/SchemaScript.astro';
 import { homepageEntryId } from '../content/homepage';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { buildBreadcrumbSchema, buildOrganizationSchema, buildWebsiteSchema } from '../utils/seo';
+import {
+  buildBreadcrumbSchema,
+  buildOrganizationSchema,
+  buildWebsiteSchema,
+  resolveLocaleFromPath,
+} from '../utils/seo';
 
 const homepageEntry = await getEntry('homepage', homepageEntryId);
 const { Content: HeroDescription } = await homepageEntry.render();
@@ -21,10 +26,12 @@ const heroMetaDescription =
   'Operational intelligence for distributed Astro deployments.';
 
 const siteOrigin = Astro.site?.origin ?? Astro.url.origin;
+const pageLocale = resolveLocaleFromPath(Astro.url.pathname) ?? 'en-US';
 const seo = {
   title: homepageEntry.data.headline,
   description: heroMetaDescription,
   path: '/',
+  locale: pageLocale,
   openGraph: {
     type: 'website',
     images: [
@@ -40,15 +47,21 @@ const organizationSchema = buildOrganizationSchema({
   url: siteOrigin,
   logo: new URL('/static/logo/logo-white-svg.svg', siteOrigin).toString(),
   sameAs: ['https://www.linkedin.com/company/apotheon-ai'],
+  locale: pageLocale,
 });
 const websiteSchema = buildWebsiteSchema({
   url: siteOrigin,
   description: heroMetaDescription,
+  locale: pageLocale,
 });
-const breadcrumbSchema = buildBreadcrumbSchema([{ label: 'Home', href: '/' }], siteOrigin);
+const breadcrumbSchema = buildBreadcrumbSchema(
+  [{ label: 'Home', href: '/' }],
+  siteOrigin,
+  pageLocale,
+);
 ---
 
-<BaseLayout {seo}>
+<BaseLayout {seo} locale={pageLocale}>
   <SchemaScript slot="head" schema={[organizationSchema, websiteSchema, breadcrumbSchema]} />
   <section class="flex flex-col gap-12" data-analytics-region="homepage-overview">
     <HomepageHero hero={homepageEntry.data}>
