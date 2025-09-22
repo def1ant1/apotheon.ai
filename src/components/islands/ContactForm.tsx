@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 
+import { trackAnalyticsEvent } from '../../utils/analytics';
 import { contactFormSchema } from '../../utils/contact-validation';
 import { analyzeDomain } from '../../utils/domain-allowlist';
 
@@ -234,6 +235,23 @@ export default function ContactForm({
       setStatus('success');
       setGlobalMessage('Request received. Our RevOps team will follow up shortly.');
       logEvent('contact_form_submission_succeeded', { intent: validation.data.intent });
+      const analyticsEvent = validation.data.intent === 'investor' ? 'lead_investor' : 'lead_demo';
+      const emailDomain = validation.data.email.split('@')[1]?.toLowerCase() ?? 'unknown';
+      void trackAnalyticsEvent({
+        event: analyticsEvent,
+        payload: {
+          intent: validation.data.intent,
+          company: validation.data.company,
+          domain: emailDomain,
+        },
+        consentService: 'pipeline-alerts',
+        onOptOut: () => {
+          console.info('[contact-form] analytics_skipped_due_to_consent', {
+            event: analyticsEvent,
+            intent: validation.data.intent,
+          });
+        },
+      });
       form.reset();
       setEmail('');
       setToken('');

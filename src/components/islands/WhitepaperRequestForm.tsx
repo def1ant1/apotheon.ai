@@ -4,6 +4,7 @@ import {
   WHITEPAPER_MANIFEST,
   type WhitepaperManifestEntry,
 } from '../../generated/whitepapers.manifest';
+import { trackAnalyticsEvent } from '../../utils/analytics';
 import { analyzeDomain } from '../../utils/domain-allowlist';
 import { whitepaperRequestSchema } from '../../utils/whitepaper-request';
 
@@ -255,6 +256,20 @@ export default function WhitepaperRequestForm({
       logEvent('whitepaper_request_submission_succeeded', {
         slug: validation.data.whitepaperSlug,
         marketingOptIn: validation.data.marketingOptIn,
+      });
+      void trackAnalyticsEvent({
+        event: 'whitepaper_download',
+        payload: {
+          slug: validation.data.whitepaperSlug,
+          marketingOptIn: validation.data.marketingOptIn,
+          company: validation.data.company,
+        },
+        consentService: validation.data.marketingOptIn ? 'pipeline-alerts' : 'umami-telemetry',
+        onOptOut: () => {
+          console.info('[whitepaper-form] analytics_skipped_due_to_consent', {
+            slug: validation.data.whitepaperSlug,
+          });
+        },
       });
       form.reset();
       setEmail('');

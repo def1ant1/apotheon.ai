@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 
+import ConsentManager from '../components/islands/ConsentManager';
 import SiteFooter from '../components/navigation/SiteFooter.astro';
 import SiteHeader from '../components/navigation/SiteHeader.astro';
 import { createPageSeo, resolveLocaleFromPath, type PageSeoInput } from '../utils/seo';
@@ -93,5 +94,10 @@ const metadata = createPageSeo(
       <slot />
     </main>
     <SiteFooter />
+    <!--
+      ConsentManager renders as a global island so every page inherits the Klaro-driven preferences modal.
+      We hydrate on `client:load` to ensure consent gating applies before other analytics islands fire.
+    -->
+    <ConsentManager client:load />
   </body>
 </html>

@@ -48,11 +48,20 @@ jobs:
       - name: Type check
         run: npm run typecheck
 
+      - name: Analytics proxy unit tests
+        run: npm run test:analytics-proxy
+
       - name: Execute test suite
         run: npm run test
 
+      - name: Run E2E tests
+        run: npm run test:e2e
+
       - name: Build project
         run: npm run build
+
+      - name: Build Ladle stories
+        run: npm run ladle:build
 
       - name: Build Pagefind index
         if: matrix.node == '20.x'
