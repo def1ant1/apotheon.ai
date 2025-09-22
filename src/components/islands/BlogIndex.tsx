@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 
+import { trackAnalyticsEvent } from '../../utils/analytics';
+
 type BlogAnalyticsEventType = 'article_view' | 'interaction' | 'conversion';
 
 type BlogListPost = {
@@ -121,6 +123,22 @@ const BlogIndex = ({ posts, tags }: Props) => {
       }).catch((error) => {
         console.warn('[blog-analytics] beacon failed', error);
       });
+
+      if (eventType === 'interaction' && detail.action === 'index_article_click') {
+        void trackAnalyticsEvent({
+          event: 'blog_read',
+          payload: {
+            slug: detail.slug,
+            title: detail.title,
+          },
+          consentService: 'umami-telemetry',
+          onOptOut: () => {
+            console.info('[blog-index] analytics_skipped_due_to_consent', {
+              slug: detail.slug,
+            });
+          },
+        });
+      }
     },
     [resolveSessionId],
   );

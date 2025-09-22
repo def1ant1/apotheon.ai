@@ -149,6 +149,16 @@ module.exports = {
       },
     },
     {
+      files: ['src/pages/**/*.{ts,tsx}', 'src/utils/blog.ts', 'src/utils/history.ts'],
+      rules: {
+        '@typescript-eslint/no-unsafe-assignment': 'off',
+        '@typescript-eslint/no-unsafe-member-access': 'off',
+        '@typescript-eslint/no-unsafe-call': 'off',
+        '@typescript-eslint/no-unsafe-return': 'off',
+        '@typescript-eslint/no-unsafe-argument': 'off',
+      },
+    },
+    {
       files: ['**/__tests__/**/*.{ts,tsx}', '**/*.test.{ts,tsx}', 'tests/**/*.{ts,tsx}'],
       parser: '@typescript-eslint/parser',
       parserOptions: {

@@ -1,0 +1,56 @@
+# docker-compose.yml orchestrates the Umami analytics stack for local prototyping.
+#
+# The configuration intentionally mirrors the staging Terraform deployment so
+# engineers only need to learn one topology. Every service has extensive inline
+# documentation because analytics is a sensitive, audited surface — we want the
+# bootstrap story to feel like running `npm install`.
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: analytics-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${UMAMI_DB_NAME:-umami}
+      POSTGRES_USER: ${UMAMI_DB_USER:-umami}
+      POSTGRES_PASSWORD: ${UMAMI_DB_PASSWORD:-umami-password}
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - analytics
+
+  umami:
+    image: ghcr.io/umami-software/umami:postgresql-latest
+    container_name: analytics-umami
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${UMAMI_DB_USER:-umami}:${UMAMI_DB_PASSWORD:-umami-password}@postgres:5432/${UMAMI_DB_NAME:-umami}
+      APP_SECRET: ${UMAMI_APP_SECRET:-please-change-me}
+      TRACKER_SCRIPT_NAME: apotheon-analytics.js
+      LOG_LEVEL: info
+    ports:
+      - '${UMAMI_PORT:-3000}:3000'
+    networks:
+      - analytics
+    command: >-
+      /bin/sh -c "
+        node prisma/migrate.js && \
+        node server/index.js
+      "
+
+networks:
+  analytics:
+    driver: bridge
+
+volumes:
+  postgres-data:
+    driver: local

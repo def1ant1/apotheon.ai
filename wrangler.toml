@@ -95,6 +95,35 @@ BLOG_ANALYTICS_DATA_RETENTION_DAYS = "180"
 # Secrets managed via `wrangler secret put BLOG_ANALYTICS_BI_API_KEY` to keep BI
 # credentials out of version control.
 
+[env.analytics_proxy]
+name = "apotheon-analytics-proxy"
+main = "workers/analytics-proxy.ts"
+usage_model = "standard"
+compatibility_date = "2024-10-08"
+migrations_dir = "workers/migrations/analytics"
+
+[[env.analytics_proxy.routes]]
+pattern = "collect.apotheon.ai/*"
+custom_domain = true
+
+[[env.analytics_proxy.kv_namespaces]]
+binding = "ANALYTICS_RATE_LIMIT"
+id = "00000000000000000000000000000005"
+preview_id = "11111111111111111111111111111115"
+
+[[env.analytics_proxy.d1_databases]]
+binding = "ANALYTICS_AUDIT_DB"
+database_name = "apotheon-analytics-audit"
+database_id = "00000000-0000-0000-0000-000000000005"
+
+[env.analytics_proxy.vars]
+ANALYTICS_BACKEND_URL = "https://analytics.apotheon.ai"
+ANALYTICS_ALLOWED_ORIGINS = "https://apotheon.ai,https://www.apotheon.ai"
+ANALYTICS_RATE_LIMIT_MAX = "120"
+ANALYTICS_RATE_LIMIT_WINDOW_SECONDS = "60"
+# Secrets managed via `wrangler secret put ANALYTICS_PROXY_SECRET` so the
+# signing key never lands in git history.
+
 [env.seo_monitor]
 name = "apotheon-seo-monitor"
 main = "workers/seo-monitor.ts"

@@ -1,0 +1,9 @@
+# Example staging configuration. Copy to terraform.tfvars and customize.
+environment          = "staging"
+docker_host          = "tcp://staging-docker.example.com:2376"
+db_password          = "please-rotate-me"
+app_secret           = "please-rotate-me"
+analytics_hostname   = "analytics.staging.apotheon.ai"
+cloudflare_zone      = "apotheon.ai"
+cloudflare_target    = "staging-workers.cloudflare.net"
+cloudflare_api_token = "${CLOUDFLARE_API_TOKEN}"
