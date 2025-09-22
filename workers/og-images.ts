@@ -511,17 +511,6 @@ async function handleRequest(
   env: OgImageEnv,
   ctx: ExecutionContext,
 ): Promise<Response> {
-  const cacheStorage = caches as unknown as CacheStorage & { default: Cache };
-  const cache = cacheStorage.default;
-  const cacheLookupRequest = new Request(request.url, { method: 'GET' });
-  const cached = await cache.match(cacheLookupRequest);
-  if (cached) {
-    if (request.method === 'HEAD') {
-      return new Response(null, { headers: cached.headers, status: cached.status });
-    }
-    return cached;
-  }
-
   const url = new URL(request.url);
   const allowedScopes = env.OG_IMAGE_ALLOWED_SCOPES
     ? new Set(
@@ -542,7 +531,22 @@ async function handleRequest(
   await assertValidSignature(env.OG_IMAGE_SIGNING_SECRET, url);
   const payload = parseRequest(url, allowedScopes, allowedThemes);
 
-  const cacheKey = buildCacheKey(payload, url.searchParams.get('signature') ?? '');
+  // We only consult the edge cache after verifying the signed URL inputs so a
+  // stale request cannot bypass scope/theme/expiry checks by reusing a cached
+  // payload that was rendered while the signature was still valid.
+  const cacheStorage = caches as unknown as CacheStorage & { default: Cache };
+  const cache = cacheStorage.default;
+  const cacheLookupRequest = new Request(url.toString(), { method: 'GET' });
+  const cached = await cache.match(cacheLookupRequest);
+  if (cached) {
+    if (request.method === 'HEAD') {
+      return new Response(null, { headers: cached.headers, status: cached.status });
+    }
+    return cached;
+  }
+
+  const signature = url.searchParams.get('signature') ?? '';
+  const cacheKey = buildCacheKey(payload, signature);
 
   const kv = await env.OG_IMAGE_CACHE.getWithMetadata<OgCacheMetadata>(cacheKey, 'arrayBuffer');
   if (kv && kv.value && kv.metadata) {
@@ -572,7 +576,6 @@ async function handleRequest(
     metadata,
   });
 
-  const signature = url.searchParams.get('signature') ?? '';
   ctx.waitUntil(persistMetadata(env, payload, cacheKey, signature, checksum, expires));
 
   const headers = buildResponseHeaders(metadata, arrayBuffer.byteLength);
