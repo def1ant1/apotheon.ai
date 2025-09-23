@@ -43,7 +43,7 @@
     "seo:verify": "node ./scripts/seo/verify-dist.mjs",
     "seo:monitor:dry-run": "tsx ./workers/seo-monitor.ts --dry-run",
     "lighthouse:ci": "node ./scripts/ci/lighthouse-ci.mjs",
-    "lighthouse:calibrate": "tsx ./scripts/perf/calibrate-lighthouse.ts",
+    "lighthouse:calibrate": "node ./scripts/perf/calibrate-lighthouse.mjs",
     "zap:baseline": "node ./scripts/ci/zap-baseline.mjs",
     "gitleaks:ci": "node ./scripts/ci/gitleaks-ci.mjs",
     "brand:contrast": "node ./scripts/brand/contrast-audit.mjs",

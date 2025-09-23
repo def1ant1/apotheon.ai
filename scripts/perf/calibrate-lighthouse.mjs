@@ -1,4 +1,4 @@
-#!/usr/bin/env tsx
+#!/usr/bin/env node
 /* eslint-disable security/detect-non-literal-fs-filename */
 import { spawn } from 'node:child_process';
 import { mkdir, readdir, readFile, writeFile, rm } from 'node:fs/promises';
@@ -9,15 +9,7 @@ import puppeteer from 'puppeteer';
 const REPORT_DIR = join(process.cwd(), 'reports', 'lighthouse');
 const LHCI_DIR = join(process.cwd(), '.lighthouseci');
 
-type LighthouseReport = {
-  readonly finalUrl?: string;
-  readonly requestedUrl?: string;
-  readonly fetchTime?: string;
-  readonly categories?: { readonly performance?: { readonly score?: number } };
-  readonly audits?: { readonly ['largest-contentful-paint']?: { readonly numericValue?: number } };
-};
-
-async function discoverChromePath(): Promise<string | undefined> {
+async function discoverChromePath() {
   const candidates = [
     process.env.LHCI_CHROME_PATH,
     process.env.CHROME_PATH,
@@ -26,13 +18,14 @@ async function discoverChromePath(): Promise<string | undefined> {
     '/usr/bin/chromium-browser',
     '/usr/bin/chromium',
     puppeteer.executablePath(),
-  ].filter(Boolean) as string[];
+  ].filter(Boolean);
 
   for (const candidate of candidates) {
     try {
       await readFile(candidate);
       return candidate;
     } catch {
+      // Continue searching other paths when the candidate does not exist.
       continue;
     }
   }
@@ -40,8 +33,8 @@ async function discoverChromePath(): Promise<string | undefined> {
   return undefined;
 }
 
-async function runLighthouse(chromePath: string): Promise<void> {
-  await new Promise<void>((resolve, reject) => {
+async function runLighthouse(chromePath) {
+  await new Promise((resolve, reject) => {
     const args = [
       'autorun',
       '--config=./lighthouserc.json',
@@ -76,16 +69,10 @@ async function runLighthouse(chromePath: string): Promise<void> {
   });
 }
 
-async function collectReports(): Promise<void> {
+async function collectReports() {
   await mkdir(REPORT_DIR, { recursive: true });
   const files = await readdir(LHCI_DIR);
-  const manifestEntries: Array<{
-    file: string;
-    url: string | undefined;
-    fetchTime: string | undefined;
-    performance: number | null;
-    lcp: number | null;
-  }> = [];
+  const manifestEntries = [];
 
   for (const file of files) {
     if (!file.endsWith('.json')) continue;
@@ -93,7 +80,7 @@ async function collectReports(): Promise<void> {
     const contents = await readFile(sourcePath, 'utf8');
     await writeFile(join(REPORT_DIR, file), contents, 'utf8');
     try {
-      const parsed = JSON.parse(contents) as LighthouseReport;
+      const parsed = JSON.parse(contents);
       manifestEntries.push({
         file,
         url: parsed.finalUrl ?? parsed.requestedUrl,
@@ -117,7 +104,7 @@ async function collectReports(): Promise<void> {
   );
 }
 
-async function main(): Promise<void> {
+async function main() {
   const chromePath = await discoverChromePath();
   if (!chromePath) {
     throw new Error('Unable to locate Chrome/Chromium for Lighthouse calibration.');
