@@ -4,7 +4,7 @@ This playbook documents how Apotheon.ai ships enterprise-ready blog content with
 
 ## Authoring workflow
 
-1. **Start from the schema** – Every article lives in `src/content/blog/` and must satisfy the collection defined in `src/content/config.ts`. Required frontmatter now includes hero imagery, OpenGraph artwork metadata, tags, and a `generatorRequestId` placeholder for the upcoming OG Worker (Epic 14).
+1. **Start from the schema** – Every article lives in `src/content/blog/` and must satisfy the collection defined in `src/content/config.ts`. Required frontmatter now includes hero imagery, OpenGraph artwork metadata, tags, and an optional `generatorRequestId` that lets the OG Worker correlate renders with editorial requests.
 2. **Capture tone + keywords inline** – Immediately after the frontmatter, add an HTML comment such as `<!-- editorial: tone="Confident" keywords="governance, ai ops" -->`. Content linting asserts that the cue exists so editors, SEO, and marketing automation stay aligned.
 3. **Reference reusable assets** – Store hero art in `public/images/blog/` and social images in `public/images/og/blog/`. Use descriptive alt text; the blog post template surfaces it in the figure caption and in JSON-LD.
 4. **Embed visuals** – Diagrams, quotes, and tables belong in the MDX body. Favor accessible representations (` ```text` diagrams, semantic tables) so we avoid adding dependencies for chart rendering.
@@ -20,7 +20,7 @@ This playbook documents how Apotheon.ai ships enterprise-ready blog content with
 ## Review expectations
 
 - **Metadata completeness** – Reviewers confirm hero art exists, OpenGraph payloads reference the correct assets, and estimated reading times are realistic.
-- **Automation hooks** – Leave the `openGraph.generatorRequestId` populated. Once Epic 14 lands the Worker will consume these IDs to render social cards automatically; comments in `src/utils/blog.ts` and the feed endpoints highlight the TODO.
+- **Automation hooks** – Keep `openGraph.image` and `openGraph.alt` accurate. `resolveOgImage` and the RSS/Atom feeds call `ensureOgAsset`, which renders signed Worker URLs and writes the results to `src/generated/og-assets.manifest.json`. Reviewers should confirm manifest diffs align with the post being updated.
 - **Accessibility + structure** – Verify headings form a logical outline, blockquotes include citations, and tables/diagrams remain readable without color.
 - **Testing receipts** – Pull requests should list the release gate commands in the description. CI enforces them, but local runs catch regressions earlier.
 
