@@ -9,7 +9,13 @@
       "satori": ["src/types/stubs/satori"],
       "@resvg/resvg-js": ["src/types/stubs/resvg"]
     },
-    "types": ["astro/client", "@types/node", "@playwright/test", "src/types/og-worker"]
+    "types": [
+      "astro/client",
+      "@types/node",
+      "@playwright/test",
+      "@testing-library/jest-dom/vitest",
+      "src/types/og-worker"
+    ]
   },
   "include": [
     "src",

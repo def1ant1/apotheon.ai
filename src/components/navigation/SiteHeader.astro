@@ -12,10 +12,25 @@ const sanitizedMenuGroups: ReadonlyArray<NavigationMenuGroup> =
   await getValidatedNavigationGroups();
 ---
 
+{
+  /**
+  The global header anchors the skip link, logo, and navigation landmarks. Explicitly declaring the
+  banner role and aria label defends against regressions if we ever wrap the header in additional
+  containers or port it into host frameworks that manipulate landmark semantics.
+*/
+}
 <header
+  role="banner"
+  aria-label="Primary site header"
   class="sticky top-0 z-40 flex justify-center bg-surface-base/70 px-gutter-inline pb-space-sm pt-space-xs backdrop-blur supports-[backdrop-filter]:bg-surface-base/60"
 >
   <div class="flex w-full max-w-5xl flex-col gap-space-xs">
+    {
+      /**
+      Keep the skip link as the first interactive element so assistive tech exposes it immediately.
+      The target maps to `<main id="main" tabindex="-1">` declared in `BaseLayout`.
+    */
+    }
     <a class="sr-only focus:not-sr-only" href="#main">Skip to content</a>
 
     <div class="flex items-start justify-between gap-space-xs">
@@ -37,6 +52,9 @@ const sanitizedMenuGroups: ReadonlyArray<NavigationMenuGroup> =
     </div>
 
     <div class="hidden sm:block">
+      {
+        /** Desktop navigation hydrates lazily; Radix still renders semantic `<nav aria-label="Primary">`. */
+      }
       <RadixNavigationMenu client:idle groups={sanitizedMenuGroups} />
     </div>
   </div>

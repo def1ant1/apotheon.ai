@@ -1,10 +1,17 @@
 import { expect, test, type Page } from '@playwright/test';
 
+import {
+  dismissConsentModal,
+  neutralizeAstroDevToolbar,
+  waitForIslandHydration,
+} from './utils/page';
+
 test.describe('mobile navigation drawer', () => {
   test('cycles focus through links and restores the trigger', async ({ page }: { page: Page }) => {
     await page.goto('/');
-
-    await page.waitForSelector('[data-mobile-nav-ready="true"]');
+    await neutralizeAstroDevToolbar(page);
+    await dismissConsentModal(page);
+    await waitForIslandHydration(page, '[data-mobile-nav-ready]', 'data-mobile-nav-ready');
 
     const trigger = page.getByRole('button', { name: /navigation menu/i });
     await expect(trigger).toBeVisible();

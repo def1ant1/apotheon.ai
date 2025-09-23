@@ -43,7 +43,7 @@ export default function MobileNavigationDrawer({
 
     host.setAttribute('data-mobile-nav-ready', 'true');
     return () => {
-      host.removeAttribute('data-mobile-nav-ready');
+      host.setAttribute('data-mobile-nav-ready', 'false');
     };
   }, []);
 
@@ -88,7 +88,7 @@ export default function MobileNavigationDrawer({
   }, []);
 
   return (
-    <div className="contents" ref={hostRef}>
+    <div className="contents" ref={hostRef} data-mobile-nav-ready="false">
       <Dialog.Root open={open} onOpenChange={handleOpenChange}>
         <Dialog.Trigger asChild>
           <button

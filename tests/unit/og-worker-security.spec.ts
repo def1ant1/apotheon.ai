@@ -65,7 +65,7 @@ describe('OG worker cache hardening', () => {
       props: {},
     } as unknown as ExecutionContext;
 
-    const env: OgImageEnv = {
+    const env = {
       OG_IMAGE_SIGNING_SECRET: 'secret',
       OG_IMAGE_CACHE: {
         getWithMetadata: vi.fn(),
@@ -75,10 +75,13 @@ describe('OG worker cache hardening', () => {
         prepare: vi.fn(() => ({
           bind: () => ({
             run: vi.fn(),
+            all: vi.fn(),
+            raw: vi.fn(),
+            first: vi.fn(),
           }),
         })),
       },
-    };
+    } as unknown as OgImageEnv;
 
     const request = new Request(
       'https://worker.example.com/og/blog/demo?title=Demo&expires=1&signature=deadbeef',

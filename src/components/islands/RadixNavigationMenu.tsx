@@ -1,7 +1,7 @@
 import * as NavigationMenu from '@radix-ui/react-navigation-menu';
 import { Slot } from '@radix-ui/react-slot';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
-import { forwardRef, useMemo, type ComponentPropsWithoutRef, type ElementRef } from 'react';
+import React, { forwardRef, useMemo, type ComponentPropsWithoutRef, type ElementRef } from 'react';
 
 /**
  * `RadixNavigationMenu` composes Radix primitives into an accessible primary navigation shell.
@@ -145,6 +145,7 @@ export function RadixNavigationMenu({
   groups = navigationMenuGroups,
   className,
 }: RadixNavigationMenuProps = {}) {
+  const rootRef = React.useRef<HTMLDivElement | null>(null);
   /**
    * Define navigation content as data first. This keeps the JSX lean and allows us to
    * generate both the trigger labels and panel content from a single source of truth.
@@ -160,8 +161,22 @@ export function RadixNavigationMenu({
     [className],
   );
 
+  React.useEffect(() => {
+    const node = rootRef.current;
+    if (!node) {
+      return undefined;
+    }
+
+    node.setAttribute('data-navigation-ready', 'true');
+    return () => {
+      node.setAttribute('data-navigation-ready', 'false');
+    };
+  }, []);
+
   return (
     <NavigationMenu.Root
+      ref={rootRef}
+      data-navigation-ready="false"
       /**
        * `aria-label` announces intent to screen readers while Radix handles the menu roles.
        * Tailwind tokens reference centralized design scales so we never hand-roll pixel values.

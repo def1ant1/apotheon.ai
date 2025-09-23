@@ -132,7 +132,14 @@ const lcpCandidates = Object.entries(rawImageManifest.assets)
     -->
     <slot name="preheader" />
     <SiteHeader />
-    <main id="main">
+    {
+      /**
+       * `tabindex="-1"` lets the global skip link land focus on the `<main>` landmark immediately
+       * after keyboard users activate "Skip to content". Explicitly setting `role="main"` keeps the
+       * landmark resilient even if future refactors wrap it with extra containers.
+       */
+    }
+    <main id="main" role="main" tabindex="-1">
       <slot />
     </main>
     <SiteFooter />

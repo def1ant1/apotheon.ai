@@ -57,6 +57,12 @@ jobs:
       - name: Run E2E tests
         run: npm run test:e2e
 
+      - name: axe-core accessibility audit
+        run: npm run accessibility:axe
+
+      - name: Pa11y accessibility audit
+        run: npm run accessibility:pa11y
+
       - name: Build project
         run: npm run build
 
@@ -141,6 +147,12 @@ jobs:
 
       - name: Run Playwright tests
         run: npm run test:e2e
+
+      - name: axe-core accessibility audit
+        run: npm run accessibility:axe
+
+      - name: Pa11y accessibility audit
+        run: npm run accessibility:pa11y
 
       - name: Build static site
         run: npm run build
