@@ -13,16 +13,25 @@ interface Props {
 }
 
 const { heading = 'Continue your evaluation', items } = Astro.props as Props;
+const headingId = `marketing-cta-${heading.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
 ---
 
 <!--
   MarketingCtaRow keeps our closing CTAs visually consistent. Each item renders as a card with a
   semantic heading so screen readers announce the available follow-up actions. Avoid more than three
   CTAs to prevent analysis paralysis and keep the row responsive without wrapping awkwardly.
--->
-<section class="flex flex-col gap-6 rounded-3xl border border-slate-800 bg-slate-900/50 p-10">
+-->{
+  /**
+  Wrap the CTA cards in a labelled region so screen reader rotor menus expose a meaningful name.
+  Supplying `aria-labelledby` is sufficient to promote the section to a region landmark.
+*/
+}
+<section
+  aria-labelledby={headingId}
+  class="flex flex-col gap-6 rounded-3xl border border-slate-800 bg-slate-900/50 p-10"
+>
   <div class="flex flex-col gap-2">
-    <h2 class="text-2xl font-semibold text-white">{heading}</h2>
+    <h2 id={headingId} class="text-2xl font-semibold text-white">{heading}</h2>
     <p class="text-sm text-slate-400">
       Choose a next step; analytics funnels bucket selections to measure demand generation impact.
     </p>

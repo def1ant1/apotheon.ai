@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
+import React, { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 
 import {
   WHITEPAPER_MANIFEST,
@@ -87,6 +87,12 @@ export default function WhitepaperRequestForm({
     if (!email) return null;
     return analyzeDomain(email);
   }, [email]);
+
+  /**
+   * Hook validation messaging into a dedicated status element so announcements remain stable whether
+   * users trigger inline errors or a success confirmation.
+   */
+  const statusRegionId = 'whitepaper-form-status';
 
   useEffect(() => {
     if (!siteKey || typeof window === 'undefined') return;
@@ -312,7 +318,7 @@ export default function WhitepaperRequestForm({
       onSubmit={(event) => {
         void handleSubmit(event);
       }}
-      aria-describedby="whitepaper-form-status"
+      aria-describedby={statusRegionId}
     >
       <input type="hidden" name="turnstileToken" value={token} />
       <fieldset className="grid gap-4">
@@ -320,7 +326,7 @@ export default function WhitepaperRequestForm({
 
         {globalMessage && (
           <p
-            id="whitepaper-form-status"
+            id={statusRegionId}
             role="status"
             className={`rounded-md border p-3 text-sm ${
               status === 'success'

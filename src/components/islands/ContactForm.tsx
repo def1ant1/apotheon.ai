@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
+import React, { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 
 import { trackAnalyticsEvent } from '../../utils/analytics';
 import { contactFormSchema } from '../../utils/contact-validation';
@@ -54,6 +54,23 @@ export default function ContactForm({
   const [email, setEmail] = useState('');
   const [token, setToken] = useState('');
   const widgetIdRef = useRef<string | null>(null);
+  /**
+   * `React.useId` keeps the legend identifier deterministic across SSR and hydration so the
+   * enclosing form can expose a stable accessible name via `aria-labelledby`.
+   */
+  const legendId = React.useId();
+
+  useEffect(() => {
+    const form = formRef.current;
+    if (!form) {
+      return undefined;
+    }
+
+    form.setAttribute('data-js-ready', 'true');
+    return () => {
+      form.setAttribute('data-js-ready', 'false');
+    };
+  }, []);
 
   const domainAssessment = useMemo(() => {
     if (!email) return null;
@@ -286,6 +303,14 @@ export default function ContactForm({
     return 'Recognized corporate domain. Expect a prioritized follow-up.';
   }, [domainAssessment]);
 
+  /**
+   * Tie assistive tech feedback loops to the `role="status"` message so validation errors are
+   * announced immediately. We prefer referencing the id via a constant so the JSX stays readable
+   * while keeping form + status wiring in sync, and the sr-only fallback keeps the reference valid
+   * even before users interact with the form.
+   */
+  const statusRegionId = 'contact-form-status';
+
   return (
     <form
       ref={formRef}
@@ -296,25 +321,34 @@ export default function ContactForm({
       onSubmit={(event) => {
         void handleSubmit(event);
       }}
-      aria-describedby="contact-form-status"
+      aria-labelledby={legendId}
+      aria-describedby={statusRegionId}
+      data-js-ready="false"
     >
       <input type="hidden" name="turnstileToken" value={token} />
       <fieldset className="grid gap-4">
-        <legend className="text-lg font-semibold text-white">Share how we can help</legend>
+        <legend id={legendId} className="text-lg font-semibold text-white">
+          Share how we can help
+        </legend>
 
-        {globalMessage && (
-          <p
-            id="contact-form-status"
-            role="status"
-            className={`rounded-md border p-3 text-sm ${
-              status === 'success'
-                ? 'border-emerald-500 bg-emerald-500/10 text-emerald-200'
-                : 'border-amber-500 bg-amber-500/10 text-amber-200'
-            }`}
-          >
-            {globalMessage}
-          </p>
-        )}
+        <p
+          id={statusRegionId}
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+          data-state={status}
+          className={
+            globalMessage
+              ? `rounded-md border p-3 text-sm ${
+                  status === 'success'
+                    ? 'border-emerald-500 bg-emerald-500/10 text-emerald-200'
+                    : 'border-amber-500 bg-amber-500/10 text-amber-200'
+                }`
+              : 'sr-only'
+          }
+        >
+          {globalMessage || 'Form ready. Provide your project context to request a briefing.'}
+        </p>
 
         <div className="grid gap-2">
           <label className="text-sm font-medium text-slate-200" htmlFor="name">

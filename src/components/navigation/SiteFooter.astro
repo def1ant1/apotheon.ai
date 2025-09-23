@@ -5,6 +5,13 @@ const navigationColumns = await getFooterColumns();
 const currentYear = new Date().getFullYear();
 ---
 
+{
+  /**
+  Footer exposes the `contentinfo` landmark so screen readers can jump directly to compliance links
+  and contact data. Keeping this annotation here—rather than relying on implicit semantics—guards
+  against regressions if future contributors wrap the footer with additional layout containers.
+*/
+}
 <footer
   role="contentinfo"
   class="border-t border-border-subtle/60 bg-surface-raised/40 text-body-sm text-ink-secondary"
