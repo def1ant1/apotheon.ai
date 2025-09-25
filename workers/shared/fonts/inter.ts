@@ -8,13 +8,24 @@
  * it in-memory to avoid repeated array allocations. This keeps the repository
  * text-only while still guaranteeing consistent renders.
  */
+import {
+  INTER_LATIN_FALLBACK_BOLD_BASE64,
+  INTER_LATIN_FALLBACK_REGULAR_BASE64,
+} from './inter.preview-fallback';
+
 import type { KVNamespace } from '@cloudflare/workers-types';
 
 const DEFAULT_FONT_URL = 'https://rsms.me/inter/font-files/Inter-roman.var.woff2';
 const CACHE_KEY_PREFIX = 'fonts::inter::';
 const KV_FALLBACK_TTL_SECONDS = 60 * 60 * 24 * 30; // 30 days
 
-const inMemoryFonts = new Map<string, Promise<Uint8Array>>();
+interface InterFontSet {
+  regular: Uint8Array;
+  bold: Uint8Array;
+}
+
+const inMemoryFonts = new Map<string, Promise<InterFontSet>>();
+let fallbackFonts: InterFontSet | null = null;
 
 interface FontCacheOptions {
   fontUrl?: string | null | undefined;
@@ -53,10 +64,36 @@ async function downloadFont(url: string): Promise<Uint8Array> {
   return new Uint8Array(buffer);
 }
 
+function decodeBase64ToUint8Array(encoded: string): Uint8Array {
+  const normalised = encoded.replace(/\s+/g, '');
+
+  if (typeof Buffer !== 'undefined') {
+    const decoded = Buffer.from(normalised, 'base64');
+    return new Uint8Array(decoded.buffer, decoded.byteOffset, decoded.byteLength);
+  }
+
+  const binary = globalThis.atob(normalised);
+  const bytes = new Uint8Array(binary.length);
+  for (let index = 0; index < binary.length; index += 1) {
+    bytes[index] = binary.charCodeAt(index);
+  }
+  return bytes;
+}
+
+function getFallbackFontData(): InterFontSet {
+  if (!fallbackFonts) {
+    fallbackFonts = {
+      regular: decodeBase64ToUint8Array(INTER_LATIN_FALLBACK_REGULAR_BASE64),
+      bold: decodeBase64ToUint8Array(INTER_LATIN_FALLBACK_BOLD_BASE64),
+    };
+  }
+  return fallbackFonts;
+}
+
 export async function getInterFontData(
   cache: KVNamespace,
   options: FontCacheOptions = {},
-): Promise<Uint8Array> {
+): Promise<InterFontSet> {
   const sourceUrl = options.fontUrl?.toString().trim() || DEFAULT_FONT_URL;
   const memoised = inMemoryFonts.get(sourceUrl);
   if (memoised) {
@@ -67,17 +104,19 @@ export async function getInterFontData(
     const cacheKey = buildCacheKey(sourceUrl);
     const cached = await cache.get(cacheKey, 'arrayBuffer');
     if (cached) {
-      return new Uint8Array(cached);
+      const bytes = new Uint8Array(cached);
+      return { regular: bytes, bold: bytes };
     }
 
     const downloaded = await downloadFont(sourceUrl);
     const ttlSeconds = parseTtl(options.ttlSeconds);
     const persisted = downloaded.slice();
     await cache.put(cacheKey, persisted.buffer, { expirationTtl: ttlSeconds });
-    return downloaded;
+    return { regular: downloaded, bold: downloaded };
   })().catch((error) => {
     inMemoryFonts.delete(sourceUrl);
-    throw error;
+    console.warn('[og-images] Falling back to embedded Inter subset for preview render.', error);
+    return Promise.resolve(getFallbackFontData());
   });
 
   inMemoryFonts.set(sourceUrl, fontPromise);

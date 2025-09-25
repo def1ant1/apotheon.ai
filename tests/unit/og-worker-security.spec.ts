@@ -29,7 +29,10 @@ vi.mock('satori', () => ({
 }));
 
 vi.mock('../../workers/shared/fonts/inter', () => ({
-  getInterFontData: vi.fn().mockResolvedValue(new Uint8Array(0)),
+  getInterFontData: vi.fn().mockResolvedValue({
+    regular: new Uint8Array(0),
+    bold: new Uint8Array(0),
+  }),
 }));
 
 describe('OG worker cache hardening', () => {

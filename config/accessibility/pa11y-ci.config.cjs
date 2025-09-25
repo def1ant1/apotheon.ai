@@ -3,6 +3,7 @@ const path = require('node:path');
 
 const root = path.resolve(__dirname, '..', '..');
 const distDir = path.join(root, 'dist');
+const ladleDistDir = path.join(distDir, 'ladle');
 
 function collectHtmlFiles(directory) {
   if (!fs.existsSync(directory)) {
@@ -24,10 +25,15 @@ function collectHtmlFiles(directory) {
   return files;
 }
 
-const htmlFiles = collectHtmlFiles(distDir);
+const pageFiles = collectHtmlFiles(distDir);
+const islandFiles = collectHtmlFiles(ladleDistDir);
+const htmlFiles = [
+  ...pageFiles.map((filePath) => ({ filePath, label: 'pages' })),
+  ...islandFiles.map((filePath) => ({ filePath, label: 'islands' })),
+];
 
 if (htmlFiles.length === 0) {
-  console.warn('[pa11y-ci] No HTML files discovered in dist/. Did you run `npm run build:static`?');
+  console.warn('[pa11y-ci] No HTML files discovered in dist/ or dist/ladle. Did you run `npm run build:static` and `npm run ladle:build`?');
 }
 
 module.exports = {
@@ -47,8 +53,8 @@ module.exports = {
   thresholds: {
     global: 0,
   },
-  urls: htmlFiles.map((filePath) => ({
+  urls: htmlFiles.map(({ filePath, label }) => ({
     url: `file://${filePath}`,
-    label: path.relative(distDir, filePath),
+    label: path.join(label, path.relative(label === 'islands' ? ladleDistDir : distDir, filePath)),
   })),
 };

@@ -1,0 +1,291 @@
+{
+  "scanned": 37,
+  "generatedAt": "2025-09-24T01:55:08.771Z",
+  "documents": [
+    {
+      "label": "pages",
+      "path": "404.html",
+      "violations": 0,
+      "incomplete": 3
+    },
+    {
+      "label": "pages",
+      "path": "500.html",
+      "violations": 0,
+      "incomplete": 3
+    },
+    {
+      "label": "pages",
+      "path": "about/careers/index.html",
+      "violations": 0,
+      "incomplete": 3
+    },
+    {
+      "label": "pages",
+      "path": "about/company/index.html",
+      "violations": 0,
+      "incomplete": 3
+    },
+    {
+      "label": "pages",
+      "path": "about/contact/index.html",
+      "violations": 0,
+      "incomplete": 3
+    },
+    {
+      "label": "pages",
+      "path": "about/history/index.html",
+      "violations": 0,
+      "incomplete": 3
+    },
+    {
+      "label": "pages",
+      "path": "about/index.html",
+      "violations": 0,
+      "incomplete": 3
+    },
+    {
+      "label": "pages",
+      "path": "about/team/index.html",
+      "violations": 0,
+      "incomplete": 3
+    },
+    {
+      "label": "pages",
+      "path": "about/white-papers/index.html",
+      "violations": 1,
+      "incomplete": 3
+    },
+    {
+      "label": "pages",
+      "path": "blog/aios-architecture/index.html",
+      "violations": 1,
+      "incomplete": 3
+    },
+    {
+      "label": "pages",
+      "path": "blog/continuous-learning/index.html",
+      "violations": 1,
+      "incomplete": 3
+    },
+    {
+      "label": "pages",
+      "path": "blog/federated-risk-mesh/index.html",
+      "violations": 1,
+      "incomplete": 3
+    },
+    {
+      "label": "pages",
+      "path": "blog/healthcare-spotlight/index.html",
+      "violations": 1,
+      "incomplete": 3
+    },
+    {
+      "label": "pages",
+      "path": "blog/index.html",
+      "violations": 1,
+      "incomplete": 4
+    },
+    {
+      "label": "pages",
+      "path": "blog/integration-governance/index.html",
+      "violations": 0,
+      "incomplete": 3
+    },
+    {
+      "label": "pages",
+      "path": "blog/welcome/index.html",
+      "violations": 0,
+      "incomplete": 3
+    },
+    {
+      "label": "pages",
+      "path": "index.html",
+      "violations": 0,
+      "incomplete": 4
+    },
+    {
+      "label": "pages",
+      "path": "industries/financial-services/index.html",
+      "violations": 0,
+      "incomplete": 4
+    },
+    {
+      "label": "pages",
+      "path": "industries/government/index.html",
+      "violations": 0,
+      "incomplete": 4
+    },
+    {
+      "label": "pages",
+      "path": "industries/healthcare/index.html",
+      "violations": 0,
+      "incomplete": 4
+    },
+    {
+      "label": "pages",
+      "path": "industries/index.html",
+      "violations": 0,
+      "incomplete": 3
+    },
+    {
+      "label": "pages",
+      "path": "industries/intelligence/index.html",
+      "violations": 0,
+      "incomplete": 4
+    },
+    {
+      "label": "pages",
+      "path": "industries/law/index.html",
+      "violations": 0,
+      "incomplete": 4
+    },
+    {
+      "label": "pages",
+      "path": "industries/military/index.html",
+      "violations": 0,
+      "incomplete": 4
+    },
+    {
+      "label": "pages",
+      "path": "industries/public-sector/index.html",
+      "violations": 0,
+      "incomplete": 4
+    },
+    {
+      "label": "pages",
+      "path": "ladle/index.html",
+      "violations": 0,
+      "incomplete": 2
+    },
+    {
+      "label": "pages",
+      "path": "legal/privacy/index.html",
+      "violations": 0,
+      "incomplete": 3
+    },
+    {
+      "label": "pages",
+      "path": "legal/responsible-ai/index.html",
+      "violations": 0,
+      "incomplete": 3
+    },
+    {
+      "label": "pages",
+      "path": "legal/terms/index.html",
+      "violations": 0,
+      "incomplete": 3
+    },
+    {
+      "label": "pages",
+      "path": "solutions/atlas/index.html",
+      "violations": 0,
+      "incomplete": 3
+    },
+    {
+      "label": "pages",
+      "path": "solutions/automation-studio/index.html",
+      "violations": 0,
+      "incomplete": 3
+    },
+    {
+      "label": "pages",
+      "path": "solutions/clio/index.html",
+      "violations": 0,
+      "incomplete": 3
+    },
+    {
+      "label": "pages",
+      "path": "solutions/governance-lakehouse/index.html",
+      "violations": 0,
+      "incomplete": 3
+    },
+    {
+      "label": "pages",
+      "path": "solutions/index.html",
+      "violations": 0,
+      "incomplete": 3
+    },
+    {
+      "label": "pages",
+      "path": "solutions/nova/index.html",
+      "violations": 0,
+      "incomplete": 3
+    },
+    {
+      "label": "pages",
+      "path": "solutions/observability-fabric/index.html",
+      "violations": 0,
+      "incomplete": 3
+    },
+    {
+      "label": "islands",
+      "path": "index.html",
+      "violations": 0,
+      "incomplete": 2
+    }
+  ],
+  "violations": [
+    {
+      "label": "pages",
+      "page": "about/white-papers/index.html",
+      "id": "heading-order",
+      "impact": "moderate",
+      "description": "Ensure the order of headings is semantically correct",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/heading-order?application=axeAPI",
+      "nodes": [["#what-to-expect"]]
+    },
+    {
+      "label": "pages",
+      "page": "blog/aios-architecture/index.html",
+      "id": "landmark-complementary-is-top-level",
+      "impact": "moderate",
+      "description": "Ensure the complementary landmark or aside is at top level",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/landmark-complementary-is-top-level?application=axeAPI",
+      "nodes": [["aside"]]
+    },
+    {
+      "label": "pages",
+      "page": "blog/continuous-learning/index.html",
+      "id": "landmark-complementary-is-top-level",
+      "impact": "moderate",
+      "description": "Ensure the complementary landmark or aside is at top level",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/landmark-complementary-is-top-level?application=axeAPI",
+      "nodes": [["aside"]]
+    },
+    {
+      "label": "pages",
+      "page": "blog/federated-risk-mesh/index.html",
+      "id": "landmark-complementary-is-top-level",
+      "impact": "moderate",
+      "description": "Ensure the complementary landmark or aside is at top level",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/landmark-complementary-is-top-level?application=axeAPI",
+      "nodes": [["aside"]]
+    },
+    {
+      "label": "pages",
+      "page": "blog/healthcare-spotlight/index.html",
+      "id": "landmark-complementary-is-top-level",
+      "impact": "moderate",
+      "description": "Ensure the complementary landmark or aside is at top level",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/landmark-complementary-is-top-level?application=axeAPI",
+      "nodes": [["aside"]]
+    },
+    {
+      "label": "pages",
+      "page": "blog/index.html",
+      "id": "aria-allowed-role",
+      "impact": "minor",
+      "description": "Ensure role attribute has an appropriate value for the element",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-allowed-role?application=axeAPI",
+      "nodes": [
+        [".h-full.rounded-3xl.hover\\:border-sky-400\\/60:nth-child(1)"],
+        [".h-full.rounded-3xl.hover\\:border-sky-400\\/60:nth-child(2)"],
+        [".h-full.rounded-3xl.hover\\:border-sky-400\\/60:nth-child(3)"],
+        [".h-full.rounded-3xl.hover\\:border-sky-400\\/60:nth-child(4)"],
+        [".h-full.rounded-3xl.hover\\:border-sky-400\\/60:nth-child(5)"],
+        [".h-full.rounded-3xl.hover\\:border-sky-400\\/60:nth-child(6)"]
+      ]
+    }
+  ]
+}

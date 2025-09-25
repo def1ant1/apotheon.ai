@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 
 import {
   klaroConfig,
@@ -68,6 +68,15 @@ export default function ConsentManager({ autoOpen = true }: ConsentManagerProps)
   const [pendingState, setPendingState] = useState<ConsentState>(state);
   const listenersRef = useRef(new Set<(state: ConsentState) => void>());
   const stateRef = useRef(state);
+
+  /**
+   * Pairing explicit identifiers with the dialog container lets us wire the
+   * accessible name and description without depending on inner text heuristics.
+   * This keeps axe happy while documenting the narration structure for future
+   * engineers running screen reader smoke tests.
+   */
+  const dialogTitleId = useId();
+  const dialogDescriptionId = useId();
 
   useEffect(() => {
     setPendingState(state);
@@ -168,17 +177,21 @@ export default function ConsentManager({ autoOpen = true }: ConsentManagerProps)
     <div
       role="dialog"
       aria-modal="true"
+      aria-labelledby={dialogTitleId}
+      aria-describedby={dialogDescriptionId}
       className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4"
       data-testid="consent-modal"
     >
       <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-xl bg-white p-6 shadow-2xl">
-        <header className="mb-6 space-y-2">
-          <h2 className="text-2xl font-bold">Privacy preferences</h2>
-          <p className="text-sm text-slate-600">
+        <div className="mb-6 space-y-2">
+          <h2 id={dialogTitleId} className="text-2xl font-bold">
+            Privacy preferences
+          </h2>
+          <p id={dialogDescriptionId} className="text-sm text-slate-600">
             We only collect telemetry when you explicitly grant consent. Use the toggles below to
             tailor your experience.
           </p>
-        </header>
+        </div>
 
         <section className="space-y-6">
           {groupedServices.map((category) => (
@@ -228,7 +241,11 @@ export default function ConsentManager({ autoOpen = true }: ConsentManagerProps)
           ))}
         </section>
 
-        <footer className="mt-8 flex flex-wrap items-center justify-between gap-3">
+        <div
+          className="mt-8 flex flex-wrap items-center justify-between gap-3"
+          role="group"
+          aria-label="Consent actions"
+        >
           <div className="space-x-2">
             <button
               type="button"
@@ -265,7 +282,7 @@ export default function ConsentManager({ autoOpen = true }: ConsentManagerProps)
               Save preferences
             </button>
           </div>
-        </footer>
+        </div>
       </div>
     </div>
   );

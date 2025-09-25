@@ -13,6 +13,8 @@
       "astro/client",
       "@types/node",
       "@playwright/test",
+      "vitest",
+      "@testing-library/jest-dom",
       "@testing-library/jest-dom/vitest",
       "src/types/og-worker"
     ]

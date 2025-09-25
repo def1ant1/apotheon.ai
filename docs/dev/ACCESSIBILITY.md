@@ -1,109 +1,65 @@
-# Accessibility Quality Program
+# Accessibility Operations Playbook
 
-Apotheon.ai treats accessibility as a release gate. Automation, manual reviews, and
-remediation workflows operate together so every marketing and product surface meets WCAG 2.2 AA
-expectations before we ship.
+## Automation-first testing cadence
 
-## Continuous Testing Cadence
+| Frequency                 | Responsibility       | Automation entrypoint                                                                                                               | Notes                                                                                                                                                                                        |
+| ------------------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Per commit / pull request | Engineering          | `npm run lint`, `npm run typecheck`, `npm run test`, `npm run test:e2e`, `npm run accessibility:axe`, `npm run accessibility:pa11y` | Run locally prior to raising a PR. Both accessibility commands materialize JSON reports under `reports/accessibility/{axe,pa11y}` so reviewers can diff violations.                          |
+| Nightly                   | Platform Engineering | GitHub Actions `CI` workflow (`quality-gates` matrix)                                                                               | Matrix runs on Node.js 18 and 20. Failing accessibility scans block the workflow, guaranteeing regressions are surfaced before morning stand-up.                                             |
+| Release candidate cut     | Release Management   | `npm run accessibility:all` followed by `npm run lighthouse:ci`                                                                     | `prepare-dist.mjs` ensures `dist/` and `dist/ladle/` exist so both page templates and Ladle islands are scanned. Do **not** skip this phase; it is the final gate before production deploys. |
 
-| Phase                    | Command                       | Notes                                                                                                                                 |
-| ------------------------ | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| Static build validation  | `npm run accessibility:axe`   | Generates per-page axe-core reports under `reports/accessibility/axe/` and fails the build on serious/critical issues.                |
-| Pa11y smoke crawl        | `npm run accessibility:pa11y` | Uses Pa11y CI against the built bundle (`dist/`) with WCAG 2.2 AA rules. JSON output lives in `reports/accessibility/pa11y/`.         |
-| Unit landmarks           | `npm run test:unit`           | Vitest suites exercise Astro landmarks via the compiler AST and React islands with Testing Library assertions.                        |
-| Keyboard & SR automation | `npm run test:e2e`            | Playwright coverage includes skip-link navigation, keyboard focus loops, and form validation messaging across responsive breakpoints. |
+Automation keeps accessibility debt visible. Scripts rehydrate the static Astro build and the Ladle storybook before scanning, ensuring every shipped surface—including interactive islands—receives axe-core and Pa11y validation.
 
-Additional CI jobs enforce `npm run lint`, `npm run typecheck`, and `npm run test` so styling,
-typing, and SEO budgets stay green alongside accessibility. The consolidated quality gate fails
-fast when any accessibility command reports a violation.
+## Manual assistive technology sweeps
 
-> **Playwright browser provisioning**: run `npx playwright install --with-deps chromium` locally
-> before the first `npm run test:e2e` execution. CI environments perform the install step during
-> provisioning, but local workflows require the one-time bootstrap so Chromium ships with required
-> system dependencies.
+Perform targeted manual passes before every major milestone (feature launch, brand refresh, architecture upgrade). Document the run in the release notes checklist.
 
-## Manual Screen Reader Passes
+### NVDA (Windows)
 
-Automation catches regressions, but we still run quarterly manual sweeps across tier-1 flows.
-Schedule checks before major campaigns and after any layout refactors.
+1. Launch NVDA and open the production-equivalent preview URL.
+2. Press `Insert + F7` and confirm the element list exposes:
+   - "Banner" and "Content info" landmarks.
+   - Skip link target labelled "Skip to content".
+   - Region landmarks such as "Marketing content" and "Blog filters".
+3. Tab through interactive controls. Confirm the skip link appears visually and focus returns to the trigger after closing dialogs (MobileNavigationDrawer).
+4. Trigger form validation errors. NVDA should announce status regions like "Complete the verification challenge" immediately.
+5. Submit a happy-path form; NVDA must announce confirmation text and not trap focus.
 
-### NVDA + Firefox
+### VoiceOver (macOS)
 
-1. Launch NVDA with Firefox ESR.
-2. Confirm skip link: press <kbd>Tab</kbd> once on the home page and verify NVDA announces
-   "Skip to content"; activate and ensure focus lands on the main region (`role="main"`).
-3. Navigate the primary navigation with <kbd>Alt</kbd>+<kbd>Ctrl</kbd>+<kbd>Left/Right</kbd> to confirm
-   the Radix menu exposes grouped landmarks and submenus announce labels.
-4. Traverse the Contact form; ensure field errors announce via the status region without moving focus.
-5. Submit without solving Turnstile to verify NVDA announces the blocking message.
+1. Activate VoiceOver (`⌘ + F5`) and load the route under review.
+2. Use `Control + Option + U` to inspect the rotor:
+   - Landmarks include banner, main, contentinfo, and labelled regions for CTAs.
+   - Headings expose a single `<h1>` per page (MarketingHero) followed by the expected hierarchy.
+3. Navigate with `Control + Option + Right Arrow`. Ensure keyboard support matches the Playwright flows (skip links, nav triggers, form controls).
+4. Open the mobile navigation drawer (emulate with responsive design mode if necessary). Confirm the dialog announces its accessible name and provides skip links back to `#main`.
+5. Verify modals and forms can be dismissed with `Esc` and that focus returns to the triggering element.
 
-### VoiceOver + Safari
+Log findings in the project tracker even when no issues arise—"no findings" is still a data point.
 
-1. Enable VoiceOver (<kbd>⌘</kbd>+<kbd>F5</kbd>) and open Safari.
-2. Use <kbd>Control</kbd>+<kbd>Option</kbd>+<kbd>U</kbd> to inspect the rotor landmarks list; confirm
-   Banner, Navigation, Main, Region (Marketing content), and Contentinfo appear once each.
-3. Exercise the Mobile navigation drawer on iPhone/iPad simulator: open menu, ensure focus lands on
-   the inline skip link, and escape returns focus to the trigger.
-4. Submit the Whitepaper request form with blank Turnstile token; VoiceOver should read the polite
-   status update before moving on.
-5. Validate that CTA regions expose their labelled heading via the rotor.
+## Remediation workflow
 
-Document findings in the release journal and log deviations as remediation tickets.
+1. **Capture** – Accessibility audits output JSON under `reports/accessibility/axe/{pages,islands}` and `reports/accessibility/pa11y/{pages,islands}`. Attach relevant snippets to the ticket.
+2. **Triage** – Classify severity (`critical`, `serious`, `moderate`, `minor`). `critical` and `serious` halt the build automatically. `moderate` and below can be scheduled but must ship before the next release candidate.
+3. **Ticketing** – Create Jira issues using the `A11Y` project prefix. Template:
+   - Summary: `A11Y: <component> <violation summary>`
+   - Description: include reproduction steps, failing selectors, and WCAG reference.
+   - Acceptance Criteria: automated axe/Pa11y pass, updated tests, manual AT verification notes.
+4. **Fix** – Pair engineers with design/UX as needed. Update automated tests to lock the regression out.
+5. **Verify** – Re-run the full command chain (`npm run accessibility:all && npm run test:e2e`). Attach screenshots or recordings from assistive technology confirmations when applicable.
 
-## Remediation Workflow
+## Training and enablement
 
-1. **Log a ticket** in the Platform Engineering board with:
-   - Component/page name
-   - Reproduction steps (include screen reader commands if applicable)
-   - Screenshot or transcript of the assistive technology output
-   - WCAG criterion reference (e.g., "WCAG 2.2.1 Keyboard Accessible")
-2. **Tag severity** using our accessibility labels:
-   - `a11y:blocker` for issues that prevent task completion (release gate)
-   - `a11y:major` for degraded experiences requiring next sprint attention
-   - `a11y:minor` for enhancements scheduled during quarterly hardening
-3. **Attach automation artifacts**: include links to the failing axe/Pa11y JSON entries or Playwright
-   trace to accelerate triage.
-4. **Assign owners**: navigation issues go to the Web Platform squad; form issues go to Growth Engineering.
-5. **Verify fixes**: update regression tests and rerun the full accessibility command suite before closing.
+- **Onboarding workshop** – Schedule a quarterly 60-minute deep dive on WCAG 2.2 AA requirements, using Apotheon components as case studies. Record the session and link it in the engineering wiki.
+- **Playwright lab** – Provide a hands-on lab where engineers extend `tests/e2e/accessibility.spec.ts` to cover new flows. Reinforces how to validate keyboard and screen-reader parity.
+- **Design partner sessions** – Pair design and engineering leads monthly to review patterns (skip links, focus traps, color contrast) before they land in Figma. Document outcomes in the brand system repo.
 
-## Training & Knowledge Transfer
+### Standing remediation tickets
 
-- New engineers complete the internal "Accessible Astro" lab, which pairs the axe-core scripts with
-  NVDA walkthroughs.
-- Quarterly lunch-and-learn sessions rotate between squads to demo new accessibility utilities and
-  review recent remediations.
-- Product marketing partners receive a two-page quick reference for writing accessible copy (link text,
-  alt text, heading hierarchy).
-- Capture tribal knowledge inside the component source via inline annotations—future contributors should
-  understand why focus management, skip links, and ARIA landmarks exist before touching markup.
+| Ticket                                           | Owner               | Status       | Notes                                                               |
+| ------------------------------------------------ | ------------------- | ------------ | ------------------------------------------------------------------- |
+| `A11Y-201: Monitor future axe/Pa11y regressions` | Platform Eng        | 🟢 Scheduled | Automation runs per commit; no open blockers as of this change-set. |
+| `A11Y-202: Quarterly AT refresher training`      | Developer Relations | 🟢 Planned   | Update with recording links and attendee list after each session.   |
+| `A11Y-203: Nightly audit triage rotation`        | Release Management  | 🟢 Active    | Rotate weekly; ensure summary posted in #quality.                   |
 
-## Release Checklist
-
-- ✅ axe-core summary shows zero critical/serious violations
-- ✅ Pa11y CI report shows zero errors
-- ✅ Playwright accessibility spec passes on desktop (1280px) and mobile (375px) viewports
-- ✅ Manual NVDA + VoiceOver sweeps signed off by QA partner for the release window
-- ✅ Remediation tickets filed (or closed) for any exceptions, with owners acknowledged in the release notes
-
-Keeping this checklist green is a prerequisite for merge approval and deployment.
-
-## Visual Snapshot Maintenance
-
-The Open Graph preview regression test stores its deterministic baseline as a base64-encoded text
-fixture to comply with our "no binary blobs" repository policy. When legitimate OG template changes
-occur, refresh the snapshot with the helper script below so teams do not need to interact with
-Playwright's binary screenshot output directly.
-
-```bash
-# 1. Launch the development server in a separate terminal.
-npm run dev
-
-# 2. Regenerate the baseline using the same API that feeds the production OG worker.
-#    The helper strips whitespace so the repository stays diff-friendly.
-node scripts/update-og-preview-fixture.mjs
-
-# 3. Review the textual diff under tests/e2e/fixtures/ and commit alongside template changes.
-```
-
-If the helper reports unexpected diffs, validate that fonts and system dependencies match CI's
-container image. See `playwright.config.ts` for the authoritative browser version.
+Release gates remain green; no critical violations detected in current scans. Keep this table updated whenever audits surface new actions so leadership can trace remediation velocity.
