@@ -174,9 +174,17 @@ const BlogIndex = ({ posts, tags }: Props) => {
       data-hydrated={isHydrated ? 'true' : 'false'}
       data-testid="blog-index-root"
     >
+      {/**
+       * Filters expose an explicit form landmark labelled "Blog filters" so screen reader rotor menus
+       * offer a quick jump target. We keep the control list semantically simple (native selects) so
+       * hydration failures never block sorting or filtering.
+       */}
       <form
         aria-label="Blog filters"
         className="flex flex-col gap-6 rounded-2xl border border-slate-800 bg-slate-950/40 p-6 text-sm text-slate-300 md:flex-row md:items-center md:justify-between"
+        onSubmit={(event) => {
+          event.preventDefault();
+        }}
       >
         <div className="flex flex-col gap-2">
           <label
@@ -237,6 +245,9 @@ const BlogIndex = ({ posts, tags }: Props) => {
         <p className="rounded-xl border border-slate-800 bg-slate-900/60 px-4 py-2 text-xs uppercase tracking-[0.3em] text-slate-400">
           {totalLabel}
         </p>
+        <button type="submit" className="sr-only">
+          Apply blog filters
+        </button>
       </form>
 
       {visiblePosts.length === 0 ? (

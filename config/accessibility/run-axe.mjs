@@ -6,10 +6,11 @@ import { fileURLToPath } from 'node:url';
 import axe from 'axe-core';
 import { JSDOM, ResourceLoader, VirtualConsole } from 'jsdom';
 
-import { collectHtmlFiles } from './shared.js';
+import { collectAuditTargets } from './shared.js';
 
 const root = fileURLToPath(new URL('../..', import.meta.url));
 const distDir = path.join(root, 'dist');
+const ladleDistDir = path.join(distDir, 'ladle');
 const reportDir = path.join(root, 'reports', 'accessibility', 'axe');
 
 class DistResourceLoader extends ResourceLoader {
@@ -81,37 +82,42 @@ async function runAxeAgainstFile(filePath, relativePath) {
 }
 
 async function main() {
-  const htmlFiles = await collectHtmlFiles(distDir);
-  if (htmlFiles.length === 0) {
-    console.warn('[accessibility][axe] No HTML files discovered in dist/. Ensure build:static has executed.');
+  const auditTargets = await collectAuditTargets([
+    { directory: distDir, label: 'pages' },
+    { directory: ladleDistDir, label: 'islands' },
+  ]);
+
+  if (auditTargets.length === 0) {
+    console.warn('[accessibility][axe] No HTML files discovered in dist/ or dist/ladle. Ensure build:static and ladle:build have executed.');
     return;
   }
 
   const summary = {
-    scanned: htmlFiles.length,
+    scanned: auditTargets.length,
     generatedAt: new Date().toISOString(),
     documents: [],
     violations: [],
   };
 
-  for (const filePath of htmlFiles) {
-    const relativePath = path.relative(distDir, filePath);
-    const reportPath = path.join(reportDir, `${relativePath}.json`);
+  for (const target of auditTargets) {
+    const reportPath = path.join(reportDir, target.label, `${target.relativePath}.json`);
     await mkdir(path.dirname(reportPath), { recursive: true });
 
     try {
-      const results = await runAxeAgainstFile(filePath, relativePath);
+      const results = await runAxeAgainstFile(target.filePath, target.relativePath);
       await writeFile(reportPath, JSON.stringify(results, null, 2), 'utf-8');
 
       summary.documents.push({
-        path: relativePath,
+        label: target.label,
+        path: target.relativePath,
         violations: results.violations.length,
         incomplete: results.incomplete.length,
       });
 
       for (const violation of results.violations) {
         summary.violations.push({
-          page: relativePath,
+          label: target.label,
+          page: target.relativePath,
           id: violation.id,
           impact: violation.impact,
           description: violation.description,
@@ -120,8 +126,8 @@ async function main() {
         });
       }
     } catch (error) {
-      console.error(`[accessibility][axe] Failed to scan ${relativePath}`, error);
-      summary.documents.push({ path: relativePath, error: String(error) });
+      console.error(`[accessibility][axe] Failed to scan ${target.relativePath}`, error);
+      summary.documents.push({ label: target.label, path: target.relativePath, error: String(error) });
       process.exitCode = 1;
     }
   }

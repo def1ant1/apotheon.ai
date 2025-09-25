@@ -1,6 +1,10 @@
-import { describe, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
-import { expectAstroElementAttributes } from '../utils/accessibility';
+import {
+  collectAstroElementsByName,
+  expectAstroElementAttributes,
+  getAstroAttributeValue,
+} from '../utils/accessibility';
 
 describe('astro component landmarks', () => {
   it('SiteHeader exposes a banner landmark and skip link', async () => {
@@ -49,5 +53,30 @@ describe('astro component landmarks', () => {
       name: 'id',
       expressionContains: 'headingId',
     });
+  });
+
+  it('BaseLayout main landmark stays focusable and labelled for skip links', async () => {
+    await expectAstroElementAttributes('src/layouts/BaseLayout.astro', 'main', {
+      name: 'id',
+      value: 'main',
+    });
+    await expectAstroElementAttributes('src/layouts/BaseLayout.astro', 'main', {
+      name: 'role',
+      value: 'main',
+    });
+    await expectAstroElementAttributes('src/layouts/BaseLayout.astro', 'main', {
+      name: 'tabindex',
+      value: '-1',
+    });
+  });
+
+  it('MarketingHero keeps a single h1 for assistive technology landmarks', async () => {
+    const headings = await collectAstroElementsByName(
+      'src/components/marketing/MarketingHero.astro',
+      'h1',
+    );
+    expect(headings).toHaveLength(1);
+    const className = getAstroAttributeValue(headings[0], 'class');
+    expect(className).toMatch(/text-4xl/);
   });
 });

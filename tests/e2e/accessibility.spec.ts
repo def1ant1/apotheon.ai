@@ -58,6 +58,10 @@ test.describe('accessibility regression flows', () => {
           await page.keyboard.press('Tab');
           const firstLink = drawer.getByRole('link', { name: /Clio Orchestration/i });
           await expect(firstLink).toBeFocused();
+
+          await page.keyboard.press('Escape');
+          await expect(menuButton).toBeFocused();
+          await expect(menuButton).toHaveAttribute('aria-expanded', 'false');
         } else {
           await waitForIslandHydration(page, '[data-navigation-ready]', 'data-navigation-ready');
           const trigger = page.getByRole('button', { name: 'Platform' });
@@ -70,6 +74,10 @@ test.describe('accessibility regression flows', () => {
           await expect(firstLink).toBeVisible();
           await page.keyboard.press('ArrowDown');
           await expect(firstLink).toBeFocused();
+
+          await page.keyboard.press('Escape');
+          await expect(trigger).toBeFocused();
+          await expect(trigger).toHaveAttribute('aria-expanded', 'false');
         }
       });
 

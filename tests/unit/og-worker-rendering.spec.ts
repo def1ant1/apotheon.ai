@@ -1,28 +1,35 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const fontBytes = new Uint8Array([1, 2, 3]);
+const fontBytes = {
+  regular: new Uint8Array([1, 2, 3]),
+  bold: new Uint8Array([4, 5, 6]),
+};
 const asPngMock = vi.fn(() => new Uint8Array([9, 9, 9]));
 const renderMock = vi.fn(() => ({ asPng: asPngMock }));
-const resvgInstances = [];
+const resvgInstances: Array<{ svg: unknown; options: unknown }> = [];
 
-const satoriMock = vi.fn().mockResolvedValue('<svg>mock</svg>');
-const getInterFontDataMock = vi.fn().mockResolvedValue(fontBytes);
+const satoriMock = vi.fn(async (_tree?: unknown, _options?: unknown) => {
+  void _tree;
+  void _options;
+  return '<svg>mock</svg>';
+});
+const getInterFontDataMock = vi.fn(async () => fontBytes);
 
 vi.mock('satori', () => ({
   __esModule: true,
-  default: (...args) => satoriMock(...args),
+  default: satoriMock,
 }));
 
 vi.mock('@resvg/resvg-js', () => ({
   __esModule: true,
-  Resvg: vi.fn().mockImplementation((svg, options) => {
+  Resvg: vi.fn().mockImplementation((svg: unknown, options: unknown) => {
     resvgInstances.push({ svg, options });
     return { render: renderMock };
   }),
 }));
 
 vi.mock('../../workers/shared/fonts/inter', () => ({
-  getInterFontData: (...args) => getInterFontDataMock(...args),
+  getInterFontData: getInterFontDataMock,
 }));
 
 describe('OG worker rendering integration', () => {
@@ -37,6 +44,17 @@ describe('OG worker rendering integration', () => {
 
   it('invokes Satori + ResVG to produce PNG bytes with expected styling', async () => {
     const { __TESTING__ } = await import('../../workers/og-images');
+    const env: Parameters<typeof __TESTING__.renderOgImage>[0] = {
+      OG_IMAGE_CACHE: {
+        get: vi.fn(),
+        put: vi.fn(),
+        delete: vi.fn(),
+        list: vi.fn(),
+        getWithMetadata: vi.fn(),
+      },
+      OG_IMAGE_INTER_FONT_URL: undefined,
+      OG_IMAGE_FONT_CACHE_TTL_SECONDS: undefined,
+    };
     const payload = {
       scope: 'blog',
       slug: 'enterprise-ai',
@@ -47,12 +65,6 @@ describe('OG worker rendering integration', () => {
       accent: '#00aaff',
       theme: 'dark',
       source: 'https://apotheon.ai/blog/enterprise-ai/',
-    } as const;
-
-    const env = {
-      OG_IMAGE_CACHE: { get: vi.fn(), put: vi.fn() },
-      OG_IMAGE_INTER_FONT_URL: undefined,
-      OG_IMAGE_FONT_CACHE_TTL_SECONDS: undefined,
     } as const;
 
     const result = await __TESTING__.renderOgImage(env, payload);
@@ -66,10 +78,14 @@ describe('OG worker rendering integration', () => {
     });
 
     expect(satoriMock).toHaveBeenCalledTimes(1);
-    const [tree, options] = satoriMock.mock.calls[0]!;
+    const [tree, options] = satoriMock.mock.calls[0] as [
+      unknown,
+      { fonts?: Array<{ data?: unknown }>; width?: number; height?: number },
+    ];
     expect(options).toMatchObject({ width: 1200, height: 630 });
     expect(Array.isArray(options.fonts)).toBe(true);
-    expect(options.fonts?.[0]?.data).toBe(fontBytes);
+    expect(options.fonts?.[0]?.data).toBe(fontBytes.regular);
+    expect(options.fonts?.[1]?.data).toBe(fontBytes.bold);
 
     const serialisedTree = JSON.stringify(tree);
     expect(serialisedTree).toContain(payload.title);

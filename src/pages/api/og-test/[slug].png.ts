@@ -4,8 +4,12 @@ import type { APIRoute } from 'astro';
 
 export const prerender = false;
 
+// Astro's static routing still validates that a `getStaticPaths` export exists
+// for any dynamic route even when `prerender` is disabled. We surface the
+// canonical preview slug here so local Playwright runs and CI smoke tests can
+// fetch `/api/og-test/welcome.png` without tripping the framework guard.
 export function getStaticPaths() {
-  return [];
+  return [{ params: { slug: 'welcome' } }];
 }
 
 interface PreviewRenderEnv {

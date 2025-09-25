@@ -7,13 +7,14 @@ import { describe, expect, it } from 'vitest';
 import ContactForm from '../../src/components/islands/ContactForm';
 import MobileNavigationDrawer from '../../src/components/islands/MobileNavigationDrawer';
 import RadixNavigationMenu from '../../src/components/islands/RadixNavigationMenu';
+import WhitepaperRequestForm from '../../src/components/islands/WhitepaperRequestForm';
 
 describe('island accessibility contracts', () => {
   it('RadixNavigationMenu exposes a named navigation landmark', () => {
     render(<RadixNavigationMenu />);
 
     const navigation = screen.getByRole('navigation', { name: /primary/i });
-    expect(navigation).toBeInTheDocument();
+    expect(navigation).toBeDefined();
   });
 
   it('MobileNavigationDrawer wires aria-controls and skip links', async () => {
@@ -23,16 +24,16 @@ describe('island accessibility contracts', () => {
     const trigger = screen.getByRole('button', { name: /open navigation menu/i });
     const controlsId = trigger.getAttribute('aria-controls');
 
-    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    expect(trigger.getAttribute('aria-expanded')).toBe('false');
     expect(controlsId).toBeTruthy();
 
     await user.click(trigger);
 
     const dialog = await screen.findByRole('dialog', { name: /mobile navigation/i });
-    expect(dialog).toHaveAttribute('id', controlsId ?? undefined);
+    expect(dialog.getAttribute('id')).toBe(controlsId ?? undefined);
 
     const skipLink = screen.getByRole('link', { name: /Skip to navigation links/i });
-    expect(skipLink).toBeInTheDocument();
+    expect(skipLink).toBeDefined();
   });
 
   it('ContactForm surfaces validation messaging through the status region', async () => {
@@ -40,7 +41,7 @@ describe('island accessibility contracts', () => {
     render(<ContactForm />);
 
     const form = screen.getByRole('form');
-    expect(form).toHaveAttribute('aria-describedby', 'contact-form-status');
+    expect(form.getAttribute('aria-describedby')).toBe('contact-form-status');
     const labelledBy = form.getAttribute('aria-labelledby');
     expect(labelledBy).toBeTruthy();
     const legend = labelledBy ? document.getElementById(labelledBy) : null;
@@ -50,8 +51,23 @@ describe('island accessibility contracts', () => {
     await user.click(submitButton);
 
     const status = await screen.findByRole('status');
-    expect(status).toHaveAttribute('id', 'contact-form-status');
-    expect(status).toHaveTextContent(/Complete the verification challenge/i);
-    expect(submitButton).toHaveAttribute('aria-live', 'polite');
+    expect(status.getAttribute('id')).toBe('contact-form-status');
+    expect(status.textContent ?? '').toMatch(/Complete the verification challenge/i);
+    expect(submitButton.getAttribute('aria-live')).toBe('polite');
+  });
+
+  it('WhitepaperRequestForm announces download readiness and verification issues', async () => {
+    const user = userEvent.setup();
+    render(<WhitepaperRequestForm />);
+
+    const form = screen.getByRole('form', { name: /whitepaper/i });
+    expect(form.getAttribute('aria-describedby')).toBe('whitepaper-form-status');
+
+    const submit = screen.getByRole('button', { name: /request download/i });
+    await user.click(submit);
+
+    const status = await screen.findByRole('status');
+    expect(status.getAttribute('id')).toBe('whitepaper-form-status');
+    expect(status.textContent ?? '').toMatch(/verification/i);
   });
 });

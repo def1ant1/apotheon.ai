@@ -93,6 +93,12 @@ export default function WhitepaperRequestForm({
    * users trigger inline errors or a success confirmation.
    */
   const statusRegionId = 'whitepaper-form-status';
+  /**
+   * UseId keeps the legend identifier consistent across hydration so the `<form>` can expose a
+   * stable accessible name. Pairing `aria-labelledby` with the legend makes it trivial for tests
+   * and manual audits to confirm the intent of the submission workflow.
+   */
+  const legendId = React.useId();
 
   useEffect(() => {
     if (!siteKey || typeof window === 'undefined') return;
@@ -319,10 +325,13 @@ export default function WhitepaperRequestForm({
         void handleSubmit(event);
       }}
       aria-describedby={statusRegionId}
+      aria-labelledby={legendId}
     >
       <input type="hidden" name="turnstileToken" value={token} />
       <fieldset className="grid gap-4">
-        <legend className="text-lg font-semibold text-white">Request enterprise whitepapers</legend>
+        <legend id={legendId} className="text-lg font-semibold text-white">
+          Request enterprise whitepapers
+        </legend>
 
         {globalMessage && (
           <p

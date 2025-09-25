@@ -81,6 +81,39 @@ function flattenElements(node: unknown, predicate: ElementPredicate, bucket: Ast
   }
 }
 
+export async function collectAstroElementsByName(
+  relativePath: string,
+  elementName: string,
+): Promise<AstroElement[]> {
+  const ast = await loadAstroAst(relativePath);
+  const matches: AstroElement[] = [];
+  flattenElements(ast.children, (node) => node.name === elementName, matches);
+  return matches;
+}
+
+export function getAstroAttributeValue(
+  node: AstroElement,
+  attributeName: string,
+): string | undefined {
+  const attributes = (node.attributes ?? []) as AstroAttribute[];
+  const attribute = attributes.find((item) => item.name === attributeName);
+  if (!attribute || attribute.type !== 'attribute') {
+    return undefined;
+  }
+
+  if (typeof attribute.value === 'string') {
+    return attribute.value;
+  }
+
+  if (Array.isArray(attribute.value)) {
+    return attribute.value
+      .map((segment) => ('value' in segment && segment.value ? segment.value : ''))
+      .join('');
+  }
+
+  return undefined;
+}
+
 export async function expectAstroElementAttributes(
   relativePath: string,
   elementName: string,

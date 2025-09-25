@@ -5,35 +5,39 @@ import { fileURLToPath } from 'node:url';
 
 import pa11y from 'pa11y';
 
-import { collectHtmlFiles } from './shared.js';
+import { collectAuditTargets } from './shared.js';
 
 const root = fileURLToPath(new URL('../..', import.meta.url));
 const distDir = path.join(root, 'dist');
+const ladleDistDir = path.join(distDir, 'ladle');
 const reportDir = path.join(root, 'reports', 'accessibility', 'pa11y');
 
 async function runPa11yScan() {
-  const htmlFiles = await collectHtmlFiles(distDir);
-  if (htmlFiles.length === 0) {
-    console.warn('[accessibility][pa11y] No HTML files discovered in dist/. Ensure build:static has executed.');
+  const auditTargets = await collectAuditTargets([
+    { directory: distDir, label: 'pages' },
+    { directory: ladleDistDir, label: 'islands' },
+  ]);
+
+  if (auditTargets.length === 0) {
+    console.warn('[accessibility][pa11y] No HTML files discovered in dist/ or dist/ladle. Ensure build:static and ladle:build have executed.');
     return;
   }
 
   await mkdir(reportDir, { recursive: true });
 
   const summary = {
-    scanned: htmlFiles.length,
+    scanned: auditTargets.length,
     generatedAt: new Date().toISOString(),
     documents: [],
     issues: [],
   };
 
-  for (const filePath of htmlFiles) {
-    const relativePath = path.relative(distDir, filePath);
-    const reportPath = path.join(reportDir, `${relativePath}.json`);
+  for (const target of auditTargets) {
+    const reportPath = path.join(reportDir, target.label, `${target.relativePath}.json`);
     await mkdir(path.dirname(reportPath), { recursive: true });
 
     try {
-      const result = await pa11y(`file://${filePath}`, {
+      const result = await pa11y(`file://${target.filePath}`, {
         standard: 'WCAG2AA',
         timeout: 60000,
         chromeLaunchConfig: {
@@ -49,13 +53,15 @@ async function runPa11yScan() {
       await writeFile(reportPath, JSON.stringify(result, null, 2), 'utf-8');
 
       summary.documents.push({
-        path: relativePath,
+        label: target.label,
+        path: target.relativePath,
         issues: result.issues.length,
       });
 
       for (const issue of result.issues) {
         summary.issues.push({
-          page: relativePath,
+          label: target.label,
+          page: target.relativePath,
           code: issue.code,
           message: issue.message,
           selector: issue.selector,
@@ -65,8 +71,18 @@ async function runPa11yScan() {
         });
       }
     } catch (error) {
-      console.error(`[accessibility][pa11y] Failed to scan ${relativePath}`, error);
-      summary.documents.push({ path: relativePath, error: String(error) });
+      console.error(`[accessibility][pa11y] Failed to scan ${target.relativePath}`, error);
+      summary.documents.push({ label: target.label, path: target.relativePath, error: String(error) });
+      summary.issues.push({
+        label: target.label,
+        page: target.relativePath,
+        code: 'pa11y.scan_error',
+        message: String(error),
+        selector: 'N/A',
+        type: 'error',
+        typeCode: 1,
+        context: 'Scan failed',
+      });
       process.exitCode = 1;
     }
   }

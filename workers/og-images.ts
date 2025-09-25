@@ -384,7 +384,7 @@ function renderContent(payload: RenderPayload): OgJsxNode {
 }
 
 async function renderOgImage(env: FontRuntimeEnv, payload: RenderPayload): Promise<Uint8Array> {
-  const interFont = await getInterFontData(env.OG_IMAGE_CACHE, {
+  const interFonts = await getInterFontData(env.OG_IMAGE_CACHE, {
     fontUrl: env.OG_IMAGE_INTER_FONT_URL,
     ttlSeconds: env.OG_IMAGE_FONT_CACHE_TTL_SECONDS,
   });
@@ -403,8 +403,8 @@ async function renderOgImage(env: FontRuntimeEnv, payload: RenderPayload): Promi
       width: IMAGE_WIDTH,
       height: IMAGE_HEIGHT,
       fonts: [
-        { name: 'Inter', data: interFont, style: 'normal', weight: 500 },
-        { name: 'Inter', data: interFont, style: 'normal', weight: 700 },
+        { name: 'Inter', data: interFonts.regular, style: 'normal', weight: 500 },
+        { name: 'Inter', data: interFonts.bold, style: 'normal', weight: 700 },
       ],
       embedFont: true,
     },
