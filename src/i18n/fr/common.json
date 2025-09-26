@@ -1,0 +1,82 @@
+{
+  "_comment": "Gabarit français en attente de traduction officielle. Utilisez cette structure pour collaborer avec les agences linguistiques.",
+  "metadata": {
+    "_comment": "Métadonnées par défaut pour les pages.",
+    "title": "TODO : titre en français",
+    "description": "TODO : description en français",
+    "ogImageAlt": "TODO : texte alternatif en français"
+  },
+  "navigation": {
+    "_comment": "Libellés de navigation globaux.",
+    "primary": {
+      "home": "TODO",
+      "platform": "TODO",
+      "solutions": "TODO",
+      "pricing": "TODO",
+      "resources": "TODO",
+      "company": "TODO"
+    },
+    "secondary": {
+      "contact": "TODO",
+      "signIn": "TODO",
+      "launchApp": "TODO"
+    }
+  },
+  "hero": {
+    "_comment": "Contenus clés de la section héro.",
+    "eyebrow": "TODO",
+    "title": "TODO",
+    "subtitle": "TODO",
+    "primaryCta": "TODO",
+    "secondaryCta": "TODO"
+  },
+  "callouts": {
+    "_comment": "Encarts de mise en avant réutilisables.",
+    "uptime": { "label": "TODO", "value": "TODO" },
+    "compliance": { "label": "TODO", "value": "TODO" },
+    "leadTime": { "label": "TODO", "value": "TODO" }
+  },
+  "footer": {
+    "_comment": "Colonnes et mentions légales du pied de page.",
+    "tagline": "TODO",
+    "newsletter": {
+      "label": "TODO",
+      "placeholder": "TODO",
+      "button": "TODO",
+      "disclaimer": "TODO"
+    },
+    "legal": {
+      "privacy": "TODO",
+      "terms": "TODO",
+      "security": "TODO",
+      "status": "TODO"
+    },
+    "copyright": "TODO"
+  },
+  "forms": {
+    "_comment": "Étiquettes et messages de validation partagés.",
+    "labels": {
+      "email": "TODO",
+      "firstName": "TODO",
+      "lastName": "TODO",
+      "company": "TODO",
+      "role": "TODO"
+    },
+    "validation": {
+      "required": "TODO",
+      "email": "TODO"
+    }
+  },
+  "alerts": {
+    "_comment": "Messages de statut réutilisables.",
+    "success": "TODO",
+    "error": "TODO",
+    "maintenance": "TODO"
+  },
+  "placeholders": {
+    "_comment": "Chaînes génériques pour les états temporaires.",
+    "comingSoon": "TODO",
+    "loading": "TODO",
+    "updating": "TODO"
+  }
+}

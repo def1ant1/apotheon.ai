@@ -1,0 +1,91 @@
+{
+  "_comment": "Canonical English translation bundle powering navigation, hero content, footer messaging, and SEO metadata.",
+  "metadata": {
+    "_comment": "Per-page metadata defaults. Override at the page level when bespoke copy is required.",
+    "title": "Apotheon | Autonomous Application Governance Platform",
+    "description": "Operate AI-native products confidently with guardrails for experimentation, observability, and compliance.",
+    "ogImageAlt": "Apotheon platform user interface with metrics and governance insights."
+  },
+  "navigation": {
+    "_comment": "Global navigation labels rendered in the top bar and mobile drawer.",
+    "primary": {
+      "home": "Home",
+      "platform": "Platform",
+      "solutions": "Solutions",
+      "pricing": "Pricing",
+      "resources": "Resources",
+      "company": "Company"
+    },
+    "secondary": {
+      "contact": "Contact sales",
+      "signIn": "Sign in",
+      "launchApp": "Launch console"
+    }
+  },
+  "hero": {
+    "_comment": "Landing hero copy shown on the marketing homepage.",
+    "eyebrow": "Enterprise AI governance, orchestrated",
+    "title": "Ship autonomous experiences with production-grade safeguards.",
+    "subtitle": "Accelerate AI delivery with policy automation, continuous evaluation, and human-in-the-loop workflows designed for regulated environments.",
+    "primaryCta": "Request a guided demo",
+    "secondaryCta": "Explore platform overview"
+  },
+  "callouts": {
+    "_comment": "Short-form highlights that appear under the hero or within marketing sections.",
+    "uptime": {
+      "label": "Global reliability",
+      "value": "99.99% uptime SLA"
+    },
+    "compliance": {
+      "label": "Compliance ready",
+      "value": "SOC 2 Type II, GDPR, HIPAA"
+    },
+    "leadTime": {
+      "label": "Shipping velocity",
+      "value": "Cut launch cycles by 65%"
+    }
+  },
+  "footer": {
+    "_comment": "Footer navigation columns, CTAs, and legal copy.",
+    "tagline": "Operational confidence for autonomous products.",
+    "newsletter": {
+      "label": "Subscribe for product updates",
+      "placeholder": "Enter your work email",
+      "button": "Join the list",
+      "disclaimer": "By subscribing you agree to receive updates and can opt out anytime."
+    },
+    "legal": {
+      "privacy": "Privacy policy",
+      "terms": "Terms of service",
+      "security": "Security",
+      "status": "System status"
+    },
+    "copyright": "© {{year}} Apotheon Labs, Inc. All rights reserved."
+  },
+  "forms": {
+    "_comment": "Shared form field labels and validation messages to keep UX consistent.",
+    "labels": {
+      "email": "Work email",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "company": "Company",
+      "role": "Role"
+    },
+    "validation": {
+      "required": "This field is required.",
+      "email": "Enter a valid work email address."
+    }
+  },
+  "alerts": {
+    "_comment": "Status banners and toast copy for asynchronous workflows.",
+    "success": "All systems operational.",
+    "error": "Something went wrong—please try again or contact support.",
+    "maintenance": "Scheduled maintenance is in progress. Some features may be temporarily unavailable."
+  },
+  "placeholders": {
+    "_comment": "Utility strings surfaced in prototypes or skeleton states to avoid lorem ipsum.",
+    "comingSoon": "Coming soon",
+    "loading": "Loading experience",
+    "updating": "Updating data"
+  }
+}
