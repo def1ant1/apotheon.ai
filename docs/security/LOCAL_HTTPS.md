@@ -64,3 +64,27 @@ centralized telemetry.
   `./scripts/security/mkcert-install.sh` to re-seed the mkcert root CA.
 - Need to force strict CSP even in dev? Set `ASTRO_CSP_REPORT_ONLY=false` when
   running `npm run dev:https`.
+
+## 7. Regenerate legal policy surfaces alongside HTTPS reviews
+
+When privacy counsel ships updated terms, follow this workflow so the static
+site and JSON-LD payloads stay synchronized:
+
+1. Duplicate the existing policy file in `src/pages/legal/` as a working copy.
+2. Update the prose, ensure the `lastUpdated` constant reflects the effective
+   date, and keep DSAR anchors (`id="dsar-workflow"`) intact for Playwright
+   regression tests.
+3. Refresh the Policy JSON-LD payload passed to `<SchemaScript>` with the new
+   summary, canonical URL, and modification date.
+4. Run the full validation suite:
+   - `npm run lint`
+   - `npm run typecheck`
+   - `npm run test`
+   - `npm run test:e2e`
+5. Capture any consent-related changes in
+   `config/privacy/klaro.config.ts` so the cookie policy’s Klaro link remains
+   accurate.
+
+Because the consent banner relies on HTTPS to exercise Secure and SameSite
+cookies correctly, run `npm run dev:https` during validation to mirror
+production transport guarantees.

@@ -98,7 +98,7 @@ describe('i18n runtime helpers', () => {
     expect(getFixedTMock).toHaveBeenCalledWith('en', 'common');
 
     const marketingTranslator = useTranslations('marketing', 'fr');
-    expect(marketingTranslator()).toBe('fr:marketing::translation');
+    expect(marketingTranslator('mock.key')).toBe('fr:marketing::translation');
     expect(marketingTranslator).toBe(useTranslations('marketing', 'fr'));
   });
 

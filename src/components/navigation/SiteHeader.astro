@@ -1,13 +1,11 @@
 ---
-const { useTranslations, detectLocaleFromPath } = await import('astro-i18next');
-
 import { getValidatedNavigationGroups } from './navigationData';
 import { getAvailableLocales, getDefaultLocale } from '../../i18n';
+import { detectLocaleFromPath, useTranslations } from '../../i18n/runtime';
 import { isLocaleQASwitcherEnabled } from '../../utils/featureFlags';
 import LocaleSwitcher, { type LocaleSwitcherLabels } from '../islands/LocaleSwitcher';
 import MobileNavigationDrawer from '../islands/MobileNavigationDrawer';
 import RadixNavigationMenu, { type NavigationMenuGroup } from '../islands/RadixNavigationMenu';
-
 
 /**
  * Consolidated navigation data lives in `navigationData.ts`. Centralizing the lookup allows the

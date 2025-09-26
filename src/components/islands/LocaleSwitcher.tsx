@@ -145,9 +145,7 @@ const LocaleSwitcher = ({
       setSelectedLocale(candidateLocale);
       setStatusMessage(renderStatusWithLocale(labels.statusUpdated, candidateLocale));
 
-      // astro-i18next ships ESM bundles without typed client helpers, so eslint flags the
-      // invocation as `any`. The surrounding guards ensure we only pass supported locales.
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+      // Runtime guards above ensure the locale is whitelisted before rewriting the URL.
       const nextPathname = localizePath(pathname, candidateLocale);
       persistLocaleCookie(candidateLocale);
 
