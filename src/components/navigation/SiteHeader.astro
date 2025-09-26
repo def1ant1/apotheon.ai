@@ -1,4 +1,6 @@
 ---
+const { useTranslations } = await import('astro-i18next');
+
 import { getValidatedNavigationGroups } from './navigationData';
 import MobileNavigationDrawer from '../islands/MobileNavigationDrawer';
 import RadixNavigationMenu, { type NavigationMenuGroup } from '../islands/RadixNavigationMenu';
@@ -8,8 +10,9 @@ import RadixNavigationMenu, { type NavigationMenuGroup } from '../islands/RadixN
  * header, footer, Ladle stories, and any future surfaces to hydrate from a single validation
  * pipeline while still receiving strongly typed objects.
  */
+const { t } = await useTranslations(Astro);
 const sanitizedMenuGroups: ReadonlyArray<NavigationMenuGroup> =
-  await getValidatedNavigationGroups();
+  await getValidatedNavigationGroups(t);
 ---
 
 {
@@ -21,7 +24,7 @@ const sanitizedMenuGroups: ReadonlyArray<NavigationMenuGroup> =
 }
 <header
   role="banner"
-  aria-label="Primary site header"
+  aria-label={t('navigation.aria.primaryHeader', { defaultValue: 'Primary site header' })}
   class="sticky top-0 z-40 flex justify-center bg-surface-base/70 px-gutter-inline pb-space-sm pt-space-xs backdrop-blur supports-[backdrop-filter]:bg-surface-base/60"
 >
   <div class="flex w-full max-w-5xl flex-col gap-space-xs">
@@ -31,7 +34,9 @@ const sanitizedMenuGroups: ReadonlyArray<NavigationMenuGroup> =
       The target maps to `<main id="main" tabindex="-1">` declared in `BaseLayout`.
     */
     }
-    <a class="sr-only focus:not-sr-only" href="#main">Skip to content</a>
+    <a class="sr-only focus:not-sr-only" href="#main">
+      {t('navigation.skipLink', { defaultValue: 'Skip to content' })}
+    </a>
 
     <div class="flex items-start justify-between gap-space-xs">
       <div class="flex flex-col gap-space-3xs">
@@ -39,10 +44,14 @@ const sanitizedMenuGroups: ReadonlyArray<NavigationMenuGroup> =
           href="/"
           class="text-title-sm font-black tracking-tight text-ink-primary transition hover:text-accent-brand"
         >
-          Apotheon.ai
+          {t('navigation.brand.name', { defaultValue: 'Apotheon.ai' })}
         </a>
         <p class="text-caption text-ink-muted sm:text-body-sm">
-          Automation-first GTM fabric for enterprise AI launches.
+          {
+            t('navigation.brand.tagline', {
+              defaultValue: 'Automation-first GTM fabric for enterprise AI launches.',
+            })
+          }
         </p>
       </div>
 

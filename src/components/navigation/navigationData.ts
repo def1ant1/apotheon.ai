@@ -1,6 +1,7 @@
 import { getCollection } from 'astro:content';
 
-import { footerContact } from './contactMetadata';
+import { getFooterContact } from './contactMetadata';
+import { translateWithFallback, type Translator } from '../../i18n/translator';
 import {
   navigationMenuGroups,
   type NavigationMenuGroup,
@@ -133,17 +134,36 @@ function isPublishedIndustryEntry(candidate: unknown): candidate is DraftableEnt
  * content collection, and drop anything that fails validation. The helper returns a brand new array
  * so downstream consumers can iterate freely without mutating the shared singleton.
  */
-export async function getValidatedNavigationGroups(): Promise<ReadonlyArray<NavigationMenuGroup>> {
+export async function getValidatedNavigationGroups(
+  t?: Translator,
+): Promise<ReadonlyArray<NavigationMenuGroup>> {
   const contentHrefLookup = await buildContentHrefLookup();
 
   const validatedGroups: NavigationMenuGroup[] = [];
 
   for (const group of navigationMenuGroups) {
     const validatedLinks: NavigationMenuLink[] = [];
+    const localizedGroupLabel = translateWithFallback(t, group.labelKey, group.label);
+    const localizedGroupDescription = translateWithFallback(
+      t,
+      group.descriptionKey,
+      group.description,
+    );
 
     for (const link of group.links) {
+      const localizedLinkLabel = translateWithFallback(t, link.labelKey, link.label);
+      const localizedLinkDescription = translateWithFallback(
+        t,
+        link.descriptionKey,
+        link.description,
+      );
+
       if (EXTERNAL_LINK_PATTERN.test(link.href)) {
-        validatedLinks.push(link);
+        validatedLinks.push({
+          ...link,
+          label: localizedLinkLabel,
+          description: localizedLinkDescription,
+        });
         continue;
       }
 
@@ -156,11 +176,21 @@ export async function getValidatedNavigationGroups(): Promise<ReadonlyArray<Navi
         continue;
       }
 
-      validatedLinks.push({ ...link, href: canonicalHref });
+      validatedLinks.push({
+        ...link,
+        href: canonicalHref,
+        label: localizedLinkLabel,
+        description: localizedLinkDescription,
+      });
     }
 
     if (validatedLinks.length > 0) {
-      validatedGroups.push({ ...group, links: validatedLinks });
+      validatedGroups.push({
+        ...group,
+        label: localizedGroupLabel,
+        description: localizedGroupDescription,
+        links: validatedLinks,
+      });
     }
   }
 
@@ -190,28 +220,36 @@ export interface FooterColumn {
  * duplicating href arrays across the repo. When new navigation buckets appear simply expand the
  * column map below and the footer will pick them up automatically.
  */
-export async function getFooterColumns(): Promise<ReadonlyArray<FooterColumn>> {
-  const groups = await getValidatedNavigationGroups();
+export async function getFooterColumns(t?: Translator): Promise<ReadonlyArray<FooterColumn>> {
+  const groups = await getValidatedNavigationGroups(t);
 
-  const groupByLabel = new Map(groups.map((group) => [group.label, group]));
+  const groupById = new Map(groups.map((group) => [group.id ?? group.label.toLowerCase(), group]));
 
-  const columnBlueprint: ReadonlyArray<{ source: string; title: string }> = [
-    { source: 'Platform', title: 'Product' },
-    { source: 'Industries', title: 'Industries' },
-    { source: 'Company', title: 'Company' },
+  const columnBlueprint: ReadonlyArray<{
+    readonly sourceId: string;
+    readonly titleKey: string;
+    readonly fallbackTitle: string;
+  }> = [
+    { sourceId: 'platform', titleKey: 'footer.columns.product.title', fallbackTitle: 'Product' },
+    {
+      sourceId: 'industries',
+      titleKey: 'footer.columns.industries.title',
+      fallbackTitle: 'Industries',
+    },
+    { sourceId: 'company', titleKey: 'footer.columns.company.title', fallbackTitle: 'Company' },
   ];
 
   const columns: FooterColumn[] = [];
 
   for (const blueprint of columnBlueprint) {
-    const group = groupByLabel.get(blueprint.source);
+    const group = groupById.get(blueprint.sourceId);
 
     if (!group || group.links.length === 0) {
       continue;
     }
 
     columns.push({
-      title: blueprint.title,
+      title: translateWithFallback(t, blueprint.titleKey, blueprint.fallbackTitle),
       summary: group.description,
       links: group.links.map((link) => ({
         label: link.label,
@@ -229,26 +267,41 @@ export async function getFooterColumns(): Promise<ReadonlyArray<FooterColumn>> {
  * module when rolling out new policies. Routes currently render lightweight Astro placeholders to
  * prevent 404s during the legal content build-out.
  */
-export const footerLegalLinks: ReadonlyArray<FooterLink> = [
+const canonicalFooterLegalLinks = [
   {
+    id: 'privacy',
     label: 'Privacy Policy',
     href: '/legal/privacy',
     description: 'Data handling commitments, retention windows, and DSAR intake.',
   },
   {
+    id: 'terms',
     label: 'Terms of Service',
     href: '/legal/terms',
     description: 'Contractual obligations that govern platform access.',
   },
   {
+    id: 'responsibleAi',
     label: 'Responsible AI',
     href: '/legal/responsible-ai',
     description: 'Guardrails that govern AI experimentation, auditability, and rollout.',
   },
-];
+] as const satisfies ReadonlyArray<{ id: string } & FooterLink>;
+
+export function getFooterLegalLinks(t?: Translator): ReadonlyArray<FooterLink> {
+  return canonicalFooterLegalLinks.map((link) => ({
+    href: link.href,
+    label: translateWithFallback(t, `footer.legal.links.${link.id}.label`, link.label),
+    description: translateWithFallback(
+      t,
+      `footer.legal.links.${link.id}.description`,
+      link.description ?? '',
+    ),
+  }));
+}
 
 /**
  * Contact metadata powers both the footer and future CRM automations. We break the address into
  * discrete lines so downstream consumers can render microformats or JSON-LD without parsing strings.
  */
-export { footerContact };
+export { getFooterContact };

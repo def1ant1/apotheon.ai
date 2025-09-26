@@ -1,6 +1,10 @@
 ---
 import { getEntry } from 'astro:content';
 
+/* eslint-disable import/namespace */
+const { useTranslations } = await import('astro-i18next');
+/* eslint-enable import/namespace */
+
 import AiosPillars from '../components/homepage/AiosPillars.astro';
 import DemoBanner from '../components/homepage/DemoBanner.astro';
 import HomepageHero from '../components/homepage/HomepageHero.astro';
@@ -19,11 +23,14 @@ import {
   resolveLocaleFromPath,
 } from '../utils/seo';
 
+const { t } = await useTranslations(Astro);
 const homepageEntry = await getEntry('homepage', homepageEntryId);
 const { Content: HeroDescription } = await homepageEntry.render();
 const heroMetaDescription =
   homepageEntry.data.supportingBullets[0]?.description ??
-  'Operational intelligence for distributed Astro deployments.';
+  t('homepage.hero.metaFallback', {
+    defaultValue: 'Operational intelligence for distributed Astro deployments.',
+  });
 
 const siteOrigin = Astro.site?.origin ?? Astro.url.origin;
 const pageLocale = resolveLocaleFromPath(Astro.url.pathname) ?? 'en-US';
@@ -55,10 +62,87 @@ const websiteSchema = buildWebsiteSchema({
   locale: pageLocale,
 });
 const breadcrumbSchema = buildBreadcrumbSchema(
-  [{ label: 'Home', href: '/' }],
+  [
+    {
+      label: t('navigation.primary.home', { defaultValue: 'Home' }),
+      href: '/',
+    },
+  ],
   siteOrigin,
   pageLocale,
 );
+
+const foundationsFirstSegments = {
+  intro: t('homepage.sections.composableFoundations.body.first.segments.intro', {
+    defaultValue: 'Drop future MDX files into ',
+  }),
+  betweenPaths: t('homepage.sections.composableFoundations.body.first.segments.betweenPaths', {
+    defaultValue: ' or ',
+  }),
+  afterMarketing: t('homepage.sections.composableFoundations.body.first.segments.afterMarketing', {
+    defaultValue:
+      ' and Astro will automatically type-check frontmatter, generate static pages, and refresh the Pagefind index as part of ',
+  }),
+  afterBuild: t('homepage.sections.composableFoundations.body.first.segments.afterBuild', {
+    defaultValue: ' (rerun search only with ',
+  }),
+  outro: t('homepage.sections.composableFoundations.body.first.segments.outro', {
+    defaultValue: ').',
+  }),
+};
+
+const foundationsFirstTokens = {
+  blogPath: t('homepage.sections.composableFoundations.body.first.tokens.blogPath', {
+    defaultValue: 'src/content/blog',
+  }),
+  marketingPath: t('homepage.sections.composableFoundations.body.first.tokens.marketingPath', {
+    defaultValue: 'src/content/marketing',
+  }),
+  buildCommand: t('homepage.sections.composableFoundations.body.first.tokens.buildCommand', {
+    defaultValue: 'npm run build',
+  }),
+  searchCommand: t('homepage.sections.composableFoundations.body.first.tokens.searchCommand', {
+    defaultValue: 'npm run search:index',
+  }),
+};
+
+const foundationsSecondSegments = {
+  intro: t('homepage.sections.composableFoundations.body.second.segments.intro', {
+    defaultValue:
+      'Tailwind CSS is wired via the official Astro integration, so design systems stay consistent without custom plumbing. Global CSS lives in ',
+  }),
+  afterStyles: t('homepage.sections.composableFoundations.body.second.segments.afterStyles', {
+    defaultValue: ' and is imported once through ',
+  }),
+  outro: t('homepage.sections.composableFoundations.body.second.segments.outro', {
+    defaultValue: '.',
+  }),
+};
+
+const foundationsSecondTokens = {
+  stylesPath: t('homepage.sections.composableFoundations.body.second.tokens.stylesPath', {
+    defaultValue: 'src/styles/global.css',
+  }),
+  layoutFile: t('homepage.sections.composableFoundations.body.second.tokens.layoutFile', {
+    defaultValue: 'BaseLayout.astro',
+  }),
+};
+
+const foundationsThirdSegments = {
+  intro: t('homepage.sections.composableFoundations.body.third.segments.intro', {
+    defaultValue:
+      'React islands remain fully supported for analytics widgets, onboarding flows, or other targeted interactivity. Hydrate them with any ',
+  }),
+  outro: t('homepage.sections.composableFoundations.body.third.segments.outro', {
+    defaultValue: ' directive and keep the rest of the experience static-first.',
+  }),
+};
+
+const foundationsThirdTokens = {
+  directive: t('homepage.sections.composableFoundations.body.third.tokens.directive', {
+    defaultValue: 'client:*',
+  }),
+};
 ---
 
 <BaseLayout {seo} locale={pageLocale}>
@@ -71,8 +155,13 @@ const breadcrumbSchema = buildBreadcrumbSchema(
     {
       homepageEntry.data.pillars?.length ? (
         <AiosPillars
-          heading="AI Operating System pillars"
-          description="A north-star view of how Apotheon.ai hardens generative workflows for regulated enterprises. Order here flows downstream into sales collateral and onboarding runbooks."
+          heading={t('homepage.sections.pillars.heading', {
+            defaultValue: 'AI Operating System pillars',
+          })}
+          description={t('homepage.sections.pillars.description', {
+            defaultValue:
+              'A north-star view of how Apotheon.ai hardens generative workflows for regulated enterprises. Order here flows downstream into sales collateral and onboarding runbooks.',
+          })}
           pillars={homepageEntry.data.pillars}
         />
       ) : null
@@ -81,8 +170,13 @@ const breadcrumbSchema = buildBreadcrumbSchema(
     {
       homepageEntry.data.modules?.length ? (
         <ProductModules
-          heading="Product modules ready for deployment"
-          description="Each module maps one-to-one with our solutions IA. Keep slugs aligned with /solutions routes so navigation, analytics, and Pagefind stay in lockstep."
+          heading={t('homepage.sections.modules.heading', {
+            defaultValue: 'Product modules ready for deployment',
+          })}
+          description={t('homepage.sections.modules.description', {
+            defaultValue:
+              'Each module maps one-to-one with our solutions IA. Keep slugs aligned with /solutions routes so navigation, analytics, and Pagefind stay in lockstep.',
+          })}
           modules={homepageEntry.data.modules}
         />
       ) : null
@@ -106,23 +200,35 @@ const breadcrumbSchema = buildBreadcrumbSchema(
 
     <article class="grid gap-12 lg:grid-cols-[2fr,1fr]" data-analytics-block="homepage-foundations">
       <div class="space-y-6">
-        <h2 class="text-2xl font-semibold text-white">Composable foundations</h2>
+        <h2 class="text-2xl font-semibold text-white">
+          {
+            t('homepage.sections.composableFoundations.heading', {
+              defaultValue: 'Composable foundations',
+            })
+          }
+        </h2>
         <p class="text-base text-slate-300">
-          Drop future MDX files into <code>src/content/blog</code> or <code
-            >src/content/marketing</code
-          > and Astro will automatically type-check frontmatter, generate static pages, and refresh the
-          Pagefind index as part of <code>npm run build</code> (rerun search only with
-          <code>npm run search:index</code>).
+          {foundationsFirstSegments.intro}
+          <code>{foundationsFirstTokens.blogPath}</code>
+          {foundationsFirstSegments.betweenPaths}
+          <code>{foundationsFirstTokens.marketingPath}</code>
+          {foundationsFirstSegments.afterMarketing}
+          <code>{foundationsFirstTokens.buildCommand}</code>
+          {foundationsFirstSegments.afterBuild}
+          <code>{foundationsFirstTokens.searchCommand}</code>
+          {foundationsFirstSegments.outro}
         </p>
         <p class="text-base text-slate-300">
-          Tailwind CSS is wired via the official Astro integration, so design systems stay
-          consistent without custom plumbing. Global CSS lives in <code>src/styles/global.css</code>
-          and is imported once through <code>BaseLayout.astro</code>.
+          {foundationsSecondSegments.intro}
+          <code>{foundationsSecondTokens.stylesPath}</code>
+          {foundationsSecondSegments.afterStyles}
+          <code>{foundationsSecondTokens.layoutFile}</code>
+          {foundationsSecondSegments.outro}
         </p>
         <p class="text-base text-slate-300">
-          React islands remain fully supported for analytics widgets, onboarding flows, or other
-          targeted interactivity. Hydrate them with any <code>client:*</code> directive and keep the
-          rest of the experience static-first.
+          {foundationsThirdSegments.intro}
+          <code>{foundationsThirdTokens.directive}</code>
+          {foundationsThirdSegments.outro}
         </p>
       </div>
       <!-- Live clock hydration can wait until the component scrolls into view; analytics and demos track the same behavior while protecting LCP. -->
