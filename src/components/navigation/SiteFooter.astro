@@ -1,7 +1,6 @@
 ---
-const { useTranslations } = await import('astro-i18next');
-
 import { getFooterContact, getFooterColumns, getFooterLegalLinks } from './navigationData';
+import { useTranslations } from '../../i18n/runtime';
 
 const { t } = await useTranslations(Astro);
 const navigationColumns = await getFooterColumns(t);

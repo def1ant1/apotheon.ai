@@ -275,6 +275,12 @@ const canonicalFooterLegalLinks = [
     description: 'Data handling commitments, retention windows, and DSAR intake.',
   },
   {
+    id: 'cookies',
+    label: 'Cookie Policy',
+    href: '/legal/cookie-policy',
+    description: 'Tracking categories, Klaro consent mechanics, and DSAR coordination guidance.',
+  },
+  {
     id: 'terms',
     label: 'Terms of Service',
     href: '/legal/terms',

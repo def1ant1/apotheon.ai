@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
+import { SEO_MANIFEST } from '../../config/seo/manifest.mjs';
 import { MemoryD1Database, runSeoMonitor } from '../seo-monitor';
 
 describe('seo monitor worker', () => {
@@ -41,7 +42,12 @@ describe('seo monitor worker', () => {
       { fetchImplementation: fetchMock, logger: console },
     );
 
-    expect(fetchMock).toHaveBeenCalledTimes(5);
+    const localeCount = Object.keys(SEO_MANIFEST.locales?.definitions ?? {}).length || 1;
+    const expectedFetchCalls = 5 + Math.max(0, localeCount - 1) * 2;
+
+    // Baseline expectation covers CrUX + Search Console queries and the three alert webhooks. Each
+    // additional locale defined in the SEO manifest triggers another CrUX + Search Console fetch.
+    expect(fetchMock).toHaveBeenCalledTimes(expectedFetchCalls);
     expect(db.executed.some((entry) => entry.sql.includes('seo_monitor_core_web_vitals'))).toBe(
       true,
     );

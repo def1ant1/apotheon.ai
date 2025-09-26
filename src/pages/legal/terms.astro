@@ -5,7 +5,7 @@ import { buildBreadcrumbSchema, resolveLocaleFromPath } from '../../utils/seo';
 
 const pageTitle = 'Terms of Service';
 const description =
-  'Master subscription agreement scaffold outlining platform access, SLAs, and billing expectations.';
+  'Review the contractual commitments that govern access to Apotheon.ai, including uptime promises, data responsibilities, and termination rights.';
 const pageLocale = resolveLocaleFromPath(Astro.url.pathname) ?? 'en-US';
 const seo = {
   title: pageTitle,
@@ -14,6 +14,8 @@ const seo = {
   locale: pageLocale,
 };
 const siteOrigin = Astro.site?.origin ?? Astro.url.origin;
+const canonicalUrl = new URL('/legal/terms/', siteOrigin).toString();
+const lastUpdated = '2024-05-18';
 const breadcrumbSchema = buildBreadcrumbSchema(
   [
     { label: 'Home', href: '/' },
@@ -23,44 +25,163 @@ const breadcrumbSchema = buildBreadcrumbSchema(
   siteOrigin,
   pageLocale,
 );
+const policySchema = {
+  '@context': 'https://schema.org',
+  '@type': 'TermsOfService',
+  '@id': `${canonicalUrl}#policy`,
+  name: pageTitle,
+  description,
+  url: canonicalUrl,
+  dateModified: lastUpdated,
+  inLanguage: pageLocale,
+  publisher: {
+    '@type': 'Organization',
+    name: 'Apotheon.ai',
+    url: siteOrigin,
+  },
+};
 ---
 
 <BaseLayout {seo} locale={pageLocale}>
-  <SchemaScript slot="head" schema={breadcrumbSchema} />
+  <SchemaScript slot="head" schema={[breadcrumbSchema, policySchema]} />
   <!--
-    Use the same tonal footprint as other legal placeholders so updates remain predictable. When the
-    negotiated MSA publishes, replace the content block below with the official clauses and ensure the
-    footer metadata points to the signed version number.
+    The Terms of Service codify platform rules so revenue, success, and product teams can answer
+    customer questions without toggling between redlines. Each clause includes explicit contact
+    points and automation notes so we continue to minimize manual exception handling as we scale.
   -->
-  <section class="flex flex-col gap-space-md">
-    <header class="space-y-space-2xs">
-      <p class="text-caption uppercase tracking-wide text-ink-muted">Governance Draft</p>
+  <section class="flex flex-col gap-space-xl">
+    <header class="space-y-space-xs">
+      <p class="text-caption uppercase tracking-wide text-ink-muted">Official Agreement</p>
       <h1 class="text-display-xl font-bold text-ink-primary">{pageTitle}</h1>
       <p class="max-w-prose text-body text-ink-secondary">
-        Apotheon.ai provides the platform under the automation-first principles documented below.
-        Legal will replace these bullet points with binding language; product and sales teams can
-        rely on the interim guardrails until the official MSA template is posted.
+        These Terms of Service (the "Terms") form a binding agreement between Apotheon.ai
+        Corporation and the customer entity that signs an Order Form or uses the services.
+        Capitalized terms not defined here have the meaning assigned in your Order Form.
+      </p>
+      <p class="text-body-sm text-ink-muted">
+        Last updated:
+        <time datetime={lastUpdated}>{new Date(lastUpdated).toLocaleDateString(pageLocale)}</time>
       </p>
     </header>
 
-    <div
-      class="space-y-space-sm rounded-radius-xl border border-border-subtle/60 bg-surface-base/80 p-space-lg shadow-elevation-1"
-    >
-      <h2 class="text-title-md font-semibold text-ink-primary">Operating Principles</h2>
-      <ul class="list-disc space-y-space-2xs pl-6 text-body-sm text-ink-secondary">
-        <li>Uptime SLO: 99.5% monthly, excluding customer-controlled maintenance windows.</li>
-        <li>Support: 24/7 PagerDuty coverage for Severity 1 incidents with one-hour response.</li>
-        <li>Usage: No training of foundation models on customer data without explicit opt-in.</li>
-        <li>Billing: Usage metering reconciled automatically with the finance data warehouse.</li>
-      </ul>
-    </div>
+    <!-- Use ordered sections so legal counsel can cross-reference clause numbers in negotiated addenda. -->
+    <article class="space-y-space-lg text-body text-ink-secondary">
+      <section id="scope" class="space-y-space-2xs">
+        <h2 class="text-title-lg font-semibold text-ink-primary">1. Scope and access</h2>
+        <p>
+          We grant you a non-exclusive, non-transferable right to access and use the services during
+          the subscription term stated on your Order Form. Access is limited to your authorized
+          users and governed by any usage metrics (such as automation minutes or workspace seats)
+          identified in the Order Form.
+        </p>
+      </section>
 
-    <p class="text-body-sm text-ink-muted">
-      Procurement escalations should route through <a
-        class="font-semibold"
-        href="mailto:contracts@apotheon.ai">contracts@apotheon.ai</a
-      >. Include deal size, industry, and critical launch dates so counsel can prioritize the review
-      queue.
-    </p>
+      <section id="customer-obligations" class="space-y-space-2xs">
+        <h2 class="text-title-lg font-semibold text-ink-primary">2. Customer responsibilities</h2>
+        <ul class="list-disc space-y-space-2xs pl-6">
+          <li>
+            Maintain the confidentiality of user credentials and promptly notify us of unauthorized
+            use or suspected compromise.
+          </li>
+          <li>
+            Configure integrations and consent tooling (including Klaro) in accordance with
+            applicable laws and your internal governance requirements.
+          </li>
+          <li>
+            Ensure any data you upload has been collected lawfully and that you have the rights to
+            provide it to us.
+          </li>
+        </ul>
+      </section>
+
+      <section id="acceptable-use" class="space-y-space-2xs">
+        <h2 class="text-title-lg font-semibold text-ink-primary">3. Acceptable use</h2>
+        <p>
+          You will not (and will not permit others to) reverse engineer the services, interfere with
+          system integrity, or use the platform to transmit malicious code. Automated scanning and
+          performance testing are permitted only after coordinating with our security team via
+          <a
+            class="font-semibold text-ink-primary underline-offset-4 hover:underline"
+            href="mailto:security@apotheon.ai">security@apotheon.ai</a
+          >.
+        </p>
+      </section>
+
+      <section id="service-levels" class="space-y-space-2xs">
+        <h2 class="text-title-lg font-semibold text-ink-primary">4. Service levels and support</h2>
+        <p>
+          We target 99.9% monthly uptime for production services. Incident response follows the
+          runbooks published in the Trust Center with PagerDuty-backed coverage for severity 1
+          events. Support requests filed through the admin console route to the appropriate queue
+          based on severity and entitlement.
+        </p>
+      </section>
+
+      <section id="fees" class="space-y-space-2xs">
+        <h2 class="text-title-lg font-semibold text-ink-primary">5. Fees and payment</h2>
+        <p>
+          Fees are invoiced in advance unless otherwise stated on your Order Form. Payments are due
+          within thirty (30) days of invoice date. Late payments may accrue a 1.5% monthly finance
+          charge or the maximum amount allowed by law, whichever is less.
+        </p>
+      </section>
+
+      <section id="data-rights" class="space-y-space-2xs">
+        <h2 class="text-title-lg font-semibold text-ink-primary">6. Data ownership and privacy</h2>
+        <p>
+          You retain all rights to customer content. We process personal data as a processor under
+          the Data Processing Addendum (DPA). The
+          <a class="underline-offset-4 hover:underline" href="/legal/privacy/">Privacy Policy</a>
+          explains how we handle personal data and document data subject rights.
+        </p>
+        <p id="dsar-workflow">
+          To exercise data subject rights relating to these Terms or the DPA, email
+          <a
+            class="font-semibold text-ink-primary underline-offset-4 hover:underline"
+            href="mailto:privacy@apotheon.ai?subject=Data%20Subject%20Rights">privacy@apotheon.ai</a
+          >. We confirm receipt within one (1) business day and deliver a response within thirty
+          (30) days, unless the applicable law allows a longer period. Contract notices unrelated to
+          privacy should go to
+          <a
+            class="font-semibold text-ink-primary underline-offset-4 hover:underline"
+            href="mailto:contracts@apotheon.ai">contracts@apotheon.ai</a
+          >.
+        </p>
+      </section>
+
+      <section id="term-termination" class="space-y-space-2xs">
+        <h2 class="text-title-lg font-semibold text-ink-primary">
+          7. Term, suspension, and termination
+        </h2>
+        <p>
+          Either party may terminate these Terms for material breach if the breach remains uncured
+          for thirty (30) days after written notice. We may suspend access immediately for security
+          threats or unpaid invoices older than forty-five (45) days.
+        </p>
+      </section>
+
+      <section id="liability" class="space-y-space-2xs">
+        <h2 class="text-title-lg font-semibold text-ink-primary">
+          8. Disclaimers and limitation of liability
+        </h2>
+        <p>
+          Except as explicitly stated, the services are provided "as is". Each party's aggregate
+          liability arising out of these Terms will not exceed the fees paid or payable during the
+          twelve (12) months preceding the claim. Neither party is liable for indirect, incidental,
+          or consequential damages.
+        </p>
+      </section>
+
+      <section id="general" class="space-y-space-2xs">
+        <h2 class="text-title-lg font-semibold text-ink-primary">9. General provisions</h2>
+        <p>
+          These Terms are governed by the laws of the State of Delaware, excluding conflict of law
+          principles. The parties submit to the exclusive jurisdiction of the state and federal
+          courts located in Wilmington, Delaware. Neither party may assign the agreement without
+          prior written consent, except to an affiliate or in connection with a merger, acquisition,
+          or sale of all or substantially all assets.
+        </p>
+      </section>
+    </article>
   </section>
 </BaseLayout>

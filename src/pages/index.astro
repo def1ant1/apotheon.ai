@@ -1,10 +1,6 @@
 ---
 import { getEntry } from 'astro:content';
 
-/* eslint-disable import/namespace */
-const { useTranslations } = await import('astro-i18next');
-/* eslint-enable import/namespace */
-
 import AiosPillars from '../components/homepage/AiosPillars.astro';
 import DemoBanner from '../components/homepage/DemoBanner.astro';
 import HomepageHero from '../components/homepage/HomepageHero.astro';
@@ -15,6 +11,7 @@ import ProductModules from '../components/homepage/ProductModules.astro';
 import LiveClock from '../components/islands/LiveClock';
 import SchemaScript from '../components/seo/SchemaScript.astro';
 import { homepageEntryId } from '../content/homepage';
+import { useTranslations } from '../i18n/runtime';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import {
   buildBreadcrumbSchema,

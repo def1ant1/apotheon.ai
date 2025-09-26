@@ -5,7 +5,7 @@ import { buildBreadcrumbSchema, resolveLocaleFromPath } from '../../utils/seo';
 
 const pageTitle = 'Privacy Policy';
 const description =
-  'How Apotheon.ai protects customer data, handles DSAR workflows, and meets jurisdictional requirements.';
+  'Learn how Apotheon.ai collects, safeguards, and processes personal data across the platform, including DSAR intake expectations.';
 const pageLocale = resolveLocaleFromPath(Astro.url.pathname) ?? 'en-US';
 const seo = {
   title: pageTitle,
@@ -14,6 +14,8 @@ const seo = {
   locale: pageLocale,
 };
 const siteOrigin = Astro.site?.origin ?? Astro.url.origin;
+const canonicalUrl = new URL('/legal/privacy/', siteOrigin).toString();
+const lastUpdated = '2024-05-18';
 const breadcrumbSchema = buildBreadcrumbSchema(
   [
     { label: 'Home', href: '/' },
@@ -23,43 +25,188 @@ const breadcrumbSchema = buildBreadcrumbSchema(
   siteOrigin,
   pageLocale,
 );
+const policySchema = {
+  '@context': 'https://schema.org',
+  '@type': 'PrivacyPolicy',
+  '@id': `${canonicalUrl}#policy`,
+  name: pageTitle,
+  description,
+  url: canonicalUrl,
+  dateModified: lastUpdated,
+  inLanguage: pageLocale,
+  publisher: {
+    '@type': 'Organization',
+    name: 'Apotheon.ai',
+    url: siteOrigin,
+  },
+  hasDigitalDocumentPermission: [
+    {
+      '@type': 'DigitalDocumentPermission',
+      permissionType: 'read',
+      grantee: {
+        '@type': 'Audience',
+        audienceType: 'public',
+      },
+    },
+  ],
+};
 ---
 
 <BaseLayout {seo} locale={pageLocale}>
-  <SchemaScript slot="head" schema={breadcrumbSchema} />
+  <SchemaScript slot="head" schema={[breadcrumbSchema, policySchema]} />
   <!--
-    This placeholder keeps the marketing site free from 404s while legal finalizes the production
-    policy language. Embed high-level guidance so product managers understand the scope before
-    routing questions to counsel.
+    Production-ready copy replaces the governance placeholder so customer trust teams can reference
+    a single canonical document. The notes below deliberately call out DSAR workflows, retention
+    logic, and cross-border data movement so future amendments remain auditable.
   -->
-  <section class="flex flex-col gap-space-md">
-    <header class="space-y-space-2xs">
-      <p class="text-caption uppercase tracking-wide text-ink-muted">Governance Draft</p>
+  <section class="flex flex-col gap-space-xl">
+    <header class="space-y-space-xs">
+      <p class="text-caption uppercase tracking-wide text-ink-muted">Official Policy</p>
       <h1 class="text-display-xl font-bold text-ink-primary">{pageTitle}</h1>
       <p class="max-w-prose text-body text-ink-secondary">
-        The canonical privacy narrative will publish here once the redlines from Security, Legal,
-        and Regional Compliance land. Track the governing document in our contract repository and
-        link the signed PDF when available. Until then, reference the bullet points below when
-        fielding customer questionnaires.
+        This Privacy Policy explains how Apotheon.ai Corporation ("Apotheon.ai", "we", "us")
+        collects, uses, stores, and shares personal information when you interact with the
+        Apotheon.ai platform, marketing sites, APIs, and support channels. It also documents your
+        rights and how to exercise them.
+      </p>
+      <p class="text-body-sm text-ink-muted">
+        Last updated:
+        <time datetime={lastUpdated}>{new Date(lastUpdated).toLocaleDateString(pageLocale)}</time>
       </p>
     </header>
 
-    <div
-      class="space-y-space-sm rounded-radius-xl border border-border-subtle/60 bg-surface-base/80 p-space-lg shadow-elevation-1"
+    <!-- Surface an always-on table of contents so account teams can deep-link into specific clauses. -->
+    <nav
+      aria-label="Privacy policy sections"
+      class="bg-surface-subtle rounded-radius-lg p-space-md"
     >
-      <h2 class="text-title-md font-semibold text-ink-primary">Interim Commitments</h2>
+      <p class="text-label-sm font-semibold text-ink-primary">Quick reference</p>
       <ul class="list-disc space-y-space-2xs pl-6 text-body-sm text-ink-secondary">
-        <li>Zero retention of uploaded training data beyond contractually defined windows.</li>
-        <li>Regional data residency honored via edge partitioning (EU, US, APAC).</li>
-        <li>DSAR requests route through the Worker queue documented in the RevOps runbook.</li>
-        <li>Incident notifications delivered within 24 hours of detection via signed webhook.</li>
+        <li><a href="#data-collection">What we collect</a></li>
+        <li><a href="#processing-basis">How and why we process data</a></li>
+        <li><a href="#retention-and-security">Retention &amp; security controls</a></li>
+        <li><a href="#sharing-and-transfers">Sharing &amp; international transfers</a></li>
+        <li><a href="#dsar-workflow">Data subject rights &amp; DSAR workflow</a></li>
+        <li><a href="#updates">Policy updates</a></li>
       </ul>
-    </div>
+    </nav>
 
-    <p class="text-body-sm text-ink-muted">
-      Need the signed policy? Ping <a class="font-semibold" href="mailto:legal@apotheon.ai"
-        >legal@apotheon.ai</a
-      > with your deal context and region so the correct jurisdictional annex is attached automatically.
-    </p>
+    <article class="space-y-space-lg text-body text-ink-secondary">
+      <!--
+        Each section intentionally mirrors standard enterprise RFI templates so that vendor security
+        teams can lift language with minimal editing. Headings map one-to-one with the quick
+        reference block above.
+      -->
+      <section id="data-collection" class="space-y-space-2xs">
+        <h2 class="text-title-lg font-semibold text-ink-primary">Information we collect</h2>
+        <p>We collect only the data necessary to deliver and secure the platform:</p>
+        <ul class="list-disc space-y-space-2xs pl-6">
+          <li>
+            <strong>Account data:</strong> Names, business email addresses, role metadata, and single
+            sign-on identifiers provisioned by your identity provider.
+          </li>
+          <li>
+            <strong>Telemetry:</strong> Event-level diagnostics about feature usage, API performance,
+            and security signals such as anomalous login attempts. IP addresses are truncated to /24
+            (IPv4) or /48 (IPv6) before storage.
+          </li>
+          <li>
+            <strong>Customer content:</strong> Data that you upload or generate within the platform (for
+            example, prompts, workflow definitions, and files submitted to workers). You retain ownership
+            of customer content at all times.
+          </li>
+        </ul>
+      </section>
+
+      <section id="processing-basis" class="space-y-space-2xs">
+        <h2 class="text-title-lg font-semibold text-ink-primary">How and why we process data</h2>
+        <p>
+          We process personal data to deliver contracted services, meet legal obligations, and
+          pursue legitimate business interests. We do not sell personal data and we do not train
+          foundation models on customer content without a signed opt-in.
+        </p>
+        <ul class="list-disc space-y-space-2xs pl-6">
+          <li>
+            <strong>Service delivery:</strong> Provisioning accounts, authenticating users, orchestrating
+            automations, and responding to support requests.
+          </li>
+          <li>
+            <strong>Security:</strong> Monitoring for abuse, preventing fraud, and maintaining audit
+            trails required for compliance certifications.
+          </li>
+          <li>
+            <strong>Product improvement:</strong> Aggregated and de-identified analytics help us prioritize
+            roadmap investments. Aggregated data cannot be used to re-identify an individual or tenant.
+          </li>
+        </ul>
+      </section>
+
+      <section id="retention-and-security" class="space-y-space-2xs">
+        <h2 class="text-title-lg font-semibold text-ink-primary">
+          Retention and security controls
+        </h2>
+        <p>
+          Customer content is retained for the shorter of the period stated in your agreement or
+          ninety (90) days after contract termination, unless required by law to retain it longer.
+          We encrypt data in transit and at rest using TLS 1.3 and AES-256, enforce least privilege
+          access, and stream security logs into a dedicated governance lakehouse for continuous
+          review.
+        </p>
+      </section>
+
+      <section id="sharing-and-transfers" class="space-y-space-2xs">
+        <h2 class="text-title-lg font-semibold text-ink-primary">
+          Sharing and international transfers
+        </h2>
+        <p>
+          We limit third-party access to vetted subprocessors that enable core functionality (such
+          as cloud hosting and support tooling). Subprocessors are listed in the Trust Center and
+          include the geographic region for data residency. When data leaves the originating
+          jurisdiction, we rely on Standard Contractual Clauses and regional-specific addenda.
+        </p>
+        <p>
+          For consent-managed technologies, including analytics and optional integrations, we expose
+          granular toggles through our Klaro-powered consent manager so that workspace
+          administrators can enforce regional policies before any cookies or localStorage keys are
+          set.
+        </p>
+      </section>
+
+      <section id="dsar-workflow" class="space-y-space-2xs">
+        <h2 class="text-title-lg font-semibold text-ink-primary">
+          Your rights and how to exercise them
+        </h2>
+        <p>
+          Depending on your jurisdiction, you may have rights to access, correct, delete, restrict,
+          or port your personal data. We extend these rights globally to all users of the platform.
+        </p>
+        <p>
+          To submit a data subject access request (DSAR), email
+          <a
+            class="font-semibold text-ink-primary underline-offset-4 hover:underline"
+            href="mailto:privacy@apotheon.ai?subject=Data%20Subject%20Access%20Request"
+            >privacy@apotheon.ai</a
+          >
+          with your account email, workspace identifier, and request type. We confirm receipt within
+          one (1) business day and provide a substantive response within thirty (30) days. If we need
+          additional time (for example, complex archival retrieval), we will notify you in writing and
+          respond no later than forty-five (45) days from intake.
+        </p>
+        <p>
+          You can also reach us via the in-product support channel. Messages flagged as a privacy
+          inquiry route directly to the privacy operations queue to preserve audit trails.
+        </p>
+      </section>
+
+      <section id="updates" class="space-y-space-2xs">
+        <h2 class="text-title-lg font-semibold text-ink-primary">Changes to this policy</h2>
+        <p>
+          We review this policy at least annually and whenever we launch new data-intensive
+          features. Material updates trigger a notice in the admin dashboard and an email to
+          workspace owners no fewer than thirty (30) days before the effective date. Continued use
+          of the services after that date constitutes acceptance of the updated policy.
+        </p>
+      </section>
+    </article>
   </section>
 </BaseLayout>

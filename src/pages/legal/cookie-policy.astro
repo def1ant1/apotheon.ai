@@ -1,0 +1,206 @@
+---
+import SchemaScript from '../../components/seo/SchemaScript.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { buildBreadcrumbSchema, resolveLocaleFromPath } from '../../utils/seo';
+
+const pageTitle = 'Cookie Policy';
+const description =
+  'Understand how Apotheon.ai uses cookies, localStorage, and consent tooling (Klaro) to respect regional privacy requirements.';
+const pageLocale = resolveLocaleFromPath(Astro.url.pathname) ?? 'en-US';
+const seo = {
+  title: pageTitle,
+  description,
+  path: '/legal/cookie-policy/',
+  locale: pageLocale,
+};
+const siteOrigin = Astro.site?.origin ?? Astro.url.origin;
+const canonicalUrl = new URL('/legal/cookie-policy/', siteOrigin).toString();
+const lastUpdated = '2024-05-18';
+const breadcrumbSchema = buildBreadcrumbSchema(
+  [
+    { label: 'Home', href: '/' },
+    { label: 'Legal', href: '/legal/' },
+    { label: pageTitle, href: '/legal/cookie-policy/' },
+  ],
+  siteOrigin,
+  pageLocale,
+);
+const policySchema = {
+  '@context': 'https://schema.org',
+  '@type': 'PrivacyPolicy',
+  '@id': `${canonicalUrl}#policy`,
+  name: pageTitle,
+  description,
+  url: canonicalUrl,
+  dateModified: lastUpdated,
+  inLanguage: pageLocale,
+  publisher: {
+    '@type': 'Organization',
+    name: 'Apotheon.ai',
+    url: siteOrigin,
+  },
+  isPartOf: {
+    '@type': 'WebPage',
+    '@id': new URL('/legal/privacy/', siteOrigin).toString(),
+    name: 'Privacy Policy',
+  },
+};
+---
+
+<BaseLayout {seo} locale={pageLocale}>
+  <SchemaScript slot="head" schema={[breadcrumbSchema, policySchema]} />
+  <!--
+    The cookie policy maps every tracking surface to Klaro categories so privacy teams can audit
+    consent mechanics without scraping runtime code. Inline notes highlight where automation keeps
+    consent state synchronized across marketing and product workloads.
+  -->
+  <section class="flex flex-col gap-space-xl">
+    <header class="space-y-space-xs">
+      <p class="text-caption uppercase tracking-wide text-ink-muted">Official Policy</p>
+      <h1 class="text-display-xl font-bold text-ink-primary">{pageTitle}</h1>
+      <p class="max-w-prose text-body text-ink-secondary">
+        This Cookie Policy describes how Apotheon.ai uses cookies, localStorage, and similar
+        technologies across apotheon.ai properties. It explains the categories we track, how consent
+        is collected, and where you can inspect the technical configuration.
+      </p>
+      <p class="text-body-sm text-ink-muted">
+        Last updated:
+        <time datetime={lastUpdated}>{new Date(lastUpdated).toLocaleDateString(pageLocale)}</time>
+      </p>
+    </header>
+
+    <nav aria-label="Cookie policy sections" class="bg-surface-subtle rounded-radius-lg p-space-md">
+      <p class="text-label-sm font-semibold text-ink-primary">Quick reference</p>
+      <ul class="list-disc space-y-space-2xs pl-6 text-body-sm text-ink-secondary">
+        <li><a href="#tracking-categories">Tracking categories</a></li>
+        <li><a href="#consent-mechanics">Consent mechanics</a></li>
+        <li><a href="#klaro-definitions">Klaro service definitions</a></li>
+        <li><a href="#dsar-workflow">Opt-out &amp; DSAR coordination</a></li>
+        <li><a href="#policy-changes">Policy changes</a></li>
+      </ul>
+    </nav>
+
+    <article class="space-y-space-lg text-body text-ink-secondary">
+      <section id="tracking-categories" class="space-y-space-2xs">
+        <h2 class="text-title-lg font-semibold text-ink-primary">Tracking categories we use</h2>
+        <p>
+          Klaro groups every storage or cookie interaction into one of the categories below.
+          Categories marked “Essential” load by default; all others require opt-in.
+        </p>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-border-subtle text-left">
+            <thead class="bg-surface-subtle text-label-sm uppercase tracking-wide text-ink-muted">
+              <tr>
+                <th class="px-4 py-3">Category</th>
+                <th class="px-4 py-3">Purpose</th>
+                <th class="px-4 py-3">Examples</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border-subtle text-body-sm">
+              <tr class="bg-surface-base">
+                <th scope="row" class="px-4 py-3 font-semibold text-ink-primary">Essential</th>
+                <td class="px-4 py-3">
+                  Required for authentication, load balancing, and remembering consent choices.
+                </td>
+                <td class="px-4 py-3"
+                  >Session cookies, consent-state localStorage, CDN affinity tokens.</td
+                >
+              </tr>
+              <tr>
+                <th scope="row" class="px-4 py-3 font-semibold text-ink-primary">Functional</th>
+                <td class="px-4 py-3"
+                  >Improves in-app productivity features such as saved filters.</td
+                >
+                <td class="px-4 py-3"
+                  >Workflow builder preferences, dashboard layout persistence.</td
+                >
+              </tr>
+              <tr class="bg-surface-base">
+                <th scope="row" class="px-4 py-3 font-semibold text-ink-primary">Analytics</th>
+                <td class="px-4 py-3">
+                  Measures product usage and marketing attribution using self-hosted telemetry.
+                </td>
+                <td class="px-4 py-3"
+                  >Umami telemetry (self-hosted), first-party campaign parameters.</td
+                >
+              </tr>
+              <tr>
+                <th scope="row" class="px-4 py-3 font-semibold text-ink-primary">Communications</th>
+                <td class="px-4 py-3">Supports customer chat and incident broadcast preferences.</td
+                >
+                <td class="px-4 py-3">In-product messenger session IDs, alert routing toggles.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="consent-mechanics" class="space-y-space-2xs">
+        <h2 class="text-title-lg font-semibold text-ink-primary">How consent is collected</h2>
+        <p>
+          The Consent Manager island, powered by Klaro, loads after the initial page render to avoid
+          blocking core content. It records consent decisions in localStorage under the
+          <code>apotheon_privacy_consent</code> key and replays them to the rest of the application via
+          a headless API. When a user toggles a category, Klaro automatically clears the associated cookies
+          and notifies downstream services through our consent bus.
+        </p>
+        <p>
+          Geo-aware defaults respect regional rules (for example, EU visitors receive opt-in prompts
+          while U.S. visitors inherit analytics opt-out). Workspace administrators can override
+          defaults per tenant using the admin console without code changes.
+        </p>
+      </section>
+
+      <section id="klaro-definitions" class="space-y-space-2xs">
+        <h2 class="text-title-lg font-semibold text-ink-primary">
+          Inspect the Klaro service catalog
+        </h2>
+        <p>
+          Every service definition—including storage keys, data processors, and expiration
+          windows—is version-controlled. Review the live configuration in our repository to confirm
+          what each toggle enables before granting consent.
+        </p>
+        <p>
+          <a
+            class="font-semibold text-ink-primary underline-offset-4 hover:underline"
+            href="https://github.com/apotheon-ai/apotheon.ai/blob/main/config/privacy/klaro.config.ts"
+            rel="noopener noreferrer"
+            target="_blank">View Klaro service definitions</a
+          >
+        </p>
+      </section>
+
+      <section id="dsar-workflow" class="space-y-space-2xs">
+        <h2 class="text-title-lg font-semibold text-ink-primary">Managing opt-outs and DSARs</h2>
+        <p>
+          You can update your consent state at any time using the "Privacy controls" link in the
+          footer or by clearing cookies. Revoking consent immediately disables non-essential
+          services across all active sessions.
+        </p>
+        <p>
+          If you need help executing a deletion or access request, email
+          <a
+            class="font-semibold text-ink-primary underline-offset-4 hover:underline"
+            href="mailto:privacy@apotheon.ai?subject=Cookie%20Policy%20Request"
+            >privacy@apotheon.ai</a
+          >. We acknowledge requests within one (1) business day and resolve them within thirty (30)
+          days, coordinating with workspace administrators as required.
+        </p>
+        <p>
+          Additional transparency commitments—including security controls and subprocessors—are
+          available in the
+          <a class="underline-offset-4 hover:underline" href="/legal/privacy/">Privacy Policy</a>.
+        </p>
+      </section>
+
+      <section id="policy-changes" class="space-y-space-2xs">
+        <h2 class="text-title-lg font-semibold text-ink-primary">Keeping this policy current</h2>
+        <p>
+          We review the Klaro configuration before shipping any new integration or analytics
+          feature. Material changes result in an updated banner prompt and a changelog entry in the
+          Trust Center. The version history is tracked in Git so you can audit previous revisions.
+        </p>
+      </section>
+    </article>
+  </section>
+</BaseLayout>
