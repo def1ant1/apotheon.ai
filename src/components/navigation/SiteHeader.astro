@@ -1,9 +1,13 @@
 ---
-const { useTranslations } = await import('astro-i18next');
+const { useTranslations, detectLocaleFromPath } = await import('astro-i18next');
 
 import { getValidatedNavigationGroups } from './navigationData';
+import { getAvailableLocales, getDefaultLocale } from '../../i18n';
+import { isLocaleQASwitcherEnabled } from '../../utils/featureFlags';
+import LocaleSwitcher, { type LocaleSwitcherLabels } from '../islands/LocaleSwitcher';
 import MobileNavigationDrawer from '../islands/MobileNavigationDrawer';
 import RadixNavigationMenu, { type NavigationMenuGroup } from '../islands/RadixNavigationMenu';
+
 
 /**
  * Consolidated navigation data lives in `navigationData.ts`. Centralizing the lookup allows the
@@ -13,6 +17,28 @@ import RadixNavigationMenu, { type NavigationMenuGroup } from '../islands/RadixN
 const { t } = await useTranslations(Astro);
 const sanitizedMenuGroups: ReadonlyArray<NavigationMenuGroup> =
   await getValidatedNavigationGroups(t);
+const availableLocales = getAvailableLocales();
+const defaultLocale = getDefaultLocale();
+const currentLocale = detectLocaleFromPath?.(Astro.url.pathname) ?? defaultLocale;
+const localeSwitcherEnabled = isLocaleQASwitcherEnabled();
+const localeSwitcherLabels: LocaleSwitcherLabels = {
+  ariaLabel: t('navigation.localeSwitcher.ariaLabel', {
+    defaultValue: 'QA locale switcher for language verification',
+  }),
+  instructions: t('navigation.localeSwitcher.instructions', {
+    defaultValue:
+      'Focus to reveal QA-only locales. Production builds stay on the default language unless the QA flag is enabled.',
+  }),
+  statusCurrent: t('navigation.localeSwitcher.status.current', {
+    defaultValue: 'Browsing the {{locale}} locale.',
+  }),
+  statusUpdated: t('navigation.localeSwitcher.status.updated', {
+    defaultValue: 'Switching to {{locale}}…',
+  }),
+  defaultLocaleSuffix: t('navigation.localeSwitcher.defaultLocaleSuffix', {
+    defaultValue: 'default locale',
+  }),
+};
 ---
 
 {
@@ -37,6 +63,28 @@ const sanitizedMenuGroups: ReadonlyArray<NavigationMenuGroup> =
     <a class="sr-only focus:not-sr-only" href="#main">
       {t('navigation.skipLink', { defaultValue: 'Skip to content' })}
     </a>
+
+    {
+      /**
+      QA can flip `PUBLIC_ENABLE_LOCALE_QA_SWITCHER` on during staging or
+      ad-hoc verification runs to expose the otherwise hidden language
+      selector. Leaving the feature flag off keeps production in the default
+      locale while still letting us QA translated routes end-to-end without
+      shipping experimental UI to customers.
+    */
+    }
+    {
+      localeSwitcherEnabled && (
+        <LocaleSwitcher
+          client:idle
+          availableLocales={availableLocales}
+          currentLocale={currentLocale}
+          defaultLocale={defaultLocale}
+          labels={localeSwitcherLabels}
+          pathname={Astro.url.pathname}
+        />
+      )
+    }
 
     <div class="flex items-start justify-between gap-space-xs">
       <div class="flex flex-col gap-space-3xs">

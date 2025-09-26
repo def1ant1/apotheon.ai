@@ -14,7 +14,7 @@ describe('astro component landmarks', () => {
     });
     await expectAstroElementAttributes('src/components/navigation/SiteHeader.astro', 'header', {
       name: 'aria-label',
-      value: 'Primary site header',
+      expressionContains: 'navigation.aria.primaryHeader',
     });
     await expectAstroElementAttributes('src/components/navigation/SiteHeader.astro', 'a', {
       name: 'href',

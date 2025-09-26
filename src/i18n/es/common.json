@@ -8,6 +8,16 @@
   },
   "navigation": {
     "_comment": "Etiquetas de navegación global.",
+    "localeSwitcher": {
+      "_comment": "Selector de idioma solo para QA controlado por PUBLIC_ENABLE_LOCALE_QA_SWITCHER.",
+      "ariaLabel": "Selector de idioma para QA",
+      "instructions": "Enfoca el control para mostrar los idiomas exclusivos de QA. Las compilaciones de producción mantienen el idioma predeterminado salvo que la bandera de QA esté activa.",
+      "status": {
+        "current": "Navegando en el idioma {{locale}}.",
+        "updated": "Cambiando a {{locale}}…"
+      },
+      "defaultLocaleSuffix": "idioma predeterminado"
+    },
     "primary": {
       "home": "TODO",
       "platform": "TODO",

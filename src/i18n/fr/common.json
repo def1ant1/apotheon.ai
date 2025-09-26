@@ -8,6 +8,16 @@
   },
   "navigation": {
     "_comment": "Libellés de navigation globaux.",
+    "localeSwitcher": {
+      "_comment": "Sélecteur de langue réservé au QA exposé via PUBLIC_ENABLE_LOCALE_QA_SWITCHER.",
+      "ariaLabel": "Sélecteur de langue QA",
+      "instructions": "Mettre le focus pour afficher les langues réservées au QA. Les builds de production restent sur la langue par défaut tant que le drapeau QA est désactivé.",
+      "status": {
+        "current": "Parcours en langue {{locale}}.",
+        "updated": "Bascule vers {{locale}}…"
+      },
+      "defaultLocaleSuffix": "langue par défaut"
+    },
     "primary": {
       "home": "TODO",
       "platform": "TODO",
