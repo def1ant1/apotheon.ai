@@ -157,6 +157,12 @@ The project outputs plain static assets. Deploy via Cloudflare Pages, Netlify,
 Vercel, S3/CloudFront, or any static-friendly CDN. Because CSP defaults are set
 in `astro.config.mjs`, most hosts require no extra headers configuration.
 
+## Operational Runbooks
+
+- [Go-Live Readiness Checklist](docs/launch/GO-LIVE_CHECKLIST.md) — DNS cutover,
+  cache warmup, rollback drills, and synthetic alert verification steps scripted
+  for enterprise launch rehearsals.
+
 ## Contributing
 
 1. Fork or branch from `main`.

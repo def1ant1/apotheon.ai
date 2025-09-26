@@ -2,6 +2,16 @@
 
 import { z } from 'zod';
 
+import {
+  CONTACT_CHECK_IDENTIFIER,
+  SYNTHETIC_CHECK_HEADER,
+  SYNTHETIC_NONCE_HEADER,
+  SYNTHETIC_RUN_ID_HEADER,
+  SYNTHETIC_SIGNATURE_HEADER,
+  SYNTHETIC_TIMESTAMP_HEADER,
+  isTimestampFresh,
+  verifySyntheticSignature,
+} from './shared/synthetic-signature';
 import { serverContactFormSchema } from '../src/utils/contact-validation';
 import {
   analyzeDomain,
@@ -17,6 +27,7 @@ interface Env {
   TURNSTILE_SECRET: string;
   CONTACT_BLOCKLIST?: string;
   CONTACT_ALLOWLIST?: string;
+  CONTACT_SYNTHETIC_SIGNING_SECRET?: string;
 }
 
 interface WorkerExecutionContext {
@@ -125,6 +136,69 @@ function deriveCustomList(raw: string | undefined): string[] {
     .filter(Boolean);
 }
 
+interface SyntheticBypassResult {
+  allowed: boolean;
+  runId?: string;
+}
+
+function createSyntheticTurnstileResponse(): TurnstileResponse {
+  return {
+    success: true,
+    challenge_ts: new Date().toISOString(),
+    action: 'synthetic-health-check',
+    score: 1,
+  };
+}
+
+async function evaluateSyntheticBypass(
+  request: Request,
+  env: Env,
+  payload: SanitizedPayload,
+): Promise<SyntheticBypassResult> {
+  const secret = env.CONTACT_SYNTHETIC_SIGNING_SECRET;
+  if (!secret) {
+    return { allowed: false };
+  }
+
+  const signature = request.headers.get(SYNTHETIC_SIGNATURE_HEADER);
+  const timestamp = request.headers.get(SYNTHETIC_TIMESTAMP_HEADER);
+  const nonce = request.headers.get(SYNTHETIC_NONCE_HEADER);
+  const check = request.headers.get(SYNTHETIC_CHECK_HEADER);
+
+  if (!signature || !timestamp || !nonce || check !== CONTACT_CHECK_IDENTIFIER) {
+    return { allowed: false };
+  }
+
+  if (!isTimestampFresh(timestamp)) {
+    return { allowed: false };
+  }
+
+  const normalizedPayload = {
+    email: payload.email.toLowerCase(),
+    company: payload.company,
+    intent: payload.intent,
+    name: payload.name,
+  };
+
+  const verified = await verifySyntheticSignature(
+    secret,
+    signature,
+    CONTACT_CHECK_IDENTIFIER,
+    timestamp,
+    nonce,
+    normalizedPayload,
+  );
+
+  if (!verified) {
+    return { allowed: false };
+  }
+
+  return {
+    allowed: true,
+    runId: request.headers.get(SYNTHETIC_RUN_ID_HEADER) ?? undefined,
+  };
+}
+
 async function persistSubmission(
   env: Env,
   payload: SanitizedPayload,
@@ -218,7 +292,10 @@ export default {
       }
 
       const sanitizedPayload = validation.data;
-      const remoteIp = request.headers.get('CF-Connecting-IP');
+      const syntheticBypass = await evaluateSyntheticBypass(request, env, sanitizedPayload);
+
+      const observedRemoteIp = request.headers.get('CF-Connecting-IP');
+      const remoteIp = syntheticBypass.allowed ? 'synthetic-monitor' : observedRemoteIp;
       const userAgent = request.headers.get('user-agent');
 
       const additionalBlocklist = deriveCustomList(env.CONTACT_BLOCKLIST);
@@ -244,16 +321,20 @@ export default {
 
       const domain = extractDomain(sanitizedPayload.email) ?? '';
       const rateLimitIdentifier = `${remoteIp ?? 'unknown'}:${domain}`;
-      await enforceRateLimit(env, rateLimitIdentifier);
+      if (!syntheticBypass.allowed) {
+        await enforceRateLimit(env, rateLimitIdentifier);
+      }
 
-      const turnstile = await verifyTurnstileToken(
-        sanitizedPayload.turnstileToken,
-        env.TURNSTILE_SECRET,
-        remoteIp,
-      );
+      const turnstile = syntheticBypass.allowed
+        ? createSyntheticTurnstileResponse()
+        : await verifyTurnstileToken(
+            sanitizedPayload.turnstileToken,
+            env.TURNSTILE_SECRET,
+            remoteIp,
+          );
 
       let mxRecords: string[] | undefined;
-      if (domain && shouldPerformMxLookup(domainAssessment)) {
+      if (domain && !syntheticBypass.allowed && shouldPerformMxLookup(domainAssessment)) {
         const lookup = await lookupMxRecords(domain);
         mxRecords = lookup.records;
         if (!lookup.hasMxRecords) {
@@ -282,12 +363,13 @@ export default {
 
       ctx.waitUntil(
         Promise.resolve().then(() => {
-          console.log('Contact submission stored', {
+          console.info('[contact] submission_stored', {
             submissionId,
             domain,
             remoteIp,
             intent: sanitizedPayload.intent,
             turnstileScore: turnstile.score,
+            syntheticRunId: syntheticBypass.runId,
           });
         }),
       );

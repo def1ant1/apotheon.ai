@@ -33,3 +33,47 @@ static Astro build remains resilient under failure conditions.
   props/slots to that component so every error page inherits the enhancement automatically.
 - Keep observability metadata (request IDs, trace headers) visible on the 500 page to accelerate
   triage. When new headers are introduced, update the copy and embed tooltips or modals as needed.
+
+## Synthetic Monitoring as Code
+
+- **Uptime-Kuma provisioning**
+  - Use the REST API to manage monitors so staging/prod stay identical. Example:
+    ```bash
+    curl -X POST "$UPTIME_KUMA/api/monitor/add" \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer $UPTIME_KUMA_TOKEN" \
+      -d '{
+        "name": "Apotheon Contact API",
+        "type": "http",
+        "url": "https://apotheon.ai/api/contact",
+        "method": "POST",
+        "body": "{\"probe\":\"synthetic\"}",
+        "interval": 60,
+        "maxretries": 1
+      }'
+    ```
+    Store the cURL snippets (or Terraform equivalents) in `infra/uptime-kuma/` so diffs drive
+    monitor changes.
+- **GlitchTip/Sentry automation**
+  - Automate project creation and DSN retrieval via API instead of clicking through the UI:
+    ```bash
+    curl -X POST "https://glitchtip.example.com/api/0/organizations/apotheon/projects/" \
+      -H "Authorization: Bearer $GLITCHTIP_TOKEN" \
+      -H "Content-Type: application/json" \
+      -d '{"name":"apotheon-ai-web","platform":"javascript"}'
+    ```
+  - Pipe the resulting DSN into a secret manager (`wrangler secret put GLITCHTIP_DSN`) so Workers
+    and Astro builds stay in sync without copying values manually.
+- **IaC integration**
+  - Wrap both APIs with Terraform modules (use `terraform-provider-http` or custom providers) and
+    commit the modules alongside the Cloudflare Pages/Worker configuration. The CI pipeline runs
+    `terraform plan` on every PR to highlight monitor drift before merge.
+
+## Automated Status Signals
+
+- The synthetic Worker writes every run to D1. Use the same database to power the on-site incident
+  banner and external status dashboards. Expose read-only replicas to BI tools via Wrangler `d1
+execute` scripts stored in `infra/d1/`.
+- Keep the incident banner React island wired to the Worker endpoint and include a manual override
+  flag (`SYNTHETIC_ALERT_WEBHOOK`) so incident commanders can simulate failures during drills without
+  mutating production tables.
