@@ -2,6 +2,7 @@
 import '../styles/global.css';
 
 import ConsentManager from '../components/islands/ConsentManager';
+import IncidentBanner from '../components/islands/IncidentBanner';
 import SiteFooter from '../components/navigation/SiteFooter.astro';
 import SiteHeader from '../components/navigation/SiteHeader.astro';
 import { createPageSeo, resolveLocaleFromPath, type PageSeoInput } from '../utils/seo';
@@ -118,6 +119,11 @@ const lcpCandidates = Object.entries(rawImageManifest.assets)
         <meta name="apotheon:lcp-candidates" content={lcpCandidates.join(',')} />
       )
     }
+    <meta
+      name="apotheon:synthetic-status-endpoint"
+      content={import.meta.env.PUBLIC_SYNTHETIC_STATUS_ENDPOINT ??
+        'https://synthetic.apotheon.ai/status'}
+    />
     <!--
       Fonts are imported via src/styles/global.css using @fontsource-variable/inter
       so we never punch holes in the CSP for third-party font CDNs.
@@ -131,6 +137,7 @@ const lcpCandidates = Object.entries(rawImageManifest.assets)
       low-power devices still receive accessible fallback navigation.
     -->
     <slot name="preheader" />
+    <IncidentBanner client:load />
     <SiteHeader />
     {
       /**

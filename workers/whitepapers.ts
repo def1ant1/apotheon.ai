@@ -3,6 +3,16 @@
 import { z } from 'zod';
 
 import {
+  SYNTHETIC_CHECK_HEADER,
+  SYNTHETIC_NONCE_HEADER,
+  SYNTHETIC_RUN_ID_HEADER,
+  SYNTHETIC_SIGNATURE_HEADER,
+  SYNTHETIC_TIMESTAMP_HEADER,
+  WHITEPAPER_CHECK_IDENTIFIER,
+  isTimestampFresh,
+  verifySyntheticSignature,
+} from './shared/synthetic-signature';
+import {
   WHITEPAPER_MANIFEST_BY_SLUG,
   type WhitepaperManifestEntry,
 } from '../src/generated/whitepapers.manifest';
@@ -23,6 +33,8 @@ interface Env {
   WHITEPAPER_BLOCKLIST?: string;
   WHITEPAPER_ALLOWLIST?: string;
   WHITEPAPER_SIGNING_TTL_SECONDS?: string;
+  WHITEPAPER_SYNTHETIC_SIGNING_SECRET?: string;
+  WHITEPAPER_SIGNED_URL_BASE?: string;
 }
 
 interface WorkerExecutionContext {
@@ -143,6 +155,69 @@ function deriveCustomList(raw: string | undefined): string[] {
     .filter(Boolean);
 }
 
+interface SyntheticBypassResult {
+  allowed: boolean;
+  runId?: string;
+}
+
+function createSyntheticTurnstileResponse(): TurnstileResponse {
+  return {
+    success: true,
+    challenge_ts: new Date().toISOString(),
+    action: 'synthetic-health-check',
+    score: 1,
+  };
+}
+
+async function evaluateSyntheticBypass(
+  request: Request,
+  env: Env,
+  payload: z.infer<typeof serverSideSchema>,
+): Promise<SyntheticBypassResult> {
+  const secret = env.WHITEPAPER_SYNTHETIC_SIGNING_SECRET;
+  if (!secret) {
+    return { allowed: false };
+  }
+
+  const signature = request.headers.get(SYNTHETIC_SIGNATURE_HEADER);
+  const timestamp = request.headers.get(SYNTHETIC_TIMESTAMP_HEADER);
+  const nonce = request.headers.get(SYNTHETIC_NONCE_HEADER);
+  const check = request.headers.get(SYNTHETIC_CHECK_HEADER);
+
+  if (!signature || !timestamp || !nonce || check !== WHITEPAPER_CHECK_IDENTIFIER) {
+    return { allowed: false };
+  }
+
+  if (!isTimestampFresh(timestamp)) {
+    return { allowed: false };
+  }
+
+  const normalizedPayload = {
+    email: payload.email.toLowerCase(),
+    company: payload.company,
+    whitepaperSlug: payload.whitepaperSlug,
+    justification: payload.justification,
+  };
+
+  const verified = await verifySyntheticSignature(
+    secret,
+    signature,
+    WHITEPAPER_CHECK_IDENTIFIER,
+    timestamp,
+    nonce,
+    normalizedPayload,
+  );
+
+  if (!verified) {
+    return { allowed: false };
+  }
+
+  return {
+    allowed: true,
+    runId: request.headers.get(SYNTHETIC_RUN_ID_HEADER) ?? undefined,
+  };
+}
+
 function resolveWhitepaper(slug: string): WhitepaperManifestEntry {
   const entry = WHITEPAPER_MANIFEST_BY_SLUG.get(slug);
   if (!entry) {
@@ -171,18 +246,30 @@ async function createSignedUrl(
   bucket: SignableBucket,
   key: string,
   ttlSeconds: number,
+  fallbackBase?: string,
 ): Promise<SignedUrl> {
   const expirationMs = Date.now() + ttlSeconds * 1000;
   const expirationIso = new Date(expirationMs).toISOString();
+  const expires = Math.floor(expirationMs / 1000);
 
   if (typeof bucket.createSignedUrl === 'function') {
-    const expires = Math.floor(expirationMs / 1000);
     const signed = await bucket.createSignedUrl({ key, expires, method: 'GET' });
     const url = typeof signed === 'string' ? signed : signed?.url;
     if (!url) {
       throw new HttpError(500, 'Failed to generate download link.');
     }
     return signedUrlSchema.parse({ url, expiration: expirationIso });
+  }
+
+  if (fallbackBase) {
+    const baseUrl = new URL(fallbackBase);
+    const normalizedPath = baseUrl.pathname.endsWith('/')
+      ? baseUrl.pathname.slice(0, -1)
+      : baseUrl.pathname;
+    baseUrl.pathname = `${normalizedPath}/${key}`;
+    baseUrl.searchParams.set('expires', expires.toString());
+    baseUrl.searchParams.set('token', crypto.randomUUID());
+    return signedUrlSchema.parse({ url: baseUrl.toString(), expiration: expirationIso });
   }
 
   throw new HttpError(500, 'Bucket binding missing signed URL capability.');
@@ -295,21 +382,24 @@ export default {
         throw new HttpError(403, 'Use a corporate email address that passes verification.');
       }
 
-      const remoteIp =
+      const syntheticBypass = await evaluateSyntheticBypass(request, env, sanitized);
+
+      const observedRemoteIp =
         request.headers.get('cf-connecting-ip') ?? request.headers.get('x-forwarded-for') ?? null;
+      const remoteIp = syntheticBypass.allowed ? 'synthetic-monitor' : observedRemoteIp;
       const userAgent = request.headers.get('user-agent');
 
       const rateLimitKey = `${sanitized.email.toLowerCase()}::${remoteIp ?? 'unknown'}`;
-      await enforceRateLimit(env, rateLimitKey);
+      if (!syntheticBypass.allowed) {
+        await enforceRateLimit(env, rateLimitKey);
+      }
 
-      const turnstile = await verifyTurnstileToken(
-        sanitized.turnstileToken,
-        env.TURNSTILE_SECRET,
-        remoteIp,
-      );
+      const turnstile = syntheticBypass.allowed
+        ? createSyntheticTurnstileResponse()
+        : await verifyTurnstileToken(sanitized.turnstileToken, env.TURNSTILE_SECRET, remoteIp);
 
       let mxRecords: string[] | undefined;
-      if (shouldPerformMxLookup(domainAnalysis)) {
+      if (!syntheticBypass.allowed && shouldPerformMxLookup(domainAnalysis)) {
         const lookupResult = await lookupMxRecords(
           domainAnalysis.domain || extractDomain(sanitized.email) || '',
         );
@@ -328,6 +418,7 @@ export default {
         env.WHITEPAPER_ASSETS as SignableBucket,
         entry.asset.objectKey,
         ttlSeconds,
+        env.WHITEPAPER_SIGNED_URL_BASE,
       );
 
       const requestId = await persistRequest(env, sanitized, entry, {
@@ -348,6 +439,7 @@ export default {
             slug: entry.slug,
             domain: domainAnalysis.domain,
             classification: domainAnalysis.classification,
+            syntheticRunId: syntheticBypass.runId,
           });
         }),
       );

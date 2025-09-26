@@ -48,6 +48,9 @@ jobs:
       - name: Type check
         run: npm run typecheck
 
+      - name: Synthetic health dry-run
+        run: npm run workers:synthetic:dry-run
+
       - name: Analytics proxy unit tests
         run: npm run test:analytics-proxy
 
@@ -141,6 +144,9 @@ jobs:
 
       - name: Type check
         run: npm run typecheck
+
+      - name: Synthetic health dry-run
+        run: npm run workers:synthetic:dry-run
 
       - name: Run test suite
         run: npm run test

@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 
+import { dismissConsentModal } from './utils/page';
+
 const VALID_AUTH = `Basic ${Buffer.from('analyst:secret').toString('base64')}`;
 
 const fixture = {
@@ -84,13 +86,21 @@ test.describe('lead viewer admin surface', () => {
   test('supports keyboard auth flow and renders accessible tables', async ({ page }) => {
     await page.goto('/lead-viewer/');
 
+    await dismissConsentModal(page);
+
     const username = page.getByLabel('Username');
     await username.fill('analyst');
     const password = page.getByLabel('Password');
     await password.fill('secret');
 
     const loginButton = page.getByRole('button', { name: 'Authenticate' });
-    await loginButton.press('Enter');
+    await Promise.all([
+      page.waitForResponse(
+        (response) =>
+          response.url().includes('/api/lead-viewer') && response.request().method() === 'GET',
+      ),
+      loginButton.click(),
+    ]);
 
     await expect(page.getByRole('heading', { name: 'Contact submissions' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Whitepaper requests' })).toBeVisible();
