@@ -11,8 +11,9 @@ const investorBanner = {
   secondaryText: 'Responses guaranteed within one business day during %officeHours%.',
   cta: {
     label: 'Access investor materials',
-    href: '/about/contact/?team=investor-relations',
-    ariaLabel: 'Request Apotheon.ai investor relations materials via the contact team intake form',
+    href: '/about/investors/',
+    ariaLabel:
+      'Navigate to the Apotheon.ai investor relations overview before requesting materials',
   },
 };
 

@@ -23,6 +23,47 @@ export interface WhitepaperManifestEntry {
 
 export const WHITEPAPER_MANIFEST: ReadonlyArray<WhitepaperManifestEntry> = [
   {
+    slug: 'apotheon-investor-brief',
+    title: 'Apotheon.ai Investor Brief',
+    summary:
+      'Board-ready overview of revenue momentum, regulated AI moat, and automation platform economics for diligence teams.',
+    industries: ['financial-services', 'healthcare', 'public-sector'],
+    asset: {
+      objectKey: 'whitepapers/apotheon-investor-brief.pdf',
+      checksum: '8da50dab10a535fc2ece307fac2bdf7e2f054ca44688f8c0032216c15cb30475',
+      contentType: 'application/pdf',
+      pageCount: 18,
+    },
+    gatingNotes: {
+      distribution:
+        "Position as the fastest path to understand Apotheon.ai's defensible pipeline mechanics, expansion levers, and compliance differentiators without an NDA.",
+      reviewerChecklist: [
+        'Confirm all ARR, GRR, and NRR references align with the latest RevOps board pack (update the appendix timestamp on drift).',
+        'Validate competitive landscape statements against the approved intelligence brief to avoid disclosing embargoed field learnings.',
+        'Ensure regulatory roadmap slides cite the live certification IDs from the trust center before shipping.',
+        'Verify every investor CTA routes to the `/about/contact/?team=investor-relations` flow so analytics and automation stay linked.',
+      ],
+      complianceContacts: [
+        {
+          team: 'Investor Relations Desk',
+          email: 'ir@apotheon.ai',
+        },
+        {
+          team: 'Revenue Operations Analytics',
+          email: 'revops@apotheon.ai',
+        },
+        {
+          team: 'Security & Compliance Office',
+          email: 'compliance@apotheon.ai',
+        },
+      ],
+    },
+    lifecycle: {
+      draft: false,
+      archived: false,
+    },
+  },
+  {
     slug: 'sovereign-ai-assurance',
     title: 'Sovereign AI Assurance Field Guide',
     summary:

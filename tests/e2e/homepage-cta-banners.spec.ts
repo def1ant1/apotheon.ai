@@ -9,10 +9,9 @@ test.describe('Homepage CTA banners', () => {
     await investorCta.focus();
     await expect(investorCta).toBeFocused();
 
-    await Promise.all([page.waitForURL('**/about/contact/**'), investorCta.press('Enter')]);
+    await Promise.all([page.waitForURL('**/about/investors/**'), investorCta.press('Enter')]);
 
-    await expect(page).toHaveURL(/\/about\/contact\//);
-    await expect(page).toHaveURL(/team=investor-relations/);
+    await expect(page).toHaveURL(/\/about\/investors\//);
     await page.goBack();
   });
 

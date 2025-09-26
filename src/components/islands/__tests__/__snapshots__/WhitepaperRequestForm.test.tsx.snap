@@ -45,6 +45,11 @@ exports[`WhitepaperRequestForm > matches the hydrated markup snapshot 1`] = `
             Select a whitepaper
           </option>
           <option
+            value="apotheon-investor-brief"
+          >
+            Apotheon.ai Investor Brief
+          </option>
+          <option
             value="sovereign-ai-assurance"
           >
             Sovereign AI Assurance Field Guide

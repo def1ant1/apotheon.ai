@@ -31,11 +31,17 @@ component implementations.
   `formatContactReachability` helper in `src/components/homepage/ctaContactNote.ts`
   injects the email + phone sourced from `src/components/navigation/contactMetadata.ts`
   into the accessible description.
+- **Investor flow:** The investor CTA now routes to `/about/investors/` so visitors review
+  the diligence context before hitting the contact form. Keep the `ariaLabel` focused on
+  navigation semantics ("Navigate to…") instead of form submission language.
 - **Accessibility + QA:**
   - Unit tests (`InvestorBanner.test.tsx`, `DemoBanner.test.tsx`) verify aria wiring and
     contact copy. Run `npm run test` whenever banner content changes.
   - Playwright coverage lives in `tests/e2e/homepage-cta-banners.spec.ts`; execute
     `npm run test:e2e` to ensure keyboard activation still navigates correctly.
+  - The end-to-end investor journey is captured in `tests/e2e/investor-journey.spec.ts`.
+    Run it whenever investor copy or routing changes to verify the contact form preselects
+    the Investor relations intent.
   - Ladle stories (`homepage/cta-banners`) provide rapid visual diffing. Rebuild with
     `npm run ladle:build` after color or copy updates so reviewers have fresh artifacts.
 - **Background guidance:** Gradients use slate + sky tokens to preserve 4.5:1 contrast.
@@ -50,6 +56,7 @@ After editing homepage benefits or CTA banners:
 1. Update `landing.mdx` frontmatter with new copy.
 2. Run `npm run lint`, `npm run typecheck`, and `npm run test` to exercise schema,
    unit, and accessibility coverage.
-3. Execute `npm run test:e2e` to replay keyboard automation for the banners.
+3. Execute `npm run test:e2e` to replay keyboard automation for the banners and
+   validate the investor journey.
 4. Finish with `npm run build` and `npm run ladle:build` so static + documentation
    artifacts stay in sync.

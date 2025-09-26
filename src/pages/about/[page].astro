@@ -27,6 +27,7 @@ const { data } = entry;
 const { Content } = await entry.render();
 const isContactPage = entry.slug === 'about/contact';
 const isWhitepaperPage = entry.slug === 'about/white-papers';
+const isInvestorsPage = entry.slug === 'about/investors';
 const heroCopy =
   data.summary ??
   'Understand the teams, history, and culture powering Apotheon.ai as we scale enterprise platforms.';
@@ -54,6 +55,39 @@ const faqSchema = isContactPage
     ])
   : null;
 const schemaPayload = faqSchema ? [breadcrumbSchema, faqSchema] : breadcrumbSchema;
+const investorVision = isInvestorsPage ? data.vision : null;
+const investorMarket = isInvestorsPage ? data.market : null;
+const investorRegulatory = isInvestorsPage ? data.regulatoryStance : null;
+const investorRoadmap = isInvestorsPage ? data.roadmap : null;
+const investorBrief = isInvestorsPage ? data.investorBrief : null;
+const investorCalls = isInvestorsPage ? data.callsToAction : null;
+const investorMarketItems = (investorMarket?.verticals ?? [
+  'Financial services consolidating risk operations and AI observability.',
+  'Healthcare networks modernizing clinical governance without sacrificing compliance.',
+  'Public sector missions operationalizing sovereign AI mandates.',
+]) as ReadonlyArray<string>;
+const investorRegulatoryItems = (investorRegulatory?.commitments ?? [
+  'Independent attestation roadmap tracking SOC 2, HITRUST, and FedRAMP milestones.',
+  'Policy automation mapped to NIST RMF, ISO 42001, and sector guardrails enforced in platform.',
+  'Worker-level audit trails with retention tuned for investor-grade diligence and disclosure readiness.',
+]) as ReadonlyArray<string>;
+const investorRoadmapItems = (investorRoadmap?.milestones ?? [
+  '2025 Q1 — Launch zero-knowledge attestation exchange for low-friction assurance sharing.',
+  '2025 Q2 — Expand automation studio marketplace with certified partner playbooks.',
+  '2025 Q3 — Deliver international data residency controls with configurable key management.',
+  '2025 Q4 — Release investor analytics dashboard streaming revenue and compliance telemetry.',
+]) as ReadonlyArray<string>;
+
+const heroCtaHref = isWhitepaperPage
+  ? '#whitepaper-request'
+  : isInvestorsPage
+    ? (investorCalls?.primaryHref ?? '/about/contact/?team=investor-relations')
+    : '/about/contact/';
+const heroCtaDescription = isWhitepaperPage
+  ? 'Jump directly to the gated asset request workflow powered by the delivery Worker.'
+  : isInvestorsPage
+    ? 'Route straight to investor relations with analytics-ready flags applied to your submission.'
+    : 'Direct message routes into the RevOps-managed intake queue.';
 ---
 
 <MarketingShell title={data.title} description={heroCopy} {breadcrumbs}>
@@ -64,10 +98,8 @@ const schemaPayload = faqSchema ? [breadcrumbSchema, faqSchema] : breadcrumbSche
     copy={heroCopy}
     cta={{
       label: heroCtaLabel,
-      href: isWhitepaperPage ? '#whitepaper-request' : '/about/contact/',
-      description: isWhitepaperPage
-        ? 'Jump directly to the gated asset request workflow powered by the delivery Worker.'
-        : 'Direct message routes into the RevOps-managed intake queue.',
+      href: heroCtaHref,
+      description: heroCtaDescription,
     }}
   />
 
@@ -81,6 +113,128 @@ const schemaPayload = faqSchema ? [breadcrumbSchema, faqSchema] : breadcrumbSche
   >
     <Content />
   </article>
+
+  {
+    isInvestorsPage && (
+      <section class="mt-12 grid gap-8" aria-labelledby="investor-overview">
+        <div class="grid gap-4">
+          <h2 id="investor-overview" class="text-2xl font-semibold text-white">
+            Investor enablement briefing
+          </h2>
+          <p class="max-w-4xl text-slate-300">
+            {/* The extra copy below mirrors the MDX narrative but structures key diligence threads so IR can reference a single */}
+            {/* canonical layout. Frontmatter drives the bullet lists so Finance, Compliance, and GTM partners can update without */}
+            {/* editing JSX. */}
+            {investorVision?.narrative ??
+              "Review the metrics, governance pillars, and automation cadence powering Apotheon.ai's investor readiness program."}
+          </p>
+        </div>
+
+        <div class="grid gap-6 md:grid-cols-2">
+          <div class="grid gap-3 rounded-xl border border-slate-700 bg-slate-900/60 p-6 shadow-lg shadow-slate-950/40">
+            <h3 class="text-xl font-semibold text-white">
+              {investorVision?.headline ?? 'Compounding trust. Compounding growth.'}
+            </h3>
+            <p class="text-slate-300">
+              {investorVision?.narrative ??
+                'Apotheon.ai automates governance, telemetry, and assurance so regulated enterprises expand AI safely while compounding revenue.'}
+            </p>
+          </div>
+
+          <div class="grid gap-3 rounded-xl border border-slate-700 bg-slate-900/60 p-6 shadow-lg shadow-slate-950/40">
+            <h3 class="text-xl font-semibold text-white">
+              {investorMarket?.headline ?? 'Where we win today'}
+            </h3>
+            <ul class="list-disc space-y-2 pl-5 text-slate-300">
+              {investorMarketItems.map((item: string) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <div class="grid gap-6 md:grid-cols-2">
+          <div class="grid gap-3 rounded-xl border border-slate-700 bg-slate-900/60 p-6 shadow-lg shadow-slate-950/40">
+            <h3 class="text-xl font-semibold text-white">
+              {investorRegulatory?.headline ?? 'Regulation is our accelerant'}
+            </h3>
+            <ul class="list-disc space-y-2 pl-5 text-slate-300">
+              {investorRegulatoryItems.map((item: string) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </div>
+
+          <div class="grid gap-3 rounded-xl border border-slate-700 bg-slate-900/60 p-6 shadow-lg shadow-slate-950/40">
+            <h3 class="text-xl font-semibold text-white">
+              {investorRoadmap?.headline ?? 'Roadmap signals through the next six quarters'}
+            </h3>
+            <ul class="list-disc space-y-2 pl-5 text-slate-300">
+              {investorRoadmapItems.map((item: string) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <div class="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+          <div class="grid gap-4 rounded-xl border border-slate-700 bg-slate-900/60 p-6 shadow-lg shadow-slate-950/40">
+            <h3 class="text-xl font-semibold text-white">Investor brief automation</h3>
+            <p class="text-slate-300">
+              {investorBrief?.summary ??
+                'Download the diligence-ready PDF curated for institutional partners. Distribution runs through the whitepaper Worker so telemetry, signed URLs, and revocation stay centralized.'}
+            </p>
+            <dl class="grid gap-2 text-sm text-slate-400">
+              <div class="grid gap-1">
+                <dt class="font-semibold text-slate-200">R2 object key</dt>
+                <dd>
+                  <code>
+                    {investorBrief?.objectKey ?? 'whitepapers/apotheon-investor-brief.pdf'}
+                  </code>
+                </dd>
+              </div>
+              <div class="grid gap-1">
+                <dt class="font-semibold text-slate-200">Steward</dt>
+                <dd>{investorBrief?.lastReviewedBy ?? 'ir@apotheon.ai'}</dd>
+              </div>
+            </dl>
+            <div class="flex flex-wrap gap-3">
+              <a
+                href={investorCalls?.primaryHref ?? '/about/contact/?team=investor-relations'}
+                class="inline-flex items-center justify-center rounded-md bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-indigo-500/30 transition hover:bg-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
+                {investorCalls?.primaryLabel ?? 'Speak with investor relations'}
+              </a>
+              <a
+                href="/about/white-papers/#whitepaper-request"
+                class="inline-flex items-center justify-center rounded-md border border-indigo-400 px-4 py-2 text-sm font-semibold text-indigo-200 transition hover:border-indigo-300 hover:text-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              >
+                {investorCalls?.secondaryLabel ?? 'Request the investor brief'}
+              </a>
+            </div>
+          </div>
+
+          <aside class="grid gap-4 rounded-xl border border-slate-700 bg-slate-900/40 p-6 text-sm text-slate-300 shadow-inner shadow-slate-950/20">
+            <h3 class="text-base font-semibold text-white">Automation checklist</h3>
+            <ul class="list-disc space-y-2 pl-5">
+              <li>
+                Ensure investor submissions include the <code>team=investor-relations</code> query
+                so ContactForm preselects the intent and logs analytics.
+              </li>
+              <li>
+                Reconcile investor brief downloads weekly using the Worker\'s D1 ledger to confirm
+                signed URLs were redeemed by approved domains.
+              </li>
+              <li>
+                When the PDF updates, rerun <code>npm run ensure:whitepapers</code> so the checksum
+                and manifest stay in lockstep.
+              </li>
+            </ul>
+          </aside>
+        </div>
+      </section>
+    )
+  }
 
   {
     isContactPage && (

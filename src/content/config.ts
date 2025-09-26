@@ -116,6 +116,52 @@ const marketingCollection = defineCollection({
       .boolean()
       .default(false)
       .describe('Toggle to hide unpublished marketing entries from navigation + homepage previews'),
+    vision: z
+      .object({
+        headline: z.string(),
+        narrative: z.string(),
+      })
+      .optional()
+      .describe('Investor relations vision copy surfaced in the investors layout.'),
+    market: z
+      .object({
+        headline: z.string(),
+        verticals: z.array(z.string()),
+      })
+      .optional()
+      .describe('Market execution highlights for investor relations.'),
+    regulatoryStance: z
+      .object({
+        headline: z.string(),
+        commitments: z.array(z.string()),
+      })
+      .optional()
+      .describe('Compliance positioning surfaced on the investors page.'),
+    roadmap: z
+      .object({
+        headline: z.string(),
+        milestones: z.array(z.string()),
+      })
+      .optional()
+      .describe('Roadmap checkpoints communicated to investors.'),
+    callsToAction: z
+      .object({
+        primaryLabel: z.string(),
+        primaryHref: z.string().min(1),
+        secondaryLabel: z.string(),
+        secondarySlug: z.string().optional(),
+      })
+      .optional()
+      .describe('Investor-specific CTAs rendered in the investors layout.'),
+    investorBrief: z
+      .object({
+        title: z.string(),
+        objectKey: z.string(),
+        summary: z.string(),
+        lastReviewedBy: z.string().email(),
+      })
+      .optional()
+      .describe('Metadata linking the investors page to the investor brief whitepaper asset.'),
   }),
 });
 

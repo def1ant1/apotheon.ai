@@ -10,7 +10,9 @@ pre-production environments.
 1. **Client-side validation** happens in the `ContactForm` React island. Inputs
    leverage the shared `contactFormSchema` and domain analysis utilities to
    mirror the Worker logic, immediately coaching the user toward corporate
-   email addresses and complete narratives.
+   email addresses and complete narratives. Query parameters such as
+   `team=investor-relations` preselect the appropriate intent so analytics and
+   RevOps routing stay synchronized without manual dropdown changes.
 2. **Turnstile verification** executes client-side; the generated token is sent
    with the submission. A noscript fallback guides users who cannot run the
    widget to escalate through `security@apotheon.ai`.
@@ -44,6 +46,9 @@ pre-production environments.
 
 - Set `PUBLIC_CONTACT_ENDPOINT` and `PUBLIC_TURNSTILE_SITE_KEY` in build-time
   environments so the island hydrates with the correct endpoints.
+- When shipping new teams/intents, update the intent preset map in
+  `ContactForm.tsx`. Add unit tests mirroring `ContactFormIntent.test.ts` to lock
+  in routing logic and analytics mappings.
 - Configure the following Wrangler bindings before shipping to production:
   - `CONTACT_RATE_LIMIT`: KV namespace for per-domain/IP throttling.
   - `CONTACT_AUDIT_DB`: D1 database seeded via the provided migration.
