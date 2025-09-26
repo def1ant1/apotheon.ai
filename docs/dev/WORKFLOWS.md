@@ -48,6 +48,70 @@ pre-production environments.
 - `npm run lint` now invokes Vale (via `scripts/content/run-vale.mjs`) so content
   style guardrails run alongside ESLint/Stylelint before merges.
 
+## Internationalization
+
+Global content management follows the same enterprise-ready posture as the
+contact intake workflow. The internationalization (i18n) practice leads the
+globalisation backlog and is accountable for automation health:
+
+- **Product Marketing (PMM) Ops** owns the language roadmap and approves new
+  locales.
+- **Developer Experience (DX) Platform** maintains the `astro-i18next`
+  configuration and integrates new automation.
+- **Quality Engineering (QE)** validates locale rollouts through the feature flag
+  strategy described in `docs/dev/I18N.md`.
+
+### JSON key conventions
+
+- Keys reside in `src/i18n/<locale>/*.json` using lower-case, kebab-cased
+  namespaces (for example `common.json`, `navigation.json`).
+- Nested keys should mirror the component tree (`hero.title`, `hero.cta.label`)
+  so cross-locale diffs remain stable.
+- Add inline comments to PR descriptions rather than JSON files to keep bundles
+  minification-friendly.
+
+### Adding locales and resources
+
+1. Duplicate `src/i18n/en` into a new `src/i18n/<locale>` folder and translate
+   each JSON file.
+2. Register the locale in `SUPPORTED_LOCALES` inside
+   `src/i18n/i18next.server.mjs` and expose the language metadata through any
+   marketing components that render locale pickers.
+3. Update `astro-i18next.config.mjs` if additional namespaces or fallback
+   behavior is required.
+4. Ensure QA previews the locale using the `PUBLIC_ENABLE_LOCALE_QA_SWITCHER`
+   feature flag described in `docs/dev/I18N.md`. The toggle gates locale routing
+   to staging-only environments until the rollout is approved.
+
+### Automation expectations
+
+- Vale runs as part of `npm run lint`, keeping translation Markdown and release
+  notes aligned with editorial standards.
+- `npm run typecheck`, `npm run test`, and `npm run test:e2e` run in CI and must
+  succeed before QA enables the locale flag. Localization helpers, feature flag
+  resolvers, and Playwright smoke tests catch regressions automatically.
+- Pull requests that touch translation files are blocked by CI linting, Vale,
+  and unit/e2e suites; treat red pipelines as release blockers.
+
+### Localization checklists
+
+**Updating translations**
+
+- [ ] Pull the latest language kit from the localisation vendor.
+- [ ] Update `src/i18n/<locale>/*.json` files and rerun `npm run lint` to trigger
+      Vale and JSON schema validation.
+- [ ] Confirm Pagefind manifests index the new locale by running
+      `npm run search:index` locally.
+
+**Pre-submission regression checks**
+
+- [ ] `npm run lint`
+- [ ] `npm run typecheck`
+- [ ] `npm run test`
+- [ ] `npm run test:e2e`
+- [ ] `npm run search:index`
+- [ ] Commit regenerated Pagefind assets in `public/pagefind/`.
+
 ## Environment configuration
 
 - Set `PUBLIC_CONTACT_ENDPOINT` and `PUBLIC_TURNSTILE_SITE_KEY` in build-time
