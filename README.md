@@ -70,6 +70,8 @@ scaffolding.
 
    - Node.js ≥ 18 (LTS recommended)
    - npm ≥ 9
+   - `gray-matter` ships as a runtime dependency so `scripts/content/ensure-og-assets.ts`
+     can parse MDX frontmatter even when pnpm/Yarn skip hoisting transitive packages.
 
 2. **Install dependencies**
 
