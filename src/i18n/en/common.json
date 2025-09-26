@@ -14,6 +14,16 @@
     "aria": {
       "primaryHeader": "Primary site header"
     },
+    "localeSwitcher": {
+      "_comment": "QA-only locale selector surfaced behind PUBLIC_ENABLE_LOCALE_QA_SWITCHER.",
+      "ariaLabel": "QA locale switcher",
+      "instructions": "Focus to reveal QA-only locales. Production builds stay on the default language unless the QA flag is enabled.",
+      "status": {
+        "current": "Browsing the {{locale}} locale.",
+        "updated": "Switching to {{locale}}…"
+      },
+      "defaultLocaleSuffix": "default locale"
+    },
     "brand": {
       "name": "Apotheon.ai",
       "tagline": "Automation-first GTM fabric for enterprise AI launches."

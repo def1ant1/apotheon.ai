@@ -31,6 +31,7 @@ declare global {
     readonly PUBLIC_LEAD_VIEWER_API_BASE?: string;
     readonly PUBLIC_SYNTHETIC_STATUS_ENDPOINT?: string;
     readonly PUBLIC_EXPERIMENTS_ENDPOINT?: string;
+    readonly PUBLIC_ENABLE_LOCALE_QA_SWITCHER?: string;
   }
 
   interface ImportMeta {
