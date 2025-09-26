@@ -23,5 +23,8 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     stdout: 'pipe',
     stderr: 'pipe',
+    env: {
+      PUBLIC_ENABLE_LOCALE_QA_SWITCHER: 'true',
+    },
   },
 });

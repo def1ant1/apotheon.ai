@@ -36,7 +36,7 @@
     "accessibility:axe": "node ./config/accessibility/run-axe.mjs",
     "accessibility:pa11y": "node ./config/accessibility/run-pa11y.mjs",
     "accessibility:all": "npm run accessibility:axe && npm run accessibility:pa11y",
-    "pretest:e2e": "npm run ensure:og-assets && npm run ensure:homepage-hero-media && npm run ensure:history-media && npm run ensure:cms-config",
+    "pretest:e2e": "npm run ensure:og-assets && npm run ensure:homepage-hero-media && npm run ensure:history-media && npm run ensure:whitepapers && npm run ensure:cms-config && node ./tests/e2e/fixtures/seed-pagefind.mjs",
     "prepare": "husky install",
     "pagefind:index": "npm run search:index",
     "postbuild:seo": "node ./scripts/seo/generate-sitemap.mjs && node ./scripts/seo/generate-hreflang.mjs && node ./scripts/seo/generate-robots.mjs",

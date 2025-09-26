@@ -75,6 +75,29 @@ export const SEO_MANIFEST = Object.freeze({
          */
         searchConsole: Object.freeze({ ...SEARCH_CONSOLE_PROPERTY_IDS }),
       }),
+      'es-ES': Object.freeze({
+        code: 'es-ES',
+        label: 'Español (España)',
+        origin: new URL(PRIMARY_SITE_ORIGIN),
+        /**
+         * Spanish experiences live under `/es/` to keep canonical URLs stable while
+         * we grow the localized content library. Update alongside CDN rules.
+         */
+        pathPrefix: '/es/',
+        hrefLang: 'es-ES',
+        searchConsole: Object.freeze({ ...SEARCH_CONSOLE_PROPERTY_IDS }),
+      }),
+      'fr-FR': Object.freeze({
+        code: 'fr-FR',
+        label: 'Français (France)',
+        origin: new URL(PRIMARY_SITE_ORIGIN),
+        /**
+         * French pages inherit the same host but are segmented under `/fr/`.
+         */
+        pathPrefix: '/fr/',
+        hrefLang: 'fr-FR',
+        searchConsole: Object.freeze({ ...SEARCH_CONSOLE_PROPERTY_IDS }),
+      }),
     }),
     hreflang: Object.freeze({
       /**
@@ -82,7 +105,7 @@ export const SEO_MANIFEST = Object.freeze({
        * across language variants. Each cluster enumerates locales that serve
        * the same canonical content in different languages.
        */
-      clusters: Object.freeze([Object.freeze(['en-US'])]),
+      clusters: Object.freeze([Object.freeze(['en-US', 'es-ES', 'fr-FR'])]),
       /**
        * Locale whose canonical URL should be re-used for the `x-default`
        * alternate when search engines need a fallback.
