@@ -126,6 +126,32 @@ ANALYTICS_RATE_LIMIT_WINDOW_SECONDS = "60"
 # Secrets managed via `wrangler secret put ANALYTICS_PROXY_SECRET` so the
 # signing key never lands in git history.
 
+[env.experiments_proxy]
+name = "apotheon-experiments-proxy"
+main = "workers/experiments-proxy.ts"
+usage_model = "standard"
+compatibility_date = "2024-10-08"
+migrations_dir = "workers/migrations/experiments"
+
+[[env.experiments_proxy.routes]]
+pattern = "experiments.apotheon.ai/*"
+custom_domain = true
+
+[[env.experiments_proxy.kv_namespaces]]
+binding = "EXPERIMENT_DEFINITIONS"
+id = "00000000000000000000000000000007"
+preview_id = "11111111111111111111111111111117"
+
+[env.experiments_proxy.vars]
+GROWTHBOOK_FEATURES_ENDPOINT = "https://growthbook.apotheon.ai"
+EXPERIMENTS_CACHE_KEY = "growthbook:definitions"
+EXPERIMENTS_CACHE_TTL_SECONDS = "900"
+# Configure the GrowthBook SDK key and refresh secret via:
+#   wrangler secret put GROWTHBOOK_CLIENT_KEY
+#   wrangler secret put EXPERIMENTS_REFRESH_TOKEN
+# Optional bearer tokens for self-hosted GrowthBook instances can be stored
+# with `wrangler secret put GROWTHBOOK_BEARER_TOKEN`.
+
 [env.seo_monitor]
 name = "apotheon-seo-monitor"
 main = "workers/seo-monitor.ts"

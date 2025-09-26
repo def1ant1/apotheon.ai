@@ -3,7 +3,9 @@
 This guide captures the repeatable workflow for planning, drafting, and shipping
 Apotheon.ai blog posts without breaking the automation that protects the rest of
 our platform. Treat it as the canonical runbook—update it whenever the content
-schema, layouts, or review stages evolve.
+schema, layouts, or review stages evolve. Pair it with
+[`docs/content/CALENDAR.md`](../content/CALENDAR.md) so onboarding teammates can
+see how GrowthBook experiments map to each rolling content drop.
 
 ## 1. Start from a commented template
 

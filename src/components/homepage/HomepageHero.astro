@@ -2,6 +2,8 @@
 import { Image } from '@astrojs/image/components';
 import { getImage } from 'astro:assets';
 
+import ExperimentBadge from '../islands/ExperimentBadge';
+
 import type { HomepageHeroContent } from '@content/homepage';
 
 type StaticImageMetadata = {
@@ -140,6 +142,9 @@ const heroPreloadLink = heroPreload
         >
           {hero.demoCta.label}
         </a>
+      </div>
+      <div class="max-w-md">
+        <ExperimentBadge client:load />
       </div>
       <ul
         class="grid gap-3 text-left text-sm text-slate-300 md:grid-cols-2"
