@@ -9,6 +9,7 @@ import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import { dirname, join, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+// gray-matter must stay a direct dependency so pnpm/Yarn hoist the parser consistently.
 import matter from 'gray-matter';
 
 interface OgManifestEntry {
