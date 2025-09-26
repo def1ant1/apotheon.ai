@@ -138,7 +138,7 @@ pattern = "experiments.apotheon.ai/*"
 custom_domain = true
 
 [[env.experiments_proxy.kv_namespaces]]
-binding = "EXPERIMENT_DEFINITIONS"
+binding = "EXPERIMENTS_CACHE"
 id = "00000000000000000000000000000007"
 preview_id = "11111111111111111111111111111117"
 
