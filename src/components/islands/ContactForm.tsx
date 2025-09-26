@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 
-import { trackAnalyticsEvent } from '../../utils/analytics';
+import { trackAnalyticsEvent, type AnalyticsEvent } from '../../utils/analytics';
 import { contactFormSchema } from '../../utils/contact-validation';
 import { analyzeDomain } from '../../utils/domain-allowlist';
 
@@ -17,6 +17,78 @@ interface FieldErrors {
 
 const DEFAULT_ENDPOINT = import.meta.env.PUBLIC_CONTACT_ENDPOINT ?? '/api/contact';
 const DEFAULT_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? 'test-site-key';
+
+type ContactIntent = 'demo' | 'partnership' | 'media' | 'careers' | 'investor' | 'support';
+
+const DEFAULT_INTENT: ContactIntent = 'demo';
+
+const INTENT_ANALYTICS_EVENT: Record<ContactIntent, AnalyticsEvent> = {
+  demo: 'lead_demo',
+  partnership: 'lead_demo',
+  media: 'lead_demo',
+  careers: 'lead_demo',
+  investor: 'lead_investor',
+  support: 'lead_demo',
+};
+
+const TEAM_INTENT_PRESETS: Record<
+  string,
+  {
+    readonly intent: ContactIntent;
+    readonly analyticsEvent: AnalyticsEvent;
+  }
+> = {
+  /**
+   * Investors receive a dedicated journey with analytics instrumentation. New teams can hook into this map without rewriting
+   * component logic—update the config and add a select option, and the prefill + telemetry flows adjust automatically.
+   */
+  'investor-relations': { intent: 'investor', analyticsEvent: 'lead_investor' },
+};
+
+export interface IntentPresetResolution {
+  readonly intent: ContactIntent;
+  readonly analyticsEvent: AnalyticsEvent;
+  readonly source: 'default' | 'team';
+  readonly team?: string;
+}
+
+function normalizeSearchParams(
+  search: string | URLSearchParams | null | undefined,
+): URLSearchParams {
+  if (search instanceof URLSearchParams) {
+    return search;
+  }
+  if (typeof search === 'string') {
+    return new URLSearchParams(search.startsWith('?') ? search : `?${search}`);
+  }
+  return new URLSearchParams();
+}
+
+export function resolveIntentPresetFromSearch(
+  search: string | URLSearchParams | null | undefined,
+): IntentPresetResolution {
+  const params = normalizeSearchParams(search);
+  const teamParamRaw = params.get('team');
+  const teamParam = teamParamRaw ? teamParamRaw.trim().toLowerCase() : '';
+  if (teamParam && teamParam in TEAM_INTENT_PRESETS) {
+    const preset = TEAM_INTENT_PRESETS[teamParam];
+    return {
+      intent: preset.intent,
+      analyticsEvent: preset.analyticsEvent,
+      source: 'team',
+      team: teamParam,
+    };
+  }
+  return {
+    intent: DEFAULT_INTENT,
+    analyticsEvent: INTENT_ANALYTICS_EVENT[DEFAULT_INTENT],
+    source: 'default',
+  };
+}
+
+function resolveAnalyticsEventForIntent(intent: ContactIntent): AnalyticsEvent {
+  return INTENT_ANALYTICS_EVENT[intent] ?? 'lead_demo';
+}
 
 function logEvent(event: string, payload: Record<string, unknown>) {
   if (typeof window !== 'undefined') {
@@ -54,6 +126,15 @@ export default function ContactForm({
   const [email, setEmail] = useState('');
   const [token, setToken] = useState('');
   const widgetIdRef = useRef<string | null>(null);
+  const initialIntentPreset = useMemo(() => {
+    if (typeof window === 'undefined') {
+      return resolveIntentPresetFromSearch(null);
+    }
+    return resolveIntentPresetFromSearch(window.location.search);
+  }, []);
+  const [intent, setIntent] = useState<ContactIntent>(initialIntentPreset.intent);
+  const intentPresetRef = useRef<IntentPresetResolution>(initialIntentPreset);
+  const hasLoggedIntentPrefill = useRef(false);
   /**
    * `React.useId` keeps the legend identifier deterministic across SSR and hydration so the
    * enclosing form can expose a stable accessible name via `aria-labelledby`.
@@ -76,6 +157,31 @@ export default function ContactForm({
     if (!email) return null;
     return analyzeDomain(email);
   }, [email]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const resolution = resolveIntentPresetFromSearch(window.location.search);
+    intentPresetRef.current = resolution;
+    if (resolution.source === 'team') {
+      setIntent(resolution.intent);
+      if (!hasLoggedIntentPrefill.current) {
+        hasLoggedIntentPrefill.current = true;
+        logEvent('contact_form_intent_prefilled', {
+          intent: resolution.intent,
+          team: resolution.team,
+        });
+        void trackAnalyticsEvent({
+          event: resolution.analyticsEvent,
+          payload: {
+            stage: 'prefill',
+            source: 'querystring',
+            team: resolution.team,
+          },
+          consentService: 'pipeline-alerts',
+        });
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (!siteKey || typeof window === 'undefined') return;
@@ -189,11 +295,13 @@ export default function ContactForm({
       FormDataEntryValue
     >;
 
+    const rawIntent = getStringValue(payloadEntries.intent);
+    const selectedIntent = (rawIntent ? (rawIntent as ContactIntent) : intent) ?? DEFAULT_INTENT;
     const normalizedPayload: Record<string, unknown> = {
       name: getStringValue(payloadEntries.name),
       email: getStringValue(payloadEntries.email),
       company: getStringValue(payloadEntries.company),
-      intent: getStringValue(payloadEntries.intent) || 'demo',
+      intent: selectedIntent,
       message: getStringValue(payloadEntries.message),
       honeypot: getStringValue(payloadEntries.honeypot) || undefined,
       turnstileToken: token,
@@ -252,7 +360,9 @@ export default function ContactForm({
       setStatus('success');
       setGlobalMessage('Request received. Our RevOps team will follow up shortly.');
       logEvent('contact_form_submission_succeeded', { intent: validation.data.intent });
-      const analyticsEvent = validation.data.intent === 'investor' ? 'lead_investor' : 'lead_demo';
+      const analyticsEvent = resolveAnalyticsEventForIntent(
+        validation.data.intent as ContactIntent,
+      );
       const emailDomain = validation.data.email.split('@')[1]?.toLowerCase() ?? 'unknown';
       void trackAnalyticsEvent({
         event: analyticsEvent,
@@ -272,6 +382,7 @@ export default function ContactForm({
       form.reset();
       setEmail('');
       setToken('');
+      setIntent(intentPresetRef.current.intent);
       if (typeof window !== 'undefined') {
         const turnstile = window.turnstile;
         const widgetId = widgetIdRef.current;
@@ -409,8 +520,14 @@ export default function ContactForm({
           <select
             id="intent"
             name="intent"
-            defaultValue="demo"
+            value={intent}
             className="rounded-md border border-slate-700 bg-slate-800/80 px-3 py-2 text-white focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            onChange={(event) => {
+              const nextIntent = event.currentTarget.value as ContactIntent;
+              setIntent(nextIntent);
+              setFieldErrors((previous) => ({ ...previous, intent: '' }));
+              logEvent('contact_form_intent_changed', { intent: nextIntent });
+            }}
           >
             <option value="demo">Product demo</option>
             <option value="partnership">Partner with us</option>
@@ -419,6 +536,7 @@ export default function ContactForm({
             <option value="investor">Investor relations</option>
             <option value="support">Customer support</option>
           </select>
+          {fieldErrors.intent && <p className="text-sm text-amber-300">{fieldErrors.intent}</p>}
         </div>
 
         <div className="grid gap-2">

@@ -62,6 +62,19 @@ Secrets to configure via `wrangler secret put`:
 - Successful submissions display the signed URL inline and remind teams to store PDFs in approved
   repositories.
 
+## Investor brief distribution checklist
+
+- The investor journey now includes the **Apotheon.ai Investor Brief** (`whitepapers/apotheon-investor-brief.pdf`).
+  `npm run ensure:whitepapers` seeds the placeholder PDF, calculates the checksum, and updates the manifest
+  so the Worker can generate signed URLs.
+- Investor relations owns distribution. Every email or CRM activity must reference the
+  `/about/contact/?team=investor-relations` flow to preserve analytics and automation context.
+- Weekly, reconcile the Worker\'s D1 ledger against CRM logs to confirm only allowlisted domains accessed the
+  asset. Escalate anomalies to `ir@apotheon.ai` and `revops@apotheon.ai`.
+- When updating the PDF, rerun the ensure script, commit the checksum change, and notify marketing so
+  nurture sequences reference the refreshed artifact. The `investors.mdx` page surfaces the R2 object key
+  for quick audits.
+
 ## Reviewer expectations
 
 When reviewing pull requests that touch whitepapers:
