@@ -1,5 +1,6 @@
 {
   "_comment": "Canonical English translation bundle powering navigation, hero content, footer messaging, and SEO metadata.",
+  "_comment_naming": "Keys follow a `{surface}.{section}.{key}` hierarchy so additional locales can stay organized as the experience scales.",
   "metadata": {
     "_comment": "Per-page metadata defaults. Override at the page level when bespoke copy is required.",
     "title": "Apotheon | Autonomous Application Governance Platform",
@@ -8,6 +9,15 @@
   },
   "navigation": {
     "_comment": "Global navigation labels rendered in the top bar and mobile drawer.",
+    "_comment_naming": "Group copy lives under `navigation.groups.{groupId}` with nested link ids for descriptions.",
+    "skipLink": "Skip to content",
+    "aria": {
+      "primaryHeader": "Primary site header"
+    },
+    "brand": {
+      "name": "Apotheon.ai",
+      "tagline": "Automation-first GTM fabric for enterprise AI launches."
+    },
     "primary": {
       "home": "Home",
       "platform": "Platform",
@@ -20,6 +30,86 @@
       "contact": "Contact sales",
       "signIn": "Sign in",
       "launchApp": "Launch console"
+    },
+    "groups": {
+      "platform": {
+        "label": "Platform",
+        "description": "Deep dives into the Apotheon.ai operating system and its modular AI surfaces.",
+        "links": {
+          "clio": {
+            "label": "Clio Orchestration",
+            "description": "Systems thinking behind our cognitive orchestration layer."
+          },
+          "atlas": {
+            "label": "Atlas Activation",
+            "description": "Real-time data activation pipelines governed by policy-aware workflows."
+          },
+          "nova": {
+            "label": "Nova Workbench",
+            "description": "Secure experimentation playgrounds for shipping regulated AI features."
+          }
+        }
+      },
+      "industries": {
+        "label": "Industries",
+        "description": "Verticalized GTM journeys designed for regulated environments.",
+        "links": {
+          "healthcare": {
+            "label": "Healthcare",
+            "description": "Augment clinical operations with AI guardrails and observability."
+          },
+          "financialServices": {
+            "label": "Financial Services",
+            "description": "Accelerate underwriting decisions without compromising compliance."
+          },
+          "legal": {
+            "label": "Legal Services",
+            "description": "Modernize confidential matter delivery with privileged AI workflows."
+          },
+          "government": {
+            "label": "Government Digital Services",
+            "description": "Rebuild constituent experiences with zero-trust automation and transparency."
+          },
+          "military": {
+            "label": "Defense & Military",
+            "description": "Deploy IL5-ready mission systems with RMF automation and observability."
+          },
+          "intelligence": {
+            "label": "Intelligence",
+            "description": "Fuse multi-source intelligence with ICD-aligned governance and automation."
+          },
+          "publicSector": {
+            "label": "Public Sector Missions",
+            "description": "Deliver mission-ready intelligence workflows at the edge."
+          }
+        }
+      },
+      "company": {
+        "label": "Company",
+        "description": "Strategic context, investor narrative, and trust signals.",
+        "links": {
+          "about": {
+            "label": "About Apotheon.ai",
+            "description": "Research pedigree, team structure, and governance disciplines."
+          },
+          "careers": {
+            "label": "Careers",
+            "description": "Hiring roadmaps and the interview experience for prospective teammates."
+          },
+          "whitepapers": {
+            "label": "Whitepapers",
+            "description": "Download compliance-ready research and rollout playbooks."
+          },
+          "history": {
+            "label": "History & Milestones",
+            "description": "Audit the evidence-backed company timeline and sourcing discipline."
+          },
+          "contact": {
+            "label": "Contact",
+            "description": "Edge-secured intake routing leads to the Cloudflare Worker API."
+          }
+        }
+      }
     }
   },
   "hero": {
@@ -46,7 +136,11 @@
     }
   },
   "footer": {
-    "_comment": "Footer navigation columns, CTAs, and legal copy.",
+    "_comment": "Footer navigation columns, CTAs, contact metadata, and legal copy.",
+    "_comment_naming": "Columns follow `footer.columns.{columnId}` while legal links land under `footer.legal.links.{slug}`.",
+    "aria": {
+      "contentInfo": "Primary site footer"
+    },
     "tagline": "Operational confidence for autonomous products.",
     "newsletter": {
       "label": "Subscribe for product updates",
@@ -54,13 +148,53 @@
       "button": "Join the list",
       "disclaimer": "By subscribing you agree to receive updates and can opt out anytime."
     },
-    "legal": {
-      "privacy": "Privacy policy",
-      "terms": "Terms of service",
-      "security": "Security",
-      "status": "System status"
+    "columns": {
+      "product": {
+        "title": "Product"
+      },
+      "industries": {
+        "title": "Industries"
+      },
+      "company": {
+        "title": "Company"
+      }
     },
-    "copyright": "© {{year}} Apotheon Labs, Inc. All rights reserved."
+    "legal": {
+      "heading": "Legal",
+      "summary": "Policy documents stay versioned alongside the marketing IA so governance stakeholders track exactly which commitments ship with each release.",
+      "links": {
+        "privacy": {
+          "label": "Privacy Policy",
+          "description": "Data handling commitments, retention windows, and DSAR intake."
+        },
+        "terms": {
+          "label": "Terms of Service",
+          "description": "Contractual obligations that govern platform access."
+        },
+        "responsibleAi": {
+          "label": "Responsible AI",
+          "description": "Guardrails that govern AI experimentation, auditability, and rollout."
+        }
+      }
+    },
+    "contact": {
+      "heading": "Contact Apotheon.ai",
+      "summary": "Reach out to route opportunities into the orchestration queue. Automated intake ensures every request hits the correct RevOps workflow without manual triage.",
+      "organization": "Apotheon.ai",
+      "officeHours": "Mon–Fri, 8:00–18:00 PT",
+      "labels": {
+        "email": "Email",
+        "phone": "Phone",
+        "officeHours": "Office Hours"
+      }
+    },
+    "bottom": {
+      "copyright": "© {{year}} Apotheon.ai — Astro powered, edge-ready delivery.",
+      "automationSummary": {
+        "beforeCommand": "Pagefind search indexes, sitemaps, and robots.txt regenerate during CI/CD via ",
+        "afterCommand": ", ensuring the static bundle remains search-friendly without a custom backend."
+      }
+    }
   },
   "forms": {
     "_comment": "Shared form field labels and validation messages to keep UX consistent.",
@@ -87,5 +221,61 @@
     "comingSoon": "Coming soon",
     "loading": "Loading experience",
     "updating": "Updating data"
+  },
+  "homepage": {
+    "_comment": "Homepage-specific copy that complements MDX-driven content.",
+    "hero": {
+      "metaFallback": "Operational intelligence for distributed Astro deployments."
+    },
+    "sections": {
+      "pillars": {
+        "heading": "AI Operating System pillars",
+        "description": "A north-star view of how Apotheon.ai hardens generative workflows for regulated enterprises. Order here flows downstream into sales collateral and onboarding runbooks."
+      },
+      "modules": {
+        "heading": "Product modules ready for deployment",
+        "description": "Each module maps one-to-one with our solutions IA. Keep slugs aligned with /solutions routes so navigation, analytics, and Pagefind stay in lockstep."
+      },
+      "composableFoundations": {
+        "heading": "Composable foundations",
+        "body": {
+          "first": {
+            "segments": {
+              "intro": "Drop future MDX files into ",
+              "betweenPaths": " or ",
+              "afterMarketing": " and Astro will automatically type-check frontmatter, generate static pages, and refresh the Pagefind index as part of ",
+              "afterBuild": " (rerun search only with ",
+              "outro": ")."
+            },
+            "tokens": {
+              "blogPath": "src/content/blog",
+              "marketingPath": "src/content/marketing",
+              "buildCommand": "npm run build",
+              "searchCommand": "npm run search:index"
+            }
+          },
+          "second": {
+            "segments": {
+              "intro": "Tailwind CSS is wired via the official Astro integration, so design systems stay consistent without custom plumbing. Global CSS lives in ",
+              "afterStyles": " and is imported once through ",
+              "outro": "."
+            },
+            "tokens": {
+              "stylesPath": "src/styles/global.css",
+              "layoutFile": "BaseLayout.astro"
+            }
+          },
+          "third": {
+            "segments": {
+              "intro": "React islands remain fully supported for analytics widgets, onboarding flows, or other targeted interactivity. Hydrate them with any ",
+              "outro": " directive and keep the rest of the experience static-first."
+            },
+            "tokens": {
+              "directive": "client:*"
+            }
+          }
+        }
+      }
+    }
   }
 }
