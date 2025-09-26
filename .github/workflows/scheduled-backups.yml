@@ -1,0 +1,57 @@
+name: Scheduled Backups
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  export-datasets:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Export contact submissions backup
+        run: node ./scripts/ops/export-contact-d1.mjs --verbose
+        env:
+          CONTACT_D1_DATABASE: ${{ secrets.CONTACT_D1_DATABASE }}
+          CONTACT_BACKUP_BUCKET: ${{ secrets.CONTACT_BACKUP_BUCKET }}
+          CONTACT_BACKUP_PREFIX: ${{ secrets.CONTACT_BACKUP_PREFIX }}
+          BACKUP_R2_ACCESS_KEY_ID: ${{ secrets.BACKUP_R2_ACCESS_KEY_ID }}
+          BACKUP_R2_SECRET_ACCESS_KEY: ${{ secrets.BACKUP_R2_SECRET_ACCESS_KEY }}
+          BACKUP_R2_ENDPOINT: ${{ secrets.BACKUP_R2_ENDPOINT }}
+          BACKUP_R2_REGION: ${{ secrets.BACKUP_R2_REGION }}
+          BACKUP_ENCRYPTION_PUBLIC_KEY: ${{ secrets.BACKUP_ENCRYPTION_PUBLIC_KEY }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Export whitepapers asset backup
+        run: node ./scripts/ops/export-whitepapers-r2.mjs --verbose
+        env:
+          WHITEPAPERS_R2_BUCKET: ${{ secrets.WHITEPAPERS_R2_BUCKET }}
+          WHITEPAPERS_BACKUP_BUCKET: ${{ secrets.WHITEPAPERS_BACKUP_BUCKET }}
+          WHITEPAPERS_BACKUP_PREFIX: ${{ secrets.WHITEPAPERS_BACKUP_PREFIX }}
+          WHITEPAPERS_R2_ACCESS_KEY_ID: ${{ secrets.WHITEPAPERS_R2_ACCESS_KEY_ID }}
+          WHITEPAPERS_R2_SECRET_ACCESS_KEY: ${{ secrets.WHITEPAPERS_R2_SECRET_ACCESS_KEY }}
+          WHITEPAPERS_R2_ENDPOINT: ${{ secrets.WHITEPAPERS_R2_ENDPOINT }}
+          BACKUP_R2_ACCESS_KEY_ID: ${{ secrets.BACKUP_R2_ACCESS_KEY_ID }}
+          BACKUP_R2_SECRET_ACCESS_KEY: ${{ secrets.BACKUP_R2_SECRET_ACCESS_KEY }}
+          BACKUP_R2_ENDPOINT: ${{ secrets.BACKUP_R2_ENDPOINT }}
+          BACKUP_R2_REGION: ${{ secrets.BACKUP_R2_REGION }}
+          BACKUP_ENCRYPTION_PUBLIC_KEY: ${{ secrets.BACKUP_ENCRYPTION_PUBLIC_KEY }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

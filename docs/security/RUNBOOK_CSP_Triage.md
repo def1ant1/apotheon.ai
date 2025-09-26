@@ -1,0 +1,46 @@
+# CSP Violation Triage Runbook
+
+Security engineers use this guide to pivot from CSP violation alerts emitted by
+[`workers/csp-report-handler.ts`](../../workers/csp-report-handler.ts) into
+containment actions. The Worker batches Reporting API payloads, persists them to
+`REPORTS`, and fans out high-severity hits to the configured alert webhook.
+
+## Detection Signals
+
+- **Alert webhook:** Any payload with `blockedURI` outside the canonical asset
+  list or violations against `script-src` emit a JSON summary to
+  `CSP_ALERT_WEBHOOK`. Alert metadata includes the runbook slug for fast lookup.
+- **KV batch storage:** All submissions persist to `REPORTS` with keys prefixed
+  by `csp:violation:`. Query via Wrangler to enumerate the most recent batched
+  incidents:
+  ```bash
+  npx wrangler kv:key list --binding REPORTS --prefix csp:violation:
+  ```
+- **Synthetic monitoring:** The synthetic health Worker exercises nonce paths.
+  If its checks fail but no alerts fire, investigate reporting endpoints for
+  ingestion failures (e.g., 5xx or schema drift).
+
+## Response Workflow
+
+1. **Confirm alert context.** Review the alert payload to identify the violated
+   directive, blocked URI, and sample CSP JSON. Determine whether the request
+   originated from production or a lower environment via the `environment` field.
+2. **Query persisted batch.** Pull the stored batch from `REPORTS` using the key
+   provided in the alert. Inspect aggregated directives to spot recurring origins
+   or inline scripts lacking nonces.
+3. **Mitigate offending asset.** For first-party regressions, locate the
+   offending change in Git (`git log -- <path>`). For third-party assets, disable
+   the integration and notify the business owner.
+4. **Document in runbook tracker.** Update the incident notes with the batch key
+   and number of violations. If more than 5 unique visitors are affected, open a
+   security incident following [`docs/security/INCIDENT_RESPONSE.md`](INCIDENT_RESPONSE.md).
+5. **Close the loop.** After deploying a fix, monitor new CSP submissions for 24
+   hours. Ensure the backup scripts captured the window for forensic retention.
+
+## Escalation Path
+
+- **Primary on-call:** Application Security Engineer monitoring CSP.
+- **Secondary:** Frontend Tech Lead responsible for the impacted surface.
+- **Tertiary:** Director of Security Engineering.
+- **External dependency:** Engage vendor contacts when third-party scripts break
+  CSP and block critical flows (login, checkout, etc.).
