@@ -1,0 +1,49 @@
+# Editorial and Experiment Calendar
+
+Apotheon.ai ships content and experiments on a rolling four-week cadence so
+marketing, product, and growth engineering can plan against the same signal. Use
+this calendar alongside `docs/dev/EDITORIAL.md` when onboarding new
+contributors—the dates below anchor GrowthBook experiments to the release notes
+and campaign assets that go live each week.
+
+## Cadence Overview
+
+| Week | Content Focus                               | Experiment Focus                                  |
+| ---- | ------------------------------------------- | ------------------------------------------------- |
+| 1    | Publish flagship thought-leadership piece.  | Launch experiment to validate new hero messaging. |
+| 2    | Release industry-specific follow-up blog.   | Tune CTA surfaces based on Week 1 performance.    |
+| 3    | Publish technical implementation deep dive. | Roll out support experience experiments.          |
+| 4    | Ship customer proof-point or case study.    | Retire stale variants and prep next cycle.        |
+
+- **Content drops** move on Tuesdays to keep SEO recrawls predictable. Use the
+  shared OG automation (`npm run ensure:og-assets`) the day prior so the social
+  preview pipeline stays warm.
+- **GrowthBook experiments** should target a single KPI per cycle. Capture the
+  flag key, hypothesis, and exit criteria in the GrowthBook description—CI reads
+  the metadata to populate dashboards.
+- **Freeze windows** begin Thursday 18:00 UTC. Avoid flipping experiments after
+  the freeze unless the change mitigates a production incident.
+
+## Workflow Integration
+
+1. Populate GrowthBook with upcoming experiment definitions at least one week in
+   advance. The CI sync (`npm run experiments:sync`) fetches the latest payload
+   from the OSS instance and caches it in the `experiments-proxy` Worker.
+2. When authoring MDX drafts tagged `social-campaign`, coordinate copy edits
+   with the OG automation. The refreshed Twitter cards land in
+   `public/images/social/` and are referenced in release briefings.
+3. Update this calendar when cadence shifts. Review the entry during quarterly
+   planning so marketing, RevOps, and engineering stay aligned on which features
+   and content will be under test.
+
+## Onboarding Checklist
+
+- Read `docs/dev/EDITORIAL.md` for the full publishing workflow.
+- Pair with the growth engineer owning GrowthBook to understand active
+  experiments.
+- Run `npm run experiments:sync -- --dry-run` locally to confirm access to the
+  Worker endpoint and secrets.
+- Confirm OG assets regenerate successfully (`npm run ensure:og-assets`).
+
+Treat this document as living infrastructure—update it whenever cadence,
+stakeholders, or experiment governance changes.
