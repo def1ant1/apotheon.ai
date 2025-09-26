@@ -172,3 +172,34 @@ database_id = "00000000-0000-0000-0000-000000000006"
 OG_IMAGE_CACHE_TTL_SECONDS = "604800"
 OG_IMAGE_ALLOWED_SCOPES = "blog,marketing"
 OG_IMAGE_ALLOWED_THEMES = "dark,light"
+
+[env.lead_viewer]
+name = "apotheon-lead-viewer"
+main = "workers/lead-viewer.ts"
+usage_model = "standard"
+compatibility_date = "2024-10-08"
+migrations_dir = "workers/migrations/lead-viewer"
+
+[[env.lead_viewer.routes]]
+pattern = "leads.apotheon.ai/*"
+custom_domain = true
+
+[[env.lead_viewer.d1_databases]]
+binding = "LEAD_VIEWER_CONTACT_DB"
+database_name = "apotheon-contact"
+database_id = "00000000-0000-0000-0000-000000000000"
+
+[[env.lead_viewer.d1_databases]]
+binding = "LEAD_VIEWER_WHITEPAPER_DB"
+database_name = "apotheon-whitepapers"
+database_id = "00000000-0000-0000-0000-000000000001"
+
+[[env.lead_viewer.d1_databases]]
+binding = "LEAD_VIEWER_AUDIT_DB"
+database_name = "apotheon-lead-viewer"
+database_id = "00000000-0000-0000-0000-000000000010"
+
+[env.lead_viewer.vars]
+LEAD_VIEWER_BASIC_REALM = "Apotheon Lead Viewer"
+LEAD_VIEWER_IP_ALLOWLIST = ""
+LEAD_VIEWER_ALLOWED_ORIGINS = ""

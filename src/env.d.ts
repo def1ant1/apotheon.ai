@@ -28,6 +28,7 @@ declare global {
     readonly PUBLIC_TURNSTILE_SITE_KEY: string;
     readonly PUBLIC_OG_IMAGE_WORKER?: string;
     readonly PUBLIC_BLOG_ANALYTICS_ENDPOINT?: string;
+    readonly PUBLIC_LEAD_VIEWER_API_BASE?: string;
   }
 
   interface ImportMeta {

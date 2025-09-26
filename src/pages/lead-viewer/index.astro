@@ -1,0 +1,25 @@
+---
+import { LeadViewerApp } from '../../components/lead-viewer';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const seo = {
+  title: 'Lead Viewer — Apotheon',
+  description:
+    'Internal dashboard backed by the read-only Cloudflare Worker for contact submissions and whitepaper requests.',
+  path: '/lead-viewer/',
+};
+---
+
+<BaseLayout {seo}>
+  <Fragment slot="head">
+    <!-- Prevent search engines from indexing the restricted dashboard. -->
+    <meta name="robots" content="noindex, nofollow" />
+  </Fragment>
+  <div class="mx-auto max-w-6xl px-4 py-12">
+    <!--
+      React island hydrates on load so the dashboard can manage authentication state in the browser and issue fetches to the
+      Worker. Keeping the view client-side prevents us from leaking credentials or request context through Astro’s static build.
+    -->
+    <LeadViewerApp client:load />
+  </div>
+</BaseLayout>
