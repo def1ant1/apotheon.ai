@@ -76,14 +76,7 @@ export default defineConfig({
     image({
       serviceEntryPoint: '@astrojs/image/sharp'
     }),
-    i18next({
-      /**
-       * The config file colocated in `src/i18n` keeps locale metadata near the
-       * translation bundles so teams can evolve strings and runtime behaviour in
-       * one place.
-       */
-      configPath: './src/i18n/i18next.server.mjs'
-    }),
+    i18next(),
     sitemap({
       /**
        * `@astrojs/sitemap` introspects Astro's route manifest after the build

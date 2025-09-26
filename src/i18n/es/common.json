@@ -2,9 +2,9 @@
   "_comment": "Plantilla en español pendiente de localización completa. Reemplaza cada valor con la traducción aprobada por el equipo lingüístico.",
   "metadata": {
     "_comment": "Metadatos predeterminados por página.",
-    "title": "TODO: título en español",
-    "description": "TODO: descripción en español",
-    "ogImageAlt": "TODO: texto alternativo en español"
+    "title": "Apotheon | Plataforma autónoma de gobernanza de aplicaciones",
+    "description": "Opera productos de IA con confianza gracias a controles de experimentación, observabilidad y cumplimiento.",
+    "ogImageAlt": "Interfaz de usuario de la plataforma Apotheon con métricas y perspectivas de gobernanza."
   },
   "navigation": {
     "_comment": "Etiquetas de navegación global.",
@@ -19,49 +19,58 @@
       "defaultLocaleSuffix": "idioma predeterminado"
     },
     "primary": {
-      "home": "TODO",
-      "platform": "TODO",
-      "solutions": "TODO",
-      "pricing": "TODO",
-      "resources": "TODO",
-      "company": "TODO"
+      "home": "Inicio",
+      "platform": "Plataforma",
+      "solutions": "Soluciones",
+      "pricing": "Precios",
+      "resources": "Recursos",
+      "company": "Compañía"
     },
     "secondary": {
-      "contact": "TODO",
-      "signIn": "TODO",
-      "launchApp": "TODO"
+      "contact": "Contactar ventas",
+      "signIn": "Iniciar sesión",
+      "launchApp": "Abrir consola"
     }
   },
   "hero": {
     "_comment": "Copys principales del héroe de la página de inicio.",
-    "eyebrow": "TODO",
-    "title": "TODO",
-    "subtitle": "TODO",
-    "primaryCta": "TODO",
-    "secondaryCta": "TODO"
+    "eyebrow": "Entrega de IA empresarial",
+    "title": "Operacionaliza la inteligencia generativa a escala planetaria",
+    "subtitle": "Unificamos disciplina operativa, gobernanza responsable y velocidad de desarrollo para equipos globales.",
+    "primaryCta": "Descargar dossier para inversores",
+    "secondaryCta": "Solicitar demostración de la plataforma"
   },
   "callouts": {
     "_comment": "Destacados cortos reutilizables.",
-    "uptime": { "label": "TODO", "value": "TODO" },
-    "compliance": { "label": "TODO", "value": "TODO" },
-    "leadTime": { "label": "TODO", "value": "TODO" }
+    "uptime": {
+      "label": "TODO",
+      "value": "TODO"
+    },
+    "compliance": {
+      "label": "TODO",
+      "value": "TODO"
+    },
+    "leadTime": {
+      "label": "TODO",
+      "value": "TODO"
+    }
   },
   "footer": {
     "_comment": "Contenido del pie de página.",
-    "tagline": "TODO",
+    "tagline": "Automatización confiable para lanzamientos de IA regulada.",
     "newsletter": {
-      "label": "TODO",
-      "placeholder": "TODO",
-      "button": "TODO",
-      "disclaimer": "TODO"
+      "label": "Suscríbete al boletín",
+      "placeholder": "Correo electrónico corporativo",
+      "button": "Unirme",
+      "disclaimer": "Al enviar aceptas las políticas de privacidad de Apotheon."
     },
     "legal": {
-      "privacy": "TODO",
-      "terms": "TODO",
-      "security": "TODO",
-      "status": "TODO"
+      "privacy": "Privacidad",
+      "terms": "Términos",
+      "security": "Seguridad",
+      "status": "Estado"
     },
-    "copyright": "TODO"
+    "copyright": "© {{year}} Apotheon.ai. Derechos reservados."
   },
   "forms": {
     "_comment": "Etiquetas y validaciones de formularios compartidas.",
@@ -79,14 +88,67 @@
   },
   "alerts": {
     "_comment": "Mensajes de estado reutilizables.",
-    "success": "TODO",
-    "error": "TODO",
-    "maintenance": "TODO"
+    "success": "Solicitud completada correctamente.",
+    "error": "Se produjo un error inesperado. Vuelve a intentarlo más tarde.",
+    "maintenance": "Estamos realizando mantenimiento programado. Algunas funciones podrían no estar disponibles temporalmente."
   },
   "placeholders": {
     "_comment": "Textos genéricos para estados temporales.",
-    "comingSoon": "TODO",
-    "loading": "TODO",
-    "updating": "TODO"
+    "comingSoon": "Próximamente",
+    "loading": "Cargando",
+    "updating": "Actualizando"
+  },
+  "homepage": {
+    "_comment": "Copys específicos de la página de inicio.",
+    "sections": {
+      "pillars": {
+        "heading": "Pilares del sistema operativo de IA",
+        "description": "Una visión estratégica de cómo Apotheon.ai refuerza los flujos generativos en entornos regulados."
+      },
+      "modules": {
+        "heading": "Módulos listos para su despliegue",
+        "description": "Cada módulo se alinea con la arquitectura de soluciones para mantener navegación, analítica y Pagefind sincronizados."
+      },
+      "composableFoundations": {
+        "heading": "Fundamentos componibles",
+        "body": {
+          "first": {
+            "segments": {
+              "intro": "Agrega futuros archivos MDX en ",
+              "betweenPaths": " o ",
+              "afterMarketing": " y Astro validará automáticamente el frontmatter, generará páginas estáticas y actualizará el índice de Pagefind como parte de ",
+              "afterBuild": " (vuelve a ejecutar la búsqueda solo con ",
+              "outro": ")."
+            },
+            "tokens": {
+              "blogPath": "src/content/blog",
+              "marketingPath": "src/content/marketing",
+              "buildCommand": "npm run build",
+              "searchCommand": "npm run search:index"
+            }
+          },
+          "second": {
+            "segments": {
+              "intro": "Tailwind CSS se integra mediante la extensión oficial de Astro para mantener los sistemas de diseño coherentes sin trabajo adicional.",
+              "afterStyles": " y se importa una única vez a través de ",
+              "outro": "."
+            },
+            "tokens": {
+              "stylesPath": "src/styles/global.css",
+              "layoutFile": "BaseLayout.astro"
+            }
+          },
+          "third": {
+            "segments": {
+              "intro": "Los islands de React siguen disponibles para widgets de analítica, flujos de incorporación u otras interacciones puntuales. Hidratarlos con cualquier directiva ",
+              "outro": " y mantén el resto de la experiencia enfocada en el rendimiento estático."
+            },
+            "tokens": {
+              "directive": "client:*"
+            }
+          }
+        }
+      }
+    }
   }
 }
