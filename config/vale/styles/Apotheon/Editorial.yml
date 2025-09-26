@@ -1,0 +1,9 @@
+extends: existence
+message: 'Replace placeholders like "%s" with final copy before shipping.'
+level: warning
+scope: text
+nonword: true
+tokens:
+  - '\bTBD\b'
+  - '\bto be determined\b'
+  - '\bLorem ipsum\b'

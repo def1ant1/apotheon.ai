@@ -143,7 +143,8 @@ export const SEO_MANIFEST = Object.freeze({
     exclusionPatterns: Object.freeze([
       /^\/404\/?$/,
       /^\/500\/?$/,
-      /^\/ladle(\/.*)?$/
+      /^\/ladle(\/.*)?$/,
+      /^\/lead-viewer(\/.*)?$/
     ]),
     /**
      * Representative canonical paths that our smoke tests assert are present in

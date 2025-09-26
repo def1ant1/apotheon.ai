@@ -31,7 +31,7 @@ ships with inline comments—treat this document as the narrative companion for 
 
 1. Convert the draft to polished copy, source final hero art, and flip `draft` to `false`.
 2. Run the automation suite locally:
-   - `npm run lint`
+   - `npm run lint` (Vale now checks `.md`/MDX copy for inclusive language and placeholder text.)
    - `npm run typecheck`
    - `npm run build`
    - `npm run test`

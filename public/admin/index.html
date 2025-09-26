@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Apotheon Content CMS</title>
+    <!--
+      Netlify Identity handles authentication for Decap CMS. Keeping the widget
+      co-located with the admin shell means security can onboard/offboard editors
+      without requiring application engineers to rotate tokens or ship code.
+    -->
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js" defer></script>
+    <script>
+      window.addEventListener('DOMContentLoaded', () => {
+        const identity = window.netlifyIdentity;
+        if (!identity) {
+          console.warn('[decap-admin] Netlify Identity widget unavailable.');
+          return;
+        }
+
+        identity.on('login', () => {
+          identity.close();
+          // Reload so the Decap instance rehydrates with a fresh token.
+          window.location.reload();
+        });
+
+        identity.on('logout', () => {
+          window.location.reload();
+        });
+
+        identity.on('init', (user) => {
+          if (!user) {
+            identity.open();
+          }
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <!--
+      Decap CMS is loaded from the evergreen CDN build so we do not need to
+      vendor JavaScript in the repo. Editors receive the latest bug fixes while
+      still operating on a locked-down identity provider.
+    -->
+    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  </body>
+</html>

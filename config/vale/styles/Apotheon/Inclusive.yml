@@ -1,0 +1,9 @@
+extends: substitution
+message: 'Prefer "%s" over "%s" to keep terminology inclusive.'
+level: error
+ignorecase: true
+swap:
+  whitelist: allowlist
+  blacklist: blocklist
+  master: primary
+  slave: secondary

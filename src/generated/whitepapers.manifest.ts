@@ -30,7 +30,7 @@ export const WHITEPAPER_MANIFEST: ReadonlyArray<WhitepaperManifestEntry> = [
     industries: ['financial-services', 'healthcare', 'public-sector'],
     asset: {
       objectKey: 'whitepapers/apotheon-investor-brief.pdf',
-      checksum: '8da50dab10a535fc2ece307fac2bdf7e2f054ca44688f8c0032216c15cb30475',
+      checksum: 'db33b7391ee4987410d0e620921f225a8f75aa39d960c0c716194d97f84fa27e',
       contentType: 'application/pdf',
       pageCount: 18,
     },

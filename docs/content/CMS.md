@@ -1,0 +1,60 @@
+# CMS & Lead Management Playbook
+
+This guide explains how marketing editors access the Decap CMS instance and how
+RevOps triages leads through the read-only viewer Worker. Both workflows build
+on the automation committed to the repo so there is no manual drift between
+content schemas, auth controls, and audit trails.
+
+## Editor onboarding (Decap CMS)
+
+1. **Grant Netlify Identity access** – Invite the editor to the Netlify site
+   backing `public/admin/` and assign the `Editor` role. Identity drives the
+   Decap `git-gateway` backend, so no GitHub tokens or deploy keys are shared
+   directly.
+2. **Confirm allow lists** – If the CMS is locked behind an IP allow list, add
+   the editor’s corporate CIDR block to the perimeter configuration so Netlify
+   Identity can load.
+3. **Regenerate the config** – Run `npm run ensure:cms-config` (or any
+   `npm run ensure:*` target) locally. The script rewrites
+   `public/admin/config.yml` using the latest Astro content schemas so editors
+   always see the correct fields.
+4. **Share the admin URL** – Point editors to `/admin/`. The shell automatically
+   loads the latest Decap build and prompts for Netlify Identity login. They can
+   add blog/marketing entries without touching MDX manually.
+5. **Content linting** – Editors (and reviewers) can run `npm run lint` to invoke
+   Vale. The linter flags non-inclusive terminology or placeholder copy before a
+   PR is merged.
+
+## Lead triage (Worker + dashboard)
+
+1. **Provision credentials** – Create a Basic Auth credential and compute the
+   SHA-256 hash of the password. Store it in the Cloudflare Worker environment
+   variable `LEAD_VIEWER_BASIC_AUTH_USERS` using the format
+   `username:hash`. Keep the secret out of git; use `wrangler secret put`.
+2. **IP and origin allow lists** – Populate `LEAD_VIEWER_IP_ALLOWLIST` with the
+   approved office IPs (comma separated) and `LEAD_VIEWER_ALLOWED_ORIGINS` with
+   the internal hostnames that should embed the dashboard. Requests outside the
+   allow lists are rejected before touching D1.
+3. **Deploy the Worker** – Run `wrangler deploy --env lead_viewer` after updating
+   the config. The Worker binds to the existing contact and whitepaper D1
+   databases and appends read access logs to `LEAD_VIEWER_AUDIT_DB`.
+4. **Access the dashboard** – Navigate to `/lead-viewer/` on the marketing site
+   (set `PUBLIC_LEAD_VIEWER_API_BASE` during builds so the React shell knows the
+   Worker origin). The UI prompts for Basic Auth credentials, stores them in
+   `sessionStorage`, and queries the Worker for paginated contact + whitepaper
+   data. Use the built-in CSV export buttons when sharing leads with downstream
+   systems.
+5. **Audit trail** – Every successful fetch inserts a record into the
+   `lead_viewer_access_log` table. Compliance can reconcile who accessed which
+   dataset by querying the dedicated D1 database.
+
+## Automation reference
+
+- `scripts/content/ensure-cms-config.mjs` keeps the Decap config synced with
+  Astro collections.
+- `scripts/content/run-vale.mjs` installs Vale on demand and lints the docs and
+  MDX folders.
+- `workers/lead-viewer.ts` enforces Basic Auth, IP restrictions, and audit
+  logging while serving read-only lead data.
+- `tests/e2e/lead-viewer-accessibility.spec.ts` covers keyboard flows and table
+  rendering to keep the admin surface accessible.
