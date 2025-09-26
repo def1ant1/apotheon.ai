@@ -1,0 +1,82 @@
+{
+  "_comment": "Plantilla en español pendiente de localización completa. Reemplaza cada valor con la traducción aprobada por el equipo lingüístico.",
+  "metadata": {
+    "_comment": "Metadatos predeterminados por página.",
+    "title": "TODO: título en español",
+    "description": "TODO: descripción en español",
+    "ogImageAlt": "TODO: texto alternativo en español"
+  },
+  "navigation": {
+    "_comment": "Etiquetas de navegación global.",
+    "primary": {
+      "home": "TODO",
+      "platform": "TODO",
+      "solutions": "TODO",
+      "pricing": "TODO",
+      "resources": "TODO",
+      "company": "TODO"
+    },
+    "secondary": {
+      "contact": "TODO",
+      "signIn": "TODO",
+      "launchApp": "TODO"
+    }
+  },
+  "hero": {
+    "_comment": "Copys principales del héroe de la página de inicio.",
+    "eyebrow": "TODO",
+    "title": "TODO",
+    "subtitle": "TODO",
+    "primaryCta": "TODO",
+    "secondaryCta": "TODO"
+  },
+  "callouts": {
+    "_comment": "Destacados cortos reutilizables.",
+    "uptime": { "label": "TODO", "value": "TODO" },
+    "compliance": { "label": "TODO", "value": "TODO" },
+    "leadTime": { "label": "TODO", "value": "TODO" }
+  },
+  "footer": {
+    "_comment": "Contenido del pie de página.",
+    "tagline": "TODO",
+    "newsletter": {
+      "label": "TODO",
+      "placeholder": "TODO",
+      "button": "TODO",
+      "disclaimer": "TODO"
+    },
+    "legal": {
+      "privacy": "TODO",
+      "terms": "TODO",
+      "security": "TODO",
+      "status": "TODO"
+    },
+    "copyright": "TODO"
+  },
+  "forms": {
+    "_comment": "Etiquetas y validaciones de formularios compartidas.",
+    "labels": {
+      "email": "TODO",
+      "firstName": "TODO",
+      "lastName": "TODO",
+      "company": "TODO",
+      "role": "TODO"
+    },
+    "validation": {
+      "required": "TODO",
+      "email": "TODO"
+    }
+  },
+  "alerts": {
+    "_comment": "Mensajes de estado reutilizables.",
+    "success": "TODO",
+    "error": "TODO",
+    "maintenance": "TODO"
+  },
+  "placeholders": {
+    "_comment": "Textos genéricos para estados temporales.",
+    "comingSoon": "TODO",
+    "loading": "TODO",
+    "updating": "TODO"
+  }
+}

@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
@@ -6,6 +7,7 @@ import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
 import image from '@astrojs/image';
 import sitemap from '@astrojs/sitemap';
+import i18next from 'astro-i18next';
 
 import {
   BASELINE_DIRECTIVES,
@@ -33,6 +35,7 @@ function loadImageOptimizationManifest() {
 }
 
 const IMAGE_OPTIMIZATION_MANIFEST = loadImageOptimizationManifest();
+const I18N_SOURCE_DIR = fileURLToPath(new URL('./src/i18n', import.meta.url));
 
 const enableHttps = process.env.ASTRO_DEV_HTTPS === 'true';
 const httpsOptions = enableHttps ? resolveDevHttpsConfig() ?? true : undefined;
@@ -72,6 +75,14 @@ export default defineConfig({
     react(),
     image({
       serviceEntryPoint: '@astrojs/image/sharp'
+    }),
+    i18next({
+      /**
+       * The config file colocated in `src/i18n` keeps locale metadata near the
+       * translation bundles so teams can evolve strings and runtime behaviour in
+       * one place.
+       */
+      configPath: './src/i18n/i18next.server.mjs'
     }),
     sitemap({
       /**
@@ -125,6 +136,11 @@ export default defineConfig({
     }
   },
   vite: {
+    resolve: {
+      alias: {
+        '@i18n': I18N_SOURCE_DIR
+      }
+    },
     server: {
       host: true,
       https: httpsOptions,

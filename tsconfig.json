@@ -6,6 +6,7 @@
       "@components/*": ["src/components/*"],
       "@layouts/*": ["src/layouts/*"],
       "@content/*": ["src/content/*"],
+      "@i18n/*": ["src/i18n/*"],
       "satori": ["src/types/stubs/satori"],
       "@resvg/resvg-js": ["src/types/stubs/resvg"]
     },
