@@ -1,0 +1,61 @@
+# Incident Response Framework
+
+This guide codifies the security incident process for the Apotheon.ai edge
+surface. It ties tabletop exercises, runbook usage, and backup restore
+verification into a single, opinionated workflow.
+
+## Tabletop Exercises
+
+- **Cadence:** Run quarterly simulations alternating between CSP violations,
+  contact-form abuse, and R2 corruption scenarios. Rotate facilitators between
+  Application Security, Platform Reliability, and Marketing Ops to keep context
+  fresh.
+- **Preparation checklist:**
+  - Update service diagrams and contact rosters in the week leading up to the
+    exercise.
+  - Pre-load sample alerts for the chosen scenario using the Miniflare harnesses
+    in `workers/__tests__` so teams practice with realistic payloads.
+  - Rehearse export tooling by executing `npm run ops:backup:dry-run` to confirm
+    scripts still parse flags correctly.
+- **Success criteria:** Teams must demonstrate clear ownership handoffs, use the
+  correct runbooks (`RUNBOOK_CSP_Triage.md`, `RUNBOOK_CONTACT_ABUSE.md`,
+  `RUNBOOK_R2_INCIDENT.md`), and document decisions in the shared incident log.
+
+## Live Incident Lifecycle
+
+1. **Detection:** Incidents begin when alert thresholds are met (CSP webhook,
+   R2 availability, contact abuse spikes) or during human-reported anomalies.
+2. **Triage:** Assign an Incident Commander (IC) within 10 minutes. IC validates
+   severity, references the relevant runbook, and pages additional SMEs.
+3. **Containment:** Apply mitigations guided by the runbook (blocklists, asset
+   quarantine, feature flags) while maintaining detailed notes.
+4. **Eradication & Recovery:** Restore service using the most recent encrypted
+   backups, validate end-to-end with Playwright or synthetic tests, and monitor
+   for regression over 24 hours.
+5. **Post-incident review:** Within five business days, publish a retrospective
+   capturing timeline, customer impact, and control gaps. Link to updated
+   automation tasks or backlog items.
+
+## Backup Restore Verification
+
+- **Monthly drills:** On the first Monday of each month, run both backup scripts
+  (`export-contact-d1.mjs` and `export-whitepapers-r2.mjs`) in a staging account
+  without `--dry-run`. Decrypt artifacts using the security key vault to confirm
+  envelope integrity.
+- **Automated checksum validation:** CI invokes `npm run ops:backup:dry-run` to
+  ensure the scripts still boot. Scheduled GitHub Actions run the full exports
+  using production credentials and compare stored SHA-256 hashes to expected
+  values.
+- **Restore smoke tests:** After a drill or live incident, import the D1 SQL dump
+  into a disposable database and mount the whitepaper assets into a scratch R2
+  bucket. Execute the Miniflare contract tests for `workers/lead-viewer.ts` and
+  `workers/whitepapers.ts` to verify customer flows operate on restored data.
+
+## Communication Protocols
+
+- **Status updates:** IC posts updates to the #incident-response Slack channel at
+  most every 30 minutes during high-severity incidents.
+- **Stakeholder briefings:** For incidents exceeding Severity 2, schedule a
+  post-mortem readout with executive leadership and customer-facing teams.
+- **External notifications:** Coordinate with Legal and Compliance for breaches
+  involving regulated data or if regulatory reporting timelines apply.

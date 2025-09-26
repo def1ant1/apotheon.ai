@@ -117,8 +117,17 @@ scaffolding.
   hydration. Inspect the terminal running `npm run dev:https` for violation logs
   or instrument the Reporting API tab inside browser devtools.
 - **Report collection:** Forward the CSP `report-uri` to the Cloudflare Worker
-  stub in `workers/csp-report-handler.ts` once deployed. The handler currently
-  logs to the console but is designed to fan out to KV/Queues/SIEM endpoints.
+  in `workers/csp-report-handler.ts`. The handler batches violations into the
+  `REPORTS` namespace, links every incident to
+  [`docs/security/RUNBOOK_CSP_Triage.md`](docs/security/RUNBOOK_CSP_Triage.md),
+  and emits webhook alerts whenever a suspicious host or `script-src` violation
+  is observed.
+- **Backups & drills:** Encrypted exports run on a GitHub Actions schedule using
+  the automation in `scripts/ops/export-contact-d1.mjs` and
+  `scripts/ops/export-whitepapers-r2.mjs`. Developers can sanity-check the
+  pipeline locally via `npm run ops:backup:dry-run`. Restoration, tabletop
+  cadence, and monthly verification are captured in
+  [`docs/security/INCIDENT_RESPONSE.md`](docs/security/INCIDENT_RESPONSE.md).
 - **Playbook:** See [`docs/security/LOCAL_HTTPS.md`](docs/security/LOCAL_HTTPS.md)
   for end-to-end automation covering mkcert setup, Astro HTTPS flags, and
   troubleshooting tips.
@@ -162,6 +171,14 @@ in `astro.config.mjs`, most hosts require no extra headers configuration.
 - [Go-Live Readiness Checklist](docs/launch/GO-LIVE_CHECKLIST.md) — DNS cutover,
   cache warmup, rollback drills, and synthetic alert verification steps scripted
   for enterprise launch rehearsals.
+- [Contact Abuse Containment](docs/security/RUNBOOK_CONTACT_ABUSE.md) — detection
+  signals, D1 forensic exports, and escalation flow for the contact Worker.
+- [Whitepaper R2 Incident](docs/security/RUNBOOK_R2_INCIDENT.md) — backup and
+  restore procedures for `WHITEPAPER_ASSETS` plus stakeholder comms guidance.
+- [CSP Violation Triage](docs/security/RUNBOOK_CSP_Triage.md) — alert response
+  tied to the `csp-report-handler` Worker with persistence and webhook hooks.
+- [Incident Response Framework](docs/security/INCIDENT_RESPONSE.md) — tabletop
+  cadence, restore verification drills, and communication templates.
 
 ## Contributing
 

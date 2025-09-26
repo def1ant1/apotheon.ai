@@ -1,0 +1,48 @@
+# Whitepaper R2 Incident Runbook
+
+This document covers containment and recovery steps when the
+[`workers/whitepapers.ts`](../../workers/whitepapers.ts) pipeline or its backing
+R2 bucket (`WHITEPAPER_ASSETS`) is degraded, compromised, or unavailable.
+
+## Detection Signals
+
+- **Worker error telemetry:** Elevated 5xx responses from the Worker paired with
+  `TURNSTILE` verification success means the failure is downstream (R2 or D1).
+- **Signed URL failures:** The Worker logs `createSignedUrl` rejections. Watch for
+  spikes in these logs or alerts from the synthetic health checker hitting the
+  `/whitepapers/request` endpoint.
+- **R2 object drift:** Compare `whitepaper_requests` audit entries in D1 with the
+  manifest living at `WHITEPAPERS_BACKUP_BUCKET/whitepapers/<timestamp>/manifest.json`.
+  Missing items suggest partial writes or tampering in the live bucket.
+
+## Response Workflow
+
+1. **Validate availability.** Use Wrangler or Miniflare to fetch a sample asset
+   via `workers/whitepapers.ts`. If the Worker succeeds but the signed URL 403s,
+   the issue is at the R2 layer.
+2. **Quarantine suspicious assets.** Tag or move affected objects within the
+   live bucket (e.g., prefix with `quarantine/`). Document every change in the
+   incident notes for later reconciliation.
+3. **Run the encrypted export.** Capture an immutable snapshot of the bucket for
+   forensics and potential restore:
+   ```bash
+   node ./scripts/ops/export-whitepapers-r2.mjs
+   ```
+   Each object is downloaded, wrapped with AES-256-GCM, and streamed to the
+   hardened backup bucket defined by `WHITEPAPERS_BACKUP_BUCKET`.
+4. **Restore from manifest (if required).** Identify the most recent manifest in
+   the backup bucket, decrypt assets with the runbook-provided key procedure, and
+   rehydrate the primary bucket. Update signed URL expirations if objects were
+   regenerated.
+5. **Stakeholder communications.** If more than 10% of whitepaper requests fail
+   for over 15 minutes, notify the VP of Marketing, Director of Security, and
+   Customer Success leadership. Include the manifest path and D1 audit query used
+   to confirm impact.
+
+## Escalation Path
+
+- **Primary on-call:** Platform Reliability Engineer for content delivery.
+- **Secondary:** Storage Operations Engineer (R2 owner).
+- **Tertiary:** Director of Security Engineering.
+- **Parallel comms:** Loop in Product Marketing Ops for customer messaging and
+  Legal if regulated content (export-controlled) was involved.
