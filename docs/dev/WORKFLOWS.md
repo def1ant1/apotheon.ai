@@ -46,7 +46,12 @@ pre-production environments.
   `npm run test`, `npm run test:e2e`, `npm run build`). The Playwright scenario
   ensures the UI reacts correctly to acceptance/rejection responses.
 - `npm run lint` now invokes Vale (via `scripts/content/run-vale.mjs`) so content
-  style guardrails run alongside ESLint/Stylelint before merges.
+  style guardrails run alongside ESLint/Stylelint before merges. The bootstrap
+  script auto-detects your host platform/architecture, streams the matching
+  release from GitHub, and caches the binary per platform under
+  `.cache/vale/<platform>-<arch>/`. Switching between Linux workstations,
+  macOS laptops, or Windows VMs no longer requires manual cleanup—each
+  environment hydrates its own Vale executable automatically.
 
 ## Internationalization
 
