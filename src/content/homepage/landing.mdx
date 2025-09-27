@@ -6,7 +6,11 @@ headline: 'Operationalize generative intelligence at planetary scale'
 # Primary investor CTA for quarterly brief.
 investorCta:
   label: 'Download investor brief'
-  href: '/static/investor-brief.pdf'
+  # Route investors through the gated whitepaper flow so marketing automation can
+  # pre-seed attribution, consent, and manifest-driven asset selection. Query
+  # params load before the hash fragment so the React island reads them on
+  # hydration and keeps analytics aligned with the whitepaper Worker journey.
+  href: '/about/white-papers/?whitepaperSlug=apotheon-investor-brief#whitepaper-request'
   ariaLabel: 'Download the Apotheon.ai investor relations brief as a PDF'
 # Secondary CTA for demo pipeline.
 demoCta:

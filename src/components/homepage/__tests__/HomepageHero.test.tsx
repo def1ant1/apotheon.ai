@@ -44,7 +44,7 @@ describe('Homepage hero content contract', () => {
 
     expect(hero.investorCta).toMatchObject({
       label: expect.stringMatching(/investor/i),
-      href: expect.stringContaining('.pdf'),
+      href: expect.stringContaining('/about/white-papers/?whitepaperSlug=apotheon-investor-brief'),
       ariaLabel: expect.stringMatching(/investor/i),
     });
     expect(hero.demoCta).toMatchObject({

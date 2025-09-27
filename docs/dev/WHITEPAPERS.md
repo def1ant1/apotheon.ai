@@ -59,6 +59,9 @@ Secrets to configure via `wrangler secret put`:
   structured events into `window.dataLayer` (`whitepaper_request_*` series) for analytics.
 - The form filters available assets using the generated manifest so embargoed or archived entries
   never surface to prospects.
+- When a visitor arrives with `?whitepaperSlug=<slug>` in the query string (e.g., homepage hero CTA),
+  the React island auto-selects the manifest entry, logs `whitepaper_request_prefill_applied`, and
+  keeps the value sticky after successful submissions so deep-link journeys remain auditable.
 - Successful submissions display the signed URL inline and remind teams to store PDFs in approved
   repositories.
 
@@ -69,6 +72,9 @@ Secrets to configure via `wrangler secret put`:
   so the Worker can generate signed URLs.
 - Investor relations owns distribution. Every email or CRM activity must reference the
   `/about/contact/?team=investor-relations` flow to preserve analytics and automation context.
+- The homepage hero CTA now points to
+  `/about/white-papers/?whitepaperSlug=apotheon-investor-brief#whitepaper-request`; confirm any
+  campaign landing pages mirror the query parameter so prefill + analytics events fire consistently.
 - Weekly, reconcile the Worker\'s D1 ledger against CRM logs to confirm only allowlisted domains accessed the
   asset. Escalate anomalies to `ir@apotheon.ai` and `revops@apotheon.ai`.
 - When updating the PDF, rerun the ensure script, commit the checksum change, and notify marketing so

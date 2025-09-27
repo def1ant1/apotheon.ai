@@ -7,6 +7,7 @@ exports[`WhitepaperRequestForm > matches the hydrated markup snapshot 1`] = `
     aria-describedby="whitepaper-form-status"
     aria-labelledby=":r1:"
     class="grid gap-6 rounded-xl border border-indigo-900/60 bg-slate-900/70 p-6 shadow-lg shadow-indigo-500/20"
+    data-js-ready="true"
     method="post"
     novalidate=""
   >

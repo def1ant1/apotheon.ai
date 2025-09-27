@@ -74,11 +74,13 @@ export default function WhitepaperRequestForm({
   const formRef = useRef<HTMLFormElement>(null);
   const turnstileRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
+  const prefilledWhitepaperSlugRef = useRef<string | null>(null);
   const [status, setStatus] = useState<SubmissionState>('idle');
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [globalMessage, setGlobalMessage] = useState('');
   const [token, setToken] = useState('');
   const [email, setEmail] = useState('');
+  const [selectedWhitepaperSlug, setSelectedWhitepaperSlug] = useState('');
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
 
   const manifest = useMemo(() => filterManifest(WHITEPAPER_MANIFEST), []);
@@ -99,6 +101,16 @@ export default function WhitepaperRequestForm({
    * and manual audits to confirm the intent of the submission workflow.
    */
   const legendId = React.useId();
+
+  useEffect(() => {
+    const form = formRef.current;
+    if (!form) return;
+
+    // Signal to hydration-aware tooling (Playwright, Lighthouse) that the island finished wiring
+    // event handlers. The attribute is intentionally generic so additional automation flows can
+    // query for `data-js-ready="true"` without coupling to component internals.
+    form.setAttribute('data-js-ready', 'true');
+  }, []);
 
   useEffect(() => {
     if (!siteKey || typeof window === 'undefined') return;
@@ -184,6 +196,60 @@ export default function WhitepaperRequestForm({
       delete window.__WHITEPAPER_FORM_SET_TOKEN__;
     };
   }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const url = new URL(window.location.href);
+    const querySlug = url.searchParams.get('whitepaperSlug')?.trim();
+
+    if (!querySlug) {
+      return;
+    }
+
+    const candidate = manifest.find((entry) => entry.slug === querySlug);
+    if (!candidate) {
+      // Track the miss so marketing automation can reconcile unexpected links back to the
+      // homepage CTA wiring or campaign utm params. Missing entries typically indicate stale
+      // PDFs, embargoed assets, or typos.
+      logEvent('whitepaper_request_prefill_ignored', {
+        slug: querySlug,
+        reason: 'manifest-miss',
+      });
+      return;
+    }
+
+    if (prefilledWhitepaperSlugRef.current === candidate.slug) {
+      return;
+    }
+
+    prefilledWhitepaperSlugRef.current = candidate.slug;
+    setSelectedWhitepaperSlug(candidate.slug);
+    setFieldErrors((previous) => ({ ...previous, whitepaperSlug: '' }));
+
+    // Persist the applied prefill on the DOM element so native form submissions (if the JS
+    // environment bails mid-request) still send the correct value.
+    // The dataLayer + console log keeps RevOps automation aware that the homepage CTA carried a
+    // visitor into the gated flow and auto-selected the expected asset.
+    logEvent('whitepaper_request_prefill_applied', {
+      slug: candidate.slug,
+      source: 'querystring',
+    });
+  }, [manifest]);
+
+  useEffect(() => {
+    if (!selectedWhitepaperSlug) {
+      return;
+    }
+
+    if (manifest.some((entry) => entry.slug === selectedWhitepaperSlug)) {
+      return;
+    }
+
+    // If the manifest changes (embargo toggled, asset archived) while the user sits on the page,
+    // clear the selection so validation highlights the mismatch instead of submitting a stale slug.
+    setSelectedWhitepaperSlug('');
+  }, [manifest, selectedWhitepaperSlug]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -286,6 +352,7 @@ export default function WhitepaperRequestForm({
       form.reset();
       setEmail('');
       setToken('');
+      setSelectedWhitepaperSlug(prefilledWhitepaperSlugRef.current ?? '');
       const turnstileHandle = window.turnstile as TurnstileHandle | undefined;
       if (turnstileHandle && widgetIdRef.current) {
         turnstileHandle.reset(widgetIdRef.current);
@@ -356,6 +423,11 @@ export default function WhitepaperRequestForm({
             name="whitepaperSlug"
             required
             className="rounded-md border border-slate-700 bg-slate-800/80 px-3 py-2 text-white focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            value={selectedWhitepaperSlug}
+            onChange={(event) => {
+              setSelectedWhitepaperSlug(event.currentTarget.value);
+              setFieldErrors((previous) => ({ ...previous, whitepaperSlug: '' }));
+            }}
           >
             <option value="">Select a whitepaper</option>
             {manifest.map((entry) => (

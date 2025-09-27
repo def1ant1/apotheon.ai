@@ -5,6 +5,16 @@ The homepage now sources hero, benefit, and CTA banner copy from
 marketing, RevOps, and investor relations can collaborate without reverse engineering
 component implementations.
 
+## Hero CTA automation
+
+- `investorCta` in `landing.mdx` now targets
+  `/about/white-papers/?whitepaperSlug=apotheon-investor-brief#whitepaper-request` so visitors hit
+  the gated request form instead of a static PDF download.
+- The query parameter primes `WhitepaperRequestForm` to select the investor brief automatically and
+  emits `whitepaper_request_prefill_applied` into `window.dataLayer` for RevOps attribution.
+- When adding new investor collateral, replicate this pattern so analytics stay centralized and the
+  Worker manifest controls which asset surfaces downstream.
+
 ## Benefits Grid
 
 - **Schema:** `benefits` is an array of objects (`title`, `proofPoint`, `metric`). The Zod
