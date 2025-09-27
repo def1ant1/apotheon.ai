@@ -16,13 +16,25 @@ download and reviewer can audit the trail end-to-end.
 
 Run `npm run ensure:whitepapers` (automatically triggered in `predev`, `prebuild`, and CI) to:
 
-1. Generate placeholder PDFs for new entries so designers are never blocked by missing assets.
-2. Calculate SHA-256 checksums and stamp them into frontmatter.
+1. Launch the Playwright-driven generator (`scripts/content/generate-whitepapers.ts`) which renders
+   every MDX entry into a production PDF using a standardized template.
+2. Calculate SHA-256 checksums, decode the page count with `pdf-lib`, and stamp both values into the
+   frontmatter so Cloudflare Workers can validate signed-url requests deterministically.
 3. Refresh `src/generated/whitepapers.manifest.ts`, which powers the request form, Worker validation,
    and analytics surfaces.
 
-Replace placeholders in `assets/whitepapers/` with production-ready PDFs, rerun the script, and commit
-the updated checksums.
+The pipeline writes PDFs to `assets/whitepapers/` during execution, but `.gitignore` blocks the binaries
+from landing in commits. Developers should stage the manifest/frontmatter changes only—CI regenerates the
+artifacts to validate integrity. If Chromium is unavailable, the ensure script hydrates a placeholder PDF
+as a safety net while still preventing placeholder checksums from passing tests.
+
+The ensure script only falls back to the historical placeholder PDF when Chromium dependencies are
+missing or explicitly disabled with `WHITEPAPER_DISABLE_GENERATOR=1`. New developer environments should
+run `npx playwright install --with-deps chromium` once to bootstrap the generator.
+
+Vitest coverage (`scripts/content/__tests__/whitepapers-assets.test.ts`) enforces that every manifest
+entry produces a PDF larger than the placeholder baseline, carries a unique checksum, and exposes the
+expected page count.
 
 ## Worker architecture
 
@@ -67,9 +79,9 @@ Secrets to configure via `wrangler secret put`:
 
 ## Investor brief distribution checklist
 
-- The investor journey now includes the **Apotheon.ai Investor Brief** (`whitepapers/apotheon-investor-brief.pdf`).
-  `npm run ensure:whitepapers` seeds the placeholder PDF, calculates the checksum, and updates the manifest
-  so the Worker can generate signed URLs.
+- The investor journey now includes the **Apotheon.ai Investor Brief**. Run `npm run ensure:whitepapers`
+  to render the PDF from MDX, calculate the checksum/page count, and update the manifest so the Worker can
+  generate signed URLs. The PDF itself remains untracked—upload the regenerated artifact to R2 post-merge.
 - Investor relations owns distribution. Every email or CRM activity must reference the
   `/about/contact/?team=investor-relations` flow to preserve analytics and automation context.
 - The homepage hero CTA now points to
