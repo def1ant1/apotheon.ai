@@ -47,6 +47,7 @@ export default defineConfig(async () => {
     },
     test: {
       environment: 'jsdom',
+      environmentMatchGlobs: [['scripts/content/__tests__/**', 'node']],
       exclude: ['tests/e2e/**', 'node_modules/**', 'dist/**'],
       setupFiles: ['vitest.setup.ts'],
     },

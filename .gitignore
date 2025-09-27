@@ -53,3 +53,5 @@ src/assets/homepage/*.webp
 src/assets/history/*.avif
 src/assets/history/*.webp
 public/generated/history/
+# Whitepaper PDFs are generated via automation; keep the working tree clean of large binaries.
+assets/whitepapers/*.pdf

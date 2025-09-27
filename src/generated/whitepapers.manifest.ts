@@ -19,20 +19,20 @@ export interface WhitepaperManifestEntry {
     readonly archived: boolean;
     readonly embargoedUntil?: string;
   };
+  readonly seo?: Record<string, unknown>;
 }
 
 export const WHITEPAPER_MANIFEST: ReadonlyArray<WhitepaperManifestEntry> = [
   {
-    slug: 'apotheon-investor-brief',
     title: 'Apotheon.ai Investor Brief',
     summary:
       'Board-ready overview of revenue momentum, regulated AI moat, and automation platform economics for diligence teams.',
     industries: ['financial-services', 'healthcare', 'public-sector'],
     asset: {
       objectKey: 'whitepapers/apotheon-investor-brief.pdf',
-      checksum: 'db33b7391ee4987410d0e620921f225a8f75aa39d960c0c716194d97f84fa27e',
+      checksum: '2f3839aa2225181bf5a10a84ddcb46db80d5267d666292a3a08131bcf9900651',
       contentType: 'application/pdf',
-      pageCount: 18,
+      pageCount: 2,
     },
     gatingNotes: {
       distribution:
@@ -62,18 +62,22 @@ export const WHITEPAPER_MANIFEST: ReadonlyArray<WhitepaperManifestEntry> = [
       draft: false,
       archived: false,
     },
+    seo: {
+      description:
+        'Access the Apotheon.ai investor briefing highlighting revenue durability, automation moat, and compliance readiness for institutional diligence.',
+    },
+    slug: 'apotheon-investor-brief',
   },
   {
-    slug: 'sovereign-ai-assurance',
     title: 'Sovereign AI Assurance Field Guide',
     summary:
       'Framework for deploying sovereign AI capabilities with verifiable lineage, policy enforcement, and mission-ready oversight.',
     industries: ['intelligence', 'public-sector', 'military'],
     asset: {
       objectKey: 'whitepapers/apotheon-sovereign-ai-assurance.pdf',
-      checksum: 'db33b7391ee4987410d0e620921f225a8f75aa39d960c0c716194d97f84fa27e',
+      checksum: '38f25dafbbfc90d63c94843b05f05eea7f53c588f20fbe1a7d1f7adddd79ac67',
       contentType: 'application/pdf',
-      pageCount: 32,
+      pageCount: 2,
     },
     gatingNotes: {
       distribution:
@@ -98,18 +102,22 @@ export const WHITEPAPER_MANIFEST: ReadonlyArray<WhitepaperManifestEntry> = [
       draft: false,
       archived: false,
     },
+    seo: {
+      description:
+        'Secure sovereign AI deployments with the Apotheon AI Assurance Field Guide covering policy enforcement and observability.',
+    },
+    slug: 'sovereign-ai-assurance',
   },
   {
-    slug: 'strategic-automation-playbook',
     title: 'Apotheon Strategic Automation Playbook',
     summary:
       'Board-ready automation guidance illustrating how regulated enterprises orchestrate Apotheon.ai rollouts without manual toil.',
     industries: ['financial-services', 'healthcare', 'government'],
     asset: {
       objectKey: 'whitepapers/apotheon-strategic-automation-playbook.pdf',
-      checksum: 'db33b7391ee4987410d0e620921f225a8f75aa39d960c0c716194d97f84fa27e',
+      checksum: '41feba531b25c5bbde367e6c2e60887143c31d60be1e1997c78ba1adef269771',
       contentType: 'application/pdf',
-      pageCount: 36,
+      pageCount: 2,
     },
     gatingNotes: {
       distribution:
@@ -135,6 +143,11 @@ export const WHITEPAPER_MANIFEST: ReadonlyArray<WhitepaperManifestEntry> = [
       archived: false,
       embargoedUntil: '2024-11-15T13:00:00.000Z',
     },
+    seo: {
+      description:
+        'Download the Apotheon Strategic Automation Playbook to see how regulated enterprises orchestrate AI deployments with audit-ready guardrails.',
+    },
+    slug: 'strategic-automation-playbook',
   },
 ] as const;
 
