@@ -4,13 +4,13 @@
  * Enterprise-grade content pipelines should never depend on humans manually copying assets
  * into place. This script guarantees that the homepage hero media exists before we invoke
  * Astro's image pipeline or Playwright by deterministically rendering the artwork with the
- * Python generator. If the render step is unavailable, we fall back to a tiny placeholder so
- * downstream jobs still have a predictable file to read.
+ * Python generator. If the render step is unavailable, we validate and hydrate a golden asset
+ * that lives under version control before falling back to a placeholder for last-resort safety.
  */
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { access, constants, mkdir, readFile, stat, unlink, writeFile } from 'node:fs/promises';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import sharp, { type Metadata as SharpMetadata } from 'sharp';
@@ -24,17 +24,27 @@ import {
 } from './shared/image-manifest';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const HERO_ASSET_FILE = join(__dirname, '..', '..', 'src', 'assets', 'homepage', 'hero-base.png');
-const HERO_ASSET_DIR = dirname(HERO_ASSET_FILE);
-const HERO_RENDERER = join(__dirname, '..', 'design', 'render-homepage-hero.py');
-const IMAGE_MANIFEST_PATH = join(
-  __dirname,
-  '..',
-  '..',
-  'src',
-  'generated',
-  'image-optimization.manifest.json',
+const REPO_ROOT = resolve(__dirname, '..', '..');
+const HERO_ASSET_DIR = resolve(
+  process.env.HOMEPAGE_HERO_ASSET_ROOT ?? join(REPO_ROOT, 'src', 'assets', 'homepage'),
 );
+const HERO_ASSET_FILE = join(HERO_ASSET_DIR, 'hero-base.png');
+const HERO_RENDERER = join(__dirname, '..', 'design', 'render-homepage-hero.py');
+const HERO_MANAGED_DIR = resolve(
+  process.env.HOMEPAGE_HERO_GOLDEN_ROOT ?? join(REPO_ROOT, 'assets', 'design', 'homepage', 'hero'),
+);
+const HERO_MANAGED_LEDGER = join(HERO_MANAGED_DIR, 'managed-assets.json');
+const IMAGE_MANIFEST_PATH = resolve(
+  process.env.HOMEPAGE_HERO_MANIFEST_PATH ??
+    join(REPO_ROOT, 'src', 'generated', 'image-optimization.manifest.json'),
+);
+const HERO_MANAGED_FILES = {
+  base: 'hero-base.png',
+  avif: 'hero-base.avif',
+  webp: 'hero-base.webp',
+} as const;
+
+const CLI_REFRESH_LEDGER_FLAG = '--refresh-managed-ledger';
 
 /**
  * 1x1 PNG pixel encoded as base64. This keeps the placeholder visually unobtrusive while still
@@ -87,6 +97,159 @@ async function deleteIfExists(path: string): Promise<void> {
 async function writePlaceholder(path: string): Promise<void> {
   const buffer = Buffer.from(PLACEHOLDER_BASE64, 'base64');
   await writeFile(path, buffer);
+}
+
+function computeChecksum(buffer: Buffer): string {
+  return createHash('sha256').update(buffer).digest('hex');
+}
+
+/**
+ * When the procedural renderer is offline we hydrate a pre-rendered hero from our managed
+ * source of truth. Integrity is enforced by verifying SHA-256 checksums before decoding the
+ * serialized binaries into the working asset directory.
+ */
+type ManagedAssetEncoding = 'base64' | 'hex';
+
+interface ManagedLedgerAsset {
+  checksum: string;
+  content: string;
+  encoding: ManagedAssetEncoding;
+  /** Optional descriptive metadata for humans investigating the asset lineage. */
+  source?: string;
+}
+
+interface ManagedLedger {
+  assets: Record<string, ManagedLedgerAsset>;
+  metadata?: Record<string, unknown>;
+}
+
+function decodeManagedAsset(asset: ManagedLedgerAsset, name: string): Buffer {
+  const { content, encoding } = asset;
+  if (encoding === 'base64') {
+    return Buffer.from(content, 'base64');
+  }
+  if (encoding === 'hex') {
+    return Buffer.from(content, 'hex');
+  }
+  const unsupportedEncoding = asset.encoding as string;
+  throw new Error(
+    `[homepage-hero] Unsupported encoding "${unsupportedEncoding}" for managed asset ${name}. Update managed-assets.json.`,
+  );
+}
+
+async function hydrateHeroFromManagedSource(): Promise<'managed' | 'missing'> {
+  const ledgerExists = await fileExists(HERO_MANAGED_LEDGER);
+  if (!ledgerExists) {
+    console.warn(
+      '[homepage-hero] Managed fallback ledger missing at %s; proceeding without hydration.',
+      HERO_MANAGED_LEDGER,
+    );
+    return 'missing';
+  }
+
+  let ledger: ManagedLedger;
+  try {
+    const raw = await readFile(HERO_MANAGED_LEDGER, 'utf-8');
+    ledger = JSON.parse(raw) as ManagedLedger;
+  } catch (error) {
+    throw new Error(
+      `[homepage-hero] Unable to parse managed asset ledger at ${HERO_MANAGED_LEDGER}: ${String(
+        error,
+      )}`,
+    );
+  }
+
+  if (!ledger.assets) {
+    throw new Error(
+      `[homepage-hero] Managed asset ledger at ${HERO_MANAGED_LEDGER} is missing the assets field.`,
+    );
+  }
+
+  await ensureDirectory(HERO_ASSET_DIR);
+
+  for (const key of Object.values(HERO_MANAGED_FILES)) {
+    const entry = ledger.assets[key];
+    if (!entry) {
+      throw new Error(
+        `[homepage-hero] Managed asset ledger missing entry for ${key}. Update managed-assets.json.`,
+      );
+    }
+
+    const buffer = decodeManagedAsset(entry, key);
+    const checksum = computeChecksum(buffer);
+    if (checksum !== entry.checksum) {
+      throw new Error(
+        `[homepage-hero] Managed asset ${key} failed checksum verification. Expected ${entry.checksum} but calculated ${checksum}.`,
+      );
+    }
+
+    const targetPath =
+      key === HERO_MANAGED_FILES.base ? HERO_ASSET_FILE : join(HERO_ASSET_DIR, key);
+    await writeFile(targetPath, buffer);
+  }
+
+  console.info(
+    '[homepage-hero] Hydrated hero artwork from managed ledger (%s).',
+    HERO_MANAGED_LEDGER,
+  );
+  return 'managed';
+}
+
+export async function refreshManagedHeroLedger(): Promise<void> {
+  const assetsToCapture: Array<{ key: string; path: string }> = [
+    { key: HERO_MANAGED_FILES.base, path: HERO_ASSET_FILE },
+    { key: HERO_MANAGED_FILES.avif, path: join(HERO_ASSET_DIR, HERO_MANAGED_FILES.avif) },
+    { key: HERO_MANAGED_FILES.webp, path: join(HERO_ASSET_DIR, HERO_MANAGED_FILES.webp) },
+  ];
+
+  await ensureDirectory(HERO_MANAGED_DIR);
+
+  const ledger: ManagedLedger = {
+    assets: {},
+    metadata: {
+      refreshedAt: new Date().toISOString(),
+      refreshedBy: 'ensure-homepage-hero-media --refresh-managed-ledger',
+    },
+  };
+
+  if (!(await fileExists(HERO_ASSET_FILE))) {
+    throw new Error(
+      '[homepage-hero] Cannot refresh managed ledger because the base PNG is missing. Run the renderer first.',
+    );
+  }
+
+  const baseBuffer = await readFile(HERO_ASSET_FILE);
+  try {
+    const metadata = await sharp(baseBuffer).metadata();
+    ledger.metadata = {
+      ...ledger.metadata,
+      width: metadata.width ?? null,
+      height: metadata.height ?? null,
+    };
+  } catch (error) {
+    console.warn(
+      '[homepage-hero] Unable to capture metadata for managed ledger refresh: %s',
+      error,
+    );
+  }
+
+  for (const { key, path } of assetsToCapture) {
+    if (!(await fileExists(path))) {
+      throw new Error(
+        `[homepage-hero] Cannot refresh managed ledger because ${path} is missing. Run the renderer first.`,
+      );
+    }
+
+    const buffer = await readFile(path);
+    ledger.assets[key] = {
+      checksum: computeChecksum(buffer),
+      content: buffer.toString('base64'),
+      encoding: 'base64',
+    };
+  }
+
+  await writeFile(HERO_MANAGED_LEDGER, `${JSON.stringify(ledger, null, 2)}\n`, 'utf-8');
+  console.info('[homepage-hero] Managed ledger refreshed at %s.', HERO_MANAGED_LEDGER);
 }
 
 async function shouldRegenerateHeroAsset(heroExists: boolean): Promise<boolean> {
@@ -180,7 +343,12 @@ async function installPillow(binary: string): Promise<boolean> {
   return false;
 }
 
-async function renderHeroProcedurally(): Promise<boolean> {
+export async function renderHeroProcedurally(): Promise<boolean> {
+  if (process.env.HOMEPAGE_HERO_DISABLE_RENDER === '1') {
+    console.info('[homepage-hero] Procedural renderer disabled via HOMEPAGE_HERO_DISABLE_RENDER.');
+    return false;
+  }
+
   const rendererExists = await fileExists(HERO_RENDERER);
   if (!rendererExists) {
     console.warn(
@@ -259,7 +427,12 @@ function hasUsableDimensions(metadata: SharpMetadata): boolean {
   );
 }
 
-async function ensureDerivatives(manifest: ImageManifest): Promise<void> {
+type DerivativeStrategy = 'regenerate' | 'reuse';
+
+async function ensureDerivatives(
+  manifest: ImageManifest,
+  strategy: DerivativeStrategy = 'regenerate',
+): Promise<void> {
   const buffer = await readFile(HERO_ASSET_FILE);
   const baseName = 'hero-base';
   const avifPath = join(HERO_ASSET_DIR, `${baseName}.avif`);
@@ -270,15 +443,32 @@ async function ensureDerivatives(manifest: ImageManifest): Promise<void> {
 
   let derivativesGenerated = false;
   if (supportsDerivatives) {
-    try {
-      await sharp(buffer).toFormat('avif', { quality: 55 }).toFile(avifPath);
-      await sharp(buffer).toFormat('webp', { quality: 90 }).toFile(webpPath);
-      derivativesGenerated = true;
-      console.info('[homepage-hero] AVIF + WebP derivatives ready: %s, %s', avifPath, webpPath);
-    } catch (error) {
-      console.warn('[homepage-hero] Failed to generate derivatives: %s', error);
-      await deleteIfExists(avifPath);
-      await deleteIfExists(webpPath);
+    if (strategy === 'reuse') {
+      const [avifExists, webpExists] = await Promise.all([
+        fileExists(avifPath),
+        fileExists(webpPath),
+      ]);
+      if (avifExists && webpExists) {
+        derivativesGenerated = true;
+        console.info('[homepage-hero] Reusing managed AVIF + WebP derivatives.');
+      } else {
+        console.warn(
+          '[homepage-hero] Managed derivatives missing; regenerating from hydrated PNG.',
+        );
+      }
+    }
+
+    if (!derivativesGenerated) {
+      try {
+        await sharp(buffer).toFormat('avif', { quality: 55 }).toFile(avifPath);
+        await sharp(buffer).toFormat('webp', { quality: 90 }).toFile(webpPath);
+        derivativesGenerated = true;
+        console.info('[homepage-hero] AVIF + WebP derivatives ready: %s, %s', avifPath, webpPath);
+      } catch (error) {
+        console.warn('[homepage-hero] Failed to generate derivatives: %s', error);
+        await deleteIfExists(avifPath);
+        await deleteIfExists(webpPath);
+      }
     }
   } else {
     console.warn(
@@ -302,7 +492,7 @@ async function ensureDerivatives(manifest: ImageManifest): Promise<void> {
     lcpCandidate: true,
     width: metadata.width ?? 0,
     height: metadata.height ?? 0,
-    checksum: createHash('sha256').update(buffer).digest('hex'),
+    checksum: computeChecksum(buffer),
   };
 
   const updatedManifest = upsertImageAsset(manifest, `homepage/${baseName}`, entry);
@@ -316,31 +506,60 @@ async function ensureDerivatives(manifest: ImageManifest): Promise<void> {
   }
 }
 
-async function main(): Promise<void> {
+/**
+ * Primary orchestration entry point invoked by both CI and local workflows. The fallback
+ * cascade is intentionally explicit:
+ * 1. Attempt to render procedurally via Python (preferred for deterministic regeneration).
+ * 2. If rendering fails, verify and hydrate the managed golden assets (ensures parity).
+ * 3. As a last resort, emit a transparent placeholder so downstream jobs still have bytes.
+ *
+ * Checksum validation within the managed fallback allows CI to gate merges when assets drift
+ * from the committed ledger, while still keeping local developer flows unblocked with the
+ * placeholder path above.
+ */
+export async function ensureHomepageHeroMedia(): Promise<void> {
   await ensureDirectory(HERO_ASSET_DIR);
   const manifest = await readImageManifest(IMAGE_MANIFEST_PATH);
   const heroExists = await fileExists(HERO_ASSET_FILE);
   const needsRender = await shouldRegenerateHeroAsset(heroExists);
+  let derivativeStrategy: DerivativeStrategy = 'regenerate';
 
   if (needsRender) {
     const rendered = await renderHeroProcedurally();
     if (!rendered) {
-      await writePlaceholder(HERO_ASSET_FILE);
-      console.warn(
-        '[homepage-hero] Placeholder asset written because procedural generation was unavailable.',
-      );
+      try {
+        const hydrationResult = await hydrateHeroFromManagedSource();
+        if (hydrationResult === 'managed') {
+          derivativeStrategy = 'reuse';
+        } else {
+          await writePlaceholder(HERO_ASSET_FILE);
+          console.warn(
+            '[homepage-hero] Placeholder asset written because managed fallback was unavailable.',
+          );
+        }
+      } catch (error) {
+        await writePlaceholder(HERO_ASSET_FILE);
+        console.error('[homepage-hero] Managed fallback failed integrity checks.', error);
+        throw error;
+      }
     }
   } else {
     console.info('[homepage-hero] Existing hero asset is up to date; skipping regeneration.');
   }
 
-  await ensureDerivatives(manifest);
+  await ensureDerivatives(manifest, derivativeStrategy);
   await writeImageManifest(IMAGE_MANIFEST_PATH, manifest);
 }
 
-try {
-  await main();
-} catch (error) {
-  console.error('[homepage-hero] Failed to ensure hero media asset:', error);
-  process.exitCode = 1;
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  const shouldRefreshLedger = process.argv.includes(CLI_REFRESH_LEDGER_FLAG);
+  try {
+    await ensureHomepageHeroMedia();
+    if (shouldRefreshLedger) {
+      await refreshManagedHeroLedger();
+    }
+  } catch (error) {
+    console.error('[homepage-hero] Failed to ensure hero media asset:', error);
+    process.exitCode = 1;
+  }
 }

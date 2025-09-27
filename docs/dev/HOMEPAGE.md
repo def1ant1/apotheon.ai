@@ -15,6 +15,28 @@ component implementations.
 - When adding new investor collateral, replicate this pattern so analytics stay centralized and the
   Worker manifest controls which asset surfaces downstream.
 
+## Hero media pipeline
+
+- `npm run ensure:homepage-hero-media` orchestrates the entire hero asset lifecycle. It first tries
+  to run `scripts/design/render-homepage-hero.py`, then falls back to the managed PNG/AVIF/WebP
+  embedded in `assets/design/homepage/hero/managed-assets.json` after verifying SHA-256 checksums,
+  and only then writes a transparent placeholder.
+- The managed assets include `hero-render-context.json` documenting the generator inputs. Update the
+  JSON + `managed-assets.json` whenever you change the design and commit both files together so CI
+  can gate on integrity drift. Binary media must never be committed directly—use the ledger refresh
+  flag below.
+- CI jobs call the ensure script before build/test. A checksum mismatch throws and fails the run,
+  but the placeholder still lands on disk so downstream tooling (Astro, Ladle, Playwright) has
+  deterministic inputs while you debug the issue.
+- Local overrides: set `HOMEPAGE_HERO_ASSET_ROOT` / `HOMEPAGE_HERO_MANIFEST_PATH` to experiment in a
+  sandbox directory, and `HOMEPAGE_HERO_GOLDEN_ROOT` to validate alternate managed sources (e.g., S3
+  buckets) without touching the production ledger. Run `npm run ensure:homepage-hero-media --
+--refresh-managed-ledger` once new art is verified to serialize binaries back into
+  `managed-assets.json`.
+- CI tests disable the renderer with `HOMEPAGE_HERO_DISABLE_RENDER=1` to exercise the managed
+  fallback deterministically. Use the same flag during local pipeline drills when Python or Pillow
+  is unavailable.
+
 ## Benefits Grid
 
 - **Schema:** `benefits` is an array of objects (`title`, `proofPoint`, `metric`). The Zod

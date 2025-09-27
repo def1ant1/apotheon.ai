@@ -46,12 +46,12 @@ npm run ensure:homepage-hero-media && open src/assets/homepage/hero-base.png # m
 # use `xdg-open` on Linux or `start` on Windows if preferred
 ```
 
-The ensure script deterministically rebuilds `hero-base.png` (ignored by git) and derivative formats during every prebuild hook, so CI pipelines and developer workstations stay aligned without committing large binaries. If Pillow is missing, the task installs it automatically before re-rendering.
+The ensure script deterministically rebuilds `hero-base.png` and derivative formats during every prebuild hook. If the Python renderer is offline, it hydrates the pre-rendered binaries serialized inside `assets/design/homepage/hero/managed-assets.json` (after verifying their SHA-256 checksums) so CI pipelines and developer workstations stay aligned without manual asset juggling. If Pillow is missing, the task installs it automatically before re-rendering.
 
 - **Dimensions & formats:** Base artwork ships as `hero-base.png` at 1440×960 px. Automated derivatives (`hero-base.avif`, `hero-base.webp`) are generated via `npm run ensure:homepage-hero-media`, ensuring `@astrojs/image` gets authoritative dimensions and SHA-256 checksums for caching.
 - **Lighting & contrast:** Radial highlight centers at 62% × 38% of the canvas to keep the hero headline legible against the navy gradient. Bloom and particle overlays stay below 35% luminance so white body copy (`#F8FAFC`) and cyan CTAs maintain ≥ 4.5:1 contrast.
 - **Narrative elements:** Central dashboard panel reflects policy automation metrics; right-side orbit cards symbolize partner teams/devices syncing asynchronously. Motion primitives should mirror these layers if we animate the hero.
-- **Production workflow:** Re-render the art procedurally with `python scripts/design/render-homepage-hero.py` before running the ensure script. This keeps design updates in source control and avoids manual exports from design tools.
+- **Production workflow:** Re-render the art procedurally with `python scripts/design/render-homepage-hero.py` before running the ensure script. After validating the outputs, execute `npm run ensure:homepage-hero-media -- --refresh-managed-ledger` to serialize the PNG/AVIF/WebP into `managed-assets.json` and commit the JSON alongside `hero-render-context.json`; CI fails fast if the checksum ledger drifts.
 - **Accessibility sync:** Update `heroMedia.alt` in `src/content/homepage/landing.mdx` whenever the illustration focus changes. Alt copy is the canonical description for assistive tech and analytics heatmaps.
 
 ---
