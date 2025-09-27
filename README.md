@@ -73,6 +73,8 @@ npm run preview          # Serves the production bundle with asset headers and C
 - **Security-first workflows** — mkcert-driven HTTPS, CSP enforcement, Workers rate limiting, and Vale-driven content linting all run by default to satisfy regulated-industry audits.
 - **Extensive runbooks** — Architecture decisions, incident response guides, and brand governance live under `/docs` with direct callouts from the README so new hires never chase tribal knowledge.
 
+> **Planning sync:** Track shipped increments and upcoming automation-first work in the [ROADMAP](ROADMAP.md) so every team references the same delivery narrative as they prioritize features.
+
 > **Where to dive deeper:** Start with the [Architecture Decision Ledger](docs/architecture/DECISIONS.md), inspect the [system context diagram](docs/architecture/system-context.svg), then review the [brand style guide](docs/brand/STYLEGUIDE.md) before editing UI.
 
 ## Contributing
@@ -84,6 +86,7 @@ npm run preview          # Serves the production bundle with asset headers and C
 3. Run `npm run test` and `npm run build` before opening a PR so CI remains a confirmation step, not a debugging session.
 4. Document changes in `CHANGELOG.md` and the relevant `/docs` section; our investors and compliance teams rely on those artifacts for review cycles.
 5. Use the [Quick Start](#quick-start) commands whenever refreshing dependencies—the automation scripts regenerate assets, diagrams, and search indexes automatically.
+6. Reconcile proposals with the [ROADMAP](ROADMAP.md) before opening a PR so roadmap, docs, and implementation remain fully aligned.
 
 ## License
 

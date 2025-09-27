@@ -12,7 +12,7 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
 > **Observability:** **GlitchTip** (OSS Sentry‑compatible) or **Sentry self‑host**, **Uptime‑Kuma** (OSS).
 > **Note:** All third‑party services are free‑tier or OSS; where SaaS is chosen (e.g., Cloudflare), an OSS/self‑host alternative is listed in the Epic.
 
-> **Orientation cue:** Anchor discussions to the [README hero pledge](../../README.md#apotheonai-web-platform) and [Quick Start automation flow](../../README.md#quick-start) so epics map cleanly to the documented delivery posture.
+> **Orientation cue:** Anchor discussions to the [README hero pledge](../../README.md#apotheonai-web-platform), [Quick Start automation flow](../../README.md#quick-start), and cross-check against the [ROADMAP](../../ROADMAP.md) so epics, roadmap increments, and delivery posture stay synchronized.
 
 ---
 
