@@ -1,198 +1,90 @@
 # Apotheon.ai Web Platform
 
-Apotheon.ai now ships on top of an **Astro static-first architecture** optimized for
-enterprise documentation, marketing, and product surfaces. Static HTML delivers
-instant performance across global CDNs while **React islands** hydrate only the
-interactive moments that truly need it. Tailwind CSS, MDX-driven content
-collections, and Pagefind search keep future teams productive without bespoke
-scaffolding.
+<div align="center">
 
-## Tech Stack Overview
+<strong>Secure, Static-First Enterprise Hub for AI Documentation &amp; Marketing</strong>
 
-- **Framework:** [Astro 4](https://astro.build/) with TypeScript and MDX support
-- **Styling:** Tailwind CSS with centralized global tokens
-- **Interactive islands:** React 18, hydrated on demand with `client:*`
-- **Search:** Pagefind static indexing (auto via `npm run build`, manual rerun `npm run search:index`)
-- **Images:** `@astrojs/image` powered by Sharp for responsive, optimized media
-- **Content collections:** Strongly typed blog + marketing collections ready for
-  MDX adoption
-- **Tooling:** ESLint + Stylelint + Prettier with Husky/commitlint automation for
-  zero-drift code quality
+[![Astro Static Platform](https://img.shields.io/badge/Astro-Static%20Sites-BC52EE?logo=astro&logoColor=white)](https://astro.build/)
+[![Tailwind Utility System](https://img.shields.io/badge/Tailwind-Design%20Tokens-38BDF8?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![GitHub Repo stars](https://img.shields.io/github/stars/apotheon-ai/apotheon.ai?style=social)](https://github.com/apotheon-ai/apotheon.ai/stargazers)
 
-## Architecture
+<em>Zero-trust posture, automation-first operations, and obsessive documentation keep this marketing + documentation hub pre-production ready.</em>
 
-- [Architecture Decision Ledger](docs/architecture/DECISIONS.md) — canonical ADRs covering Astro SSG, Tailwind + Radix, Pagefind, and Cloudflare platform services with security boundaries and performance budgets.
-- [System context diagram](docs/architecture/system-context.svg) — browser ↔ Cloudflare edge ↔ Workers/D1/KV/R2 data flows with boundary notes.
-- [Managed service alternatives](docs/infra/ALTERNATIVES.md) — vetted OSS/free substitutes and operational guidance aligned to [`docs/ai-instructions.md`](docs/ai-instructions.md).
+</div>
 
-## Repository Structure
+> **Enterprise note:** Everything in this repository assumes regulated-industry baselines—explicit automation, immutable audit trails, and static-first delivery to minimize operational variance.
 
-```
-├─ src/
-│  ├─ components/islands/  # React islands, hydrated only when needed
-│  ├─ content/             # Astro content collections (blog, marketing)
-│  ├─ layouts/             # Shared layout shells that load global styles once
-│  ├─ pages/               # `.astro` routes, statically generated
-│  ├─ styles/              # Tailwind-powered global styles
-│  └─ env.d.ts             # Ambient types for Astro and React JSX
-├─ public/                 # Static assets copied directly into the build
-├─ astro.config.mjs        # Astro configuration (CSP, integrations, build)
-├─ tailwind.config.mjs     # Tailwind scanning + design tokens
-├─ postcss.config.cjs      # Autoprefixer + Tailwind pipeline
-└─ package.json            # Scripts, dependencies, automation hooks
+## Quick Start
+
+> **Onboarding tip:** These commands intentionally mirror the CI pipeline so that every workstation matches production expectations. Stick to the sequence; each step caches work for the next one.
+
+### 1. Provision the toolchain (one-time per workstation)
+
+- Install **Node.js ≥ 18 LTS** and **npm ≥ 9**. Pin versions via `asdf`, `nvm`, or your preferred fleet manager so upgrades stay coordinated across teams.
+- Trust the automation helpers by running `npm install` once—this bootstraps Husky hooks, caches Vale binaries, and generates local assets (OG images, hero media, CMS configs).
+- If you support air-gapped networks, mirror the `npm` cache per [infrastructure guidance](docs/infra/ALTERNATIVES.md) to keep supply chains deterministic.
+
+```bash
+npm install
 ```
 
-> **Why Astro?** The platform favors static delivery with opt-in hydration. That
-> keeps Core Web Vitals well within enterprise SLAs and reduces operational
-> overhead compared to maintaining a monolithic SPA.
+### 2. Iterate locally with the enterprise dev server
 
-## UI Components & Radix Integration
+```bash
+npm run dev              # Starts Astro with hot reload + React island hydration
+npm run dev:https        # Same as above but with mkcert-issued TLS for CSP parity
+```
 
-- `RadixNavigationMenu` (see `src/components/islands/RadixNavigationMenu.tsx`) demonstrates
-  how we wrap Radix primitives inside React islands. The component ships a
-  keyboard-first navigation shell hydrated with `client:idle` on `src/pages/index.astro`
-  to preserve static rendering while still enabling fully accessible dropdowns.
-- Shared Tailwind tokens (`brand.*`, `shadow-navigation*`) live in
-  `tailwind.config.mjs` so additional Radix-driven surfaces can adopt the same
-  interaction language without bespoke utility sprawl. Styling helpers for the
-  navigation namespace are consolidated inside `src/styles/global.css`.
-- Radix adoption workflows and hydration guidance are captured in
-  `docs/dev/WORKFLOWS.md` under "Radix UI Composition Workflow" to keep future
-  islands consistent and low-maintenance.
+> **Instrumentation note:** The HTTPS variant auto-discovers the certificates minted by `./scripts/security/mkcert-localhost.sh` and emits nonce-based CSP headers so you can rehearse prod constraints.
 
-## Brand System
+### 3. Run quality gates continuously
 
-- [Brand & Experience Style Guide](docs/brand/STYLEGUIDE.md) — token-driven palettes, typography, spacing, radius/shadow tokens, and component playbooks backed by automated WCAG 2.2 AA contrast auditing.
+```bash
+npm run lint             # ESLint + Stylelint + Vale + diagram/icon checks (mirrors CI)
+npm run typecheck        # Astro check keeps content collections and TS types in sync
+npm run test:unit        # Vitest suite for islands, workers, and utilities
+npm run test:e2e         # Playwright smoke coverage for investor-critical funnels
+```
 
-## Getting Started
+> **Automation note:** `npm run test` orchestrates the full stack (lint → typecheck → unit → Ladle CI → SEO monitor → synthetic worker tests). Use it before every PR to avoid rework.
 
-1. **Install prerequisites**
+### 4. Build and inspect production artifacts
 
-   - Node.js ≥ 18 (LTS recommended)
-   - npm ≥ 9
-   - `gray-matter` ships as a runtime dependency so `scripts/content/ensure-og-assets.ts`
-     can parse MDX frontmatter even when pnpm/Yarn skip hoisting transitive packages.
+```bash
+npm run build            # Static render + sitemap + hreflang + robots + Pagefind index + SEO verification
+npm run preview          # Serves the production bundle with asset headers and CSP enforced
+```
 
-2. **Install dependencies**
+> **Performance note:** The build command chains through diagrams, OG images, and recommendation models so nothing ships stale. Keep the step intact for deterministic releases.
 
-   ```bash
-   npm install
-   ```
+### 5. Deploy on fully managed edges
 
-3. **Run the dev server**
+- **Cloudflare Pages (recommended):** Connect the repo, set `NODE_VERSION=18` and `NPM_FLAGS=--legacy-peer-deps` if corporate proxies interfere, then let Pages run `npm run build` automatically.
+- **Netlify / Vercel / S3 + CloudFront:** Point the build command to `npm run build` and publish the generated `dist/` directory. Preserve the generated headers from `astro.config.mjs` for CSP correctness.
+- **Workers assets:** Execute `npm run workers:deploy` after Pages completes; the script auto-discovers worker environments and syncs secrets via Wrangler.
 
-   ```bash
-   npm run dev
-   ```
+> **Reliability note:** Backups run through `npm run ops:backup:dry-run` to validate D1 + R2 exports before production rollouts.
 
-   Astro prints a local URL (default `http://localhost:4321`) with file watching
-   and on-demand React island hydration.
+## Features
 
-4. **Run automation scripts**
+- **Static-first Astro foundation** — Every marketing and documentation page pre-renders, then hydrates React islands only where necessary for accessibility-critical interactions.
+- **Tailwind + Radix design system** — Centralized tokens in `tailwind.config.mjs` and Radix wrappers (see `src/components/islands/`) unlock enterprise theming without bespoke utility drift.
+- **Search + personalization automation** — `npm run build` regenerates Pagefind indexes and blog recommendation models, ensuring investors and analysts land on fresh, relevant content with zero manual steps.
+- **Security-first workflows** — mkcert-driven HTTPS, CSP enforcement, Workers rate limiting, and Vale-driven content linting all run by default to satisfy regulated-industry audits.
+- **Extensive runbooks** — Architecture decisions, incident response guides, and brand governance live under `/docs` with direct callouts from the README so new hires never chase tribal knowledge.
 
-   ```bash
-   npm run lint           # ESLint + Stylelint across Astro, TS/TSX, MDX, and CSS
-   npm run lint:eslint    # Script-focused lint pass only
-   npm run lint:styles    # Tailwind-aware Stylelint for stylesheets and <style> blocks
-   npm run format         # Prettier --write with Astro + Tailwind class sorting
-   npm run format:check   # Formatting verification for CI or pre-push checks
-   npm run typecheck      # Astro's type- and content-aware analysis
-   npm run test           # Aggregated lint + typecheck gate mirroring CI
-   npm run build          # Static production build + sitemap/robots/pagefind smoke tests
-   npm run preview        # Serve the production build locally
-   npm run search:index   # Rebuild only the Pagefind index (dist/ must already exist)
-   ```
-
-   Husky runs `lint-staged` automatically on commit, so the majority of files are
-   auto-fixed before they land in history.
-
-## Security
-
-- **Local HTTPS:** Run `./scripts/security/mkcert-install.sh` once per machine to
-  trust the mkcert root CA, then `./scripts/security/mkcert-localhost.sh` to mint
-  `certs/localhost-*.pem` certificates. Launch the hardened dev server via
-  `npm run dev:https`, which auto-detects the certs and forces Astro into HTTPS
-  mode.
-- **CSP testing:** The security middleware emits nonce-based CSP headers. In
-  dev/preview modes the middleware downgrades to `Content-Security-Policy-Report-Only`
-  so you can open the HTTPS site in a browser and iterate without blocking
-  hydration. Inspect the terminal running `npm run dev:https` for violation logs
-  or instrument the Reporting API tab inside browser devtools.
-- **Report collection:** Forward the CSP `report-uri` to the Cloudflare Worker
-  in `workers/csp-report-handler.ts`. The handler batches violations into the
-  `REPORTS` namespace, links every incident to
-  [`docs/security/RUNBOOK_CSP_Triage.md`](docs/security/RUNBOOK_CSP_Triage.md),
-  and emits webhook alerts whenever a suspicious host or `script-src` violation
-  is observed.
-- **Backups & drills:** Encrypted exports run on a GitHub Actions schedule using
-  the automation in `scripts/ops/export-contact-d1.mjs` and
-  `scripts/ops/export-whitepapers-r2.mjs`. Developers can sanity-check the
-  pipeline locally via `npm run ops:backup:dry-run`. Restoration, tabletop
-  cadence, and monthly verification are captured in
-  [`docs/security/INCIDENT_RESPONSE.md`](docs/security/INCIDENT_RESPONSE.md).
-- **Playbook:** See [`docs/security/LOCAL_HTTPS.md`](docs/security/LOCAL_HTTPS.md)
-  for end-to-end automation covering mkcert setup, Astro HTTPS flags, and
-  troubleshooting tips.
-
-## Typography & Self-Hosted Fonts
-
-- **Inter Variable via @fontsource:** `@fontsource-variable/inter` is installed
-  as a production dependency so the entire font family is bundled during `astro build`.
-  Importing the package from `src/styles/global.css` ensures the `@font-face`
-  declarations resolve against locally served assets.
-- **Tailwind integration:** `tailwind.config.mjs` prioritizes the `Inter Variable`
-  family so the `font-sans` utility automatically maps to the self-hosted font
-  while retaining system fallbacks.
-- **Operational guidance:** If additional weights or families are needed, prefer
-  the [`@fontsource`](https://fontsource.org/) ecosystem to keep delivery within
-  our origin. Avoid `<link>` tags to third-party font CDNs; they violate the
-  default CSP and introduce availability risk. See
-  [`docs/security/FONT_HOSTING.md`](docs/security/FONT_HOSTING.md) for the
-  step-by-step playbook.
-
-## Content & Search Workflow
-
-- Drop MDX/Markdown files into `src/content/blog` or `src/content/marketing`. The
-  Zod schemas in `src/content/config.ts` guarantee consistent frontmatter.
-- `npm run build` emits static HTML to `dist/` **and** chains the sitemap,
-  robots.txt, Pagefind index, and smoke checks automatically.
-- `npm run search:index` re-runs Pagefind against the existing `dist/` output for
-  quick search-only refreshes without touching the Astro build.
-- React islands live in `src/components/islands/` and can be imported into any
-  `.astro` template with hydration directives like `client:load` or
-  `client:visible`.
-
-## Deployment
-
-The project outputs plain static assets. Deploy via Cloudflare Pages, Netlify,
-Vercel, S3/CloudFront, or any static-friendly CDN. Because CSP defaults are set
-in `astro.config.mjs`, most hosts require no extra headers configuration.
-
-## Operational Runbooks
-
-- [Go-Live Readiness Checklist](docs/launch/GO-LIVE_CHECKLIST.md) — DNS cutover,
-  cache warmup, rollback drills, and synthetic alert verification steps scripted
-  for enterprise launch rehearsals.
-- [Contact Abuse Containment](docs/security/RUNBOOK_CONTACT_ABUSE.md) — detection
-  signals, D1 forensic exports, and escalation flow for the contact Worker.
-- [Whitepaper R2 Incident](docs/security/RUNBOOK_R2_INCIDENT.md) — backup and
-  restore procedures for `WHITEPAPER_ASSETS` plus stakeholder comms guidance.
-- [CSP Violation Triage](docs/security/RUNBOOK_CSP_Triage.md) — alert response
-  tied to the `csp-report-handler` Worker with persistence and webhook hooks.
-- [Incident Response Framework](docs/security/INCIDENT_RESPONSE.md) — tabletop
-  cadence, restore verification drills, and communication templates.
+> **Where to dive deeper:** Start with the [Architecture Decision Ledger](docs/architecture/DECISIONS.md), inspect the [system context diagram](docs/architecture/system-context.svg), then review the [brand style guide](docs/brand/STYLEGUIDE.md) before editing UI.
 
 ## Contributing
 
-1. Fork or branch from `main`.
-2. Build features within Astro pages or MDX collections; prefer islands for
-   isolated interactivity.
-3. Run `npm run test` (aggregates lint + typecheck) and `npm run build` before
-   opening a PR.
-4. Commit messages must follow Conventional Commits; the Husky `commit-msg` hook
-   provides immediate feedback.
-5. Document changes in the **Changelog** and relevant docs under `/docs`.
+> **Process note:** Conventional Commits, lint-staged auto-fixes, and CI parity are non-negotiable. Each guideline below keeps the platform enterprise-grade.
 
-Apotheon.ai continues to prioritize automation, scalability, and zero-trust
-security. This Astro foundation minimizes manual plumbing so teams can focus on
-high-leverage AI experiences.
+1. Branch from `main` and keep feature branches short-lived to reduce merge drift.
+2. Build UI in `.astro` files with React islands only when interaction is mandatory; this preserves the static-first contract demanded by the hero pledge.
+3. Run `npm run test` and `npm run build` before opening a PR so CI remains a confirmation step, not a debugging session.
+4. Document changes in `CHANGELOG.md` and the relevant `/docs` section; our investors and compliance teams rely on those artifacts for review cycles.
+5. Use the [Quick Start](#quick-start) commands whenever refreshing dependencies—the automation scripts regenerate assets, diagrams, and search indexes automatically.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE). Review the permissive grant alongside internal security guidelines before redistributing derivatives.
