@@ -1,0 +1,10 @@
+{
+  "generator": "render-homepage-hero.py",
+  "last_known_good": "2025-01-05T00:00:00.000Z",
+  "inputs": {
+    "canvas": { "width": 1440, "height": 960 },
+    "palette": ["#082540", "#105187", "#1c7ac7"],
+    "noiseSeed": 421337,
+    "notes": "Gradient backdrop used for fallback automation. Procedural renderer overlays typography and animated particles when available."
+  }
+}
