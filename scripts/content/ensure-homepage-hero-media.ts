@@ -3,11 +3,13 @@
 /**
  * Enterprise-grade content pipelines should never depend on humans manually copying assets
  * into place. This script guarantees that the homepage hero media exists before we invoke
- * Astro's image pipeline or Playwright. The placeholder is intentionally lightweight; design
- * teams can safely replace it with production artwork without fighting tooling overrides.
+ * Astro's image pipeline or Playwright by deterministically rendering the artwork with the
+ * Python generator. If the render step is unavailable, we fall back to a tiny placeholder so
+ * downstream jobs still have a predictable file to read.
  */
+import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { access, constants, mkdir, readFile, unlink, writeFile } from 'node:fs/promises';
+import { access, constants, mkdir, readFile, stat, unlink, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -24,6 +26,7 @@ import {
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const HERO_ASSET_FILE = join(__dirname, '..', '..', 'src', 'assets', 'homepage', 'hero-base.png');
 const HERO_ASSET_DIR = dirname(HERO_ASSET_FILE);
+const HERO_RENDERER = join(__dirname, '..', 'design', 'render-homepage-hero.py');
 const IMAGE_MANIFEST_PATH = join(
   __dirname,
   '..',
@@ -59,6 +62,18 @@ async function ensureDirectory(path: string): Promise<void> {
   await mkdir(path, { recursive: true });
 }
 
+async function getModifiedTimeMs(path: string): Promise<number | null> {
+  try {
+    const stats = await stat(path);
+    return stats.mtimeMs;
+  } catch (error) {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'ENOENT') {
+      return null;
+    }
+    throw error;
+  }
+}
+
 async function deleteIfExists(path: string): Promise<void> {
   try {
     await unlink(path);
@@ -72,6 +87,167 @@ async function deleteIfExists(path: string): Promise<void> {
 async function writePlaceholder(path: string): Promise<void> {
   const buffer = Buffer.from(PLACEHOLDER_BASE64, 'base64');
   await writeFile(path, buffer);
+}
+
+async function shouldRegenerateHeroAsset(heroExists: boolean): Promise<boolean> {
+  if (process.env.HOMEPAGE_HERO_FORCE_RENDER === '1') {
+    console.info('[homepage-hero] Force rendering enabled via HOMEPAGE_HERO_FORCE_RENDER=1.');
+    return true;
+  }
+
+  if (!heroExists) {
+    return true;
+  }
+
+  try {
+    const buffer = await readFile(HERO_ASSET_FILE);
+    const metadata = await sharp(buffer).metadata();
+    if (!hasUsableDimensions(metadata)) {
+      console.info(
+        '[homepage-hero] Existing hero asset dimensions are %sx%s; regenerating.',
+        metadata.width ?? 0,
+        metadata.height ?? 0,
+      );
+      return true;
+    }
+  } catch (error) {
+    console.warn('[homepage-hero] Failed to inspect hero asset; regenerating. %s', error);
+    return true;
+  }
+
+  const rendererExists = await fileExists(HERO_RENDERER);
+  if (!rendererExists) {
+    return false;
+  }
+
+  const [heroModified, rendererModified] = await Promise.all([
+    getModifiedTimeMs(HERO_ASSET_FILE),
+    getModifiedTimeMs(HERO_RENDERER),
+  ]);
+
+  if (heroModified === null) {
+    return true;
+  }
+
+  if (rendererModified === null) {
+    return false;
+  }
+
+  if (rendererModified > heroModified) {
+    console.info(
+      '[homepage-hero] Renderer newer than asset on disk (%s > %s); regenerating.',
+      new Date(rendererModified).toISOString(),
+      new Date(heroModified).toISOString(),
+    );
+    return true;
+  }
+
+  return false;
+}
+
+async function spawnProcess(binary: string, args: string[]): Promise<number> {
+  return await new Promise((resolve, reject) => {
+    const child = spawn(binary, args, { stdio: 'inherit' });
+    child.on('error', (error) => {
+      reject(error);
+    });
+    child.on('close', (code) => {
+      resolve(code ?? 1);
+    });
+  });
+}
+
+async function installPillow(binary: string): Promise<boolean> {
+  try {
+    console.info('[homepage-hero] Attempting `pip install pillow` via %s.', binary);
+    const exitCode = await spawnProcess(binary, ['-m', 'pip', 'install', '--quiet', 'pillow']);
+    if (exitCode === 0) {
+      console.info('[homepage-hero] Pillow installation succeeded via %s.', binary);
+      return true;
+    }
+    console.warn(
+      '[homepage-hero] Pillow installation via %s exited with code %s.',
+      binary,
+      exitCode,
+    );
+  } catch (error) {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'ENOENT') {
+      console.warn('[homepage-hero] Cannot install Pillow because %s is missing.', binary);
+    } else {
+      console.warn('[homepage-hero] Pillow installation via %s failed: %s', binary, error);
+    }
+  }
+  return false;
+}
+
+async function renderHeroProcedurally(): Promise<boolean> {
+  const rendererExists = await fileExists(HERO_RENDERER);
+  if (!rendererExists) {
+    console.warn(
+      '[homepage-hero] Renderer missing at %s; falling back to placeholder asset.',
+      HERO_RENDERER,
+    );
+    return false;
+  }
+
+  const preferred = process.env.HOMEPAGE_HERO_PYTHON;
+  const envPython = process.env.PYTHON;
+  const candidates = Array.from(
+    new Set(
+      [
+        preferred,
+        envPython,
+        'python3',
+        'python',
+        process.platform === 'win32' ? 'py' : undefined,
+      ].filter((value): value is string => Boolean(value)),
+    ),
+  );
+
+  let attemptedAutoInstall = false;
+  for (const binary of candidates) {
+    try {
+      const exitCode = await spawnProcess(binary, [HERO_RENDERER, '--output', HERO_ASSET_FILE]);
+      if (exitCode === 0) {
+        console.info('[homepage-hero] Generated hero artwork via %s.', binary);
+        return true;
+      }
+      console.warn('[homepage-hero] Renderer %s exited with code %s.', binary, exitCode);
+
+      if (!attemptedAutoInstall) {
+        attemptedAutoInstall = true;
+        const installed = await installPillow(binary);
+        if (installed) {
+          const retryExit = await spawnProcess(binary, [
+            HERO_RENDERER,
+            '--output',
+            HERO_ASSET_FILE,
+          ]);
+          if (retryExit === 0) {
+            console.info(
+              '[homepage-hero] Generated hero artwork via %s after installing Pillow.',
+              binary,
+            );
+            return true;
+          }
+          console.warn(
+            '[homepage-hero] Renderer %s still failed after installing Pillow (code %s).',
+            binary,
+            retryExit,
+          );
+        }
+      }
+    } catch (error) {
+      if (error && typeof error === 'object' && 'code' in error && error.code === 'ENOENT') {
+        console.warn('[homepage-hero] Skipping missing python binary "%s".', binary);
+      } else {
+        console.warn('[homepage-hero] Renderer %s failed: %s', binary, error);
+      }
+    }
+  }
+
+  console.warn('[homepage-hero] Unable to render hero procedurally. Install Pillow and retry.');
+  return false;
 }
 
 function hasUsableDimensions(metadata: SharpMetadata): boolean {
@@ -143,17 +319,19 @@ async function ensureDerivatives(manifest: ImageManifest): Promise<void> {
 async function main(): Promise<void> {
   await ensureDirectory(HERO_ASSET_DIR);
   const manifest = await readImageManifest(IMAGE_MANIFEST_PATH);
-  const hasExistingAsset = await fileExists(HERO_ASSET_FILE);
-  if (!hasExistingAsset) {
-    await writePlaceholder(HERO_ASSET_FILE);
-    console.info('[homepage-hero] Generated placeholder hero asset at %s', HERO_ASSET_FILE);
-    console.info(
-      '[homepage-hero] Replace this file with production artwork to update the live hero without editing templates.',
-    );
+  const heroExists = await fileExists(HERO_ASSET_FILE);
+  const needsRender = await shouldRegenerateHeroAsset(heroExists);
+
+  if (needsRender) {
+    const rendered = await renderHeroProcedurally();
+    if (!rendered) {
+      await writePlaceholder(HERO_ASSET_FILE);
+      console.warn(
+        '[homepage-hero] Placeholder asset written because procedural generation was unavailable.',
+      );
+    }
   } else {
-    console.info(
-      '[homepage-hero] Existing hero asset detected; ensuring derivatives are refreshed.',
-    );
+    console.info('[homepage-hero] Existing hero asset is up to date; skipping regeneration.');
   }
 
   await ensureDerivatives(manifest);
