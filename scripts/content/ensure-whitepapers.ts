@@ -22,6 +22,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = join(__dirname, '..', '..');
 const CONTENT_DIR = join(PROJECT_ROOT, 'src', 'content', 'whitepapers');
 const ASSETS_DIR = join(PROJECT_ROOT, 'assets', 'whitepapers');
+const MANAGED_LEDGER_PATH = join(ASSETS_DIR, 'managed-assets.json');
 const MANIFEST_PATH = join(PROJECT_ROOT, 'src', 'generated', 'whitepapers.manifest.ts');
 
 export const PLACEHOLDER_BUFFER = Buffer.from(PLACEHOLDER_PDF_BASE64, 'base64');
@@ -48,7 +49,7 @@ interface FrontmatterShape {
   lifecycle: {
     draft: boolean;
     archived: boolean;
-    embargoedUntil?: string;
+    embargoedUntil?: string | Date;
   };
   seo?: Record<string, unknown>;
 }
@@ -56,6 +57,31 @@ interface FrontmatterShape {
 interface ManifestEntry extends FrontmatterShape {
   slug: string;
 }
+
+interface ManagedLedgerAsset {
+  slug: string;
+  objectKey: string;
+  checksum: string;
+  byteLength: number;
+  pageCount: number;
+  base64: string;
+  capturedAt: string;
+  provenance: string[];
+}
+
+interface ManagedLedger {
+  version: number;
+  generatedAt: string;
+  sourceOfTruth: string;
+  automationNotes: string[];
+  assets: ManagedLedgerAsset[];
+}
+
+interface ManagedLedgerRuntimeAsset extends ManagedLedgerAsset {
+  buffer: Buffer;
+}
+
+type AssetSource = 'generator' | 'managed-ledger' | 'placeholder';
 
 function computeChecksum(buffer: Buffer): string {
   return createHash('sha256').update(buffer).digest('hex');
@@ -123,6 +149,159 @@ async function ensurePlaceholderAsset(assetPath: string): Promise<void> {
   console.warn('[whitepapers] placeholder hydrated at %s (generator unavailable)', assetPath);
 }
 
+async function loadManagedLedger(): Promise<Map<string, ManagedLedgerRuntimeAsset>> {
+  const ledgerExists = await fileExists(MANAGED_LEDGER_PATH);
+  if (!ledgerExists) {
+    return new Map();
+  }
+
+  const raw = await readFile(MANAGED_LEDGER_PATH, 'utf8');
+  let parsed: ManagedLedger;
+  try {
+    parsed = JSON.parse(raw) as ManagedLedger;
+  } catch (error) {
+    throw new Error(`Unable to parse managed whitepaper ledger: ${(error as Error).message}`);
+  }
+
+  if (!Array.isArray(parsed.assets)) {
+    throw new Error('Managed whitepaper ledger is missing the assets array.');
+  }
+
+  const managed = new Map<string, ManagedLedgerRuntimeAsset>();
+  for (const asset of parsed.assets) {
+    if (!asset?.slug || !asset.objectKey || !asset.base64) {
+      console.warn('[whitepapers] skipping malformed ledger entry: %o', asset);
+      continue;
+    }
+
+    const buffer = Buffer.from(asset.base64, 'base64');
+    const checksum = computeChecksum(buffer);
+    if (checksum !== asset.checksum) {
+      throw new Error(
+        `Checksum mismatch for managed asset ${asset.slug}; ledger declared ${asset.checksum} but decoded ${checksum}.`,
+      );
+    }
+
+    if (buffer.byteLength !== asset.byteLength) {
+      throw new Error(
+        `Byte length mismatch for managed asset ${asset.slug}; ledger declared ${asset.byteLength} but decoded ${buffer.byteLength}.`,
+      );
+    }
+
+    managed.set(asset.slug, { ...asset, buffer });
+  }
+
+  return managed;
+}
+
+async function hydrateManagedAsset(
+  slug: string,
+  assetPath: string,
+  ledgerAsset: ManagedLedgerRuntimeAsset,
+): Promise<{ buffer: Buffer; checksum: string; pageCount: number; source: AssetSource }> {
+  const existing = (await fileExists(assetPath)) ? await readFile(assetPath) : null;
+  if (existing) {
+    const existingChecksum = computeChecksum(existing);
+    if (existingChecksum === ledgerAsset.checksum) {
+      return {
+        buffer: existing,
+        checksum: ledgerAsset.checksum,
+        pageCount: ledgerAsset.pageCount,
+        source: 'managed-ledger',
+      };
+    }
+
+    console.info(
+      '[whitepapers] replacing divergent asset on disk for %s (expected %s, found %s)',
+      slug,
+      ledgerAsset.checksum,
+      existingChecksum,
+    );
+  }
+
+  await mkdir(dirname(assetPath), { recursive: true });
+  await writeFile(assetPath, ledgerAsset.buffer);
+  console.info('[whitepapers] hydrated %s from managed ledger', slug);
+
+  return {
+    buffer: ledgerAsset.buffer,
+    checksum: ledgerAsset.checksum,
+    pageCount: ledgerAsset.pageCount,
+    source: 'managed-ledger',
+  };
+}
+
+async function resolveAsset(
+  slug: string,
+  assetPath: string,
+  generated: GeneratedWhitepaper | undefined,
+  ledgerAsset: ManagedLedgerRuntimeAsset | undefined,
+): Promise<{ buffer: Buffer; checksum: string; pageCount: number; source: AssetSource }> {
+  if (generated) {
+    /**
+     * Primary path — when Playwright is available we trust the freshly rendered PDF and only
+     * validate its integrity before synchronizing metadata downstream.
+     */
+    const buffer = await readFile(generated.assetPath);
+    const metadata = await loadPdfMetadata(buffer);
+    if (metadata.checksum !== generated.checksum) {
+      throw new Error(
+        `Checksum drift detected for generated asset ${slug}: expected ${generated.checksum} but calculated ${metadata.checksum}.`,
+      );
+    }
+
+    if (metadata.pageCount !== generated.pageCount) {
+      throw new Error(
+        `Page count drift detected for generated asset ${slug}: expected ${generated.pageCount} but decoded ${metadata.pageCount}.`,
+      );
+    }
+
+    return {
+      buffer,
+      checksum: generated.checksum,
+      pageCount: generated.pageCount,
+      source: 'generator',
+    };
+  }
+
+  if (ledgerAsset) {
+    /**
+     * Secondary path — generator outages hydrate the managed ledger capture. Checksums are verified
+     * before writing so we never downgrade vetted binaries.
+     */
+    const hydrated = await hydrateManagedAsset(slug, assetPath, ledgerAsset);
+    const metadata = await loadPdfMetadata(hydrated.buffer);
+    if (metadata.checksum !== ledgerAsset.checksum) {
+      throw new Error(
+        `Managed ledger checksum mismatch for ${slug}; decoded ${metadata.checksum} but ledger records ${ledgerAsset.checksum}.`,
+      );
+    }
+
+    if (metadata.pageCount !== ledgerAsset.pageCount) {
+      throw new Error(
+        `Managed ledger page count mismatch for ${slug}; decoded ${metadata.pageCount} but ledger records ${ledgerAsset.pageCount}.`,
+      );
+    }
+
+    return { ...hydrated };
+  }
+
+  /**
+   * Final safety net — when Playwright is down and the ledger lacks coverage we intentionally fall
+   * back to the placeholder asset. Frontmatter/manifest metadata stay untouched so the last known
+   * good checksum continues to protect signed URL workflows.
+   */
+  await ensurePlaceholderAsset(assetPath);
+  const buffer = await readFile(assetPath);
+  const metadata = await loadPdfMetadata(buffer);
+  return {
+    buffer,
+    checksum: metadata.checksum,
+    pageCount: metadata.pageCount,
+    source: 'placeholder',
+  };
+}
+
 async function loadPdfMetadata(buffer: Buffer): Promise<{ checksum: string; pageCount: number }> {
   /**
    * Checksums anchor downstream compliance automation—Cloudflare Workers validate request bodies
@@ -149,6 +328,7 @@ async function processEntry(
   slug: string,
   entryPath: string,
   generatorMap: Map<string, GeneratedWhitepaper>,
+  ledgerMap: Map<string, ManagedLedgerRuntimeAsset>,
 ): Promise<ManifestEntry> {
   const { frontmatter, body, rawFrontmatter } = await readMdxFrontmatter(entryPath);
   if (!frontmatter?.asset?.objectKey) {
@@ -163,27 +343,26 @@ async function processEntry(
 
   const assetPath = join(ASSETS_DIR, assetFilename);
   const generated = generatorMap.get(slug);
-
-  if (!generated) {
-    await ensurePlaceholderAsset(assetPath);
+  const ledgerAsset = ledgerMap.get(slug);
+  if (ledgerAsset && ledgerAsset.objectKey !== assetKey) {
+    throw new Error(
+      `Managed ledger entry for ${slug} references ${ledgerAsset.objectKey} but frontmatter expects ${assetKey}.`,
+    );
   }
+  const resolved = await resolveAsset(slug, assetPath, generated, ledgerAsset);
 
-  const stats = await stat(assetPath);
-  if (!stats.isFile()) {
-    throw new Error(`Whitepaper asset at ${assetPath} is not a regular file.`);
+  if (resolved.source === 'placeholder') {
+    const stats = await stat(assetPath);
+    if (!stats.isFile()) {
+      throw new Error(`Whitepaper asset at ${assetPath} is not a regular file.`);
+    }
   }
-
-  const buffer = await readFile(assetPath);
-  const { checksum, pageCount } = await loadPdfMetadata(buffer);
-
-  const desiredChecksum = generated?.checksum ?? checksum;
-  const desiredPageCount = generated?.pageCount ?? pageCount;
 
   const updates: FrontmatterAsset = {
     objectKey: assetKey,
-    checksum: desiredChecksum,
+    checksum: resolved.checksum,
     contentType: 'application/pdf',
-    pageCount: desiredPageCount,
+    pageCount: resolved.pageCount,
   };
 
   if (frontmatter.lifecycle?.embargoedUntil instanceof Date) {
@@ -199,9 +378,10 @@ async function processEntry(
     !/embargoedUntil:\s*'[^']*'/u.test(rawFrontmatter);
 
   const shouldPersist =
-    frontmatter.asset.checksum !== updates.checksum ||
-    frontmatter.asset.pageCount !== updates.pageCount ||
-    frontmatter.asset.contentType !== updates.contentType ||
+    (resolved.source !== 'placeholder' &&
+      (frontmatter.asset.checksum !== updates.checksum ||
+        frontmatter.asset.pageCount !== updates.pageCount ||
+        frontmatter.asset.contentType !== updates.contentType)) ||
     missingEmbargoQuotes;
 
   if (shouldPersist) {
@@ -231,12 +411,13 @@ export async function ensureWhitepapers(): Promise<void> {
   }
 
   const generatedMap = new Map(generatedOutputs.map((output) => [output.slug, output] as const));
+  const managedLedger = await loadManagedLedger();
 
   const manifestEntries: ManifestEntry[] = [];
   for (const entry of entries) {
     const slug = basename(entry, extname(entry));
     const entryPath = join(CONTENT_DIR, entry);
-    const frontmatter = await processEntry(slug, entryPath, generatedMap);
+    const frontmatter = await processEntry(slug, entryPath, generatedMap, managedLedger);
     manifestEntries.push(frontmatter);
   }
 
