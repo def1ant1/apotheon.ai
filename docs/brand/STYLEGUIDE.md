@@ -5,6 +5,7 @@
 ## Contents
 
 - [Brand Design North Star](#brand-design-north-star)
+- [Homepage Hero System](#homepage-hero-system)
 - [Color Systems](#color-systems)
   - [Daylight Palette (Light Mode)](#daylight-palette-light-mode)
   - [Midnight Palette (Dark Mode)](#midnight-palette-dark-mode)
@@ -31,6 +32,27 @@
 - **Voice & Tone:** Confident, data-forward, and transparent. Interfaces should feel like a precision instrument rather than a marketing site. _Rationale:_ Stakeholders rely on Apotheon.ai for mission-critical forecasting – a restrained palette and purposeful animation reduce distraction.
 - **Token-first delivery:** All surfaces consume Tailwind design tokens declared once in `tailwind.config.mjs`, hydrated from `src/styles/tokens.css`, and mirrored in this document. _Rationale:_ Shared tokens eliminate manual restyling and enable automation like the contrast script to validate pairings.
 - **Dark mode parity:** Every color, typography, and spacing token includes a dark-mode equivalent. _Rationale:_ Enterprise customers expect first-class dark themes for dashboards and SOC workflows.
+
+---
+
+## Homepage Hero System
+
+> **Purpose:** Anchor the landing experience with an aspirational yet accurate depiction of the platform’s autonomous operations console. The illustration must preserve whitespace for the `h1` and CTAs while signalling real-time orchestration across distributed teams.
+
+To preview the most recent rendering locally, execute:
+
+```bash
+npm run ensure:homepage-hero-media && open src/assets/homepage/hero-base.png # macOS
+# use `xdg-open` on Linux or `start` on Windows if preferred
+```
+
+The ensure script deterministically rebuilds `hero-base.png` (ignored by git) and derivative formats during every prebuild hook, so CI pipelines and developer workstations stay aligned without committing large binaries. If Pillow is missing, the task installs it automatically before re-rendering.
+
+- **Dimensions & formats:** Base artwork ships as `hero-base.png` at 1440×960 px. Automated derivatives (`hero-base.avif`, `hero-base.webp`) are generated via `npm run ensure:homepage-hero-media`, ensuring `@astrojs/image` gets authoritative dimensions and SHA-256 checksums for caching.
+- **Lighting & contrast:** Radial highlight centers at 62% × 38% of the canvas to keep the hero headline legible against the navy gradient. Bloom and particle overlays stay below 35% luminance so white body copy (`#F8FAFC`) and cyan CTAs maintain ≥ 4.5:1 contrast.
+- **Narrative elements:** Central dashboard panel reflects policy automation metrics; right-side orbit cards symbolize partner teams/devices syncing asynchronously. Motion primitives should mirror these layers if we animate the hero.
+- **Production workflow:** Re-render the art procedurally with `python scripts/design/render-homepage-hero.py` before running the ensure script. This keeps design updates in source control and avoids manual exports from design tools.
+- **Accessibility sync:** Update `heroMedia.alt` in `src/content/homepage/landing.mdx` whenever the illustration focus changes. Alt copy is the canonical description for assistive tech and analytics heatmaps.
 
 ---
 

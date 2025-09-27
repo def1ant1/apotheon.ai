@@ -3,12 +3,15 @@
   "assets": {
     "homepage/hero-base": {
       "base": "src/assets/homepage/hero-base.png",
-      "derivatives": {},
+      "derivatives": {
+        "avif": "src/assets/homepage/hero-base.avif",
+        "webp": "src/assets/homepage/hero-base.webp"
+      },
       "preload": true,
       "lcpCandidate": true,
-      "width": 1,
-      "height": 1,
-      "checksum": "3d7c44a28efd8a761f6a69f30460d6fb3e5b805fca8363d1032d421ba1a7bc02"
+      "width": 1440,
+      "height": 960,
+      "checksum": "6368bff2d9831c710639dfcbe39b6d84649f1f1e2baa0904fbd287d94c9fbf3d"
     },
     "history/expansion": {
       "base": "src/assets/history/expansion.svg",
