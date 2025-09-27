@@ -22,19 +22,31 @@ Run `npm run ensure:whitepapers` (automatically triggered in `predev`, `prebuild
    frontmatter so Cloudflare Workers can validate signed-url requests deterministically.
 3. Refresh `src/generated/whitepapers.manifest.ts`, which powers the request form, Worker validation,
    and analytics surfaces.
+4. When Chromium is unavailable, hydrate `assets/whitepapers/managed-assets.json` into the working
+   directory. The managed ledger stores base64-encoded production PDFs with recorded checksums,
+   provenance notes, and page counts so zero-touch environments can still validate content.
 
 The pipeline writes PDFs to `assets/whitepapers/` during execution, but `.gitignore` blocks the binaries
 from landing in commits. Developers should stage the manifest/frontmatter changes only—CI regenerates the
 artifacts to validate integrity. If Chromium is unavailable, the ensure script hydrates a placeholder PDF
-as a safety net while still preventing placeholder checksums from passing tests.
+as a safety net while still preventing placeholder checksums from passing tests. The fallback cascade is
+documented directly in `scripts/content/ensure-whitepapers.ts` (generator → managed ledger → placeholder)
+so auditors can trace exactly how assets materialize across automation tiers.
 
-The ensure script only falls back to the historical placeholder PDF when Chromium dependencies are
-missing or explicitly disabled with `WHITEPAPER_DISABLE_GENERATOR=1`. New developer environments should
-run `npx playwright install --with-deps chromium` once to bootstrap the generator.
+The ensure script now checks the managed ledger before ever downgrading to the placeholder PDF. Only when
+both Playwright and the ledger are unavailable will the placeholder hydrate. In those cases, the script
+intentionally avoids overwriting existing frontmatter metadata so the last known good checksum remains in
+source control. New developer environments should run `npx playwright install --with-deps chromium` once
+to bootstrap the generator and keep the ledger in "break glass" territory.
+
+> ℹ️ **Ledger stewardship:** Playwright remains the source of truth for production refreshes. Whenever a
+> PDF changes, regenerate via Playwright, update the manifest/frontmatter, and then rebuild
+> `managed-assets.json` so offline automation paths continue to match production binaries.
 
 Vitest coverage (`scripts/content/__tests__/whitepapers-assets.test.ts`) enforces that every manifest
 entry produces a PDF larger than the placeholder baseline, carries a unique checksum, and exposes the
-expected page count.
+expected page count. Tests also simulate generator outages to confirm the managed ledger hydrate path
+produces multi-page PDFs with digests aligned across the ledger, frontmatter, and manifest.
 
 ## Worker architecture
 
