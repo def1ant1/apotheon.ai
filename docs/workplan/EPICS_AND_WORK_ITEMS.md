@@ -2,15 +2,17 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
 
 # Apotheon.ai Website — Large Work Items (Epics) for Codex
 
-> **Goal:** Build and launch the public **apotheon.ai** website using **free / open‑source or custom‑developed** components that **maximize scalability, performance, and security**.  
-> **Strategy:** **Static‑first, edge‑enhanced** architecture: **Astro (TypeScript, MDX)** + **React islands (minimal JS)** + **TailwindCSS** + **Radix Primitives** (accessible headless UI).  
-> **Edge & Hosting:** **Cloudflare Pages** (global CDN, WAF, DDoS) + **Cloudflare Workers/D1/KV/R2** for forms, gating, and signed downloads (all with free tiers).  
-> **Content:** Git‑based MDX (no vendor lock‑in). Optional OSS CMS (Decap CMS) toggle.  
-> **Analytics/Consent:** **Umami** (self‑hosted) or **Plausible CE** (AGPL) + **Klaro** (MIT) for consent.  
+> **Goal:** Build and launch the public **apotheon.ai** website using **free / open‑source or custom‑developed** components that **maximize scalability, performance, and security**.
+> **Strategy:** **Static‑first, edge‑enhanced** architecture: **Astro (TypeScript, MDX)** + **React islands (minimal JS)** + **TailwindCSS** + **Radix Primitives** (accessible headless UI).
+> **Edge & Hosting:** **Cloudflare Pages** (global CDN, WAF, DDoS) + **Cloudflare Workers/D1/KV/R2** for forms, gating, and signed downloads (all with free tiers).
+> **Content:** Git‑based MDX (no vendor lock‑in). Optional OSS CMS (Decap CMS) toggle.
+> **Analytics/Consent:** **Umami** (self‑hosted) or **Plausible CE** (AGPL) + **Klaro** (MIT) for consent.
 > **Search:** **Pagefind** (OSS static search, zero runtime).  
 > **CI/CD & Security:** **GitHub Actions** (public repo free), **OWASP ZAP** DAST in CI, **Gitleaks** secret scanning, **Dependabot**/npm‑audit, **Snyk CLI (OSS)** optional.  
-> **Observability:** **GlitchTip** (OSS Sentry‑compatible) or **Sentry self‑host**, **Uptime‑Kuma** (OSS).  
+> **Observability:** **GlitchTip** (OSS Sentry‑compatible) or **Sentry self‑host**, **Uptime‑Kuma** (OSS).
 > **Note:** All third‑party services are free‑tier or OSS; where SaaS is chosen (e.g., Cloudflare), an OSS/self‑host alternative is listed in the Epic.
+
+> **Orientation cue:** Anchor discussions to the [README hero pledge](../../README.md#apotheonai-web-platform) and [Quick Start automation flow](../../README.md#quick-start) so epics map cleanly to the documented delivery posture.
 
 ---
 

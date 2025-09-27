@@ -5,6 +5,8 @@ inquiry lands in auditable infrastructure backed by D1. This document outlines
 how the pipeline is wired together and what automation keeps it healthy in
 pre-production environments.
 
+> **Onboarding reminder:** Before diving into workflow specifics, review the [README Quick Start](../../README.md#quick-start) for the required tooling cadence and the [README Features](../../README.md#features) recap so your local environment mirrors the static-first contract described in the hero block.
+
 ## High-level sequence
 
 1. **Client-side validation** happens in the `ContactForm` React island. Inputs
