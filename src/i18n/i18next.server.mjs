@@ -1,15 +1,12 @@
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
-/**
- * Centralised locale metadata keeps the integration declarative and discoverable.
- * Adjusting these arrays automatically propagates supported languages across the
- * server configuration, Astro integration, and helper utilities.
- */
-export const DEFAULT_LOCALE = 'en';
-export const SUPPORTED_LOCALES = ['en', 'es', 'fr'];
-export const DEFAULT_NAMESPACE = 'common';
-export const NAMESPACES = [DEFAULT_NAMESPACE];
+import {
+  DEFAULT_LOCALE,
+  DEFAULT_NAMESPACE,
+  NAMESPACES,
+  SUPPORTED_LOCALES,
+} from './metadata.mjs';
 
 const moduleDirectory = dirname(fileURLToPath(import.meta.url));
 
@@ -83,3 +80,4 @@ const astroI18nextConfig = {
 };
 
 export default astroI18nextConfig;
+export { DEFAULT_LOCALE, DEFAULT_NAMESPACE, NAMESPACES, SUPPORTED_LOCALES } from './metadata.mjs';

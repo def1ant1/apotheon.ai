@@ -1,6 +1,7 @@
 ---
 import { getCollection, type CollectionEntry } from 'astro:content';
 
+import DocsExitTracker from '../../components/islands/DocsExitTracker';
 import Breadcrumbs from '../../components/navigation/Breadcrumbs.astro';
 import SchemaScript from '../../components/seo/SchemaScript.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
@@ -10,7 +11,7 @@ import { buildBreadcrumbSchema, resolveLocaleFromPath } from '../../utils/seo';
 export async function getStaticPaths() {
   const docs = await getCollection('docs', ({ data }) => data.draft !== true);
   return docs.map((entry) => ({
-    params: { segments: entry.slug.split('/') },
+    params: { segments: entry.slug },
     props: { entry },
   }));
 }
@@ -104,4 +105,12 @@ const lastReviewedDisplay =
       <Content />
     </div>
   </article>
+  {
+    /**
+     * The docs exit tracker hydrates invisibly and only records telemetry when
+     * Klaro grants analytics consent. The payload feeds Plausible + GA for
+     * leadership dashboards while the Worker continues forwarding into Umami.
+     */
+  }
+  <DocsExitTracker client:load slug={entry.slug} />
 </BaseLayout>

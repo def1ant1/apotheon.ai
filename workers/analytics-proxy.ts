@@ -22,6 +22,11 @@ export interface AnalyticsProxyEnv {
   ANALYTICS_ALLOWED_ORIGINS?: string;
   ANALYTICS_RATE_LIMIT_MAX?: string;
   ANALYTICS_RATE_LIMIT_WINDOW_SECONDS?: string;
+  PLAUSIBLE_ENDPOINT?: string;
+  PLAUSIBLE_DOMAIN?: string;
+  GA_ENDPOINT?: string;
+  GA_MEASUREMENT_ID?: string;
+  GA_API_SECRET?: string;
 }
 
 type BeaconRecord = z.infer<typeof beaconSchema>;
@@ -226,14 +231,7 @@ export default {
 
       const response = await fetch(backendRequest);
 
-      ctx.waitUntil(
-        persistAuditRecord(env, {
-          beacon,
-          status: response.status,
-          cfRay: request.headers.get('cf-ray') ?? null,
-          country: request.headers.get('cf-ipcountry') ?? 'XX',
-        }),
-      );
+      ctx.waitUntil(fanOutAsyncTasks(env, request, beacon, response.status));
 
       if (!response.ok) {
         throw new HttpError(502, `Backend responded with ${response.status}`);
@@ -296,6 +294,24 @@ function createSuccessResponse(): Response {
   });
 }
 
+async function fanOutAsyncTasks(
+  env: AnalyticsProxyEnv,
+  request: Request,
+  beacon: BeaconRecord,
+  status: number,
+): Promise<void> {
+  await Promise.allSettled([
+    persistAuditRecord(env, {
+      beacon,
+      status,
+      cfRay: request.headers.get('cf-ray') ?? null,
+      country: request.headers.get('cf-ipcountry') ?? 'XX',
+    }),
+    forwardToPlausible(env, beacon),
+    forwardToGa(env, beacon),
+  ]);
+}
+
 function createNoopResponse(reason: string): Response {
   return new Response(null, {
     status: 204,
@@ -355,4 +371,83 @@ async function ensureAuditTable(env: AnalyticsProxyEnv): Promise<void> {
   if (auditTableReady) return;
   await env.ANALYTICS_AUDIT_DB.exec(AUDIT_TABLE_SQL);
   auditTableReady = true;
+}
+
+const PLAUSIBLE_EVENTS = new Set(['search_query', 'docs_exit']);
+
+function mapBeaconToPlausiblePayload(env: AnalyticsProxyEnv, beacon: BeaconRecord) {
+  const name = beacon.event === 'search_query' ? 'pagefind_search' : beacon.event;
+  const props: Record<string, unknown> = {};
+  if (beacon.event === 'search_query') {
+    props.query = beacon.payload?.query;
+    props.status = beacon.payload?.status;
+    props.resultCount = beacon.payload?.resultCount;
+  }
+  if (beacon.event === 'docs_exit') {
+    props.slug = beacon.payload?.slug;
+    props.exitPath = beacon.payload?.exitPath;
+    props.timeOnPageMs = beacon.payload?.timeOnPageMs;
+    props.scrollDepth = beacon.payload?.scrollDepth;
+  }
+  return {
+    domain: env.PLAUSIBLE_DOMAIN,
+    name,
+    url: beacon.meta?.href ?? undefined,
+    props,
+  };
+}
+
+async function forwardToPlausible(env: AnalyticsProxyEnv, beacon: BeaconRecord): Promise<void> {
+  if (!env.PLAUSIBLE_ENDPOINT || !env.PLAUSIBLE_DOMAIN) return;
+  if (!PLAUSIBLE_EVENTS.has(beacon.event)) return;
+  const payload = mapBeaconToPlausiblePayload(env, beacon);
+  payload.domain = env.PLAUSIBLE_DOMAIN;
+  if (!payload.url) {
+    payload.url = `https://${env.PLAUSIBLE_DOMAIN}/`;
+  }
+  await fetch(env.PLAUSIBLE_ENDPOINT, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+}
+
+async function forwardToGa(env: AnalyticsProxyEnv, beacon: BeaconRecord): Promise<void> {
+  if (!env.GA_MEASUREMENT_ID || !env.GA_API_SECRET) return;
+  if (!PLAUSIBLE_EVENTS.has(beacon.event)) return;
+  const endpoint = env.GA_ENDPOINT ?? 'https://www.google-analytics.com/mp/collect';
+  const url = new URL(endpoint);
+  url.searchParams.set('measurement_id', env.GA_MEASUREMENT_ID);
+  url.searchParams.set('api_secret', env.GA_API_SECRET);
+
+  const params: Record<string, unknown> = {
+    session_id: beacon.sessionId,
+  };
+  if (beacon.event === 'search_query') {
+    params.search_term = beacon.payload?.query;
+    params.search_status = beacon.payload?.status;
+    params.search_results = beacon.payload?.resultCount;
+  }
+  if (beacon.event === 'docs_exit') {
+    params.page_path = beacon.payload?.slug;
+    params.exit_path = beacon.payload?.exitPath;
+    params.time_on_page = beacon.payload?.timeOnPageMs;
+    params.scroll_depth = beacon.payload?.scrollDepth;
+  }
+
+  const body = {
+    client_id: beacon.sessionId,
+    events: [
+      {
+        name: beacon.event === 'search_query' ? 'pagefind_search' : 'docs_exit',
+        params,
+      },
+    ],
+  };
+
+  await fetch(url.toString(), {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(body),
+  });
 }

@@ -14,6 +14,7 @@ export type AnalyticsEvent =
   | 'whitepaper_download'
   | 'blog_read'
   | 'search_query'
+  | 'docs_exit'
   | 'role_experience_impression';
 
 interface TrackOptions {
@@ -44,11 +45,21 @@ export type ConsentApi = {
   update: (next: ConsentState) => void;
 };
 
+export type PlausibleClient = ((
+  eventName: string,
+  options?: { props?: Record<string, unknown> },
+) => unknown) & {
+  q?: Array<readonly [string, Record<string, unknown> | undefined]>;
+};
+
 export type ConsentState = Record<string, boolean>;
 
 declare global {
   interface Window {
     __APOTHEON_CONSENT__?: ConsentApi;
+    plausible?: PlausibleClient;
+    dataLayer?: unknown[];
+    gtag?: (...args: unknown[]) => void;
   }
 }
 
@@ -170,6 +181,10 @@ export async function trackAnalyticsEvent(options: TrackOptions): Promise<TrackR
     delivered = response.ok;
   }
 
+  if (delivered) {
+    fanoutWebAnalytics(options, consentService, sessionId);
+  }
+
   return {
     delivered,
     reason: delivered ? undefined : response ? `status-${response.status}` : 'beacon-failed',
@@ -177,11 +192,83 @@ export async function trackAnalyticsEvent(options: TrackOptions): Promise<TrackR
   };
 }
 
+function fanoutWebAnalytics(
+  options: TrackOptions,
+  consentService: TrackOptions['consentService'],
+  sessionId: string,
+): void {
+  if (typeof window === 'undefined') return;
+  if (consentService && !hasConsent(consentService)) return;
+
+  const plausible = typeof window.plausible === 'function' ? window.plausible : undefined;
+  const gtag = resolveGtag();
+
+  switch (options.event) {
+    case 'search_query': {
+      const payload = options.payload ?? {};
+      const query = payload['query'];
+      const status = payload['status'];
+      const resultCount = payload['resultCount'];
+      const props = {
+        query,
+        status,
+        resultCount,
+      };
+      plausible?.('pagefind_search', { props });
+      gtag?.('event', 'pagefind_search', {
+        search_term: query,
+        search_status: status,
+        search_results: resultCount,
+        session_id: sessionId,
+      });
+      break;
+    }
+    case 'docs_exit': {
+      const payload = options.payload ?? {};
+      const slug = payload['slug'];
+      const exitPath = payload['exitPath'];
+      const timeOnPageMs = payload['timeOnPageMs'];
+      const scrollDepth = payload['scrollDepth'];
+      const props = {
+        slug,
+        exitPath,
+        timeOnPageMs,
+        scrollDepth,
+      };
+      plausible?.('docs_exit', { props });
+      gtag?.('event', 'docs_exit', {
+        page_path: slug,
+        exit_path: exitPath,
+        time_on_page: timeOnPageMs,
+        scroll_depth: scrollDepth,
+        session_id: sessionId,
+      });
+      break;
+    }
+    default:
+      break;
+  }
+}
+
+function resolveGtag(): ((...args: unknown[]) => void) | undefined {
+  if (typeof window === 'undefined') return undefined;
+  if (typeof window.gtag === 'function') {
+    return window.gtag;
+  }
+  if (Array.isArray(window.dataLayer)) {
+    return (...args: unknown[]) => {
+      window.dataLayer?.push(args);
+    };
+  }
+  return undefined;
+}
+
 function inferConsentService(event: AnalyticsEvent): TrackOptions['consentService'] {
   switch (event) {
     case 'blog_read':
       return 'umami-telemetry';
     case 'search_query':
+    case 'docs_exit':
       return 'umami-telemetry';
     case 'lead_demo':
     case 'lead_investor':

@@ -75,9 +75,9 @@ export const klaroConfig: KlaroConfig = {
     },
     {
       name: 'umami-telemetry',
-      title: 'Umami analytics',
+      title: 'Governed analytics (Umami & Plausible)',
       description:
-        'Anonymous usage insights that guide roadmap priorities. We only record aggregated metrics — no IP addresses or fingerprints.',
+        'Anonymous usage insights routed through our consent-gated proxy. Events stream to Umami for dashboards and Plausible for leadership rollups — no IP addresses or fingerprints.',
       purposes: ['analytics'],
       privacyPolicyUrl: 'https://umami.is/docs/faq',
       cookies: ['umami.session'],

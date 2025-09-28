@@ -1,8 +1,9 @@
-import { detectLocaleFromPath, localizePath, localizeUrl } from 'astro-i18next';
-
 import {
   type Locale,
   SUPPORTED_LOCALES,
+  detectLocaleFromPath,
+  localizePath,
+  localizeUrl,
   getDefaultLocale,
   useTranslations as resolveTranslator,
 } from './index';

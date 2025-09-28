@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import mdx from '@astrojs/mdx';
+import plausible from '@astrojs/plausible';
 import react from '@astrojs/react';
 import image from '@astrojs/image';
 import sitemap from '@astrojs/sitemap';
@@ -60,6 +61,7 @@ const devServerHeaders = {
 // by the npm `build` script so every deployment artifact is fully SEO-ready.
 
 const canonicalSiteUrl = SEO_MANIFEST.site.toString();
+const canonicalAnalyticsDomain = new URL(canonicalSiteUrl).hostname;
 const isRouteExcludedFromDiscovery = createRouteExclusionPredicate();
 const sitemapLastModified = new Date();
 
@@ -72,6 +74,18 @@ export default defineConfig({
       applyBaseStyles: false
     }),
     mdx(),
+    plausible({
+      /**
+       * Plausible traditionally injects immediately, but our consent automation requires a
+       * Klaro gate. The vendored integration proxies configuration into a client-side module
+       * that listens for `apotheon:consent:updated` events before appending the analytics
+       * script. Inline comments live alongside the runtime to keep privacy reviews frictionless.
+       */
+      domain: canonicalAnalyticsDomain,
+      scriptSrc: process.env.ANALYTICS_PLAUSIBLE_SCRIPT_URL ?? 'https://plausible.io/js/script.tagged.js',
+      apiHost: process.env.ANALYTICS_PLAUSIBLE_API_HOST,
+      consentService: 'umami-telemetry'
+    }),
     react(),
     image({
       serviceEntryPoint: '@astrojs/image/sharp'
@@ -131,7 +145,15 @@ export default defineConfig({
   vite: {
     resolve: {
       alias: {
-        '@i18n': I18N_SOURCE_DIR
+        '@i18n': I18N_SOURCE_DIR,
+        /**
+         * Vite 6 externalises Node built-ins like `util` when compiling the
+         * client bundle, which breaks packages such as `escalade` that rely on
+         * `util.promisify`. Installing the userland `util` polyfill and mapping
+         * requests here restores the helper in browser builds without
+         * impacting server output.
+         */
+        util: 'util/'
       }
     },
     server: {

@@ -16,9 +16,10 @@ description: '- [Brand Design North Star](#brand-design-north-star) - [Homepage
   Guardrails](#accessibility--wcag-22-aa-guardrails) - [Contrast
   Automation](#contrast-automation) - [Manual QA
   Checklist](#manual-qa-checklist) - [Adoption Workflow for Designers &
-  Engineers](#adoption-workflow-for-designers--engineers)'
+  Engineers](#adoption-workflow-for-designers--engineers) - [Navigation
+  Information Architecture](#navigation-information-architecture)'
 sourcePath: brand/STYLEGUIDE.md
-sourceLastModified: 2025-09-28T00:41:50.114Z
+sourceLastModified: 2025-09-28T02:01:21.032Z
 tags: []
 ---
 
@@ -46,6 +47,7 @@ tags: []
   - [Contrast Automation](#contrast-automation)
   - [Manual QA Checklist](#manual-qa-checklist)
 - [Adoption Workflow for Designers & Engineers](#adoption-workflow-for-designers--engineers)
+- [Navigation Information Architecture](#navigation-information-architecture)
 
 ---
 
@@ -362,6 +364,21 @@ The script checks every pairing listed in the [palette matrix](#palette-pairing-
    - Before merging, run `npm run ladle:ci` to execute the Puppeteer + axe-core sweep that verifies accessibility and basic visual density. The command also runs under `npm run test` so CI parity stays intact.
      _Rationale:_ Centralized component documentation keeps designers, engineers, and QA aligned on states, tokens, and theming expectations.
 6. **Ship with confidence:** Attach this guide to product briefs and onboarding docs so every stakeholder references the same source of truth.
+
+---
+
+## Navigation Information Architecture
+
+> **Purpose:** Marketing, design, product, and security stakeholders now share a unified primary navigation blueprint spanning platform messaging, regulated-industry journeys, documentation, runbooks, and the managed brand kit. Capturing the structure here keeps the IA auditable without spelunking TypeScript.
+
+- **Platform** → `/solutions/clio`, `/solutions/atlas`, `/solutions/nova`
+- **Industries** → `/industries/healthcare`, `/industries/financial-services`, `/industries/law`, `/industries/government`, `/industries/military`, `/industries/intelligence`, `/industries/public-sector`
+- **Docs** → `/docs/`, `/docs/architecture/decisions`, `/docs/content/information-architecture`
+- **Security Runbooks** → `/docs/security/runbook-contact-abuse`, `/docs/security/runbook-csp-triage`, `/docs/security/runbook-r2-incident`
+- **Brand Kit** → `/docs/brand/styleguide`, `/static/brand/palette-light.svg`, `/static/brand/typography-scale.svg`
+- **Company** → `/about/company`, `/about/careers`, `/about/white-papers`, `/about/history`, `/about/contact`
+
+_Change management note:_ When adding or removing navigation links update `navigationMenuGroups` in `src/components/islands/RadixNavigationMenu.tsx`, rerun `npm run lint && npm run test`, and paste the revised hierarchy back into this section so partner teams always have a searchable reference.
 
 ---
 
