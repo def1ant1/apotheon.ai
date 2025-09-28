@@ -1,5 +1,5 @@
 ---
-import { getEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
 
 import AiosPillars from '../components/homepage/AiosPillars.astro';
 import DemoBanner from '../components/homepage/DemoBanner.astro';
@@ -27,7 +27,15 @@ import {
 } from '../utils/seo';
 
 const { t } = await useTranslations(Astro);
-const homepageEntry = await getEntry('homepage', homepageEntryId);
+const homepageEntries = await getCollection('homepage');
+const homepageEntry = homepageEntries.find((entry) => entry.slug === homepageEntryId);
+
+if (!homepageEntry) {
+  throw new Error(
+    `Homepage collection entry "${homepageEntryId}" is missing. Ensure src/content/homepage/${homepageEntryId}.mdx exists.`,
+  );
+}
+
 const { Content: HeroDescription } = await homepageEntry.render();
 const heroMetaDescription =
   homepageEntry.data.supportingBullets[0]?.description ??

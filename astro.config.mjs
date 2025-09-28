@@ -64,10 +64,34 @@ const canonicalAnalyticsDomain = new URL(canonicalSiteUrl).hostname;
 const isRouteExcludedFromDiscovery = createRouteExclusionPredicate();
 const sitemapLastModified = new Date();
 
+const contentLayerIntegrations = [
+  /**
+   * MDX remains the only content-layer plugin today, but living here keeps
+   * the migration path explicit once content collections move to the
+   * Content Layer API. The integration is otherwise unchanged – it still
+   * extends remark/rehype and participates in Markdown automation – but
+   * the central registry guarantees future loaders inherit the same guardrails.
+   */
+  mdx()
+];
+
 export default defineConfig({
   output: 'static',
   trailingSlash: 'ignore',
   site: canonicalSiteUrl,
+  content: {
+    layer: {
+      /**
+       * Centralised automation contract for anything that augments the content
+       * layer. Astro 5 consolidates MDX, Markdoc, and future data loaders under
+       * this hook so CI can diff integrations in a single place and Ops can
+       * spot drift when reconciling production vs. staging manifests. All new
+       * content processors MUST register here so the deploy pipeline can
+       * auto-wire telemetry, cache busting, and schema generation before build.
+       */
+      integrations: contentLayerIntegrations
+    }
+  },
   image: {
     /**
      * Astro 5 promotes the built-in `astro:assets` pipeline, so we explicitly
@@ -80,7 +104,7 @@ export default defineConfig({
     service: sharpImageService()
   },
   integrations: [
-    mdx(),
+    ...contentLayerIntegrations,
     plausible({
       /**
        * Plausible traditionally injects immediately, but our consent automation requires a
