@@ -31,6 +31,10 @@ export const PrimaryNavigation: Story = () => (
             Astro island and this Ladle story simultaneously, ensuring docs stay honest.
           </li>
           <li>
+            Docs, Security Runbooks, and Brand Kit groups reference the handbook and asset pages
+            introduced in issue #3—review them here before rolling the IA to production.
+          </li>
+          <li>
             Accessibility toggles (e.g., <kbd>Tab</kbd>, arrow keys) come from Radix. When QA signs
             off here the production build inherits the same behavior.
           </li>

@@ -29,13 +29,29 @@ function normalizeInternalHref(href: string): string {
  * inside the primary navigation array. We scope the lookup to known hrefs so the validator avoids
  * storing thousands of unrelated collection routes as the content library scales.
  */
+const STATIC_PATH_ALLOWLIST = new Set<string>([
+  /**
+   * The docs landing page is not backed by the content collection but is a required IA entrypoint
+   * surfaced in issue #3. Allow the normalized `/docs` route to pass validation untouched.
+   */
+  '/docs',
+  /**
+   * Brand assets ship as managed SVG exports under `public/static/brand`. The navigation should be
+   * able to deep-link those artifacts without the marketing collection knowing about them.
+   */
+  '/static/brand/palette-light.svg',
+  '/static/brand/typography-scale.svg',
+]);
+
 async function buildContentHrefLookup(): Promise<Map<string, string>> {
   const marketingEntries = (await getCollection('marketing')) as ReadonlyArray<unknown>;
   const solutionEntries = (await getCollection('solutions')) as ReadonlyArray<unknown>;
   const industryEntries = (await getCollection('industries')) as ReadonlyArray<unknown>;
+  const docsEntries = (await getCollection('docs')) as ReadonlyArray<unknown>;
   const marketingSlugs = marketingEntries.filter(isEntryWithSlug).map((entry) => entry.slug);
   const solutionSlugs = solutionEntries.filter(isPublishedSolutionEntry).map((entry) => entry.slug);
   const industrySlugs = industryEntries.filter(isPublishedIndustryEntry).map((entry) => entry.slug);
+  const docsSlugs = docsEntries.filter(isPublishedDraftableEntry).map((entry) => entry.slug);
 
   const relevantContentSlugs = new Map<string, string>();
   const trackedInternalLinks = new Set<string>();
@@ -66,6 +82,10 @@ async function buildContentHrefLookup(): Promise<Map<string, string>> {
 
   for (const slug of industrySlugs) {
     registerSlug(`industries/${slug}`);
+  }
+
+  for (const slug of docsSlugs) {
+    registerSlug(`docs/${slug}`);
   }
 
   return relevantContentSlugs;
@@ -167,9 +187,10 @@ export async function getValidatedNavigationGroups(
         continue;
       }
 
-      const canonicalHref = contentHrefLookup.get(normalizeInternalHref(link.href));
+      const normalizedHref = normalizeInternalHref(link.href);
+      const canonicalHref = contentHrefLookup.get(normalizedHref);
 
-      if (!canonicalHref) {
+      if (!canonicalHref && !STATIC_PATH_ALLOWLIST.has(normalizedHref)) {
         console.warn(
           `navigation: skipping "${link.label}" because ${link.href} does not resolve to a supported content entry`,
         );
@@ -178,7 +199,12 @@ export async function getValidatedNavigationGroups(
 
       validatedLinks.push({
         ...link,
-        href: canonicalHref,
+        /**
+         * Preserve the canonical href when the link maps to a content collection entry, otherwise
+         * keep the original path (e.g., static brand assets) so downstream consumers don't lose the
+         * intentional asset route.
+         */
+        href: canonicalHref ?? link.href,
         label: localizedLinkLabel,
         description: localizedLinkDescription,
       });
