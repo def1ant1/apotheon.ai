@@ -273,7 +273,7 @@ export const homepageCollection = defineCollection({
   schema: homepageSchema,
 });
 
-export const homepageEntryId = 'landing';
+export const homepageEntryId = 'landing' as const;
 
 export type HomepageHeroContent = z.infer<typeof homepageSchema>;
 export type HomepagePillar = HomepageHeroContent['pillars'][number];

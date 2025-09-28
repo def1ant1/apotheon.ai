@@ -1,6 +1,5 @@
 ---
-/* eslint-disable astro/no-deprecated-getentrybyslug -- Requirement: maintain getEntryBySlug usage until Astro 5 migrations land */
-import { getCollection, getEntryBySlug } from 'astro:content';
+import { getCollection } from 'astro:content';
 
 import AuthorBio from '../../components/blog/AuthorBio.astro';
 import RelatedPosts from '../../components/blog/RelatedPosts.astro';
@@ -19,7 +18,9 @@ export async function getStaticPaths() {
 }
 
 const { slug } = Astro.params;
-const entry = slug ? await getEntryBySlug('blog', slug) : null;
+const entry = slug
+  ? ((await getCollection('blog', ({ slug: entrySlug }) => entrySlug === slug)).at(0) ?? null)
+  : null;
 
 if (!entry) {
   throw new Response('Not found', { status: 404 });
@@ -85,7 +86,7 @@ const breadcrumbSchema = buildBreadcrumbSchema(breadcrumbs, siteOrigin, pageLoca
   />
   <article class="mx-auto flex w-full max-w-3xl flex-col gap-12 px-6 py-16 text-slate-100">
     <header class="flex flex-col gap-6">
-      <p class="text-sm font-semibold uppercase tracking-[0.35em] text-sky-300">
+      <p class="text-sm font-semibold tracking-[0.35em] text-sky-300 uppercase">
         Apotheon.ai Insights
       </p>
       <h1 class="text-4xl font-bold text-white md:text-5xl">{entry.data.title}</h1>
