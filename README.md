@@ -20,7 +20,7 @@
 
 ### 1. Provision the toolchain (one-time per workstation)
 
-- Install **Node.js ≥ 18 LTS** and **npm ≥ 9**. Pin versions via `asdf`, `nvm`, or your preferred fleet manager so upgrades stay coordinated across teams.
+- Install **Node.js 20.x or 22.x LTS** and **npm ≥ 9**. Pin versions via `asdf`, `nvm`, or your preferred fleet manager so upgrades stay coordinated across teams.
 - Trust the automation helpers by running `npm install` once—this bootstraps Husky hooks, caches Vale binaries, and generates local assets (OG images, hero media, CMS configs).
 - If you support air-gapped networks, mirror the `npm` cache per [infrastructure guidance](docs/infra/ALTERNATIVES.md) to keep supply chains deterministic.
 
@@ -59,7 +59,7 @@ npm run preview          # Serves the production bundle with asset headers and C
 
 ### 5. Deploy on fully managed edges
 
-- **Cloudflare Pages (recommended):** Connect the repo, set `NODE_VERSION=18` and `NPM_FLAGS=--legacy-peer-deps` if corporate proxies interfere, then let Pages run `npm run build` automatically.
+- **Cloudflare Pages (recommended):** Connect the repo, set `NODE_VERSION=20` (or `22` once your fleet standardises there) and `NPM_FLAGS=--legacy-peer-deps` if corporate proxies interfere, then let Pages run `npm run build` automatically.
 - **Netlify / Vercel / S3 + CloudFront:** Point the build command to `npm run build` and publish the generated `dist/` directory. Preserve the generated headers from `astro.config.mjs` for CSP correctness.
 - **Workers assets:** Execute `npm run workers:deploy` after Pages completes; the script auto-discovers worker environments and syncs secrets via Wrangler.
 
