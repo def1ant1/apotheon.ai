@@ -1,6 +1,19 @@
-# Managed Service Alternatives
+---
+title: Managed Service Alternatives
+category: infra
+categoryLabel: Infrastructure
+description: This register lists open-source or zero-cost (for small workloads)
+  substitutes for the managed Cloudflare stack so we can pivot while maintaining
+  the automation-first principles defined in
+  [`docs/ai-instructions.md`](../ai-instructions.md). Each alternative includes
+  integration notes covering security boundaries, data flow implications, and
+  performance considerations.
+sourcePath: infra/ALTERNATIVES.md
+sourceLastModified: 2025-09-28T00:41:50.114Z
+tags: []
+---
 
-This register lists open-source or zero-cost (for small workloads) substitutes for the managed Cloudflare stack so we can pivot while maintaining the automation-first principles defined in [`docs/ai-instructions.md`](../ai-instructions.md). Each alternative includes integration notes covering security boundaries, data flow implications, and performance considerations.
+This register lists open-source or zero-cost (for small workloads) substitutes for the managed Cloudflare stack so we can pivot while maintaining the automation-first principles defined in [`docs/ai-instructions.md`](/docs/ai-instructions/). Each alternative includes integration notes covering security boundaries, data flow implications, and performance considerations.
 
 - **Pages (SSG Hosting)**
 
@@ -54,4 +67,4 @@ This register lists open-source or zero-cost (for small workloads) substitutes f
 
 - Maintain Terraform modules for both Cloudflare-managed and alternative stacks so we can switch providers with a single pipeline variable.
 - Validate that automated compliance scanners cover each substitute (CIS benchmarks, dependency SCA, workload policies).
-- Update [`docs/architecture/DECISIONS.md`](../architecture/DECISIONS.md) whenever an alternative becomes primary so downstream teams honour the new security boundaries and performance envelopes.
+- Update [`docs/architecture/DECISIONS.md`](/docs/architecture/decisions/) whenever an alternative becomes primary so downstream teams honour the new security boundaries and performance envelopes.

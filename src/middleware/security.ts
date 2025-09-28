@@ -4,7 +4,7 @@ import {
   buildCspHeaders,
   DEFAULT_REPORT_URI,
   DEFAULT_SECURITY_HEADERS,
-} from '../../config/security/csp';
+} from '../../config/security/csp.js';
 
 /**
  * Shared helper to determine whether the current runtime should run in

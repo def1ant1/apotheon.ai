@@ -17,8 +17,8 @@ import {
   DEFAULT_REPORT_URI,
   serializeDirectives,
   resolveDevHttpsConfig,
-  toAstroContentSecurityPolicy
-} from './config/security/csp';
+  toAstroContentSecurityPolicy,
+} from './config/security/csp.js';
 import {
   SEO_MANIFEST,
   createRouteExclusionPredicate

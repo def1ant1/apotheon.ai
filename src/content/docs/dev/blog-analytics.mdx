@@ -1,0 +1,173 @@
+---
+title: Blog Analytics Platform
+category: dev
+categoryLabel: Development
+description: This document captures the contract for the `blog-analytics`
+  Worker, the D1 schema backing marketing dashboards, and the reviewer
+  expectations for changes that touch analytics code paths.
+sourcePath: dev/BLOG-ANALYTICS.md
+sourceLastModified: 2025-09-27T17:17:13.266Z
+tags: []
+---
+
+This document captures the contract for the `blog-analytics` Worker, the D1
+schema backing marketing dashboards, and the reviewer expectations for changes
+that touch analytics code paths.
+
+## Architecture Overview
+
+1. Client surfaces (React islands + inline Astro scripts) dispatch structured
+   events into `window.dataLayer` **and** send POST beacons to the
+   `blog-analytics` Worker. Session identifiers are stored in `sessionStorage`
+   so per-tab journeys remain coherent.
+2. The Worker validates batches with Zod, enriches visitor domains via
+   `analyzeDomain`, writes rollups into D1, and archives raw payloads for audit
+   trails.
+3. A nightly Node script (`scripts/content/build-blog-recommendations.mjs`)
+   reads D1 aggregates (or a local fixture in CI) and emits
+   `public/data/blog/recommendations.json`. The Astro build copies the JSON into
+   `dist/` so static fallbacks exist even when the API is offline.
+4. `/api/blog/recommendations` re-runs the scoring helper against the latest
+   aggregates. Consumers can filter by domain classification or limit the result
+   set without waiting for the next nightly artifact.
+
+## Event Taxonomy
+
+All analytics payloads must conform to the Zod schema in
+`workers/blog-analytics.ts`:
+
+```ts
+const blogEventSchema = z.object({
+  id: z.string().uuid().optional(),
+  type: z.enum(['article_view', 'interaction', 'conversion']),
+  slug: z.string().min(1),
+  sessionId: z.string().min(8),
+  occurredAt: z.coerce.date(),
+  referrer: z.string().url().optional(),
+  identity: z
+    .object({
+      email: z.string().email().optional(),
+      domain: z.string().min(1).optional(),
+      accountId: z.string().optional(),
+    })
+    .default({}),
+  metadata: z
+    .record(z.string(), z.union([z.string(), z.number(), z.boolean(), z.null()]))
+    .default({}),
+});
+```
+
+Current event usage:
+
+| Event type     | Source                                 | Notes                              |
+| -------------- | -------------------------------------- | ---------------------------------- |
+| `article_view` | Blog article inline script             | Fired on page load. Includes tags. |
+| `interaction`  | Blog index filter/sort + related links | Captures exploration intent.       |
+| `conversion`   | Read-depth sentinel on article pages   | Signals visitors reached the end.  |
+
+When introducing a new event type update:
+
+- `BLOG_EVENT_TYPES` in `workers/blog-analytics.ts`
+- The migration docs (this file) with usage guidance
+- Front-end emitters and tests.
+
+## D1 Schema
+
+`workers/migrations/blog-analytics/0001_init.sql` defines the schema. Core
+tables:
+
+- `blog_event_rollups`: primary aggregation table keyed by day, slug, event
+  type, and domain. Includes `domain_classification`, `domain_flags`, counts,
+  and `last_seen_at` for retention automation.
+- `blog_event_payloads`: optional raw payload archive for security reviews.
+
+Run migrations via Wrangler:
+
+```bash
+wrangler d1 migrations apply apotheon-blog-analytics --local
+```
+
+### Query Cheatsheet
+
+```bash
+wrangler d1 execute apotheon-blog-analytics \
+  --command "SELECT article_slug, event_type, SUM(total_events) AS events FROM blog_event_rollups GROUP BY 1,2 ORDER BY events DESC" \
+  --json
+```
+
+Marketing stakeholders can export CSVs directly from the Cloudflare dashboard
+(`D1 > blog_event_rollups`). Recommend filtering on `event_date` to keep queries
+fast.
+
+## Personalization Artifacts
+
+- Builder script: `npm run content:blog-recommendations`
+- Output: `public/data/blog/recommendations.json`
+- Schema:
+
+```json
+{
+  "generatedAt": "2024-10-01T12:00:00.000Z",
+  "metadata": {
+    "decayHalfLifeDays": 14,
+    "eventWeights": {
+      "article_view": 1,
+      "interaction": 3,
+      "conversion": 7
+    }
+  },
+  "aggregates": [
+    {
+      "slug": "continuous-learning",
+      "eventType": "conversion",
+      "totalEvents": 18,
+      "uniqueSessions": 12,
+      "domainClassification": "allow",
+      "eventDate": "2024-10-01"
+    }
+  ],
+  "topArticles": [
+    {
+      "slug": "continuous-learning",
+      "score": 273.0,
+      "breakdown": {
+        "article_view": 0,
+        "interaction": 0,
+        "conversion": 273.0
+      }
+    }
+  ]
+}
+```
+
+Consumers should treat `topArticles` as a pre-ranked list. When experimenting
+with new scoring strategies use the `aggregates` array + the helper in
+`src/utils/blog-recommendations.ts` to derive alternative rankings.
+
+## Reviewer Checklist
+
+- **Schema changes**: ensure migrations include comments, update this document,
+  and provide backfill instructions in the PR description.
+- **Worker updates**: run `npm run test:unit` (Vitest) and, when applicable,
+  Miniflare contract tests in `workers/__tests__`.
+- **Front-end emitters**: include dataLayer pushes + Worker beacons. Add inline
+  comments so future editors know why instrumentation exists.
+- **Artifacts**: rerun `npm run content:blog-recommendations` after modifying
+  scoring logic or schema.
+- **Docs**: update this page whenever event taxonomies or output schemas change.
+
+## Access for Marketing & RevOps
+
+- Cloudflare D1 dashboard provides raw SQL console + CSV export for the
+  `apotheon-blog-analytics` database.
+- Wrangler one-liner for ad-hoc exports:
+
+  ```bash
+  wrangler d1 execute apotheon-blog-analytics \
+    --command "SELECT * FROM blog_event_rollups WHERE event_date >= date('now', '-30 day')" \
+    --output json
+  ```
+
+- The personalization JSON lives in the public bucket (`/data/blog/`). Content
+  strategists can inspect the latest artifact by visiting
+  `https://apotheon.ai/data/blog/recommendations.json` in the browser.

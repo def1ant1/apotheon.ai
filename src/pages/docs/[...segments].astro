@@ -1,0 +1,107 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+import Breadcrumbs from '../../components/navigation/Breadcrumbs.astro';
+import SchemaScript from '../../components/seo/SchemaScript.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { createDocsEntryTrail } from '../../utils/breadcrumbs';
+import { buildBreadcrumbSchema, resolveLocaleFromPath } from '../../utils/seo';
+
+export async function getStaticPaths() {
+  const docs = await getCollection('docs', ({ data }) => data.draft !== true);
+  return docs.map((entry) => ({
+    params: { segments: entry.slug.split('/') },
+    props: { entry },
+  }));
+}
+
+interface Props {
+  entry: CollectionEntry<'docs'>;
+}
+
+const { entry } = Astro.props as Props;
+const { Content } = await entry.render();
+const breadcrumbs = createDocsEntryTrail(entry);
+const siteOrigin = Astro.site?.origin ?? Astro.url.origin;
+const pageLocale = resolveLocaleFromPath(Astro.url.pathname) ?? 'en-US';
+const breadcrumbSchema = buildBreadcrumbSchema(breadcrumbs, siteOrigin, pageLocale);
+
+const description =
+  entry.data.description ??
+  'Reference implementation guidance and governance notes from the Apotheon.ai Developer Handbook.';
+const seo = {
+  title: `${entry.data.title} · Developer Handbook`,
+  description,
+  path: `/docs/${entry.slug}/`,
+  openGraph: {
+    type: 'article',
+    section: entry.data.categoryLabel ?? 'Docs',
+  },
+};
+
+const repositoryBase = 'https://github.com/apotheonai/apotheon.ai/blob/main/';
+const sourceHref = entry.data.sourcePath
+  ? new URL(entry.data.sourcePath, repositoryBase).toString()
+  : null;
+const lastReviewed = entry.data.sourceLastModified ? new Date(entry.data.sourceLastModified) : null;
+const lastReviewedDisplay =
+  lastReviewed && !Number.isNaN(lastReviewed.valueOf())
+    ? new Intl.DateTimeFormat(pageLocale ?? 'en-US', {
+        dateStyle: 'medium',
+        timeZone: 'UTC',
+      }).format(lastReviewed)
+    : null;
+---
+
+<BaseLayout {seo} locale={pageLocale}>
+  <SchemaScript slot="head" schema={breadcrumbSchema} />
+  <Breadcrumbs
+    baseHref={Astro.site?.origin ?? Astro.url.origin}
+    class="mx-auto w-full max-w-5xl px-6 pt-12"
+    trail={breadcrumbs}
+  />
+
+  <article class="mx-auto flex w-full max-w-5xl flex-col gap-10 px-6 pb-24 pt-12 text-slate-100">
+    <header class="grid gap-4">
+      <div class="flex flex-wrap items-center gap-3">
+        <span
+          class="rounded-full border border-slate-700 bg-slate-900/70 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-slate-300"
+        >
+          {entry.data.categoryLabel ?? 'Docs'}
+        </span>
+        {
+          lastReviewedDisplay && (
+            <span class="text-xs text-slate-400">Last reviewed {lastReviewedDisplay}</span>
+          )
+        }
+      </div>
+      <h1 class="text-4xl font-bold text-white md:text-5xl">{entry.data.title}</h1>
+      <p class="max-w-3xl text-lg text-slate-300">{description}</p>
+      <div class="flex flex-wrap items-center gap-3 text-xs text-slate-400">
+        {
+          sourceHref && (
+            <a
+              class="inline-flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900/70 px-3 py-1 font-semibold text-sky-300 transition hover:border-sky-500 hover:text-sky-200"
+              href={sourceHref}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              View source on GitHub
+            </a>
+          )
+        }
+        <span
+          class="rounded-full border border-slate-700 bg-slate-950/60 px-3 py-1 text-[0.65rem] uppercase tracking-[0.3em] text-slate-300"
+        >
+          Automation ready
+        </span>
+      </div>
+    </header>
+
+    <div
+      class="prose prose-invert prose-headings:font-semibold prose-headings:text-white prose-p:text-slate-200 prose-a:text-indigo-300 prose-strong:text-white max-w-none"
+    >
+      <Content />
+    </div>
+  </article>
+</BaseLayout>

@@ -1,0 +1,90 @@
+---
+title: Accessibility Operations Playbook
+category: dev
+categoryLabel: Development
+description: "| Frequency | Responsibility | Automation entrypoint | Notes | |
+  ------------------------- | -------------------- |
+  -----------------------------------------------------------------------------\
+  ------------------------------------------------------ |
+  -----------------------------------------------------------------------------\
+  -----------------------------------------------------------------------------\
+  ---------------------------------- | | Per commit / pull request | Engineering
+  | `npm run lint`, `npm run typecheck`, `npm run test`, `npm run test:e2e`,
+  `npm run accessibility:axe`, `npm run accessibility:pa11y` | Run locally prior
+  to raising a PR. Both accessibility commands materialize JSON reports under
+  `reports/accessibility/{axe,pa11y}` so reviewers can diff violations. | |
+  Nightly | Platform Engineering | GitHub Actions `CI` workflow (`quality-gates`
+  matrix) | Matrix runs on Node.js 18 and 20. Failing accessibility scans block
+  the workflow, guaranteeing regressions are surfaced before morning stand-up. |
+  | Release candidate cut | Release Management | `npm run accessibility:all`
+  followed by `npm run lighthouse:ci` | `prepare-dist.mjs` ensures `dist/` and
+  `dist/ladle/` exist so both page templates and Ladle islands are scanned. Do
+  **not** skip this phase; it is the final gate before production deploys. |"
+sourcePath: dev/ACCESSIBILITY.md
+sourceLastModified: 2025-09-27T17:17:13.266Z
+tags: []
+---
+
+## Automation-first testing cadence
+
+| Frequency                 | Responsibility       | Automation entrypoint                                                                                                               | Notes                                                                                                                                                                                        |
+| ------------------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Per commit / pull request | Engineering          | `npm run lint`, `npm run typecheck`, `npm run test`, `npm run test:e2e`, `npm run accessibility:axe`, `npm run accessibility:pa11y` | Run locally prior to raising a PR. Both accessibility commands materialize JSON reports under `reports/accessibility/{axe,pa11y}` so reviewers can diff violations.                          |
+| Nightly                   | Platform Engineering | GitHub Actions `CI` workflow (`quality-gates` matrix)                                                                               | Matrix runs on Node.js 18 and 20. Failing accessibility scans block the workflow, guaranteeing regressions are surfaced before morning stand-up.                                             |
+| Release candidate cut     | Release Management   | `npm run accessibility:all` followed by `npm run lighthouse:ci`                                                                     | `prepare-dist.mjs` ensures `dist/` and `dist/ladle/` exist so both page templates and Ladle islands are scanned. Do **not** skip this phase; it is the final gate before production deploys. |
+
+Automation keeps accessibility debt visible. Scripts rehydrate the static Astro build and the Ladle storybook before scanning, ensuring every shipped surface—including interactive islands—receives axe-core and Pa11y validation.
+
+## Manual assistive technology sweeps
+
+Perform targeted manual passes before every major milestone (feature launch, brand refresh, architecture upgrade). Document the run in the release notes checklist.
+
+### NVDA (Windows)
+
+1. Launch NVDA and open the production-equivalent preview URL.
+2. Press `Insert + F7` and confirm the element list exposes:
+   - "Banner" and "Content info" landmarks.
+   - Skip link target labelled "Skip to content".
+   - Region landmarks such as "Marketing content" and "Blog filters".
+3. Tab through interactive controls. Confirm the skip link appears visually and focus returns to the trigger after closing dialogs (MobileNavigationDrawer).
+4. Trigger form validation errors. NVDA should announce status regions like "Complete the verification challenge" immediately.
+5. Submit a happy-path form; NVDA must announce confirmation text and not trap focus.
+
+### VoiceOver (macOS)
+
+1. Activate VoiceOver (`⌘ + F5`) and load the route under review.
+2. Use `Control + Option + U` to inspect the rotor:
+   - Landmarks include banner, main, contentinfo, and labelled regions for CTAs.
+   - Headings expose a single `<h1>` per page (MarketingHero) followed by the expected hierarchy.
+3. Navigate with `Control + Option + Right Arrow`. Ensure keyboard support matches the Playwright flows (skip links, nav triggers, form controls).
+4. Open the mobile navigation drawer (emulate with responsive design mode if necessary). Confirm the dialog announces its accessible name and provides skip links back to `#main`.
+5. Verify modals and forms can be dismissed with `Esc` and that focus returns to the triggering element.
+
+Log findings in the project tracker even when no issues arise—"no findings" is still a data point.
+
+## Remediation workflow
+
+1. **Capture** – Accessibility audits output JSON under `reports/accessibility/axe/{pages,islands}` and `reports/accessibility/pa11y/{pages,islands}`. Attach relevant snippets to the ticket.
+2. **Triage** – Classify severity (`critical`, `serious`, `moderate`, `minor`). `critical` and `serious` halt the build automatically. `moderate` and below can be scheduled but must ship before the next release candidate.
+3. **Ticketing** – Create Jira issues using the `A11Y` project prefix. Template:
+   - Summary: `A11Y: <component> <violation summary>`
+   - Description: include reproduction steps, failing selectors, and WCAG reference.
+   - Acceptance Criteria: automated axe/Pa11y pass, updated tests, manual AT verification notes.
+4. **Fix** – Pair engineers with design/UX as needed. Update automated tests to lock the regression out.
+5. **Verify** – Re-run the full command chain (`npm run accessibility:all && npm run test:e2e`). Attach screenshots or recordings from assistive technology confirmations when applicable.
+
+## Training and enablement
+
+- **Onboarding workshop** – Schedule a quarterly 60-minute deep dive on WCAG 2.2 AA requirements, using Apotheon components as case studies. Record the session and link it in the engineering wiki.
+- **Playwright lab** – Provide a hands-on lab where engineers extend `tests/e2e/accessibility.spec.ts` to cover new flows. Reinforces how to validate keyboard and screen-reader parity.
+- **Design partner sessions** – Pair design and engineering leads monthly to review patterns (skip links, focus traps, color contrast) before they land in Figma. Document outcomes in the brand system repo.
+
+### Standing remediation tickets
+
+| Ticket                                           | Owner               | Status       | Notes                                                               |
+| ------------------------------------------------ | ------------------- | ------------ | ------------------------------------------------------------------- |
+| `A11Y-201: Monitor future axe/Pa11y regressions` | Platform Eng        | 🟢 Scheduled | Automation runs per commit; no open blockers as of this change-set. |
+| `A11Y-202: Quarterly AT refresher training`      | Developer Relations | 🟢 Planned   | Update with recording links and attendee list after each session.   |
+| `A11Y-203: Nightly audit triage rotation`        | Release Management  | 🟢 Active    | Rotate weekly; ensure summary posted in #quality.                   |
+
+Release gates remain green; no critical violations detected in current scans. Keep this table updated whenever audits surface new actions so leadership can trace remediation velocity.

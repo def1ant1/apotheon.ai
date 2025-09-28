@@ -1,0 +1,60 @@
+---
+title: Internationalisation Operations
+category: dev
+categoryLabel: Development
+description: The marketing surface now ships with a QA-only locale switcher that
+  rides on top of `astro-i18next`. This guide explains how to exercise the
+  toggle safely without leaking unfinished localisation work into production
+  releases.
+sourcePath: dev/I18N.md
+sourceLastModified: 2025-09-27T17:17:13.266Z
+tags: []
+---
+
+The marketing surface now ships with a QA-only locale switcher that rides on top of
+`astro-i18next`. This guide explains how to exercise the toggle safely without leaking
+unfinished localisation work into production releases.
+
+## Feature Flag Governance
+
+- **Environment toggle:** Set `PUBLIC_ENABLE_LOCALE_QA_SWITCHER=true` in your `.env`
+  file or CI configuration when you need to expose the switcher. The flag is read
+  during SSG and SSR via `src/utils/featureFlags.ts`, so flipping it automatically
+  updates both the rendered HTML and the hydrated React island.
+- **Default posture:** When the flag is unset the header remains locked to the default
+  locale declared in `src/i18n/i18next.server.mjs`. Customers never see experimental
+  tooling, but QA can still deep-link to `/es/...` or `/fr/...` routes for smoke tests.
+- **Persistence:** Selecting a locale writes the standard `i18next` cookie for one year
+  and rewrites the current path using `localizePath`. Subsequent visits to `/` respect
+  the stored preference as long as the locale exists in `SUPPORTED_LOCALES`.
+
+## Operational Checklist
+
+1. Export fresh translation bundles and update `src/i18n/<locale>/common.json` with the
+   approved copy.
+2. Enable `PUBLIC_ENABLE_LOCALE_QA_SWITCHER` in the target environment.
+3. Run `npm run test:unit` to ensure the new island compiles and hydration boundaries
+   stay intact.
+4. Capture screenshots of the QA menu for accessibility review before toggling the flag
+   off again.
+
+## Test Automation
+
+- **Unit coverage:** `tests/unit/i18n/translation-helpers.spec.ts` verifies the memoised
+  translator helpers, default locale fallbacks, and the QA feature flag resolver. The
+  suite runs automatically via `npm run test`.
+- **E2E coverage:** `tests/e2e/i18n-routing.spec.ts` exercises the locale switcher in
+  Playwright, asserts the `<html lang>` attribute, checks the Open Graph locale, and
+  confirms the Pagefind manifest indexes `/es/` routes. The spec assumes
+  `PUBLIC_ENABLE_LOCALE_QA_SWITCHER=true` so CI must set the variable before invoking
+  `npm run test:e2e`.
+- **Pre-test seed:** `npm run test:e2e` primes OG assets and then runs
+  `tests/e2e/fixtures/seed-pagefind.mjs` to stage a minimal Pagefind manifest. CI jobs can
+  replace the stub with a real `npm run search:index` invocation when running against
+  production-ready builds.
+
+## Rollback Strategy
+
+If a localisation regression ships, delete the cookie named `i18next` or clear
+`PUBLIC_ENABLE_LOCALE_QA_SWITCHER` to immediately fall back to the baseline English
+experience without redeploying the site.

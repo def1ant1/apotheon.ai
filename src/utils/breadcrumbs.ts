@@ -10,6 +10,10 @@ export const BREADCRUMB_ARIA_LABEL = 'Breadcrumb';
  * with primary navigation copy during IA refactors.
  */
 const SECTION_CONFIG = {
+  docs: {
+    label: 'Docs',
+    href: '/docs/',
+  },
   solutions: {
     label: 'Solutions',
     href: '/solutions/',
@@ -81,6 +85,10 @@ function humanizeSlug(slug: string): string {
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ') ?? slug
   );
+}
+
+function sanitizeDocSlug(slug: string): string {
+  return slug.replace(/^handbook\//u, '');
 }
 
 function isAbsoluteUrl(url: string): boolean {
@@ -197,6 +205,36 @@ export function createMarketingEntryTrail(entry: EntryWithTitle): BreadcrumbTrai
   ];
 
   return normalizeTrail(trail);
+}
+
+/**
+ * Handbook entries share the same slug semantics as marketing/blog content, but live under the `/docs`
+ * IA node. This helper normalizes the slug (removing the generated `handbook/` prefix) and surfaces
+ * breadcrumbs that mirror the directory hierarchy so GitHub- and Astro-based navigation stay aligned.
+ */
+export function createDocsEntryTrail(entry: EntryWithTitle): BreadcrumbTrail {
+  const sanitizedSlug = sanitizeDocSlug(entry.slug);
+  const segments = sanitizedSlug.split('/').filter(Boolean);
+  const ancestors = segments.slice(0, -1).map((segment, index) => ({
+    label: humanizeSlug(segment),
+    href: `/docs/${segments.slice(0, index + 1).join('/')}/`,
+  }));
+
+  const leafHref = `/docs/${segments.join('/')}/`;
+  const trail: BreadcrumbTrail = [
+    buildSectionCrumb('docs'),
+    ...ancestors,
+    { label: entry.data.title, href: leafHref },
+  ];
+
+  return normalizeTrail(trail);
+}
+
+/**
+ * Landing page breadcrumb for the Developer Handbook index.
+ */
+export function createDocsIndexTrail(): BreadcrumbTrail {
+  return normalizeTrail([buildSectionCrumb('docs')]);
 }
 
 /**

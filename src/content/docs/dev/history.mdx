@@ -1,0 +1,67 @@
+---
+title: History Timeline Editorial Playbook
+category: dev
+categoryLabel: Development
+description: This guide documents how Apotheon.ai teams extend the company
+  timeline while preserving the sourcing discipline demanded by enterprise
+  buyers, regulators, and partners. Treat it as the canonical workflow—changes
+  should ship through code review so downstream automation remains in sync.
+sourcePath: dev/HISTORY.md
+sourceLastModified: 2025-09-27T17:17:13.266Z
+tags: []
+---
+
+This guide documents how Apotheon.ai teams extend the company timeline while preserving the sourcing discipline demanded by enterprise buyers, regulators, and partners. Treat it as the canonical workflow—changes should ship through code review so downstream automation remains in sync.
+
+## Content architecture
+
+- **Collection**: `src/content/history/` stores one MDX file per milestone. The Zod schema in `src/content/history/index.ts` enforces year, headline, narrative, program area, and media metadata.
+- **Media**: Base assets live under `src/assets/history/` as SVG illustration templates. The automation pipeline validates aspect ratios and refreshes provenance manifests via `npm run ensure:history-media`.
+- **Page surface**: `/about/history/` renders milestones through the `Timeline` and `MilestoneCard` components. Structured data is emitted as a Schema.org `ItemList` for SEO and partner integrations.
+
+## Authoring workflow
+
+1. **Draft the milestone**
+   - Copy `src/content/history/company-timeline.mdx` as a template.
+   - Populate the frontmatter fields and keep the body focused on verifiable statements.
+   - Include inline Markdown comments reminding reviewers which source systems back the claims.
+2. **Prepare media**
+   - Drop source SVG illustrations into `src/assets/history/`. Raster assets are no longer committed—convert them to compliant vectors before opening a PR.
+   - Run `npm run ensure:history-media` to validate the 4:3 aspect ratio, confirm accessible dimensions in the provenance manifest, and stamp provenance metadata (see automation notes below).
+   - Replace the auto-generated provenance JSON if compliance supplies an audited ID.
+3. **Request review**
+   - Tag Governance Ops and the program owner responsible for the milestone.
+   - Reviews confirm sourcing, verify media provenance, and ensure Schema.org output remains accurate.
+4. **Publish**
+   - Remove the `draft: true` flag once approvals land.
+   - Merge via PR so the sitemap, marketing navigation, and Pagefind index refresh automatically.
+
+## Compliance checkpoints
+
+| Checkpoint               | Owner              | Notes                                                                                         |
+| ------------------------ | ------------------ | --------------------------------------------------------------------------------------------- |
+| Source evidence linked   | Program owner      | Reference audit ledger IDs or runbook URLs within the MDX body.                               |
+| Media provenance stamped | Governance Ops     | Review SVG provenance manifests and update credit lines when compliance supplies audited IDs. |
+| Schema validation        | Developer reviewer | Run `npm run lint && npm run typecheck && npm run test` locally before requesting merge.      |
+| Accessibility review     | Design systems     | Confirm alt text, captions, and reduced-motion behaviour in `/about/history/`.                |
+
+## Automation notes
+
+- `npm run ensure:history-media` is idempotent. It exits non-zero if aspect ratios drift from the enforced 4:3 baseline or if SVG dimensions cannot be inferred from the viewBox.
+- The script writes `<asset>.provenance.json` files containing the hash, generation timestamp, derived dimensions, and source credit. Compliance Ops may update these files manually when ingesting third-party assets.
+- Navigation validation ensures `/about/history/` stays linked from the “Company” menu. Adding a milestone without updating the marketing entry will fail CI via the Playwright coverage in `tests/e2e/history-timeline.spec.ts`.
+
+## Testing checklist
+
+Run the full release gate prior to merging timeline updates:
+
+```bash
+npm run lint
+npm run typecheck
+npm run test
+npm run test:e2e
+npm run build
+npm run ladle:build
+```
+
+Capture the results in your PR summary so stakeholders can audit which safeguards executed.

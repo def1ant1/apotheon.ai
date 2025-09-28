@@ -1,0 +1,217 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+import Breadcrumbs from '../../components/navigation/Breadcrumbs.astro';
+import SchemaScript from '../../components/seo/SchemaScript.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { createDocsIndexTrail } from '../../utils/breadcrumbs';
+import { buildBreadcrumbSchema, resolveLocaleFromPath } from '../../utils/seo';
+
+const allDocs = await getCollection('docs', ({ data }) => data.draft !== true);
+const sortedDocs = allDocs.toSorted((a, b) => a.slug.localeCompare(b.slug));
+
+const highlightOrder = [
+  'why-apotheon',
+  'brand/styleguide',
+  'dev/workflows',
+  'dev/whitepapers',
+  'security/incident-response',
+];
+
+const highlightSet = new Set(highlightOrder);
+const highlightDocs = highlightOrder.map((slug) => {
+  const entry = sortedDocs.find((doc) => doc.slug === slug);
+  if (!entry) {
+    throw new Error(`Developer Handbook highlight is missing required slug: ${slug}`);
+  }
+  return entry;
+});
+
+const CATEGORY_ORDER = [
+  'overview',
+  'ai',
+  'ai-instructions',
+  'brand',
+  'content',
+  'dev',
+  'infra',
+  'security',
+  'architecture',
+  'launch',
+  'workplan',
+];
+
+const categoryBuckets = new Map<string, { label: string; entries: CollectionEntry<'docs'>[] }>();
+for (const doc of sortedDocs) {
+  if (highlightSet.has(doc.slug)) {
+    continue;
+  }
+  const key = doc.data.category ?? 'general';
+  const bucket = categoryBuckets.get(key) ?? {
+    label: doc.data.categoryLabel ?? key,
+    entries: [] as CollectionEntry<'docs'>[],
+  };
+  bucket.entries.push(doc);
+  categoryBuckets.set(key, bucket);
+}
+
+const sortedBuckets = Array.from(categoryBuckets.entries())
+  .map(([key, bucket]) => ({
+    key,
+    ...bucket,
+    entries: bucket.entries.toSorted((a, b) => a.data.title.localeCompare(b.data.title)),
+  }))
+  .sort((a, b) => {
+    const indexA = CATEGORY_ORDER.indexOf(a.key);
+    const indexB = CATEGORY_ORDER.indexOf(b.key);
+    if (indexA !== -1 && indexB !== -1) {
+      return indexA - indexB;
+    }
+    if (indexA !== -1) {
+      return -1;
+    }
+    if (indexB !== -1) {
+      return 1;
+    }
+    return a.label.localeCompare(b.label);
+  });
+
+const breadcrumbs = createDocsIndexTrail();
+const siteOrigin = Astro.site?.origin ?? Astro.url.origin;
+const pageLocale = resolveLocaleFromPath(Astro.url.pathname) ?? 'en-US';
+const seo = {
+  title: 'Developer Handbook',
+  description:
+    'Centralized workflows, security runbooks, and AI delivery checklists for engineering, marketing, and compliance teams.',
+  path: '/docs/',
+  openGraph: {
+    type: 'website',
+    section: 'Docs',
+  },
+};
+const breadcrumbSchema = buildBreadcrumbSchema(breadcrumbs, siteOrigin, pageLocale);
+const repositoryBase = 'https://github.com/apotheonai/apotheon.ai/blob/main/';
+---
+
+<BaseLayout {seo} locale={pageLocale}>
+  <SchemaScript slot="head" schema={breadcrumbSchema} />
+  <Breadcrumbs
+    baseHref={Astro.site?.origin ?? Astro.url.origin}
+    class="mx-auto w-full max-w-5xl px-6 pt-12"
+    trail={breadcrumbs}
+  />
+
+  <section class="mx-auto flex w-full max-w-5xl flex-col gap-16 px-6 pb-24 pt-12 text-slate-100">
+    <header class="grid gap-4">
+      <p class="text-sm font-semibold uppercase tracking-[0.35em] text-sky-300">
+        Developer Handbook
+      </p>
+      <h1 class="text-4xl font-bold text-white md:text-5xl">
+        Automate every pre-production ritual
+      </h1>
+      <p class="max-w-3xl text-lg text-slate-300">
+        Drop markdown into <code>docs/</code>, run <code>npm run ensure:docs-handbook</code>, and
+        the collection syncs into Astro with typed frontmatter, GitHub source links, and Pagefind
+        coverage. Highlighted guides below capture the most requested style, workflow, and security
+        policies from Apotheon.ai engineering teams.
+      </p>
+      <p class="max-w-3xl text-sm text-slate-400">
+        Every entry ships with breadcrumbs, JSON-LD, and audit metadata. Updating a single markdown
+        file refreshes the landing page, `/docs/*` routes, and downstream automation during <code
+          >npm run build</code
+        >—no CMS toggles or manual indexing steps.
+      </p>
+    </header>
+
+    <div class="grid gap-6 md:grid-cols-2">
+      {
+        highlightDocs.map((doc) => {
+          const description =
+            doc.data.description ??
+            'Dive into the full procedure to keep automation, governance, and delivery synchronized.';
+          const sourceHref = doc.data.sourcePath
+            ? new URL(doc.data.sourcePath, repositoryBase).toString()
+            : null;
+          return (
+            <a
+              class="group flex flex-col gap-3 rounded-2xl border border-slate-800 bg-slate-900/60 p-6 shadow-lg shadow-slate-950/40 transition hover:border-sky-500 hover:bg-slate-900/80"
+              href={`/docs/${doc.slug}/`}
+            >
+              <span class="inline-flex w-fit items-center gap-2 rounded-full border border-slate-700 bg-slate-950/50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-slate-300">
+                {doc.data.categoryLabel ?? 'Docs'}
+              </span>
+              <h2 class="text-2xl font-semibold text-white transition group-hover:text-sky-200">
+                {doc.data.title}
+              </h2>
+              <p class="text-sm text-slate-300">{description}</p>
+              <div class="flex flex-wrap items-center gap-3 text-xs text-slate-400">
+                <span class="font-semibold text-sky-300 group-hover:text-sky-200">
+                  Read guide →
+                </span>
+                {sourceHref && (
+                  <span class="hidden items-center gap-1 group-hover:flex">
+                    <span aria-hidden="true">·</span>
+                    <span>Edit on GitHub</span>
+                  </span>
+                )}
+              </div>
+            </a>
+          );
+        })
+      }
+    </div>
+
+    <div class="grid gap-10">
+      {
+        sortedBuckets.map((bucket) => (
+          <section class="grid gap-6">
+            <div class="grid gap-2">
+              <h2 class="text-xl font-semibold text-white">{bucket.label}</h2>
+              <p class="max-w-3xl text-sm text-slate-400">
+                Automation keeps this section synchronized with the repository. Add or update
+                markdown in <code>docs/{bucket.key}</code>
+                and rerun the ensure script to rehydrate Pagefind, breadcrumbs, and schema metadata.
+              </p>
+            </div>
+            <ul class="grid gap-4">
+              {bucket.entries.map((doc) => {
+                const description =
+                  doc.data.description ??
+                  'Detailed implementation guidance for platform contributors.';
+                const sourceHref = doc.data.sourcePath
+                  ? new URL(doc.data.sourcePath, repositoryBase).toString()
+                  : null;
+                return (
+                  <li class="group rounded-2xl border border-slate-800 bg-slate-950/50 p-5 transition hover:border-sky-500">
+                    <a class="flex flex-col gap-2" href={`/docs/${doc.slug}/`}>
+                      <div class="flex flex-wrap items-center gap-2">
+                        <h3 class="text-lg font-semibold text-white transition group-hover:text-sky-200">
+                          {doc.data.title}
+                        </h3>
+                        <span class="rounded-full border border-slate-700 bg-slate-900/80 px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-[0.25em] text-slate-300">
+                          {doc.data.categoryLabel ?? 'Docs'}
+                        </span>
+                      </div>
+                      <p class="text-sm text-slate-300">{description}</p>
+                      <div class="flex flex-wrap items-center gap-3 text-xs text-slate-400">
+                        <span class="font-semibold text-sky-300 group-hover:text-sky-200">
+                          View guide →
+                        </span>
+                        {sourceHref && (
+                          <span class="flex items-center gap-1">
+                            <span aria-hidden="true">·</span>
+                            <span>Source: {doc.data.sourcePath}</span>
+                          </span>
+                        )}
+                      </div>
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>

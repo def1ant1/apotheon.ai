@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2025-09-22T19:21:30.725Z",
+  "generatedAt": "2025-09-28T00:57:41.353Z",
   "metadata": {
     "decayHalfLifeDays": 14,
     "eventWeights": {
@@ -45,27 +45,27 @@
   "topArticles": [
     {
       "slug": "continuous-learning",
-      "score": 0.000007499850831481724,
+      "score": 0.000005787914423275265,
       "breakdown": {
         "article_view": 0,
-        "interaction": 0.000003925453839456391,
-        "conversion": 0.0000035743969920253323
+        "interaction": 0.0000030294190385653517,
+        "conversion": 0.0000027584953847099137
       }
     },
     {
       "slug": "welcome",
-      "score": 0.0000035637589057395423,
+      "score": 0.000002750285577017325,
       "breakdown": {
-        "article_view": 0.0000035637589057395423,
+        "article_view": 0.000002750285577017325,
         "interaction": 0,
         "conversion": 0
       }
     },
     {
       "slug": "integration-governance",
-      "score": 0.0000022557563471140083,
+      "score": 0.0000017408512502743249,
       "breakdown": {
-        "article_view": 0.0000022557563471140083,
+        "article_view": 0.0000017408512502743249,
         "interaction": 0,
         "conversion": 0
       }

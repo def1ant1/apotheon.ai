@@ -1,0 +1,55 @@
+---
+title: Self-Hosted Font Policy
+category: security
+categoryLabel: Security
+description: Enterprise CSP requirements prohibit calls to third-party font
+  CDNs. All web fonts must be bundled with the Astro build so assets ship from
+  the same origin as the rest of the site. This file documents the repeatable
+  workflow for teams.
+sourcePath: security/FONT_HOSTING.md
+sourceLastModified: 2025-09-27T17:17:13.266Z
+tags: []
+---
+
+Enterprise CSP requirements prohibit calls to third-party font CDNs. All web
+fonts must be bundled with the Astro build so assets ship from the same origin
+as the rest of the site. This file documents the repeatable workflow for teams.
+
+## Current Implementation
+
+- **Package:** [`@fontsource-variable/inter`](https://fontsource.org/fonts/inter)
+  provides the entire Inter variable weight range as local `.woff2` assets.
+- **Import location:** `src/styles/global.css` imports the package once so every
+  page automatically receives the `@font-face` declarations during build time.
+- **Tailwind mapping:** `tailwind.config.mjs` overrides `theme.extend.fontFamily.sans`
+  to prefer `Inter Variable`, cascading to system fonts if the local asset fails.
+- **Delivery:** Astro inlines the CSS reference and copies the font files into
+  the production bundle under `dist/_astro/`. No runtime network requests leave
+  the origin, satisfying strict CSP headers.
+
+## Operational Playbook
+
+1. **Add new families via @fontsource packages.** Install them with `npm install`
+   (e.g., `npm install @fontsource/roboto`) so package-lock captures the assets.
+2. **Import from CSS or a dedicated stylesheet.** Keep imports centralized in
+   `src/styles/global.css` or a new `fonts.css` module that is referenced by
+   `BaseLayout.astro` to minimize duplication.
+3. **Update Tailwind tokens.** Extend `fontFamily` mappings so utility classes
+   resolve to the self-hosted families. Include system fallbacks for resiliency.
+4. **Verify CSP compliance.** Run `npm run lint`, `npm run typecheck`, and
+   `npm run build`; the build pipeline fails if CSP headers require external
+   origins. Manually inspect the generated HTML/CSS for lingering CDN links.
+5. **Document changes.** Update this file, the README, and `CHANGELOG.md` so
+   future contributors understand which fonts are approved and how to extend the
+   pipeline without reintroducing CDN dependencies.
+
+## Anti-Patterns To Avoid
+
+- **Do not embed `<link>` tags** to Google Fonts, Adobe Fonts, or any other
+  hosted service. Those references will be blocked by the CSP and introduce
+  privacy considerations.
+- **Avoid base64 inlining** of large font files directly into CSS; it bloats the
+  bundle and harms caching. Keep assets as separate `.woff2` files served via the
+  static pipeline.
+- **Never bypass version control.** Font binaries must live in `node_modules`
+  via npm or under `public/fonts/` so they are reproducible across environments.

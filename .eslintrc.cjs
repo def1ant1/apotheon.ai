@@ -54,6 +54,7 @@ module.exports = {
     'package-lock.json',
     '!.ladle/**/*',
     'scripts/utils/solutions-loader.d.ts',
+    'config/security/**/*.d.ts',
   ],
 
   // Organization-first rules that apply globally.
@@ -119,6 +120,7 @@ module.exports = {
     {
       // TypeScript (including React islands) gets type-aware linting + React hook safety nets.
       files: ['src/**/*.{ts,tsx}', 'workers/**/*.{ts,tsx}', 'config/**/*.{ts,tsx}'],
+      excludedFiles: ['**/*.d.ts'],
       parser: '@typescript-eslint/parser',
       parserOptions: {
         project: projectTsconfig,
@@ -153,6 +155,7 @@ module.exports = {
     {
       // Node-based automation scripts run under tsx with full type safety.
       files: ['scripts/**/*.ts'],
+      excludedFiles: ['**/*.d.ts'],
       parser: '@typescript-eslint/parser',
       parserOptions: {
         project: projectTsconfig,
@@ -230,7 +233,23 @@ module.exports = {
     {
       files: ['**/*.d.ts'],
       parser: '@typescript-eslint/parser',
-      rules: {},
+      parserOptions: {
+        // Disable project-bound type analysis so declaration shims do not require a tsconfig.
+        project: false,
+        tsconfigRootDir: __dirname,
+      },
+      rules: {
+        'no-undef': 'off',
+        'no-unused-vars': 'off',
+        '@typescript-eslint/await-thenable': 'off',
+        '@typescript-eslint/no-array-delete': 'off',
+        '@typescript-eslint/no-base-to-string': 'off',
+        '@typescript-eslint/no-duplicate-type-constituents': 'off',
+        '@typescript-eslint/no-floating-promises': 'off',
+        '@typescript-eslint/no-implied-eval': 'off',
+        '@typescript-eslint/no-misused-promises': 'off',
+        '@typescript-eslint/no-redundant-type-constituents': 'off',
+      },
     },
     {
       // Astro single-file components combine HTML, frontmatter, scripts, and styles.
@@ -275,6 +294,32 @@ module.exports = {
         // Permit dev ergonomics inside tooling scripts.
         'import/no-extraneous-dependencies': 'off',
       },
+    },
+    {
+      files: ['astro.config.mjs', 'src/middleware/security.ts'],
+      rules: {
+        'import/extensions': [
+          'error',
+          'ignorePackages',
+          {
+            js: 'always',
+            jsx: 'never',
+            ts: 'never',
+            tsx: 'never',
+            astro: 'always',
+            mdx: 'always',
+          },
+        ],
+      },
+    },
+    {
+      files: ['config/security/**/*.d.ts'],
+      parser: '@typescript-eslint/parser',
+      parserOptions: {
+        project: false,
+        tsconfigRootDir: __dirname,
+      },
+      rules: {},
     },
   ],
 };
