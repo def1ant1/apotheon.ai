@@ -137,6 +137,121 @@ export const navigationMenuGroups: ReadonlyArray<NavigationMenuGroup> = [
     ],
   },
   {
+    /**
+     * Documentation surface links are curated to the living handbook that landed in issue #3.
+     * Keeping the IA, architectural ledger, and overview adjacent here gives every team a
+     * deterministic jumping-off point when onboarding or auditing product decisions.
+     */
+    id: 'docs',
+    label: 'Docs',
+    labelKey: 'navigation.groups.docs.label',
+    description:
+      'Operational handbook, architecture decisions, and IA references that ship with every release.',
+    descriptionKey: 'navigation.groups.docs.description',
+    links: [
+      {
+        id: 'handbook-overview',
+        label: 'Handbook overview',
+        labelKey: 'navigation.groups.docs.links.handbookOverview.label',
+        href: '/docs/',
+        description: 'Entry point into the curated handbook surfaced in issue #3.',
+        descriptionKey: 'navigation.groups.docs.links.handbookOverview.description',
+      },
+      {
+        id: 'architecture-ledger',
+        label: 'Architecture decision ledger',
+        labelKey: 'navigation.groups.docs.links.architectureLedger.label',
+        href: '/docs/architecture/decisions',
+        description: 'Traceability matrix for platform decisions and long-term tradeoffs.',
+        descriptionKey: 'navigation.groups.docs.links.architectureLedger.description',
+      },
+      {
+        id: 'marketing-ia',
+        label: 'Marketing IA blueprint',
+        labelKey: 'navigation.groups.docs.links.marketingIa.label',
+        href: '/docs/content/information-architecture',
+        description: 'End-to-end information architecture notes for the marketing surface.',
+        descriptionKey: 'navigation.groups.docs.links.marketingIa.description',
+      },
+    ],
+  },
+  {
+    /**
+     * Incident response guides stay isolated in their own menu bucket so security teams can hotlink
+     * the exact playbook they need during incidents without parsing the broader handbook catalog.
+     */
+    id: 'security-runbooks',
+    label: 'Security Runbooks',
+    labelKey: 'navigation.groups.securityRunbooks.label',
+    description:
+      'Field-ready incident guides aligned with the security playbooks introduced in issue #3.',
+    descriptionKey: 'navigation.groups.securityRunbooks.description',
+    links: [
+      {
+        id: 'contact-abuse',
+        label: 'Contact abuse containment',
+        labelKey: 'navigation.groups.securityRunbooks.links.contactAbuse.label',
+        href: '/docs/security/runbook-contact-abuse',
+        description: 'Intake hardening and automation to neutralize form API abuse.',
+        descriptionKey: 'navigation.groups.securityRunbooks.links.contactAbuse.description',
+      },
+      {
+        id: 'csp-triage',
+        label: 'CSP violation triage',
+        labelKey: 'navigation.groups.securityRunbooks.links.cspTriage.label',
+        href: '/docs/security/runbook-csp-triage',
+        description: 'Rapid response checklist for Content Security Policy reports.',
+        descriptionKey: 'navigation.groups.securityRunbooks.links.cspTriage.description',
+      },
+      {
+        id: 'r2-incident',
+        label: 'R2 incident response',
+        labelKey: 'navigation.groups.securityRunbooks.links.r2Incident.label',
+        href: '/docs/security/runbook-r2-incident',
+        description: 'Recovery orchestration for whitepaper storage breaches.',
+        descriptionKey: 'navigation.groups.securityRunbooks.links.r2Incident.description',
+      },
+    ],
+  },
+  {
+    /**
+     * Partner teams frequently request brand assets without needing the entire handbook. Surfacing
+     * the managed SVG exports alongside the narrative style guide minimizes back-and-forth and
+     * keeps design automation (e.g., ensure scripts) front-and-center.
+     */
+    id: 'brand-kit',
+    label: 'Brand Kit',
+    labelKey: 'navigation.groups.brandKit.label',
+    description: 'Design system artifacts, palettes, and typography specimens for partner teams.',
+    descriptionKey: 'navigation.groups.brandKit.description',
+    links: [
+      {
+        id: 'brand-style-guide',
+        label: 'Brand style guide',
+        labelKey: 'navigation.groups.brandKit.links.brandStyleGuide.label',
+        href: '/docs/brand/styleguide',
+        description: 'Living style guide documenting the end-to-end experience system.',
+        descriptionKey: 'navigation.groups.brandKit.links.brandStyleGuide.description',
+      },
+      {
+        id: 'palette-assets',
+        label: 'Palette assets',
+        labelKey: 'navigation.groups.brandKit.links.paletteAssets.label',
+        href: '/static/brand/palette-light.svg',
+        description: 'Downloadable color matrices for light/dark product surfaces.',
+        descriptionKey: 'navigation.groups.brandKit.links.paletteAssets.description',
+      },
+      {
+        id: 'typography-specimen',
+        label: 'Typography specimen',
+        labelKey: 'navigation.groups.brandKit.links.typographySpecimen.label',
+        href: '/static/brand/typography-scale.svg',
+        description: 'Responsive type ramp assets for collateral and product UI.',
+        descriptionKey: 'navigation.groups.brandKit.links.typographySpecimen.description',
+      },
+    ],
+  },
+  {
     id: 'company',
     label: 'Company',
     labelKey: 'navigation.groups.company.label',
