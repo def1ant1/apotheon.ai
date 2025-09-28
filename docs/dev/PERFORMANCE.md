@@ -32,13 +32,14 @@ Run `npm run lighthouse:calibrate` to generate fresh JSON audits under `reports/
 2. Executes `lhci autorun` with our production budgets (`lighthouserc.json`).
 3. Copies each Lighthouse report into `reports/lighthouse/` and writes a `calibration-manifest.json` with the URL, fetch time, performance score, and LCP metric.
 
-The CI workflow continues to run `npm run lighthouse:ci`, which uploads reports to `artifacts/lighthouse` for every PR. Calibration simply keeps a local archive for diffing trends.
+`npm run lighthouse:ci` now runs both the desktop and mobile profiles defined in `lighthouserc.json`. Desktop results must continue to satisfy a ≥0.90 performance score with ≤2.5 s LCP/TBT ≤150 ms, while the mobile sweep simulates 4G radio conditions and enforces ≥0.85 performance with ≤3.2 s LCP/TBT ≤200 ms. Each suite uploads into `artifacts/lighthouse/<profile>/` so PR reviewers can compare reports side-by-side. Calibration simply keeps a local archive for diffing trends.
 
 ## Reviewer checklist
 
 - [ ] Verify `src/generated/og-assets.manifest.json` updates correspond to intentional Worker renders (stale signatures or unexpected endpoints usually indicate env misconfiguration).
 - [ ] Confirm `src/generated/image-optimization.manifest.json` entries were regenerated (new hashes/derivatives) when imagery changes.
 - [ ] Ensure new pages or routes update `lighthouserc.json` if they should fall under the performance budget umbrella.
+- [ ] Review both `artifacts/lighthouse/desktop` and `artifacts/lighthouse/mobile` outputs when performance regressions are suspected; the latter represents our 4G mobile budget.
 - [ ] Run `npm run lighthouse:calibrate` after large visual overhauls and commit updated reports if the baseline changes.
 
 ## Rollback guidance
