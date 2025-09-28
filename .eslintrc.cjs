@@ -29,7 +29,7 @@ module.exports = {
   settings: {
     'import/resolver': {
       node: {
-        extensions: ['.js', '.jsx', '.ts', '.tsx', '.astro', '.mdx'],
+        extensions: ['.js', '.jsx', '.ts', '.tsx', '.astro', '.mdx', '.png', '.jpg', '.jpeg', '.webp', '.avif', '.svg'],
       },
       typescript: {
         // Use the same tsconfig we ship to Astro/tsc for consistent path + type resolution.

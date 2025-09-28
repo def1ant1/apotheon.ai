@@ -1,6 +1,5 @@
 ---
-import { Image } from '@astrojs/image/components';
-import { getImage } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 
 import ExperimentBadge from '../islands/ExperimentBadge';
 import RoleExperienceAnalytics from '../islands/RoleExperienceAnalytics';
@@ -38,7 +37,7 @@ const heroLcpCandidate = manifestEntry?.lcpCandidate ?? false;
 
 /**
  * Import every homepage asset eagerly so MDX frontmatter only has to reference the file name.
- * This keeps the editorial workflow declarative while enabling @astrojs/image optimizations.
+ * This keeps the editorial workflow declarative while enabling the built-in astro:assets optimizations.
  */
 const heroMediaKey = `../../assets/homepage/${hero.heroMedia.src}`;
 const heroImage: StaticImageMetadata =
@@ -132,16 +131,16 @@ const heroPreloadLink = heroPreload
   <!-- Layout: a responsive split grid ensures copy is readable on small screens while allocating predictable space for media at desktop breakpoints. -->
   <div class="grid gap-12 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-center">
     <div class="space-y-6" data-analytics-block="hero-copy">
-      <p class="text-sm font-semibold uppercase tracking-[0.35rem] text-sky-400">
+      <p class="text-sm font-semibold tracking-[0.35rem] text-sky-400 uppercase">
         {heroEyebrow}
       </p>
-      <h1 class="text-4xl font-black leading-tight text-white md:text-5xl lg:text-6xl">
+      <h1 class="text-4xl leading-tight font-black text-white md:text-5xl lg:text-6xl">
         {heroHeadline}
       </h1>
       {
         roleExperience && (
           <div class="grid gap-2 rounded-xl border border-sky-800/40 bg-sky-900/20 p-4 text-sky-100">
-            <p class="text-xs font-semibold uppercase tracking-[0.3em] text-sky-300">
+            <p class="text-xs font-semibold tracking-[0.3em] text-sky-300 uppercase">
               You're viewing the {roleExperience.label} path
             </p>
             <p class="text-sm text-slate-200">{roleExperience.description}</p>
@@ -155,7 +154,7 @@ const heroPreloadLink = heroPreload
       <div class="flex flex-wrap gap-3" data-analytics-block="hero-ctas">
         <a
           id={heroPrimaryElementId}
-          class="inline-flex items-center justify-center rounded-full border border-sky-400 bg-sky-500 px-5 py-3 text-sm font-semibold uppercase tracking-wide text-slate-950 transition hover:bg-sky-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300"
+          class="inline-flex items-center justify-center rounded-full border border-sky-400 bg-sky-500 px-5 py-3 text-sm font-semibold tracking-wide text-slate-950 uppercase transition hover:bg-sky-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300"
           data-analytics-id={heroPrimaryAnalyticsId}
           href={heroPrimaryCta.href}
           aria-label={heroPrimaryCta.ariaLabel}
@@ -164,7 +163,7 @@ const heroPreloadLink = heroPreload
         </a>
         <a
           id={heroSecondaryElementId}
-          class="inline-flex items-center justify-center rounded-full border border-slate-700 px-5 py-3 text-sm font-semibold uppercase tracking-wide text-slate-200 transition hover:border-slate-500 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-200"
+          class="inline-flex items-center justify-center rounded-full border border-slate-700 px-5 py-3 text-sm font-semibold tracking-wide text-slate-200 uppercase transition hover:border-slate-500 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-200"
           data-analytics-id={heroSecondaryAnalyticsId}
           href={heroSecondaryCta.href}
           aria-label={heroSecondaryCta.ariaLabel}

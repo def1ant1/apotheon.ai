@@ -99,7 +99,7 @@ export const homepageSchema = z.object({
    */
   heroMedia: z
     .object({
-      /** Path to the base raster asset processed through @astrojs/image */
+      /** Path to the base raster asset processed through astro:assets */
       src: z.string().min(1).describe('Image source path imported from the repo'),
       /** Plain-language description for screen readers */
       alt: z.string().min(1).describe('Accessible alt text for the hero image'),
@@ -113,7 +113,7 @@ export const homepageSchema = z.object({
         .default(true)
         .describe('Whether the component should emit a preload hint for the hero media'),
     })
-    .describe('Configuration for hero media rendered with @astrojs/image'),
+    .describe('Configuration for hero media rendered with astro:assets'),
   /**
    * Pillars summarize the AI Operating System value props the homepage teases before deeper
    * solution pages. Keep entries ordered by strategic priority so downstream surfaces (navigation,

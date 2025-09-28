@@ -41,7 +41,7 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
   - UI: **TailwindCSS** + **Radix UI primitives** (headless, accessible). Optional icons: **Lucide** / custom SVGs.
   - Typography: **Self-hosted variable fonts** via `@fontsource` packages; external font CDNs are prohibited to maintain CSP fidelity.
   - Content: Astro **Content Collections** for blog & pages; whitepapers as static assets (R2) with signed links.
-  - Build: Static pre‑render (SSG) for all pages; islands hydrate on demand; images via **@astrojs/image** (Sharp).
+  - Build: Static pre‑render (SSG) for all pages; islands hydrate on demand; images via **astro:assets** (Sharp service).
   - Repo: Monorepo (if needed) or single app; Prettier, ESLint, stylelint; commitlint + Husky; Conventional Commits.
   - CI: GitHub Actions (build/lint/test), Pagefind index build, Lighthouse CI budgets, ZAP scan, Gitleaks.
   - Dev server security: sample CSP, local HTTPS (mkcert) for parity with prod.
@@ -58,7 +58,6 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
 - **Status:** ✅ Completed — Ladle documentation pipeline with automated a11y + visual checks is operational and design tokens are fully documented.
 
 - **Deliverables**
-
   - `brand/STYLEGUIDE.md`: palette (dark & light), typography scale, spacing, radii, shadows.
   - Tokenized **Tailwind config**; prefers system fonts for perf; variable fonts optional (subset + preload).
   - Icon set: custom SVGs for **Clio, Hermes, THEMIS, Morpheus, Mnemosyne**, and 6 industries.
@@ -66,7 +65,6 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
   - Component library docs (Storybook **Chromatic** alt → **Ladle** OSS if lighter).
 
 - **Work Items**
-
   - **Document the brand system** — Create `docs/brand/STYLEGUIDE.md` capturing the light/dark palettes, typography scale, spacing/radii/shadow tokens, usage tables, and instructions for running an automated WCAG contrast audit script so designers and engineers share a single source of truth.
   - **Codify multi-theme design tokens** — Expand `tailwind.config.mjs` (and supporting files such as `src/styles/global.css` and a new `src/styles/tokens.(css|ts)`) to expose semantic color, typography, spacing, radii, and shadow tokens via CSS variables for both themes, prefer the system stack before optional variable fonts to eliminate layout shift, and annotate the tokens with inline comments.
   - **Automate the icon pipeline** — Produce custom SVGs for Clio, Hermes, THEMIS, Morpheus, Mnemosyne, and the six industries under `public/static/icons/brand/`, wire an `svgo` configuration plus an `npm run icons:build` script to normalize/optimize them (and optionally emit React wrappers), and document naming/usage guidance in the style guide.

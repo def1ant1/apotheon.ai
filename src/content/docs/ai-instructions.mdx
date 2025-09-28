@@ -39,10 +39,10 @@ releasing, and operating the public-facing Apotheon.ai web experience.
 ## 1) Architecture & Stack
 
 - **Framework:** Astro 4 + TypeScript + MDX (`@astrojs/mdx`)
-- **Styling:** Tailwind CSS via `@astrojs/tailwind`, PostCSS + Autoprefixer
+- **Styling:** Tailwind CSS via `@tailwindcss/vite`, PostCSS + Autoprefixer
 - **Islands:** React 18 components hydrated with Astro `client:*` directives
 - **Search:** Pagefind CLI for static index generation (wired into `npm run build`, manual rerun `npm run search:index`)
-- **Images:** `@astrojs/image` backed by Sharp for responsive assets
+- **Images:** `astro:assets` backed by Sharp for responsive assets
 - **Content:** Astro Content Collections for `blog` & `marketing` MDX
 - **Hosting:** Static CDNs (Cloudflare Pages preferred) with CSP headers honored
 - **Automation:** Astro check, Prettier, future Vitest/Playwright/axe suites

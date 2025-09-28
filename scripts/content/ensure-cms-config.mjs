@@ -118,7 +118,7 @@ function buildBlogCollection() {
         widget: 'image',
         media_folder: 'public/images/blog',
         public_folder: '/images/blog',
-        hint: 'Processed via @astrojs/image; supply high-resolution assets.',
+        hint: 'Processed via astro:assets; supply high-resolution assets.',
       },
       {
         name: 'heroImageAlt',
@@ -168,7 +168,7 @@ function buildBlogCollection() {
             label: 'Avatar',
             widget: 'image',
             required: false,
-            hint: 'Optional portrait rendered via @astrojs/image.',
+            hint: 'Optional portrait rendered via astro:assets.',
           },
           {
             name: 'bio',
