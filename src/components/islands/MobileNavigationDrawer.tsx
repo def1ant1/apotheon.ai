@@ -3,6 +3,7 @@ import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import React, { useEffect } from 'react';
 import { useCallback, useId, useMemo, useRef, useState, type MouseEvent } from 'react';
 
+import PagefindSearch from './PagefindSearch';
 import { navigationMenuGroups, type NavigationMenuGroup } from './RadixNavigationMenu';
 
 export interface MobileNavigationDrawerProps {
@@ -159,6 +160,16 @@ export default function MobileNavigationDrawer({
               >
                 Skip to navigation links
               </a>
+            </div>
+
+            {/**
+             * Mobile surfaces inherit the same search affordance as desktop. Because Pagefind streams hits
+             * incrementally, focus never jumps when additional results resolve—tab order flows from the input
+             * directly into the rendered list. The drawer keeps search above the primary nav so handheld users
+             * can reach it without wading through every section link.
+             */}
+            <div className="mt-6 border-t border-border-subtle/80 pt-6">
+              <PagefindSearch />
             </div>
 
             {/**

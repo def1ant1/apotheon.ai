@@ -8,7 +8,12 @@
  * method is thoroughly commented because compliance reviewers routinely audit
  * this file when new telemetry ships.
  */
-export type AnalyticsEvent = 'lead_investor' | 'lead_demo' | 'whitepaper_download' | 'blog_read';
+export type AnalyticsEvent =
+  | 'lead_investor'
+  | 'lead_demo'
+  | 'whitepaper_download'
+  | 'blog_read'
+  | 'search_query';
 
 interface TrackOptions {
   event: AnalyticsEvent;
@@ -174,6 +179,8 @@ export async function trackAnalyticsEvent(options: TrackOptions): Promise<TrackR
 function inferConsentService(event: AnalyticsEvent): TrackOptions['consentService'] {
   switch (event) {
     case 'blog_read':
+      return 'umami-telemetry';
+    case 'search_query':
       return 'umami-telemetry';
     case 'lead_demo':
     case 'lead_investor':

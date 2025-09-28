@@ -5,6 +5,7 @@ import { detectLocaleFromPath, useTranslations } from '../../i18n/runtime';
 import { isLocaleQASwitcherEnabled } from '../../utils/featureFlags';
 import LocaleSwitcher, { type LocaleSwitcherLabels } from '../islands/LocaleSwitcher';
 import MobileNavigationDrawer from '../islands/MobileNavigationDrawer';
+import PagefindSearch from '../islands/PagefindSearch';
 import RadixNavigationMenu, { type NavigationMenuGroup } from '../islands/RadixNavigationMenu';
 
 /**
@@ -104,6 +105,17 @@ const localeSwitcherLabels: LocaleSwitcherLabels = {
       <div class="sm:hidden">
         <MobileNavigationDrawer client:idle groups={sanitizedMenuGroups} />
       </div>
+    </div>
+
+    <div class="hidden sm:block">
+      {
+        /**
+        Keyboard navigation: the search island keeps focus within the input/results column. Tabbing from the
+        input advances directly into the streaming list items without stealing focus back when Pagefind resolves
+        additional matches. We document the behaviour inline so future refactors preserve the zero-jump contract.
+      */
+      }
+      <PagefindSearch client:idle />
     </div>
 
     <div class="hidden sm:block">

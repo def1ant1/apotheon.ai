@@ -18,7 +18,8 @@
       "@testing-library/jest-dom",
       "@testing-library/jest-dom/vitest",
       "src/types/og-worker",
-      "src/types/stubs/astro-i18next"
+      "src/types/stubs/astro-i18next",
+      "src/types/pagefind-runtime"
     ]
   },
   "include": [
