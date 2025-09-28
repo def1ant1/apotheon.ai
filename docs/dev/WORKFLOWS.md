@@ -55,6 +55,21 @@ pre-production environments.
   macOS laptops, or Windows VMs no longer requires manual cleanup—each
   environment hydrates its own Vale executable automatically.
 
+### Pagefind re-index cadence for docs changes
+
+- `npm run search:index` rehydrates the Pagefind bundle under `dist/pagefind/`.
+  Run it whenever Markdown/MDX in `docs/` or `src/content/docs/` changes outside
+  of a full `npm run build` so local previews mirror production search results.
+- The command automatically reuses the prior binary download and canonicalises
+  URLs via `scripts/search/postbuild.mjs`; no manual flag toggles or directory
+  cleanup are required between runs.
+- After reviewing docs updates, run `npm run build` to exercise the same
+  pipeline CI will execute. The static build regenerates the sitemap, robots
+  directives, and Pagefind index in a single pass to avoid drift.
+- Commit the regenerated `public/pagefind/` assets if you run the indexer in a
+  production-bound branch so the CDN can ship the refreshed manifest alongside
+  the Astro output.
+
 ## Internationalization
 
 Global content management follows the same enterprise-ready posture as the
