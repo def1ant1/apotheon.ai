@@ -1,0 +1,66 @@
+---
+title: Contact Abuse Containment Runbook
+category: security
+categoryLabel: Security
+description: This playbook guides on-call responders through triaging
+  contact-form abuse at the edge. It maps signals produced by
+  [`workers/contact.ts`](../../workers/contact.ts) and the downstream D1 audit
+  trails so operators can jump from an alert directly to actionable remediation
+  tasks.
+sourcePath: security/RUNBOOK_CONTACT_ABUSE.md
+sourceLastModified: 2025-09-27T17:17:13.266Z
+tags: []
+---
+
+This playbook guides on-call responders through triaging contact-form abuse at
+the edge. It maps signals produced by [`workers/contact.ts`](https://github.com/apotheonai/apotheon.ai/blob/main/workers/contact.ts)
+and the downstream D1 audit trails so operators can jump from an alert directly
+to actionable remediation tasks.
+
+## Detection Signals
+
+- **Worker audit inserts:** `contact_submissions` rows in D1 should grow
+  linearly. Bursts (>30 submissions/minute) from a single IP or ASN indicate
+  rate-limit bypass attempts. Inspect via Wrangler:
+  ```bash
+  npx wrangler d1 execute $CONTACT_D1_DATABASE --command "SELECT id, email, ip_address, intent, created_at FROM contact_submissions ORDER BY created_at DESC LIMIT 50;"
+  ```
+- **KV rate-limit saturation:** The Worker populates `CONTACT_RATE_LIMIT` keys
+  per IP. Use Cloudflare dashboard analytics or `wrangler kv:key list` to spot
+  thousands of hot keys or TTL churn well below the 15-minute window enforced in
+  the Worker logic.
+- **Synthetic health exceptions:** Legitimate synthetic checks sign requests via
+  `SYNTHETIC_SIGNATURE_HEADER`. Absence of that header paired with high Turnstile
+  failure rates suggests the attack has pivoted to CAPTCHA exhaustion.
+
+## Response Workflow
+
+1. **Confirm the spike.** Validate submissions via the D1 query above and check
+   Cloudflare Turnstile dashboards for matching spikes. If traffic is spoofed,
+   expect Turnstile `error-codes` populated in the Worker logs.
+2. **Activate additional blocking.** Update the `CONTACT_BLOCKLIST` environment
+   variable for `workers/contact.ts` (Wrangler secret or Cloudflare dashboard) to
+   include malicious IPs or disposable domains discovered during triage.
+3. **Capture a forensics snapshot.** Run the hardened export pipeline:
+   ```bash
+   node ./scripts/ops/export-contact-d1.mjs
+   ```
+   The script wraps the `wrangler d1 export` output in AES-256-GCM, stores it in
+   the `CONTACT_BACKUP_BUCKET`, and writes an encrypted envelope so security can
+   decrypt via the KMS-backed private key.
+4. **Purge automation artifacts.** If synthetic checks were compromised, rotate
+   `CONTACT_SYNTHETIC_SIGNING_SECRET` and redeploy the Worker. Coordinate with
+   the platform automation owner listed in the incident roster.
+5. **Notify stakeholders.** If more than 500 abusive submissions bypassed
+   filtering, escalate to the Director of Security Engineering and the Product
+   Marketing lead. Attach the backup manifest emitted by the export script so
+   they can ingest raw submissions into downstream analytics.
+
+## Escalation Path
+
+- **Primary on-call:** Cloudflare Workers SRE (PagerDuty: `workers-edge`).
+- **Secondary:** Application Security Engineer owning the contact workflow.
+- **Tertiary:** Director of Security Engineering.
+- **Incident Commander handoff:** If escalation hits tertiary or the abuse is
+  coupled with credential stuffing elsewhere, promote the event to a full
+  incident following [`docs/security/INCIDENT_RESPONSE.md`](/docs/security/incident-response/).

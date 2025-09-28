@@ -4,6 +4,8 @@ import {
   BREADCRUMB_ARIA_LABEL,
   createBlogIndexTrail,
   createBlogPostTrail,
+  createDocsEntryTrail,
+  createDocsIndexTrail,
   createMarketingEntryTrail,
   createMarketingIndexTrail,
   createSolutionsEntryTrail,
@@ -20,6 +22,11 @@ const marketingEntry = (slug: string, title: string): EntryWithTitle => ({
 });
 
 const blogEntry = (slug: string, title: string): EntryWithTitle => ({
+  slug,
+  data: { title },
+});
+
+const docEntry = (slug: string, title: string): EntryWithTitle => ({
   slug,
   data: { title },
 });
@@ -88,6 +95,21 @@ describe('breadcrumbs utilities', () => {
       item: 'https://apotheon.ai/blog/ai-governance',
     });
     expect(json).toBe(JSON.stringify(ldObject, null, 2));
+  });
+
+  it('exposes docs index and entry trails that mirror handbook slugs', () => {
+    expect(createDocsIndexTrail()).toEqual([
+      { href: '/', label: 'Home', isCurrentPage: false },
+      { href: '/docs/', label: 'Docs', isCurrentPage: true },
+    ]);
+
+    const trail = createDocsEntryTrail(docEntry('dev/workflows', 'Contact submission workflow'));
+    expect(trail).toEqual([
+      { href: '/', label: 'Home', isCurrentPage: false },
+      { href: '/docs/', label: 'Docs', isCurrentPage: false },
+      { href: '/docs/dev/', label: 'Dev', isCurrentPage: false },
+      { href: '/docs/dev/workflows/', label: 'Contact submission workflow', isCurrentPage: true },
+    ]);
   });
 
   it('normalizes arbitrary trails so only the terminal crumb is marked current', () => {

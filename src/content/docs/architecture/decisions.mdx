@@ -1,16 +1,27 @@
-# Architecture Decision Ledger
+---
+title: Architecture Decision Ledger
+category: architecture
+categoryLabel: Architecture
+description: This document captures the canonical architecture choices for the
+  Apotheon.ai platform. Each entry summarises the problem context, the decision
+  that was made, expected consequences, and references to operating guidance
+  such as [`docs/ai-instructions.md`](../ai-instructions.md).
+sourcePath: architecture/DECISIONS.md
+sourceLastModified: 2025-09-28T00:41:50.114Z
+tags: []
+---
 
-This document captures the canonical architecture choices for the Apotheon.ai platform. Each entry summarises the problem context, the decision that was made, expected consequences, and references to operating guidance such as [`docs/ai-instructions.md`](../ai-instructions.md).
+This document captures the canonical architecture choices for the Apotheon.ai platform. Each entry summarises the problem context, the decision that was made, expected consequences, and references to operating guidance such as [`docs/ai-instructions.md`](/docs/ai-instructions/).
 
 ## Decision: Astro Static Site Generation
 
-- **Context**: We require a content-first marketing and knowledge site that serves AI governance collateral with deterministic build pipelines, excellent SEO defaults, and seamless integration with Astro Islands for interactive widgets while respecting the automation mandate in [`docs/ai-instructions.md`](../ai-instructions.md).
+- **Context**: We require a content-first marketing and knowledge site that serves AI governance collateral with deterministic build pipelines, excellent SEO defaults, and seamless integration with Astro Islands for interactive widgets while respecting the automation mandate in [`docs/ai-instructions.md`](/docs/ai-instructions/).
 - **Decision**: Adopt Astro's Static Site Generation (SSG) mode with incremental builds and component-level hydration only where dynamic behaviour is essential.
 - **Consequences**:
   - Positive: Predictable build artefacts for Cloudflare Pages, high Lighthouse scores, and simplified caching strategies at the edge.
   - Negative/Mitigations: Dynamic content must either be pre-rendered or sourced via serverless endpoints; content editors require pipeline automation to publish updates.
   - Security & Performance: Static assets remain within the public edge boundary, keeping origin attack surface minimal; enforce a performance budget of &lt;100 ms TTFB and &lt;2.5 s Largest Contentful Paint (LCP) via build-time Web Vitals checks.
-- **References**: [`docs/ai-instructions.md`](../ai-instructions.md), [`docs/architecture/system-context.svg`](./system-context.svg).
+- **References**: [`docs/ai-instructions.md`](/docs/ai-instructions/), [`docs/architecture/system-context.svg`](/docs/architecture/system-context/).
 
 ## Decision: Tailwind CSS with Radix UI Primitives
 
@@ -20,7 +31,7 @@ This document captures the canonical architecture choices for the Apotheon.ai pl
   - Positive: Utility-first CSS keeps styling deterministic and automatable; Radix primitives deliver WCAG compliance and composable accessibility tokens.
   - Negative/Mitigations: Requires strict configuration linting to avoid style bloat; integrate PurgeCSS/Tailwind pruning in CI to uphold a &lt;150 KB CSS budget.
   - Security & Performance: Components interact only within the browser boundary; enforce security reviews for any third-party Tailwind plugins.
-- **References**: [`docs/ai-instructions.md`](../ai-instructions.md), Tailwind configuration in `tailwind.config.mjs`.
+- **References**: [`docs/ai-instructions.md`](/docs/ai-instructions/), Tailwind configuration in `tailwind.config.mjs`.
 
 ## Decision: Pagefind for Localised Search
 
@@ -30,7 +41,7 @@ This document captures the canonical architecture choices for the Apotheon.ai pl
   - Positive: Zero server dependencies for search, progressive enhancement, and minimal bundle footprint when lazy-loaded.
   - Negative/Mitigations: Index rebuilds are required on every publish; schedule nightly builds and incremental indexing jobs to keep within a &lt;60 s build budget.
   - Security & Performance: Search index stays within the public CDN boundary; sanitise index content to avoid leaking confidential drafts.
-- **References**: [`docs/ai-instructions.md`](../ai-instructions.md), `package.json#scripts.search:index`.
+- **References**: [`docs/ai-instructions.md`](/docs/ai-instructions/), `package.json#scripts.search:index`.
 
 ## Decision: Cloudflare Pages & Workers Platform
 
@@ -38,9 +49,9 @@ This document captures the canonical architecture choices for the Apotheon.ai pl
 - **Decision**: Deploy static assets via Cloudflare Pages, execute dynamic requests through Cloudflare Workers, and govern connectivity using Cloudflare Zero Trust and WAF policies.
 - **Consequences**:
   - Positive: Managed deployment workflows, integrated CI/CD, and automatic TLS across edge locations; centralised observability via Cloudflare Logs.
-  - Negative/Mitigations: Ties architecture to Cloudflare-specific APIs; maintain IaC blueprints for alternative targets (see [`docs/infra/ALTERNATIVES.md`](../infra/ALTERNATIVES.md)).
+  - Negative/Mitigations: Ties architecture to Cloudflare-specific APIs; maintain IaC blueprints for alternative targets (see [`docs/infra/ALTERNATIVES.md`](/docs/infra/alternatives/)).
   - Security & Performance: Workers form the security boundary between the public internet and storage services; enforce &lt;50 ms Worker execution budgets per request and log Zero Trust access policies.
-- **References**: [`docs/ai-instructions.md`](../ai-instructions.md), [`docs/architecture/system-context.puml`](./system-context.puml).
+- **References**: [`docs/ai-instructions.md`](/docs/ai-instructions/), [`docs/architecture/system-context.puml`](/docs/architecture/system-context/).
 
 ## Decision: Cloudflare D1 (SQL), KV, and R2 (Object Storage)
 
@@ -48,9 +59,9 @@ This document captures the canonical architecture choices for the Apotheon.ai pl
 - **Decision**: Use Cloudflare D1 for relational data, KV for ultra-low latency key/value access, and R2 for durable object storage. Workers mediate all data access.
 - **Consequences**:
   - Positive: Fully managed storage primitives aligned with Cloudflare's global edge, reducing operational toil while enabling automated backups and lifecycle rules.
-  - Negative/Mitigations: Vendor lock-in around query dialect and API semantics; implement portable schema definitions and replication exports to alternative stores (see [`docs/infra/ALTERNATIVES.md`](../infra/ALTERNATIVES.md)).
+  - Negative/Mitigations: Vendor lock-in around query dialect and API semantics; implement portable schema definitions and replication exports to alternative stores (see [`docs/infra/ALTERNATIVES.md`](/docs/infra/alternatives/)).
   - Security & Performance: Workers enforce data validation and tenancy checks before crossing into the private storage boundary; set budgets of &lt;20 ms KV reads, &lt;150 ms D1 transactional latency, and &lt;200 ms R2 retrieval for &lt;5 MB assets.
-- **References**: [`docs/ai-instructions.md`](../ai-instructions.md), [`docs/architecture/system-context.svg`](./system-context.svg).
+- **References**: [`docs/ai-instructions.md`](/docs/ai-instructions/), [`docs/architecture/system-context.svg`](/docs/architecture/system-context/).
 
 ---
 

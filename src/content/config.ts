@@ -1,5 +1,6 @@
 import { z, defineCollection } from 'astro:content';
 
+import { docsCollection } from './docs';
 import { historyCollection } from './history';
 import { homepageCollection } from './homepage';
 import { industriesCollection } from './industries';
@@ -165,8 +166,35 @@ const marketingCollection = defineCollection({
   }),
 });
 
+const docsManifestCollection = defineCollection({
+  type: 'data',
+  schema: z.object({
+    generatedAt: z
+      .string()
+      .describe('ISO timestamp emitted by the handbook ensure script for change tracking.'),
+    source: z
+      .string()
+      .describe('File URL pointing at the canonical /docs source directory for provenance.'),
+    entries: z
+      .array(
+        z.object({
+          title: z.string(),
+          description: z.string().nullable(),
+          category: z.string(),
+          categoryLabel: z.string(),
+          slug: z.string(),
+          sourcePath: z.string(),
+          sourceLastModified: z.string(),
+        }),
+      )
+      .describe('Ordered list of synchronized handbook entries consumed by automation pipelines.'),
+  }),
+});
+
 export const collections = {
   blog: blogCollection,
+  docs: docsCollection,
+  'docs-manifest': docsManifestCollection,
   marketing: marketingCollection,
   homepage: homepageCollection,
   /**

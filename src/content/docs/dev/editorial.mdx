@@ -1,0 +1,84 @@
+---
+title: Editorial Playbook
+category: dev
+categoryLabel: Development
+description: This guide captures the repeatable workflow for planning, drafting,
+  and shipping Apotheon.ai blog posts without breaking the automation that
+  protects the rest of our platform. Treat it as the canonical runbook—update it
+  whenever the content schema, layouts, or review stages evolve. Pair it with
+  [`docs/content/CALENDAR.md`](../content/CALENDAR.md) so onboarding teammates
+  can see how GrowthBook experiments map to each rolling content drop.
+sourcePath: dev/EDITORIAL.md
+sourceLastModified: 2025-09-27T17:17:13.266Z
+tags: []
+---
+
+This guide captures the repeatable workflow for planning, drafting, and shipping
+Apotheon.ai blog posts without breaking the automation that protects the rest of
+our platform. Treat it as the canonical runbook—update it whenever the content
+schema, layouts, or review stages evolve. Pair it with
+[`docs/content/CALENDAR.md`](/docs/content/calendar/) so onboarding teammates can
+see how GrowthBook experiments map to each rolling content drop.
+
+## 1. Start from a commented template
+
+1. Copy an existing file from `src/content/blog/`. The production-ready article
+   (`federated-risk-mesh.mdx`) demonstrates final polish while the draft
+   examples (`ai-vendor-scorecards.mdx`, `lightweight-assurance-patterns.mdx`)
+   show how to keep metadata current during outlines.
+2. Keep every frontmatter comment intact. They document which fields are
+   required, what formatting we expect, and the editorial workflow (draft gate,
+   hero asset expectations, etc.). Tooling parses these comments when we add new
+   checks, so deleting them slows future automation.
+3. Update the metadata before touching the body copy. `npm run typecheck`
+   validates the schema in seconds and catches typos like malformed dates or
+   missing author links.
+
+### Frontmatter quick reference
+
+| Field                     | Required | Notes                                                                           |
+| ------------------------- | -------- | ------------------------------------------------------------------------------- |
+| `title`                   | ✅       | 60–90 characters, action-oriented. Powers `<title>` and JSON-LD `headline`.     |
+| `description`             | ✅       | 140–160 characters for SEO/social cards.                                        |
+| `publishDate`             | ✅       | ISO-8601 date representing the intended go-live. Drives ordering + RSS.         |
+| `updatedDate`             | ➖       | Add when substantive edits go live post-launch.                                 |
+| `heroImage`               | ➖       | Reference artwork under `/public/images/blog`. SVG preferred.                   |
+| `heroImageAlt`            | ➖       | Required when `heroImage` is provided. Plain-language summary.                  |
+| `tags`                    | ✅       | Lowercase kebab-case tokens. Fuel search facets + related content scoring.      |
+| `estimatedReadingMinutes` | ✅       | Whole number derived from reading-time automation.                              |
+| `author`                  | ✅       | Includes name, optional title/avatar, short bio, and optional links.            |
+| `draft`                   | ✅       | `true` hides the entry from production builds. Flip to `false` when publishing. |
+
+## 2. Build and preview with drafts
+
+- `npm run dev` → Standard hot reload server. Drafts render automatically.
+- `npm run dev -- --drafts` → Mirrors production routing while keeping draft
+  content visible. Use this when testing pagination or related-posts logic.
+- `npm run build -- --drafts` → Generates a static build with drafts included.
+  Pair with `npm run preview` for stakeholder reviews without toggling the
+  `draft` flag.
+
+## 3. Submit for review
+
+1. Run the full quality gate locally: `npm run lint`, `npm run typecheck`,
+   `npm run build`, `npm run test`.
+2. Capture outstanding editorial tasks inside the MDX body using checklists.
+   They provide context for reviewers and double as a QA reminder before you
+   flip `draft` to `false`.
+3. Reference this playbook and `docs/dev/WORKFLOWS.md` in the PR description so
+   reviewers know which automation already ran.
+
+## 4. Publish confidently
+
+1. Replace any placeholder assets, ensure call-to-action URLs resolve, and set
+   `draft: false`.
+2. Re-run the quality gate (commands above). Production builds will now include
+   the article and expose JSON-LD article schema via `src/pages/blog/[slug].astro`.
+3. After merge, monitor the next scheduled deployment for any warnings. The
+   blog index already sorts by `publishDate`; no manual reordering is necessary.
+4. If you edit the article later, add an `updatedDate` so structured data stays
+   accurate and readers know the content is fresh.
+
+Maintaining this workflow keeps the blog automation-friendly and ensures every
+new piece ships with enterprise-grade observability, accessibility, and SEO
+signals baked in.

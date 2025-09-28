@@ -1,0 +1,294 @@
+{
+  "generatedAt": "2025-09-28T00:57:37.485Z",
+  "source": "file:///workspace/apotheon.ai/docs",
+  "entries": [
+    {
+      "title": "Apotheon.ai — AI Instructions & Engineering Playbook",
+      "description": "**Purpose:** Enforce a unified rule-set for engineering, documenting, testing, releasing, and operating the public-facing Apotheon.ai web experience.",
+      "category": "ai-instructions",
+      "categoryLabel": "AI Playbooks",
+      "slug": "ai-instructions",
+      "sourcePath": "ai-instructions.md",
+      "sourceLastModified": "2025-09-27T17:17:13.262Z"
+    },
+    {
+      "title": "Architecture Decision Ledger",
+      "description": "This document captures the canonical architecture choices for the Apotheon.ai platform. Each entry summarises the problem context, the decision that was made, expected consequences, and references to operating guidance such as [`docs/ai-instructions.md`](../ai-instructions.md).",
+      "category": "architecture",
+      "categoryLabel": "Architecture",
+      "slug": "architecture/decisions",
+      "sourcePath": "architecture/DECISIONS.md",
+      "sourceLastModified": "2025-09-28T00:41:50.114Z"
+    },
+    {
+      "title": "Apotheon Brand & Experience Style Guide",
+      "description": "- [Brand Design North Star](#brand-design-north-star) - [Homepage Hero System](#homepage-hero-system) - [Color Systems](#color-systems) - [Daylight Palette (Light Mode)](#daylight-palette-light-mode) - [Midnight Palette (Dark Mode)](#midnight-palette-dark-mode) - [Palette Pairing Matrix](#palette-pairing-matrix) - [Typography Scale](#typography-scale) - [Layout Density Tokens](#layout-density-tokens) - [Spacing Rhythm](#spacing-rhythm) - [Corner Radii](#corner-radii) - [Elevation & Shadows](#elevation--shadows) - [Component Application Cheat Sheets](#component-application-cheat-sheets) - [Buttons](#buttons) - [Form Inputs](#form-inputs) - [Data Surfaces](#data-surfaces) - [Brand Iconography Pipeline](#brand-iconography-pipeline) - [Accessibility & WCAG 2.2 AA Guardrails](#accessibility--wcag-22-aa-guardrails) - [Contrast Automation](#contrast-automation) - [Manual QA Checklist](#manual-qa-checklist) - [Adoption Workflow for Designers & Engineers](#adoption-workflow-for-designers--engineers)",
+      "category": "brand",
+      "categoryLabel": "Brand",
+      "slug": "brand/styleguide",
+      "sourcePath": "brand/STYLEGUIDE.md",
+      "sourceLastModified": "2025-09-28T00:41:50.114Z"
+    },
+    {
+      "title": "Blog Editorial Playbook",
+      "description": "This guide translates the automated blog pipeline into a repeatable editorial workflow. Every entry in `src/content/blog/` ships with inline comments—treat this document as the narrative companion for deeper context.",
+      "category": "content",
+      "categoryLabel": "Content Strategy",
+      "slug": "content/blog-editorial",
+      "sourcePath": "content/BLOG_EDITORIAL.md",
+      "sourceLastModified": "2025-09-27T17:17:13.262Z"
+    },
+    {
+      "title": "Editorial and Experiment Calendar",
+      "description": "Apotheon.ai ships content and experiments on a rolling four-week cadence so marketing, product, and growth engineering can plan against the same signal. Use this calendar alongside `docs/dev/EDITORIAL.md` when onboarding new contributors—the dates below anchor GrowthBook experiments to the release notes and campaign assets that go live each week.",
+      "category": "content",
+      "categoryLabel": "Content Strategy",
+      "slug": "content/calendar",
+      "sourcePath": "content/CALENDAR.md",
+      "sourceLastModified": "2025-09-27T17:17:13.262Z"
+    },
+    {
+      "title": "CMS & Lead Management Playbook",
+      "description": "This guide explains how marketing editors access the Decap CMS instance and how RevOps triages leads through the read-only viewer Worker. Both workflows build on the automation committed to the repo so there is no manual drift between content schemas, auth controls, and audit trails.",
+      "category": "content",
+      "categoryLabel": "Content Strategy",
+      "slug": "content/cms",
+      "sourcePath": "content/CMS.md",
+      "sourceLastModified": "2025-09-28T00:41:50.114Z"
+    },
+    {
+      "title": "Marketing Information Architecture",
+      "description": "Our marketing stack favors content-driven automation so teams scale storytelling without manually wiring routes. Use this reference to understand how content collections, Astro templates, and shared components cooperate during `npm run build`.",
+      "category": "content",
+      "categoryLabel": "Content Strategy",
+      "slug": "content/information-architecture",
+      "sourcePath": "content/INFORMATION_ARCHITECTURE.md",
+      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+    },
+    {
+      "title": "Accessibility Operations Playbook",
+      "description": "| Frequency | Responsibility | Automation entrypoint | Notes | | ------------------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | | Per commit / pull request | Engineering | `npm run lint`, `npm run typecheck`, `npm run test`, `npm run test:e2e`, `npm run accessibility:axe`, `npm run accessibility:pa11y` | Run locally prior to raising a PR. Both accessibility commands materialize JSON reports under `reports/accessibility/{axe,pa11y}` so reviewers can diff violations. | | Nightly | Platform Engineering | GitHub Actions `CI` workflow (`quality-gates` matrix) | Matrix runs on Node.js 18 and 20. Failing accessibility scans block the workflow, guaranteeing regressions are surfaced before morning stand-up. | | Release candidate cut | Release Management | `npm run accessibility:all` followed by `npm run lighthouse:ci` | `prepare-dist.mjs` ensures `dist/` and `dist/ladle/` exist so both page templates and Ladle islands are scanned. Do **not** skip this phase; it is the final gate before production deploys. |",
+      "category": "dev",
+      "categoryLabel": "Development",
+      "slug": "dev/accessibility",
+      "sourcePath": "dev/ACCESSIBILITY.md",
+      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+    },
+    {
+      "title": "Blog Delivery Workflow",
+      "description": "This playbook documents how Apotheon.ai ships enterprise-ready blog content without manual busywork. Use it alongside `docs/content/BLOG_EDITORIAL.md` for narrative guidance—the checklist below focuses on developer automation.",
+      "category": "dev",
+      "categoryLabel": "Development",
+      "slug": "dev/blog",
+      "sourcePath": "dev/BLOG.md",
+      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+    },
+    {
+      "title": "Blog Analytics Platform",
+      "description": "This document captures the contract for the `blog-analytics` Worker, the D1 schema backing marketing dashboards, and the reviewer expectations for changes that touch analytics code paths.",
+      "category": "dev",
+      "categoryLabel": "Development",
+      "slug": "dev/blog-analytics",
+      "sourcePath": "dev/BLOG-ANALYTICS.md",
+      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+    },
+    {
+      "title": "Continuous Integration Pipeline",
+      "description": "The `CI` workflow codifies our enterprise readiness guardrails so every commit is vetted for quality, security, and operational excellence. The workflow is implemented in [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) and executes automatically for pull requests and pushes to `main`.",
+      "category": "dev",
+      "categoryLabel": "Development",
+      "slug": "dev/ci-cd",
+      "sourcePath": "dev/CI_CD.md",
+      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+    },
+    {
+      "title": "Editorial Playbook",
+      "description": "This guide captures the repeatable workflow for planning, drafting, and shipping Apotheon.ai blog posts without breaking the automation that protects the rest of our platform. Treat it as the canonical runbook—update it whenever the content schema, layouts, or review stages evolve. Pair it with [`docs/content/CALENDAR.md`](../content/CALENDAR.md) so onboarding teammates can see how GrowthBook experiments map to each rolling content drop.",
+      "category": "dev",
+      "categoryLabel": "Development",
+      "slug": "dev/editorial",
+      "sourcePath": "dev/EDITORIAL.md",
+      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+    },
+    {
+      "title": "History Timeline Editorial Playbook",
+      "description": "This guide documents how Apotheon.ai teams extend the company timeline while preserving the sourcing discipline demanded by enterprise buyers, regulators, and partners. Treat it as the canonical workflow—changes should ship through code review so downstream automation remains in sync.",
+      "category": "dev",
+      "categoryLabel": "Development",
+      "slug": "dev/history",
+      "sourcePath": "dev/HISTORY.md",
+      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+    },
+    {
+      "title": "Homepage Governance",
+      "description": "The homepage now sources hero, benefit, and CTA banner copy from `src/content/homepage/landing.mdx`. This guide centralizes editorial guardrails so marketing, RevOps, and investor relations can collaborate without reverse engineering component implementations.",
+      "category": "dev",
+      "categoryLabel": "Development",
+      "slug": "dev/homepage",
+      "sourcePath": "dev/HOMEPAGE.md",
+      "sourceLastModified": "2025-09-28T00:41:50.114Z"
+    },
+    {
+      "title": "Internationalisation Operations",
+      "description": "The marketing surface now ships with a QA-only locale switcher that rides on top of `astro-i18next`. This guide explains how to exercise the toggle safely without leaking unfinished localisation work into production releases.",
+      "category": "dev",
+      "categoryLabel": "Development",
+      "slug": "dev/i18n",
+      "sourcePath": "dev/I18N.md",
+      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+    },
+    {
+      "title": "Industries Editorial Playbook",
+      "description": "Industry narratives moved into the dedicated `src/content/industries` collection so editors capture compliance-first messaging without touching templates. Every entry is validated by Zod at build time and rendered through hydration-free Astro components.",
+      "category": "dev",
+      "categoryLabel": "Development",
+      "slug": "dev/industries",
+      "sourcePath": "dev/INDUSTRIES.md",
+      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+    },
+    {
+      "title": "Performance & OpenGraph Automation",
+      "description": "This guide captures the automation that keeps our marketing surface fast, visually consistent, and regression friendly. Use it as a runbook when introducing new assets or reviewing pull requests that touch the rendering pipeline.",
+      "category": "dev",
+      "categoryLabel": "Development",
+      "slug": "dev/performance",
+      "sourcePath": "dev/PERFORMANCE.md",
+      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+    },
+    {
+      "title": "Privacy & Analytics Runbook",
+      "description": "This document describes how Apothéon captures analytics while honouring global privacy regulations. Engineering, security, and go-to-market teams should use it as the canonical reference when shipping new telemetry or reviewing PRs.",
+      "category": "dev",
+      "categoryLabel": "Development",
+      "slug": "dev/privacy",
+      "sourcePath": "dev/PRIVACY.md",
+      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+    },
+    {
+      "title": "SEO & SMO Operations Guide",
+      "description": "This document captures the conventions that keep Apotheon.ai's marketing surfaces search-friendly without sacrificing automation. Treat the guidance below as the source of truth when extending metadata, structured data, or search artifacts.",
+      "category": "dev",
+      "categoryLabel": "Development",
+      "slug": "dev/seo",
+      "sourcePath": "dev/SEO.md",
+      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+    },
+    {
+      "title": "Solutions Content Schema & Workflow",
+      "description": "The dedicated solutions collection (`src/content/solutions/`) keeps product storytelling fully structured so Astro templates render hydration-free sections in a consistent order. Each entry is a Markdown or MDX file whose frontmatter must satisfy the schema defined in `src/content/solutions/index.ts`.",
+      "category": "dev",
+      "categoryLabel": "Development",
+      "slug": "dev/solutions",
+      "sourcePath": "dev/SOLUTIONS.md",
+      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+    },
+    {
+      "title": "Whitepaper delivery pipeline",
+      "description": "Enterprise whitepapers run through a fully automated pipeline so regulated teams can trust every download and reviewer can audit the trail end-to-end.",
+      "category": "dev",
+      "categoryLabel": "Development",
+      "slug": "dev/whitepapers",
+      "sourcePath": "dev/WHITEPAPERS.md",
+      "sourceLastModified": "2025-09-27T22:15:54.755Z"
+    },
+    {
+      "title": "Contact submission workflow",
+      "description": "The `/about/contact/` experience now routes through a Cloudflare Worker so every inquiry lands in auditable infrastructure backed by D1. This document outlines how the pipeline is wired together and what automation keeps it healthy in pre-production environments.",
+      "category": "dev",
+      "categoryLabel": "Development",
+      "slug": "dev/workflows",
+      "sourcePath": "dev/WORKFLOWS.md",
+      "sourceLastModified": "2025-09-27T22:15:54.755Z"
+    },
+    {
+      "title": "Managed Service Alternatives",
+      "description": "This register lists open-source or zero-cost (for small workloads) substitutes for the managed Cloudflare stack so we can pivot while maintaining the automation-first principles defined in [`docs/ai-instructions.md`](../ai-instructions.md). Each alternative includes integration notes covering security boundaries, data flow implications, and performance considerations.",
+      "category": "infra",
+      "categoryLabel": "Infrastructure",
+      "slug": "infra/alternatives",
+      "sourcePath": "infra/ALTERNATIVES.md",
+      "sourceLastModified": "2025-09-28T00:41:50.114Z"
+    },
+    {
+      "title": "Hosting Playbook",
+      "description": "This document captures the operational contracts our hosting providers must honor so the static Astro build remains resilient under failure conditions.",
+      "category": "infra",
+      "categoryLabel": "Infrastructure",
+      "slug": "infra/hosting",
+      "sourcePath": "infra/HOSTING.md",
+      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+    },
+    {
+      "title": "Go-Live Readiness Checklist",
+      "description": "This playbook codifies the enterprise-grade launch routine for Apotheon.ai. Every step favors automation over one-off console work so we can rehearse, audit, and repeat the launch procedure without drift.",
+      "category": "launch",
+      "categoryLabel": "Launch Readiness",
+      "slug": "launch/go-live-checklist",
+      "sourcePath": "launch/GO-LIVE_CHECKLIST.md",
+      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+    },
+    {
+      "title": "Self-Hosted Font Policy",
+      "description": "Enterprise CSP requirements prohibit calls to third-party font CDNs. All web fonts must be bundled with the Astro build so assets ship from the same origin as the rest of the site. This file documents the repeatable workflow for teams.",
+      "category": "security",
+      "categoryLabel": "Security",
+      "slug": "security/font-hosting",
+      "sourcePath": "security/FONT_HOSTING.md",
+      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+    },
+    {
+      "title": "Incident Response Framework",
+      "description": "This guide codifies the security incident process for the Apotheon.ai edge surface. It ties tabletop exercises, runbook usage, and backup restore verification into a single, opinionated workflow.",
+      "category": "security",
+      "categoryLabel": "Security",
+      "slug": "security/incident-response",
+      "sourcePath": "security/INCIDENT_RESPONSE.md",
+      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+    },
+    {
+      "title": "Local HTTPS + CSP Validation Playbook",
+      "description": "Enterprise QA requires parity with production transport security. The workflow below automates certificate management, Astro dev server configuration, and CSP report capture so engineers can exercise real-world browser behaviour before shipping.",
+      "category": "security",
+      "categoryLabel": "Security",
+      "slug": "security/local-https",
+      "sourcePath": "security/LOCAL_HTTPS.md",
+      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+    },
+    {
+      "title": "Contact Abuse Containment Runbook",
+      "description": "This playbook guides on-call responders through triaging contact-form abuse at the edge. It maps signals produced by [`workers/contact.ts`](../../workers/contact.ts) and the downstream D1 audit trails so operators can jump from an alert directly to actionable remediation tasks.",
+      "category": "security",
+      "categoryLabel": "Security",
+      "slug": "security/runbook-contact-abuse",
+      "sourcePath": "security/RUNBOOK_CONTACT_ABUSE.md",
+      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+    },
+    {
+      "title": "CSP Violation Triage Runbook",
+      "description": "Security engineers use this guide to pivot from CSP violation alerts emitted by [`workers/csp-report-handler.ts`](../../workers/csp-report-handler.ts) into containment actions. The Worker batches Reporting API payloads, persists them to `REPORTS`, and fans out high-severity hits to the configured alert webhook.",
+      "category": "security",
+      "categoryLabel": "Security",
+      "slug": "security/runbook-csp-triage",
+      "sourcePath": "security/RUNBOOK_CSP_Triage.md",
+      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+    },
+    {
+      "title": "Whitepaper R2 Incident Runbook",
+      "description": "This document covers containment and recovery steps when the [`workers/whitepapers.ts`](../../workers/whitepapers.ts) pipeline or its backing R2 bucket (`WHITEPAPER_ASSETS`) is degraded, compromised, or unavailable.",
+      "category": "security",
+      "categoryLabel": "Security",
+      "slug": "security/runbook-r2-incident",
+      "sourcePath": "security/RUNBOOK_R2_INCIDENT.md",
+      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+    },
+    {
+      "title": "Epics And Work Items",
+      "description": "docs/workplan/EPICS_AND_WORK_ITEMS.md",
+      "category": "workplan",
+      "categoryLabel": "Workplan",
+      "slug": "workplan/epics-and-work-items",
+      "sourcePath": "workplan/EPICS_AND_WORK_ITEMS.md",
+      "sourceLastModified": "2025-09-27T22:15:54.755Z"
+    }
+  ]
+}

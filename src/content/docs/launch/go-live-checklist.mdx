@@ -1,0 +1,104 @@
+---
+title: Go-Live Readiness Checklist
+category: launch
+categoryLabel: Launch Readiness
+description: This playbook codifies the enterprise-grade launch routine for
+  Apotheon.ai. Every step favors automation over one-off console work so we can
+  rehearse, audit, and repeat the launch procedure without drift.
+sourcePath: launch/GO-LIVE_CHECKLIST.md
+sourceLastModified: 2025-09-27T17:17:13.266Z
+tags: []
+---
+
+This playbook codifies the enterprise-grade launch routine for Apotheon.ai. Every
+step favors automation over one-off console work so we can rehearse, audit, and
+repeat the launch procedure without drift.
+
+## 1. DNS Cutover Runbook
+
+- **Pre-flight validation**
+  - Export the current DNS zone via API (`cloudflare zones export`). Store the
+    snapshot in the `infra` repository with the change ticket ID for traceability.
+  - Execute `npm run build` and `npm run workers:synthetic:dry-run` against the
+    staging stack. The synthetic dry-run must return `status: healthy` before
+    we touch DNS.
+- **Automated switch**
+  - Use the infrastructure pipeline (Terraform/Cloudflare API) to swap the
+    `apotheon.ai` origin from staging to production. Avoid manual toggles inside
+    the Cloudflare dashboard—changes need to flow through Git-backed IaC so we
+    can reproduce the same switch in rehearsals.
+  - Apply traffic weights gradually when blue/green is enabled (start at 10%,
+    observe synthetic metrics for 5 minutes, then ramp to 100%).
+- **Post-cutover verification**
+  - Re-run the synthetic Worker in live mode (`wrangler deploy --env
+synthetic_health && wrangler tail`) to confirm `/api/contact` and
+    `/api/whitepapers` still return audit IDs within latency budgets.
+  - Execute `npx dig apotheon.ai` from at least two regions to confirm TTLs and
+    CDN POPs have absorbed the new records.
+
+## 2. Cache Warmup & CDN Readiness
+
+- Trigger the warmup script (`npm run build && node scripts/ci/ensure-ladle-output.mjs`)
+  to prime static assets and OG imagery before the first user hits the site.
+- Fire the synthetic Worker immediately after warmup so the contact and
+  whitepaper caches contain fresh responses. This also seeds D1 with the first
+  production run for observability.
+- Verify the incident banner endpoint (`/synthetic-health` Worker) returns
+  `status: healthy` with at least two checks populated. Capture the JSON payload
+  in the launch ticket for audit history.
+
+## 3. Rollback Drills
+
+- **One-click Worker rollback**
+  - Run `wrangler deployments list --env <worker>` for every Worker and capture
+    the latest deployment IDs.
+  - Execute `wrangler rollback --env <worker> <deployment-id>` in staging to
+    confirm the command path still works. Script this via CI so we never rely on
+    manual CLI inputs during production incidents.
+- **Static asset rollback**
+  - Store the previous `dist/` artifact in object storage (S3/R2) with a timestamp.
+    Rolling back becomes a single `rclone sync` rather than a frantic rebuild.
+- **Synthetic regression gate**
+  - After simulating rollback, rerun `npm run workers:synthetic:dry-run`. The
+    command must fail (non-zero exit) if either API returns anything but a
+    healthy response, guaranteeing we catch hidden regressions before rolling
+    forward again.
+
+## 4. Alerting & Incident Verification
+
+- **Synthetic Worker alerts**
+  - Configure the `SYNTHETIC_ALERT_WEBHOOK` secret to point at the incident
+    bridge (PagerDuty, Slack, Teams). Use the provided `scripts/tests/run-
+synthetic-dry-run.mjs` script in staging to simulate a failure and confirm
+    the webhook fires.
+- **Observability dashboards**
+  - Ensure Uptime-Kuma, GlitchTip/Sentry, and synthetic D1 dashboards reference
+    the same run IDs so on-call engineers can pivot between sources instantly.
+- **Incident banner smoke test**
+  - Override the incident status endpoint (`window.__APOTHEON_SYNTHETIC_STATUS_ENDPOINT__`)
+    to a mocked failure response and run `npm run test:e2e -- incident-banner`
+    to prove the banner renders correctly. Attach screenshots to the change
+    ticket for compliance.
+
+## 5. Launch Communication
+
+- **Stakeholder updates**
+  - Send a launch summary including synthetic run IDs, DNS change windows, and
+    rollback URLs to RevOps, Support, and the incident channel.
+- **Post-launch monitoring window**
+  - Keep the synthetic Worker on a 10-minute cadence for the first hour. Review
+    D1 logs in the runbook to ensure latency stays inside the declared budget.
+
+## 6. Documentation & Evidence
+
+- Archive:
+  - DNS export before/after.
+  - Synthetic Worker JSON response (run ID + audit IDs).
+  - Screenshots of the incident banner smoke test.
+  - CI pipeline logs showing `npm run workers:synthetic:dry-run` passing.
+- Store everything in `/infra/releases/<YYYY-MM-DD>-<change-id>/` so audits
+  can reconstruct the launch without human memory.
+
+Following this checklist keeps launches deterministic, reversible, and fully
+observable. Every command is scriptable—if you discover a manual step, automate
+it and update this document before the next release.
