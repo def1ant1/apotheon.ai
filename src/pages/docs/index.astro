@@ -1,9 +1,11 @@
 ---
 import { getCollection, type CollectionEntry } from 'astro:content';
 
+import RoleExperienceAnalytics from '../../components/islands/RoleExperienceAnalytics';
 import Breadcrumbs from '../../components/navigation/Breadcrumbs.astro';
 import SchemaScript from '../../components/seo/SchemaScript.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { resolveIntentPresetFromSearch } from '../../utils/audience-resolver';
 import { createDocsIndexTrail } from '../../utils/breadcrumbs';
 import { buildBreadcrumbSchema, resolveLocaleFromPath } from '../../utils/seo';
 
@@ -91,6 +93,8 @@ const seo = {
 };
 const breadcrumbSchema = buildBreadcrumbSchema(breadcrumbs, siteOrigin, pageLocale);
 const repositoryBase = 'https://github.com/apotheonai/apotheon.ai/blob/main/';
+const docsRoleResolution = resolveIntentPresetFromSearch(Astro.url.search);
+const docsRoleExperience = docsRoleResolution.rolePreset ?? null;
 ---
 
 <BaseLayout {seo} locale={pageLocale}>
@@ -121,6 +125,31 @@ const repositoryBase = 'https://github.com/apotheonai/apotheon.ai/blob/main/';
           >npm run build</code
         >—no CMS toggles or manual indexing steps.
       </p>
+      {
+        docsRoleExperience && (
+          <div class="grid gap-3 rounded-2xl border border-sky-800/40 bg-sky-900/10 p-5 text-sky-100">
+            <p class="text-xs font-semibold uppercase tracking-[0.3em] text-sky-300">
+              Role-tuned recommendations for {docsRoleExperience.label}
+            </p>
+            <h2 class="text-2xl font-semibold text-white">{docsRoleExperience.docs.title}</h2>
+            <p class="text-sm text-slate-200">{docsRoleExperience.docs.description}</p>
+            <div class="flex flex-wrap gap-3">
+              <a
+                class="inline-flex items-center justify-center rounded-full border border-sky-500 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-900 transition hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-200"
+                href={docsRoleExperience.docs.href}
+                data-analytics-id={`docs-role-${docsRoleExperience.id}-cta`}
+              >
+                Open recommended guide →
+              </a>
+            </div>
+            <RoleExperienceAnalytics
+              client:idle
+              role={docsRoleExperience.id}
+              surface="docs-landing"
+            />
+          </div>
+        )
+      }
     </header>
 
     <div class="grid gap-6 md:grid-cols-2">

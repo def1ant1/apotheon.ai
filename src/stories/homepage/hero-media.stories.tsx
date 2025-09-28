@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-unresolved -- Asset generated via npm run ensure:homepage-hero-media.
 import heroBase from '../../assets/homepage/hero-base.png';
 
 import type { Meta, Story } from '@ladle/react';

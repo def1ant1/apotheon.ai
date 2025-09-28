@@ -13,8 +13,9 @@ pre-production environments.
    leverage the shared `contactFormSchema` and domain analysis utilities to
    mirror the Worker logic, immediately coaching the user toward corporate
    email addresses and complete narratives. Query parameters such as
-   `team=investor-relations` preselect the appropriate intent so analytics and
-   RevOps routing stay synchronized without manual dropdown changes.
+   `team=investor-relations` preselect the appropriate intent while
+   `role=dev|security|exec` loads curated copy blocks + CTAs—the resolver keeps
+   analytics, RevOps routing, and documentation callouts perfectly in sync.
 2. **Turnstile verification** executes client-side; the generated token is sent
    with the submission. A noscript fallback guides users who cannot run the
    widget to escalate through `security@apotheon.ai`.
