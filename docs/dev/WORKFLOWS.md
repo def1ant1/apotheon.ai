@@ -56,6 +56,28 @@ pre-production environments.
   macOS laptops, or Windows VMs no longer requires manual cleanup—each
   environment hydrates its own Vale executable automatically.
 
+### Node.js engine baseline
+
+The [README Quick Start](../../README.md#quick-start) is the canonical source
+for runtime support. Align with its **Node.js 20.x/22.x LTS** requirement so the
+Worker automation, Astro pipeline, and analytics proxies execute against the
+same JavaScript engine everywhere.
+
+- **Pin the runtime locally.** Use `asdf` (`asdf plugin add nodejs && asdf
+install nodejs 20.11.1` or the matching 22.x build) or `nvm` (`nvm install
+20 --lts=hydrogen && nvm alias default 20`) to enforce the LTS pair on every
+  workstation. Enterprise device profiles should mirror the same pin so
+  onboarding relies on automation, not manual installers.
+- **Surface the pin in automation.** GitHub Actions currently executes the full
+  workflow on Node 20.x, with a trailing 18.x check temporarily preserved for
+  dependency transition audits. Update workflow matrices in step with the
+  README whenever the fleet promotes to Node 22.x so CI remains the enforcement
+  gate.
+- **Propagate the constraint to deployments.** Managed edges (Cloudflare Pages,
+  Workers, or containerized previews) must set `NODE_VERSION` to `20` (or `22`
+  once validated) to keep generated assets (Pagefind, OG manifests, Workers) in
+  lockstep with local builds.
+
 ### Pagefind re-index cadence for docs changes
 
 - `npm run search:index` rehydrates the Pagefind bundle under `dist/pagefind/`.
