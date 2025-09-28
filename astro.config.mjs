@@ -1,12 +1,11 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-import { defineConfig } from 'astro/config';
-import tailwind from '@astrojs/tailwind';
+import { defineConfig, sharpImageService } from 'astro/config';
+import tailwindcss from '@tailwindcss/vite';
 import mdx from '@astrojs/mdx';
 import plausible from '@astrojs/plausible';
 import react from '@astrojs/react';
-import image from '@astrojs/image';
 import sitemap from '@astrojs/sitemap';
 import i18next from 'astro-i18next';
 
@@ -69,10 +68,18 @@ export default defineConfig({
   output: 'static',
   trailingSlash: 'ignore',
   site: canonicalSiteUrl,
+  image: {
+    /**
+     * Astro 5 promotes the built-in `astro:assets` pipeline, so we explicitly
+     * wire the Sharp-based image service here rather than relying on the
+     * deprecated `@astrojs/image` integration wrapper. Keeping the service
+     * declaration declarative ensures future service swaps (Cloudflare, Squoosh,
+     * etc.) are a one-line change and documents to operators that responsive
+     * media is still routed through Sharp for deterministic output.
+     */
+    service: sharpImageService()
+  },
   integrations: [
-    tailwind({
-      applyBaseStyles: false
-    }),
     mdx(),
     plausible({
       /**
@@ -87,9 +94,6 @@ export default defineConfig({
       consentService: 'umami-telemetry'
     }),
     react(),
-    image({
-      serviceEntryPoint: '@astrojs/image/sharp'
-    }),
     i18next(),
     sitemap({
       /**
@@ -143,6 +147,15 @@ export default defineConfig({
     }
   },
   vite: {
+    plugins: [
+      /**
+       * Tailwind 4 ships as a first-party Vite plugin. Placing it first keeps
+       * its PostCSS emulation ahead of Astro's own transforms while the
+       * commented rationale reminds engineers that the legacy @astrojs/tailwind
+       * wrapper has been retired.
+       */
+      tailwindcss()
+    ],
     resolve: {
       alias: {
         '@i18n': I18N_SOURCE_DIR,

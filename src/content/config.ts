@@ -20,7 +20,7 @@ const blogCollection = defineCollection({
       .string()
       .min(1)
       .describe(
-        'Path to hero image processed by @astrojs/image. Required so every launch post ships with art.',
+        'Path to hero image processed by astro:assets. Required so every launch post ships with art.',
       ),
     heroImageAlt: z
       .string()
@@ -47,7 +47,7 @@ const blogCollection = defineCollection({
         avatar: z
           .string()
           .optional()
-          .describe('Optional path to an avatar rendered via @astrojs/image'),
+          .describe('Optional path to an avatar rendered via astro:assets'),
         bio: z
           .string()
           .describe(

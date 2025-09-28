@@ -1,6 +1,5 @@
 ---
-import { Image } from '@astrojs/image/components';
-import { getImage } from 'astro:assets';
+import { Picture, getImage, type ImageOutputFormat } from 'astro:assets';
 
 import ExperimentBadge from '../islands/ExperimentBadge';
 import RoleExperienceAnalytics from '../islands/RoleExperienceAnalytics';
@@ -38,7 +37,7 @@ const heroLcpCandidate = manifestEntry?.lcpCandidate ?? false;
 
 /**
  * Import every homepage asset eagerly so MDX frontmatter only has to reference the file name.
- * This keeps the editorial workflow declarative while enabling @astrojs/image optimizations.
+ * This keeps the editorial workflow declarative while enabling the built-in astro:assets optimizations.
  */
 const heroMediaKey = `../../assets/homepage/${hero.heroMedia.src}`;
 const heroImage: StaticImageMetadata =
@@ -65,6 +64,8 @@ const heroImage: StaticImageMetadata =
 type GetImageSource = Parameters<typeof getImage>[0]['src'];
 const heroImageSource = heroImage as unknown as GetImageSource;
 const responsiveSizes = '(min-width: 1280px) 44vw, (min-width: 768px) 60vw, 94vw';
+const heroOptimizedFormats: ImageOutputFormat[] = ['avif', 'webp'];
+const heroPrimaryFormat = heroOptimizedFormats[0];
 
 const heroEyebrow = roleExperience?.hero.eyebrow ?? hero.eyebrow;
 const heroHeadline = roleExperience?.hero.headline ?? hero.headline;
@@ -90,10 +91,10 @@ if (heroShouldPreload) {
       // Match the layout width to reduce content flashes on initial render.
       src: heroImageSource,
       width: hero.heroMedia.width,
-      format: 'avif',
+      format: heroPrimaryFormat,
     });
   } catch (error) {
-    console.warn('[homepage-hero] Skipping AVIF preload generation: %s', error);
+    console.warn('[homepage-hero] Skipping %s preload generation: %s', heroPrimaryFormat, error);
   }
 }
 
@@ -108,6 +109,7 @@ const heroPreloadLink = heroPreload
         typeof heroPreload.attributes?.sizes === 'string'
           ? heroPreload.attributes.sizes
           : responsiveSizes,
+      type: `image/${heroPrimaryFormat}`,
     }
   : null;
 ---
@@ -120,7 +122,7 @@ const heroPreloadLink = heroPreload
       href={heroPreloadLink.href}
       imagesizes={heroPreloadLink.imagesizes}
       imagesrcset={heroPreloadLink.imagesrcset ?? undefined}
-      type="image/avif"
+      type={heroPreloadLink.type}
     />
   )
 }
@@ -215,20 +217,22 @@ const heroPreloadLink = heroPreload
       <div
         class="relative overflow-hidden rounded-3xl border border-slate-800/80 bg-slate-900/60 shadow-xl"
       >
-        <!-- The Image component also emits a fallback preload; keeping it enabled preserves legacy browsers. -->
-        <Image
+        <!--
+          Use the Picture component so that the hero explicitly advertises modern (AVIF/WebP) and legacy (PNG)
+          sources. This keeps the manual preload aligned with the first optimized derivative while preserving the
+          broader browser support that @astrojs/image previously provided automatically.
+        -->
+        <Picture
           src={heroImageSource}
           alt={hero.heroMedia.alt}
           width={hero.heroMedia.width}
           height={hero.heroMedia.height}
           loading="eager"
           decoding="async"
-          formats={['avif', 'webp', 'png']}
+          formats={heroOptimizedFormats}
           sizes={responsiveSizes}
+          pictureAttributes={{ class: 'block h-full w-full object-cover' }}
           class="h-full w-full object-cover"
-          pictureClass="block"
-          imgClass="h-full w-full object-cover"
-          preload={hero.heroMedia.preload}
         />
       </div>
     </div>
