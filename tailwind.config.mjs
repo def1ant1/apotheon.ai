@@ -1,3 +1,4 @@
+import defaultConfig from 'tailwindcss/defaultConfig';
 import defaultTheme from 'tailwindcss/defaultTheme';
 
 /**
@@ -106,9 +107,26 @@ const shadowScale = {
   'focus-ring': '0 0 0 3px hsl(var(--color-accent-focus) / 0.35)'
 };
 
-/** @type {import('tailwindcss').Config} */
+/**
+ * Tailwind CSS v4 promotes a preset-first mental model. We start from the
+ * upstream defaults and layer our enterprise tokens on top so future upgrades
+ * become a preset swap rather than manual copy/paste work.
+ */
 const config = {
-  content: ['src/**/*.{astro,html,md,mdx,js,jsx,ts,tsx}'],
+  presets: [defaultConfig],
+  /**
+   * The `content` key graduated to an object in Tailwind v4. Keeping it explicit
+   * helps new contributors understand where to extend extraction (e.g., Astro
+   * MDX, markdown partials, or future CMS-driven entry points).
+   */
+  content: {
+    files: ['src/**/*.{astro,html,md,mdx,js,jsx,ts,tsx}']
+  },
+  /**
+   * We deliberately keep everything under `theme.extend` so Tailwind continues to
+   * merge with upstream defaults. Each token block mirrors the CSS custom
+   * properties declared in `src/styles/tokens.css`.
+   */
   theme: {
     extend: {
       colors: semanticColors,
