@@ -37,6 +37,29 @@ component implementations.
   fallback deterministically. Use the same flag during local pipeline drills when Python or Pillow
   is unavailable.
 
+## Welcome tour onboarding
+
+- The first-visit experience hydrates `WelcomeTour` (`src/components/islands/WelcomeTour.tsx`) on the
+  homepage with `client:idle` so crawlers still see static markup while new operators receive the
+  orientation overlay.
+- Copy, labels, and selectors live under `homepage.welcomeTour` in the locale bundles
+  (`src/i18n/*/common.json`). Update translations in all locales when editing the copy to keep the
+  automation ready for future launches.
+- The island persists dismissal in `localStorage` using the
+  `apotheon:welcome-tour:v1` key exported from
+  `src/components/islands/welcomeTour.constants.ts`. Bumping the version resets the tour for every
+  visitor, so only do this when the highlighted flow materially changes.
+- Analytics hooks: every lifecycle change dispatches the
+  `apotheon:welcome-tour:event` `CustomEvent` and optionally pushes into `window.dataLayer` when a
+  `dataLayerEventName` prop is provided. Subscribe once in downstream scripts instead of wiring
+  bespoke callbacks per page.
+- Regression coverage:
+  - Unit tests live in `src/components/islands/__tests__/WelcomeTour.test.tsx`.
+  - Playwright flow `tests/e2e/homepage-welcome-tour.spec.ts` verifies keyboard controls and storage
+    persistence. Run `npm run test:e2e` (or the full `npm run test`) whenever you touch the tour.
+- Highlighted targets use `data-welcome-tour-target` attributes in the header. When adding new steps,
+  annotate the relevant markup once and reuse the selectors so the island stays declarative.
+
 ## Benefits Grid
 
 - **Schema:** `benefits` is an array of objects (`title`, `proofPoint`, `metric`). The Zod

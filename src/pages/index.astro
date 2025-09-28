@@ -9,6 +9,11 @@ import InvestorBanner from '../components/homepage/InvestorBanner.astro';
 import PlatformBenefits from '../components/homepage/PlatformBenefits.astro';
 import ProductModules from '../components/homepage/ProductModules.astro';
 import LiveClock from '../components/islands/LiveClock';
+import WelcomeTour from '../components/islands/WelcomeTour';
+import {
+  WELCOME_TOUR_EVENT_CHANNEL,
+  WELCOME_TOUR_STORAGE_KEY,
+} from '../components/islands/welcomeTour.constants';
 import SchemaScript from '../components/seo/SchemaScript.astro';
 import { homepageEntryId } from '../content/homepage';
 import { useTranslations } from '../i18n/runtime';
@@ -140,10 +145,80 @@ const foundationsThirdTokens = {
     defaultValue: 'client:*',
   }),
 };
+
+const welcomeTourTitle = t('homepage.welcomeTour.title', {
+  defaultValue: 'Command the Apotheon.ai control plane',
+});
+const welcomeTourDescription = t('homepage.welcomeTour.description', {
+  defaultValue:
+    'This guided walkthrough orients new operators around the navigation system, federated search, and documentation command center so onboarding never blocks delivery.',
+});
+const welcomeTourLabels = {
+  close: t('homepage.welcomeTour.labels.close', { defaultValue: 'Close tour' }),
+  next: t('homepage.welcomeTour.labels.next', { defaultValue: 'Next' }),
+  previous: t('homepage.welcomeTour.labels.previous', { defaultValue: 'Back' }),
+  skip: t('homepage.welcomeTour.labels.skip', { defaultValue: 'Skip tour' }),
+  finish: t('homepage.welcomeTour.labels.finish', { defaultValue: 'Finish' }),
+  progress: t('homepage.welcomeTour.labels.progress', {
+    defaultValue: 'Step {{current}} of {{total}}',
+  }),
+  srLandmarkPrefix: t('homepage.welcomeTour.labels.srLandmarkPrefix', {
+    defaultValue: 'Highlighting',
+  }),
+  srDialogAnnouncement: t('homepage.welcomeTour.labels.srDialogAnnouncement', {
+    defaultValue:
+      'Welcome tour opened. Use the Next button or arrow keys to move between highlights.',
+  }),
+};
+const welcomeTourSteps = [
+  {
+    id: 'navigation',
+    targetSelector: '[data-welcome-tour-target="primary-navigation"]',
+    title: t('homepage.welcomeTour.steps.navigation.title', {
+      defaultValue: 'Primary navigation',
+    }),
+    description: t('homepage.welcomeTour.steps.navigation.description', {
+      defaultValue:
+        'Every strategic surface lives here—hover to reveal fly-out panels that mirror the information architecture shipped with each release.',
+    }),
+  },
+  {
+    id: 'search',
+    targetSelector: '[data-welcome-tour-target="global-search"]',
+    title: t('homepage.welcomeTour.steps.search.title', {
+      defaultValue: 'Federated search',
+    }),
+    description: t('homepage.welcomeTour.steps.search.description', {
+      defaultValue:
+        'Query the static handbook, MDX posts, and marketing surfaces in one place. Results hydrate instantly without leaving the header.',
+    }),
+  },
+  {
+    id: 'docs',
+    targetSelector: '[data-welcome-tour-target="docs-hub"]',
+    title: t('homepage.welcomeTour.steps.docs.title', {
+      defaultValue: 'Documentation launchpad',
+    }),
+    description: t('homepage.welcomeTour.steps.docs.description', {
+      defaultValue:
+        'Jump into the living handbook for architecture decisions, runbooks, and IA maps. Analytics hooks trace every open so we know which playbooks resonate.',
+    }),
+  },
+];
 ---
 
 <BaseLayout {seo} locale={pageLocale}>
   <SchemaScript slot="head" schema={[organizationSchema, websiteSchema, breadcrumbSchema]} />
+  <WelcomeTour
+    client:idle
+    title={welcomeTourTitle}
+    description={welcomeTourDescription}
+    steps={welcomeTourSteps}
+    labels={welcomeTourLabels}
+    storageKey={WELCOME_TOUR_STORAGE_KEY}
+    eventChannel={WELCOME_TOUR_EVENT_CHANNEL}
+    dataLayerEventName="welcome_tour"
+  />
   <section class="flex flex-col gap-12" data-analytics-region="homepage-overview">
     <HomepageHero hero={homepageEntry.data}>
       <HeroDescription />

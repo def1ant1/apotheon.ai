@@ -100,6 +100,39 @@
   },
   "homepage": {
     "_comment": "Copys específicos de la página de inicio.",
+    "welcomeTour": {
+      "title": "Domina el plano de control de Apotheon.ai",
+      "description": "Este recorrido guiado orienta a los nuevos operadores por la navegación, la búsqueda federada y el centro de documentación para que la incorporación nunca bloquee la entrega.",
+      "labels": {
+        "close": "Cerrar recorrido",
+        "next": "Siguiente",
+        "previous": "Atrás",
+        "skip": "Saltar recorrido",
+        "finish": "Finalizar",
+        "progress": "Paso {{current}} de {{total}}",
+        "srLandmarkPrefix": "Resaltando",
+        "srDialogAnnouncement": "Recorrido de bienvenida abierto. Usa el botón Siguiente o las flechas para desplazarte entre los puntos destacados."
+      },
+      "steps": {
+        "navigation": {
+          "title": "Navegación principal",
+          "description": "Cada superficie estratégica vive aquí; pasa el cursor para revelar paneles que reflejan la arquitectura de información publicada en cada versión."
+        },
+        "search": {
+          "title": "Búsqueda federada",
+          "description": "Consulta el manual estático, las entradas MDX y las superficies de marketing en un solo lugar. Los resultados aparecen de inmediato sin salir del encabezado."
+        },
+        "docs": {
+          "title": "Centro de documentación",
+          "description": "Ingresa al manual vivo para decisiones arquitectónicas, runbooks y mapas de IA. Los eventos analíticos rastrean cada apertura para entender qué playbooks generan más interés."
+        }
+      },
+      "targets": {
+        "navigation": "Sistema de navegación principal",
+        "search": "Lanzador de búsqueda global",
+        "docs": "Centro de documentos"
+      }
+    },
     "sections": {
       "pillars": {
         "heading": "Pilares del sistema operativo de IA",
