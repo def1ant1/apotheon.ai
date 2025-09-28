@@ -88,5 +88,41 @@
     "comingSoon": "TODO",
     "loading": "TODO",
     "updating": "TODO"
+  },
+  "homepage": {
+    "_comment": "Contenus spécifiques à la page d'accueil en attente de localisation.",
+    "welcomeTour": {
+      "title": "TODO : titre du parcours de bienvenue",
+      "description": "TODO : description du parcours de bienvenue",
+      "labels": {
+        "close": "TODO",
+        "next": "TODO",
+        "previous": "TODO",
+        "skip": "TODO",
+        "finish": "TODO",
+        "progress": "TODO",
+        "srLandmarkPrefix": "TODO",
+        "srDialogAnnouncement": "TODO"
+      },
+      "steps": {
+        "navigation": {
+          "title": "TODO",
+          "description": "TODO"
+        },
+        "search": {
+          "title": "TODO",
+          "description": "TODO"
+        },
+        "docs": {
+          "title": "TODO",
+          "description": "TODO"
+        }
+      },
+      "targets": {
+        "navigation": "TODO",
+        "search": "TODO",
+        "docs": "TODO"
+      }
+    }
   }
 }

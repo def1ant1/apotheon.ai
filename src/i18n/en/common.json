@@ -291,6 +291,39 @@
     "hero": {
       "metaFallback": "Operational intelligence for distributed Astro deployments."
     },
+    "welcomeTour": {
+      "title": "Command the Apotheon.ai control plane",
+      "description": "This guided walkthrough orients new operators around the navigation system, federated search, and documentation command center so onboarding never blocks delivery.",
+      "labels": {
+        "close": "Close tour",
+        "next": "Next",
+        "previous": "Back",
+        "skip": "Skip tour",
+        "finish": "Finish",
+        "progress": "Step {{current}} of {{total}}",
+        "srLandmarkPrefix": "Highlighting",
+        "srDialogAnnouncement": "Welcome tour opened. Use the Next button or arrow keys to move between highlights."
+      },
+      "steps": {
+        "navigation": {
+          "title": "Primary navigation",
+          "description": "Every strategic surface lives here—hover to reveal fly-out panels that mirror the information architecture shipped with each release."
+        },
+        "search": {
+          "title": "Federated search",
+          "description": "Query the static handbook, MDX posts, and marketing surfaces in one place. Results hydrate instantly without leaving the header."
+        },
+        "docs": {
+          "title": "Documentation launchpad",
+          "description": "Jump into the living handbook for architecture decisions, runbooks, and IA maps. Analytics hooks trace every open so we know which playbooks resonate."
+        }
+      },
+      "targets": {
+        "navigation": "Primary navigation system",
+        "search": "Global search launcher",
+        "docs": "Docs command center"
+      }
+    },
     "sections": {
       "pillars": {
         "heading": "AI Operating System pillars",

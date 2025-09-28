@@ -353,6 +353,11 @@ export function RadixNavigationMenu({
       ref={rootRef}
       data-navigation-ready="false"
       /**
+       * Welcome tour integration: exposing a stable data attribute lets the onboarding island
+       * spotlight the entire navigation surface without hardcoding DOM queries in multiple files.
+       */
+      data-welcome-tour-target="navigation-surface"
+      /**
        * `aria-label` announces intent to screen readers while Radix handles the menu roles.
        * Tailwind tokens reference centralized design scales so we never hand-roll pixel values.
        */
@@ -373,6 +378,11 @@ export function RadixNavigationMenu({
             <NavigationMenu.Trigger
               className="navigation-trigger group"
               style={{ minHeight: '3rem', paddingInline: 'var(--space-lg)' }}
+              {...(group.id === 'docs'
+                ? {
+                    'data-welcome-tour-target': 'docs-hub',
+                  }
+                : {})}
             >
               {group.label}
               <span aria-hidden className="navigation-trigger__chevron">

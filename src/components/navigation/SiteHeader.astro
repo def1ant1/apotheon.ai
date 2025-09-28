@@ -107,7 +107,13 @@ const localeSwitcherLabels: LocaleSwitcherLabels = {
       </div>
     </div>
 
-    <div class="hidden sm:block">
+    <div
+      class="hidden sm:block"
+      data-welcome-tour-target="global-search"
+      data-welcome-tour-label={t('homepage.welcomeTour.targets.search', {
+        defaultValue: 'Global search launcher',
+      })}
+    >
       {
         /**
         Keyboard navigation: the search island keeps focus within the input/results column. Tabbing from the
@@ -118,7 +124,13 @@ const localeSwitcherLabels: LocaleSwitcherLabels = {
       <PagefindSearch client:idle />
     </div>
 
-    <div class="hidden sm:block">
+    <div
+      class="hidden sm:block"
+      data-welcome-tour-target="primary-navigation"
+      data-welcome-tour-label={t('homepage.welcomeTour.targets.navigation', {
+        defaultValue: 'Primary navigation system',
+      })}
+    >
       {
         /** Desktop navigation hydrates lazily; Radix still renders semantic `<nav aria-label="Primary">`. */
       }
