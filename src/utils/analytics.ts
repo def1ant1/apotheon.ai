@@ -13,7 +13,8 @@ export type AnalyticsEvent =
   | 'lead_demo'
   | 'whitepaper_download'
   | 'blog_read'
-  | 'search_query';
+  | 'search_query'
+  | 'role_experience_impression';
 
 interface TrackOptions {
   event: AnalyticsEvent;
@@ -185,6 +186,7 @@ function inferConsentService(event: AnalyticsEvent): TrackOptions['consentServic
     case 'lead_demo':
     case 'lead_investor':
     case 'whitepaper_download':
+    case 'role_experience_impression':
       return 'pipeline-alerts';
     default:
       return 'umami-telemetry';

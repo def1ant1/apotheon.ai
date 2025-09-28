@@ -1,6 +1,14 @@
 import React, { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 
 import { trackAnalyticsEvent, type AnalyticsEvent } from '../../utils/analytics';
+import {
+  DEFAULT_INTENT,
+  INTENT_ANALYTICS_EVENT,
+  resolveIntentPresetFromSearch,
+  type ContactIntent,
+  type IntentPresetResolution,
+  type RoleExperiencePreset,
+} from '../../utils/audience-resolver';
 import { contactFormSchema } from '../../utils/contact-validation';
 import { analyzeDomain } from '../../utils/domain-allowlist';
 
@@ -17,74 +25,6 @@ interface FieldErrors {
 
 const DEFAULT_ENDPOINT = import.meta.env.PUBLIC_CONTACT_ENDPOINT ?? '/api/contact';
 const DEFAULT_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? 'test-site-key';
-
-type ContactIntent = 'demo' | 'partnership' | 'media' | 'careers' | 'investor' | 'support';
-
-const DEFAULT_INTENT: ContactIntent = 'demo';
-
-const INTENT_ANALYTICS_EVENT: Record<ContactIntent, AnalyticsEvent> = {
-  demo: 'lead_demo',
-  partnership: 'lead_demo',
-  media: 'lead_demo',
-  careers: 'lead_demo',
-  investor: 'lead_investor',
-  support: 'lead_demo',
-};
-
-const TEAM_INTENT_PRESETS: Record<
-  string,
-  {
-    readonly intent: ContactIntent;
-    readonly analyticsEvent: AnalyticsEvent;
-  }
-> = {
-  /**
-   * Investors receive a dedicated journey with analytics instrumentation. New teams can hook into this map without rewriting
-   * component logic—update the config and add a select option, and the prefill + telemetry flows adjust automatically.
-   */
-  'investor-relations': { intent: 'investor', analyticsEvent: 'lead_investor' },
-};
-
-export interface IntentPresetResolution {
-  readonly intent: ContactIntent;
-  readonly analyticsEvent: AnalyticsEvent;
-  readonly source: 'default' | 'team';
-  readonly team?: string;
-}
-
-function normalizeSearchParams(
-  search: string | URLSearchParams | null | undefined,
-): URLSearchParams {
-  if (search instanceof URLSearchParams) {
-    return search;
-  }
-  if (typeof search === 'string') {
-    return new URLSearchParams(search.startsWith('?') ? search : `?${search}`);
-  }
-  return new URLSearchParams();
-}
-
-export function resolveIntentPresetFromSearch(
-  search: string | URLSearchParams | null | undefined,
-): IntentPresetResolution {
-  const params = normalizeSearchParams(search);
-  const teamParamRaw = params.get('team');
-  const teamParam = teamParamRaw ? teamParamRaw.trim().toLowerCase() : '';
-  if (teamParam && teamParam in TEAM_INTENT_PRESETS) {
-    const preset = TEAM_INTENT_PRESETS[teamParam];
-    return {
-      intent: preset.intent,
-      analyticsEvent: preset.analyticsEvent,
-      source: 'team',
-      team: teamParam,
-    };
-  }
-  return {
-    intent: DEFAULT_INTENT,
-    analyticsEvent: INTENT_ANALYTICS_EVENT[DEFAULT_INTENT],
-    source: 'default',
-  };
-}
 
 function resolveAnalyticsEventForIntent(intent: ContactIntent): AnalyticsEvent {
   return INTENT_ANALYTICS_EVENT[intent] ?? 'lead_demo';
@@ -133,14 +73,23 @@ export default function ContactForm({
     return resolveIntentPresetFromSearch(window.location.search);
   }, []);
   const [intent, setIntent] = useState<ContactIntent>(initialIntentPreset.intent);
+  const [rolePreset, setRolePreset] = useState<RoleExperiencePreset | null>(
+    initialIntentPreset.rolePreset ?? null,
+  );
   const intentPresetRef = useRef<IntentPresetResolution>(initialIntentPreset);
   const hasLoggedIntentPrefill = useRef(false);
+  const hasLoggedRoleExperience = useRef(false);
   /**
    * `React.useId` keeps the legend identifier deterministic across SSR and hydration so the
    * enclosing form can expose a stable accessible name via `aria-labelledby`.
    */
   const legendId = React.useId();
 
+  /**
+   * Re-run the resolver during hydration so querystring targeting coming from server render (or
+   * client-side nav) keeps the form intent + messaging synchronized. All analytics fire exactly
+   * once thanks to the dedicated refs.
+   */
   useEffect(() => {
     const form = formRef.current;
     if (!form) {
@@ -158,28 +107,52 @@ export default function ContactForm({
     return analyzeDomain(email);
   }, [email]);
 
+  const statusFallbackMessage = useMemo(() => {
+    if (!rolePreset) {
+      return 'Form ready. Provide your project context to request a briefing.';
+    }
+    return `${rolePreset.contact.headline}: ${rolePreset.contact.message}`;
+  }, [rolePreset]);
+
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const resolution = resolveIntentPresetFromSearch(window.location.search);
     intentPresetRef.current = resolution;
-    if (resolution.source === 'team') {
+    setRolePreset(resolution.rolePreset ?? null);
+    if (resolution.rolePreset && !hasLoggedRoleExperience.current) {
+      hasLoggedRoleExperience.current = true;
+      logEvent('contact_form_role_targeting_applied', {
+        role: resolution.rolePreset.id,
+        source: resolution.source,
+      });
+      void trackAnalyticsEvent({
+        event: resolution.rolePreset.experienceEvent,
+        payload: {
+          role: resolution.rolePreset.id,
+          surface: 'contact-form',
+          source: resolution.source,
+        },
+        consentService: 'pipeline-alerts',
+      });
+    }
+    if (resolution.source === 'team' || resolution.source === 'role') {
       setIntent(resolution.intent);
-      if (!hasLoggedIntentPrefill.current) {
-        hasLoggedIntentPrefill.current = true;
-        logEvent('contact_form_intent_prefilled', {
-          intent: resolution.intent,
+    }
+    if (resolution.source === 'team' && !hasLoggedIntentPrefill.current) {
+      hasLoggedIntentPrefill.current = true;
+      logEvent('contact_form_intent_prefilled', {
+        intent: resolution.intent,
+        team: resolution.team,
+      });
+      void trackAnalyticsEvent({
+        event: resolution.analyticsEvent,
+        payload: {
+          stage: 'prefill',
+          source: 'querystring',
           team: resolution.team,
-        });
-        void trackAnalyticsEvent({
-          event: resolution.analyticsEvent,
-          payload: {
-            stage: 'prefill',
-            source: 'querystring',
-            team: resolution.team,
-          },
-          consentService: 'pipeline-alerts',
-        });
-      }
+        },
+        consentService: 'pipeline-alerts',
+      });
     }
   }, []);
 
@@ -353,13 +326,20 @@ export default function ContactForm({
           : 'Unable to submit your request right now.';
         setStatus('error');
         setGlobalMessage(message);
-        logEvent('contact_form_submission_failed', { message, status: response.status });
+        logEvent('contact_form_submission_failed', {
+          message,
+          status: response.status,
+          role: rolePreset?.id,
+        });
         return;
       }
 
       setStatus('success');
       setGlobalMessage('Request received. Our RevOps team will follow up shortly.');
-      logEvent('contact_form_submission_succeeded', { intent: validation.data.intent });
+      logEvent('contact_form_submission_succeeded', {
+        intent: validation.data.intent,
+        role: rolePreset?.id,
+      });
       const analyticsEvent = resolveAnalyticsEventForIntent(
         validation.data.intent as ContactIntent,
       );
@@ -370,6 +350,7 @@ export default function ContactForm({
           intent: validation.data.intent,
           company: validation.data.company,
           domain: emailDomain,
+          role: rolePreset?.id,
         },
         consentService: 'pipeline-alerts',
         onOptOut: () => {
@@ -383,6 +364,7 @@ export default function ContactForm({
       setEmail('');
       setToken('');
       setIntent(intentPresetRef.current.intent);
+      setRolePreset(intentPresetRef.current.rolePreset ?? null);
       if (typeof window !== 'undefined') {
         const turnstile = window.turnstile;
         const widgetId = widgetIdRef.current;
@@ -394,7 +376,10 @@ export default function ContactForm({
       console.error('Contact form submission error', error);
       setStatus('error');
       setGlobalMessage('Network error submitting the form. Try again in a moment.');
-      logEvent('contact_form_submission_failed', { message: 'network_error' });
+      logEvent('contact_form_submission_failed', {
+        message: 'network_error',
+        role: rolePreset?.id,
+      });
     }
   };
 
@@ -442,6 +427,36 @@ export default function ContactForm({
           Share how we can help
         </legend>
 
+        {rolePreset && (
+          <aside
+            className="grid gap-3 rounded-lg border border-sky-700/40 bg-sky-900/20 p-4 text-sky-100"
+            data-analytics-block="contact-role-preset"
+          >
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-300">
+              Tailored for {rolePreset.label}
+            </p>
+            <h3 className="text-lg font-semibold text-white">{rolePreset.contact.headline}</h3>
+            <p className="text-sm text-slate-200">{rolePreset.contact.message}</p>
+            <ul className="grid gap-2 text-sm text-sky-100">
+              {rolePreset.contact.bullets.map((bullet) => (
+                <li
+                  key={bullet}
+                  className="flex items-start gap-2 rounded-md border border-sky-800/40 bg-sky-900/30 p-3 text-left"
+                  data-analytics-id={`contact-role-${rolePreset.id}-bullet-${bullet
+                    .toLowerCase()
+                    .replace(/[^a-z0-9]+/g, '-')}`}
+                >
+                  <span
+                    aria-hidden="true"
+                    className="mt-1 inline-flex h-2 w-2 flex-none rounded-full bg-sky-400"
+                  />
+                  <span>{bullet}</span>
+                </li>
+              ))}
+            </ul>
+          </aside>
+        )}
+
         <p
           id={statusRegionId}
           role="status"
@@ -458,7 +473,7 @@ export default function ContactForm({
               : 'sr-only'
           }
         >
-          {globalMessage || 'Form ready. Provide your project context to request a briefing.'}
+          {globalMessage || statusFallbackMessage}
         </p>
 
         <div className="grid gap-2">

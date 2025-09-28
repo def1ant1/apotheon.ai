@@ -1,0 +1,45 @@
+---
+title: Role Targeting Presets
+category: dev
+categoryLabel: Development
+description: >-
+  Apotheon.ai marketing surfaces (homepage hero, contact form, docs landing)
+  now share a single resolver at `src/utils/audience-resolver.ts`. Append
+  `?role=<id>` to any marketing URL and the system hydrates curated copy, CTAs,
+  and analytics automatically.
+sourcePath: dev/ROLE-TARGETING.md
+sourceLastModified: 2025-09-28T04:46:50.971Z
+tags: []
+---
+
+Apotheon.ai marketing surfaces (homepage hero, contact form, docs landing) now share a single
+resolver at `src/utils/audience-resolver.ts`. Append `?role=<id>` to any marketing URL and the
+system hydrates curated copy, CTAs, and analytics automatically.
+
+## Available presets
+
+| Role ID    | Audience label          | Primary CTA                                                                      | Contact intent |
+| ---------- | ----------------------- | -------------------------------------------------------------------------------- | -------------- |
+| `dev`      | Platform & AI engineers | `/docs/dev/workflows/`                                                           | `demo`         |
+| `security` | Security & risk leaders | `/docs/security/incident-response/`                                              | `support`      |
+| `exec`     | Executive sponsors      | `/about/white-papers/?whitepaperSlug=apotheon-investor-brief#whitepaper-request` | `demo`         |
+
+## Implementation notes
+
+- `resolveIntentPresetFromSearch(search)` returns the role preset (if any) alongside the contact
+  intent + analytics metadata. Team-based presets (e.g., `?team=investor-relations`) still take
+  priority for routing, but the resolver attaches the role experience so surfaces can render both.
+- `RoleExperienceAnalytics` is a zero-UI island that fires `role_experience_impression` via the
+  analytics Worker. Drop it next to any targeted block so telemetry stays standardized.
+- When authoring new roles, update `ROLE_EXPERIENCE_PRESETS` with hero, docs, and contact copy. The
+  presets are pure data structures—no component rewrites required.
+- Playwright coverage lives in `tests/e2e/role-targeting.spec.ts`; add new assertions there to lock
+  in future presets.
+
+## Operational workflow
+
+1. Add or update presets inside `ROLE_EXPERIENCE_PRESETS`.
+2. Wire desired CTAs or copy blocks to the resolver output (hero, docs, additional pages).
+3. Extend the documentation table above with the new role ID, destination, and contact intent.
+4. Run `npm run lint`, `npm run test`, and `npm run build` before merging so CI exercises the new
+   targeting paths end-to-end.
