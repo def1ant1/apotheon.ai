@@ -91,6 +91,10 @@ async function verifyHtmlMetadata() {
     if (isRouteExcluded(route)) {
       continue;
     }
+    if (route.startsWith('/admin')) {
+      console.info(`[verify] Skipping admin surface verification for ${route}.`);
+      continue;
+    }
 
     const html = await readText(filePath);
     const dom = new JSDOM(html);

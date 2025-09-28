@@ -1,21 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { DetectLocaleFromPath } from 'astro-i18next';
-
-const detectLocaleFromPathMock = vi.fn<DetectLocaleFromPath>();
+const detectLocaleFromPathMock = vi.fn();
 const resolveTranslatorMock = vi.fn();
 const getDefaultLocaleMock = vi.fn(() => 'en');
-
-vi.mock('astro-i18next', () => ({
-  /**
-   * The runtime bridge leans on `detectLocaleFromPath` to extract locale hints from the request
-   * URL. Mocking the helper keeps the tests isolated from the third-party package while still
-   * exercising our control flow.
-   */
-  detectLocaleFromPath: detectLocaleFromPathMock,
-  localizePath: vi.fn(),
-  localizeUrl: vi.fn(),
-}));
 
 vi.mock('../../../src/i18n/index', () => ({
   /**
@@ -23,6 +10,9 @@ vi.mock('../../../src/i18n/index', () => ({
    * real integration adds or removes languages down the road.
    */
   SUPPORTED_LOCALES: ['en', 'es', 'fr'] as const,
+  detectLocaleFromPath: detectLocaleFromPathMock,
+  localizePath: vi.fn(),
+  localizeUrl: vi.fn(),
   getDefaultLocale: getDefaultLocaleMock,
   useTranslations: resolveTranslatorMock,
 }));

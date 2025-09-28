@@ -7,7 +7,7 @@ description: This guide explains how marketing editors access the Decap CMS
   Both workflows build on the automation committed to the repo so there is no
   manual drift between content schemas, auth controls, and audit trails.
 sourcePath: content/CMS.md
-sourceLastModified: 2025-09-28T00:41:50.114Z
+sourceLastModified: 2025-09-28T02:01:21.032Z
 tags: []
 ---
 
@@ -75,7 +75,8 @@ content schemas, auth controls, and audit trails.
 - **Sync repo docs into Astro.** Commit markdown updates inside the `docs/`
   directory and run `npm run ensure:docs-handbook`. The script parses headings,
   derives slugs, rewrites relative links to `/docs/*` routes, and emits
-  frontmatter under `src/content/docs/handbook/` plus a manifest for auditing.
+  frontmatter under `src/content/docs/` alongside a data manifest in
+  `src/content/docs-manifest/` for auditing.
 - **Preview locally.** Start `npm run dev` and browse to `/docs/` to verify the
   landing page cards, breadcrumbs, and Pagefind facets picked up the change.
 - **Ship with confidence.** `npm run test` and `npm run build` automatically

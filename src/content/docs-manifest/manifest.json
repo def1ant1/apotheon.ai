@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2025-09-28T00:57:37.485Z",
+  "generatedAt": "2025-09-28T14:33:57.363Z",
   "source": "file:///workspace/apotheon.ai/docs",
   "entries": [
     {
@@ -9,7 +9,7 @@
       "categoryLabel": "AI Playbooks",
       "slug": "ai-instructions",
       "sourcePath": "ai-instructions.md",
-      "sourceLastModified": "2025-09-27T17:17:13.262Z"
+      "sourceLastModified": "2025-09-28T02:01:21.032Z"
     },
     {
       "title": "Architecture Decision Ledger",
@@ -18,16 +18,16 @@
       "categoryLabel": "Architecture",
       "slug": "architecture/decisions",
       "sourcePath": "architecture/DECISIONS.md",
-      "sourceLastModified": "2025-09-28T00:41:50.114Z"
+      "sourceLastModified": "2025-09-28T02:01:21.032Z"
     },
     {
       "title": "Apotheon Brand & Experience Style Guide",
-      "description": "- [Brand Design North Star](#brand-design-north-star) - [Homepage Hero System](#homepage-hero-system) - [Color Systems](#color-systems) - [Daylight Palette (Light Mode)](#daylight-palette-light-mode) - [Midnight Palette (Dark Mode)](#midnight-palette-dark-mode) - [Palette Pairing Matrix](#palette-pairing-matrix) - [Typography Scale](#typography-scale) - [Layout Density Tokens](#layout-density-tokens) - [Spacing Rhythm](#spacing-rhythm) - [Corner Radii](#corner-radii) - [Elevation & Shadows](#elevation--shadows) - [Component Application Cheat Sheets](#component-application-cheat-sheets) - [Buttons](#buttons) - [Form Inputs](#form-inputs) - [Data Surfaces](#data-surfaces) - [Brand Iconography Pipeline](#brand-iconography-pipeline) - [Accessibility & WCAG 2.2 AA Guardrails](#accessibility--wcag-22-aa-guardrails) - [Contrast Automation](#contrast-automation) - [Manual QA Checklist](#manual-qa-checklist) - [Adoption Workflow for Designers & Engineers](#adoption-workflow-for-designers--engineers)",
+      "description": "- [Brand Design North Star](#brand-design-north-star) - [Homepage Hero System](#homepage-hero-system) - [Color Systems](#color-systems) - [Daylight Palette (Light Mode)](#daylight-palette-light-mode) - [Midnight Palette (Dark Mode)](#midnight-palette-dark-mode) - [Palette Pairing Matrix](#palette-pairing-matrix) - [Typography Scale](#typography-scale) - [Layout Density Tokens](#layout-density-tokens) - [Spacing Rhythm](#spacing-rhythm) - [Corner Radii](#corner-radii) - [Elevation & Shadows](#elevation--shadows) - [Component Application Cheat Sheets](#component-application-cheat-sheets) - [Buttons](#buttons) - [Form Inputs](#form-inputs) - [Data Surfaces](#data-surfaces) - [Brand Iconography Pipeline](#brand-iconography-pipeline) - [Accessibility & WCAG 2.2 AA Guardrails](#accessibility--wcag-22-aa-guardrails) - [Contrast Automation](#contrast-automation) - [Manual QA Checklist](#manual-qa-checklist) - [Adoption Workflow for Designers & Engineers](#adoption-workflow-for-designers--engineers) - [Navigation Information Architecture](#navigation-information-architecture)",
       "category": "brand",
       "categoryLabel": "Brand",
       "slug": "brand/styleguide",
       "sourcePath": "brand/STYLEGUIDE.md",
-      "sourceLastModified": "2025-09-28T00:41:50.114Z"
+      "sourceLastModified": "2025-09-28T02:01:21.032Z"
     },
     {
       "title": "Blog Editorial Playbook",
@@ -36,7 +36,7 @@
       "categoryLabel": "Content Strategy",
       "slug": "content/blog-editorial",
       "sourcePath": "content/BLOG_EDITORIAL.md",
-      "sourceLastModified": "2025-09-27T17:17:13.262Z"
+      "sourceLastModified": "2025-09-28T02:01:21.032Z"
     },
     {
       "title": "Editorial and Experiment Calendar",
@@ -45,7 +45,7 @@
       "categoryLabel": "Content Strategy",
       "slug": "content/calendar",
       "sourcePath": "content/CALENDAR.md",
-      "sourceLastModified": "2025-09-27T17:17:13.262Z"
+      "sourceLastModified": "2025-09-28T02:01:21.032Z"
     },
     {
       "title": "CMS & Lead Management Playbook",
@@ -54,7 +54,7 @@
       "categoryLabel": "Content Strategy",
       "slug": "content/cms",
       "sourcePath": "content/CMS.md",
-      "sourceLastModified": "2025-09-28T00:41:50.114Z"
+      "sourceLastModified": "2025-09-28T02:01:21.032Z"
     },
     {
       "title": "Marketing Information Architecture",
@@ -63,7 +63,7 @@
       "categoryLabel": "Content Strategy",
       "slug": "content/information-architecture",
       "sourcePath": "content/INFORMATION_ARCHITECTURE.md",
-      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+      "sourceLastModified": "2025-09-28T02:01:21.032Z"
     },
     {
       "title": "Accessibility Operations Playbook",
@@ -72,7 +72,7 @@
       "categoryLabel": "Development",
       "slug": "dev/accessibility",
       "sourcePath": "dev/ACCESSIBILITY.md",
-      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+      "sourceLastModified": "2025-09-28T02:01:21.032Z"
     },
     {
       "title": "Blog Delivery Workflow",
@@ -81,7 +81,7 @@
       "categoryLabel": "Development",
       "slug": "dev/blog",
       "sourcePath": "dev/BLOG.md",
-      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+      "sourceLastModified": "2025-09-28T02:01:21.032Z"
     },
     {
       "title": "Blog Analytics Platform",
@@ -90,7 +90,7 @@
       "categoryLabel": "Development",
       "slug": "dev/blog-analytics",
       "sourcePath": "dev/BLOG-ANALYTICS.md",
-      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+      "sourceLastModified": "2025-09-28T02:01:21.032Z"
     },
     {
       "title": "Continuous Integration Pipeline",
@@ -99,7 +99,7 @@
       "categoryLabel": "Development",
       "slug": "dev/ci-cd",
       "sourcePath": "dev/CI_CD.md",
-      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+      "sourceLastModified": "2025-09-28T02:01:21.036Z"
     },
     {
       "title": "Editorial Playbook",
@@ -108,7 +108,7 @@
       "categoryLabel": "Development",
       "slug": "dev/editorial",
       "sourcePath": "dev/EDITORIAL.md",
-      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+      "sourceLastModified": "2025-09-28T02:01:21.036Z"
     },
     {
       "title": "History Timeline Editorial Playbook",
@@ -117,7 +117,7 @@
       "categoryLabel": "Development",
       "slug": "dev/history",
       "sourcePath": "dev/HISTORY.md",
-      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+      "sourceLastModified": "2025-09-28T02:01:21.036Z"
     },
     {
       "title": "Homepage Governance",
@@ -126,7 +126,7 @@
       "categoryLabel": "Development",
       "slug": "dev/homepage",
       "sourcePath": "dev/HOMEPAGE.md",
-      "sourceLastModified": "2025-09-28T00:41:50.114Z"
+      "sourceLastModified": "2025-09-28T13:08:47.480Z"
     },
     {
       "title": "Internationalisation Operations",
@@ -135,7 +135,7 @@
       "categoryLabel": "Development",
       "slug": "dev/i18n",
       "sourcePath": "dev/I18N.md",
-      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+      "sourceLastModified": "2025-09-28T02:01:21.036Z"
     },
     {
       "title": "Industries Editorial Playbook",
@@ -144,7 +144,7 @@
       "categoryLabel": "Development",
       "slug": "dev/industries",
       "sourcePath": "dev/INDUSTRIES.md",
-      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+      "sourceLastModified": "2025-09-28T02:01:21.036Z"
     },
     {
       "title": "Performance & OpenGraph Automation",
@@ -153,7 +153,7 @@
       "categoryLabel": "Development",
       "slug": "dev/performance",
       "sourcePath": "dev/PERFORMANCE.md",
-      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+      "sourceLastModified": "2025-09-28T13:08:47.480Z"
     },
     {
       "title": "Privacy & Analytics Runbook",
@@ -162,7 +162,16 @@
       "categoryLabel": "Development",
       "slug": "dev/privacy",
       "sourcePath": "dev/PRIVACY.md",
-      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+      "sourceLastModified": "2025-09-28T02:01:21.036Z"
+    },
+    {
+      "title": "Role Targeting Presets",
+      "description": "Apotheon.ai marketing surfaces (homepage hero, contact form, docs landing) now share a single resolver at `src/utils/audience-resolver.ts`. Append `?role=<id>` to any marketing URL and the system hydrates curated copy, CTAs, and analytics automatically.",
+      "category": "dev",
+      "categoryLabel": "Development",
+      "slug": "dev/role-targeting",
+      "sourcePath": "dev/ROLE-TARGETING.md",
+      "sourceLastModified": "2025-09-28T13:08:47.480Z"
     },
     {
       "title": "SEO & SMO Operations Guide",
@@ -171,7 +180,7 @@
       "categoryLabel": "Development",
       "slug": "dev/seo",
       "sourcePath": "dev/SEO.md",
-      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+      "sourceLastModified": "2025-09-28T02:01:21.036Z"
     },
     {
       "title": "Solutions Content Schema & Workflow",
@@ -180,7 +189,7 @@
       "categoryLabel": "Development",
       "slug": "dev/solutions",
       "sourcePath": "dev/SOLUTIONS.md",
-      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+      "sourceLastModified": "2025-09-28T02:01:21.036Z"
     },
     {
       "title": "Whitepaper delivery pipeline",
@@ -189,7 +198,7 @@
       "categoryLabel": "Development",
       "slug": "dev/whitepapers",
       "sourcePath": "dev/WHITEPAPERS.md",
-      "sourceLastModified": "2025-09-27T22:15:54.755Z"
+      "sourceLastModified": "2025-09-28T02:01:21.036Z"
     },
     {
       "title": "Contact submission workflow",
@@ -198,7 +207,7 @@
       "categoryLabel": "Development",
       "slug": "dev/workflows",
       "sourcePath": "dev/WORKFLOWS.md",
-      "sourceLastModified": "2025-09-27T22:15:54.755Z"
+      "sourceLastModified": "2025-09-28T13:08:47.484Z"
     },
     {
       "title": "Managed Service Alternatives",
@@ -207,7 +216,7 @@
       "categoryLabel": "Infrastructure",
       "slug": "infra/alternatives",
       "sourcePath": "infra/ALTERNATIVES.md",
-      "sourceLastModified": "2025-09-28T00:41:50.114Z"
+      "sourceLastModified": "2025-09-28T02:01:21.036Z"
     },
     {
       "title": "Hosting Playbook",
@@ -216,7 +225,7 @@
       "categoryLabel": "Infrastructure",
       "slug": "infra/hosting",
       "sourcePath": "infra/HOSTING.md",
-      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+      "sourceLastModified": "2025-09-28T02:01:21.036Z"
     },
     {
       "title": "Go-Live Readiness Checklist",
@@ -225,7 +234,7 @@
       "categoryLabel": "Launch Readiness",
       "slug": "launch/go-live-checklist",
       "sourcePath": "launch/GO-LIVE_CHECKLIST.md",
-      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+      "sourceLastModified": "2025-09-28T02:01:21.036Z"
     },
     {
       "title": "Self-Hosted Font Policy",
@@ -234,7 +243,7 @@
       "categoryLabel": "Security",
       "slug": "security/font-hosting",
       "sourcePath": "security/FONT_HOSTING.md",
-      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+      "sourceLastModified": "2025-09-28T02:01:21.036Z"
     },
     {
       "title": "Incident Response Framework",
@@ -243,7 +252,7 @@
       "categoryLabel": "Security",
       "slug": "security/incident-response",
       "sourcePath": "security/INCIDENT_RESPONSE.md",
-      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+      "sourceLastModified": "2025-09-28T02:01:21.036Z"
     },
     {
       "title": "Local HTTPS + CSP Validation Playbook",
@@ -252,7 +261,7 @@
       "categoryLabel": "Security",
       "slug": "security/local-https",
       "sourcePath": "security/LOCAL_HTTPS.md",
-      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+      "sourceLastModified": "2025-09-28T02:01:21.036Z"
     },
     {
       "title": "Contact Abuse Containment Runbook",
@@ -261,7 +270,7 @@
       "categoryLabel": "Security",
       "slug": "security/runbook-contact-abuse",
       "sourcePath": "security/RUNBOOK_CONTACT_ABUSE.md",
-      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+      "sourceLastModified": "2025-09-28T02:01:21.036Z"
     },
     {
       "title": "CSP Violation Triage Runbook",
@@ -270,7 +279,7 @@
       "categoryLabel": "Security",
       "slug": "security/runbook-csp-triage",
       "sourcePath": "security/RUNBOOK_CSP_Triage.md",
-      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+      "sourceLastModified": "2025-09-28T02:01:21.036Z"
     },
     {
       "title": "Whitepaper R2 Incident Runbook",
@@ -279,7 +288,7 @@
       "categoryLabel": "Security",
       "slug": "security/runbook-r2-incident",
       "sourcePath": "security/RUNBOOK_R2_INCIDENT.md",
-      "sourceLastModified": "2025-09-27T17:17:13.266Z"
+      "sourceLastModified": "2025-09-28T02:01:21.036Z"
     },
     {
       "title": "Epics And Work Items",
@@ -288,7 +297,7 @@
       "categoryLabel": "Workplan",
       "slug": "workplan/epics-and-work-items",
       "sourcePath": "workplan/EPICS_AND_WORK_ITEMS.md",
-      "sourceLastModified": "2025-09-27T22:15:54.755Z"
+      "sourceLastModified": "2025-09-28T02:01:21.036Z"
     }
   ]
 }

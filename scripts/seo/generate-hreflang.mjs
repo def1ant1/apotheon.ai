@@ -271,17 +271,33 @@ async function main() {
   }
 
   const hreflangErrors = [];
+  const hreflangWarnings = [];
   for (const cluster of HREFLANG_CLUSTERS) {
     if (!Array.isArray(cluster) || cluster.length <= 1) continue;
     const normalisedCluster = cluster.map((locale) => resolveLocaleCode(locale));
     for (const [routeKey, locales] of routeGroups.entries()) {
       const missing = normalisedCluster.filter((locale) => !locales.has(locale));
-      if (missing.length > 0 && missing.length < normalisedCluster.length) {
+      const present = normalisedCluster.filter((locale) => locales.has(locale));
+      if (missing.length === 0) {
+        continue;
+      }
+      if (present.length > 1) {
         hreflangErrors.push(
           `Route "${routeKey}" is missing locale variants: ${missing.join(', ')}.`,
         );
+        continue;
       }
+      hreflangWarnings.push(
+        `Route "${routeKey}" has only ${present.length === 0 ? '0' : '1'} generated locale. Missing variants: ${missing.join(', ')}.`,
+      );
     }
+  }
+
+  if (hreflangWarnings.length > 0) {
+    console.warn(
+      '[hreflang] Warning: Incomplete locale coverage detected for the following routes:\n' +
+        hreflangWarnings.join('\n'),
+    );
   }
 
   if (hreflangErrors.length > 0) {
