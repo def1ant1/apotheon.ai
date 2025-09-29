@@ -24,7 +24,32 @@ interface SnapshotAssertionInput {
 }
 
 const UPDATE_FLAG = 'UPDATE_THEME_VISUAL_BASELINES';
+const UPDATE_COMMAND = `${UPDATE_FLAG}=1 npx playwright test tests/e2e/theme-visual.spec.ts`;
 const CHARS_PER_LINE = 120;
+const COMMENT_PREFIX = '# ';
+
+function buildCommentHeader(scenarioLabel: string, relativeFixture: string): string {
+  const routeThemeMatch = scenarioLabel.match(/^(?<route>.*) \((?<theme>.*)\)$/);
+  const route = routeThemeMatch?.groups?.route?.trim() ?? scenarioLabel;
+  const theme = routeThemeMatch?.groups?.theme?.trim() ?? 'unspecified';
+
+  const lines = [
+    `${COMMENT_PREFIX}Route: ${route}`,
+    `${COMMENT_PREFIX}Theme: ${theme}`,
+    `${COMMENT_PREFIX}Regenerate: ${UPDATE_COMMAND}`,
+    `${COMMENT_PREFIX}Fixture: ${relativeFixture}`,
+    '',
+  ];
+
+  return lines.join('\n');
+}
+
+function stripCommentLines(payload: string): string {
+  return payload
+    .split('\n')
+    .filter((line) => !line.trimStart().startsWith(COMMENT_PREFIX.trim()))
+    .join('\n');
+}
 
 /**
  * Encodes the provided PNG buffer into base64, writes/updates the stored fixture when the dedicated
@@ -38,30 +63,29 @@ export async function assertBase64Snapshot({
   scenarioLabel,
 }: SnapshotAssertionInput): Promise<void> {
   const base64Payload = pngBuffer.toString('base64');
-  const formattedPayload = base64Payload.match(new RegExp(`.{1,${CHARS_PER_LINE}}`, 'g'))?.join('\n') ?? '';
+  const formattedPayload =
+    base64Payload.match(new RegExp(`.{1,${CHARS_PER_LINE}}`, 'g'))?.join('\n') ?? '';
   const relativeFixture = relative(process.cwd(), fixturePath);
 
   if (process.env[UPDATE_FLAG] === '1') {
-    await mkdir(dirname(fixturePath), { recursive: true });
+    await mkdir(dirname(fixturePath), { recursive: true }); // eslint-disable-line security/detect-non-literal-fs-filename
 
-    await writeFile(
-      fixturePath,
-      `${formattedPayload}\n`,
-      'utf8',
-    );
+    const header = buildCommentHeader(scenarioLabel, relativeFixture);
+    await writeFile(fixturePath, `${header}${formattedPayload}\n`, 'utf8'); // eslint-disable-line security/detect-non-literal-fs-filename
 
     return;
   }
 
   let baseline: string;
   try {
-    baseline = (await readFile(fixturePath, 'utf8')).replace(/\s/g, '');
+    const fileContents = await readFile(fixturePath, 'utf8'); // eslint-disable-line security/detect-non-literal-fs-filename
+    baseline = stripCommentLines(fileContents).replace(/\s/g, '');
   } catch (error) {
     const hint = [
       `Missing visual baseline for ${scenarioLabel}.`,
       `Expected fixture: ${relativeFixture}.`,
       `Re-run the spec with \`${UPDATE_FLAG}=1\` to seed the snapshot automatically:`,
-      `  ${UPDATE_FLAG}=1 npx playwright test tests/e2e/theme-visual.spec.ts`,
+      `  ${UPDATE_COMMAND}`,
     ].join('\n');
 
     throw new Error(hint, { cause: error });
@@ -71,7 +95,7 @@ export async function assertBase64Snapshot({
     `Visual regression detected for ${scenarioLabel}.`,
     `Baseline fixture: ${relativeFixture}.`,
     `If the new rendering is intentional, regenerate the stored payload by running:`,
-    `  ${UPDATE_FLAG}=1 npx playwright test tests/e2e/theme-visual.spec.ts`,
+    `  ${UPDATE_COMMAND}`,
     'Snapshots are persisted as base64-encoded PNG text to keep diffs reviewable while staying binary-free.',
   ].join('\n');
 
