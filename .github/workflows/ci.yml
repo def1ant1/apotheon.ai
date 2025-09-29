@@ -42,6 +42,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
       - name: Backup automation dry-run
         run: npm run ops:backup:dry-run
 
@@ -60,8 +63,56 @@ jobs:
       - name: Execute test suite
         run: npm run test
 
-      - name: Run E2E tests
-        run: npm run test:e2e
+      - name: Prepare Playwright fixtures
+        run: |
+          rm -rf artifacts/playwright
+          mkdir -p artifacts/playwright
+          npm run pretest:e2e
+
+      - name: Playwright - chromium mobile
+        run: |
+          set -euo pipefail
+          export PLAYWRIGHT_HTML_REPORT=artifacts/playwright/html-report/chromium-mobile
+          export PLAYWRIGHT_JSON_OUTPUT_NAME=artifacts/playwright/report-chromium-mobile.json
+          npx playwright test --max-failures=1 --project=chromium-mobile --output=artifacts/playwright/test-results/chromium-mobile
+
+      - name: Playwright - chromium desktop (light)
+        run: |
+          set -euo pipefail
+          export PLAYWRIGHT_HTML_REPORT=artifacts/playwright/html-report/chromium-desktop-light
+          export PLAYWRIGHT_JSON_OUTPUT_NAME=artifacts/playwright/report-chromium-desktop-light.json
+          npx playwright test --max-failures=1 --project=chromium-desktop-light --output=artifacts/playwright/test-results/chromium-desktop-light
+
+      - name: Playwright - chromium desktop (dark)
+        run: |
+          set -euo pipefail
+          export PLAYWRIGHT_HTML_REPORT=artifacts/playwright/html-report/chromium-desktop-dark
+          export PLAYWRIGHT_JSON_OUTPUT_NAME=artifacts/playwright/report-chromium-desktop-dark.json
+          npx playwright test --max-failures=1 --project=chromium-desktop-dark --output=artifacts/playwright/test-results/chromium-desktop-dark
+
+      - name: Collate Playwright diff manifests
+        if: always()
+        run: node ./scripts/ci/collect-playwright-diffs.mjs artifacts/playwright
+
+      - name: Upload Playwright reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-reports-${{ matrix.node }}
+          path: |
+            artifacts/playwright/html-report
+            artifacts/playwright/report-*.json
+          retention-days: 14
+
+      - name: Upload Playwright diffs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-diffs-${{ matrix.node }}
+          path: |
+            artifacts/playwright/diffs
+            artifacts/playwright/test-results
+          retention-days: 14
 
       - name: axe-core accessibility audit
         run: npm run accessibility:axe
