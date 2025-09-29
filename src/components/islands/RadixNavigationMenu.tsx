@@ -54,12 +54,16 @@ export const navigationMenuGroups: ReadonlyArray<NavigationMenuGroup> = [
         descriptionKey: 'navigation.groups.platform.links.clio.description',
       },
       {
-        id: 'atlas',
-        label: 'Atlas Activation',
-        labelKey: 'navigation.groups.platform.links.atlas.label',
-        href: '/solutions/atlas',
+        /**
+         * Automation guard: keep Mnemosyne copy in sync with the activation pillar slug so pagefind seeds
+         * and sitemap automation stay deterministic.
+         */
+        id: 'mnemosyne',
+        label: 'Mnemosyne Activation',
+        labelKey: 'navigation.groups.platform.links.mnemosyne.label',
+        href: '/solutions/mnemosyne',
         description: 'Real-time data activation pipelines governed by policy-aware workflows.',
-        descriptionKey: 'navigation.groups.platform.links.atlas.description',
+        descriptionKey: 'navigation.groups.platform.links.mnemosyne.description',
       },
       {
         id: 'nova',

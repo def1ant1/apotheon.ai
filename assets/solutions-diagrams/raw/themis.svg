@@ -1,5 +1,9 @@
+<!--
+  Diagram provenance: Derived from governance-lakehouse.svg to serve the Themis governance pillar.
+  Maintainer note: maintain layout constants so exported PNG derivatives remain stable.
+-->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 220">
-  <title>Governance Lakehouse control flows</title>
+  <title>Themis governance control flows</title>
   <rect x="0" y="0" width="360" height="220" rx="18" fill="#020617" />
   <g fill="#0F172A" stroke="#1E293B" stroke-width="1.5">
     <rect x="28" y="40" width="120" height="140" rx="16" />

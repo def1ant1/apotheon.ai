@@ -20,7 +20,7 @@ const seo = createPageSeo(
     path: '/solutions/',
     openGraph: {
       type: 'website',
-      images: [{ url: 'https://apotheon.ai/static/diagrams/solutions/atlas.svg' }],
+      images: [{ url: 'https://apotheon.ai/static/diagrams/solutions/mnemosyne.svg' }],
     },
   },
   { site: Astro.site ?? Astro.url },

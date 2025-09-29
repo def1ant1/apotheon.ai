@@ -6,12 +6,12 @@
       "url": [
         "/",
         "/solutions/",
-        "/solutions/atlas/",
-        "/solutions/automation-studio/",
+        "/solutions/mnemosyne/",
+        "/solutions/hermes/",
         "/solutions/clio/",
-        "/solutions/governance-lakehouse/",
+        "/solutions/themis/",
         "/solutions/nova/",
-        "/solutions/observability-fabric/"
+        "/solutions/morpheus/"
       ],
       "numberOfRuns": 1,
       "settings": {

@@ -28,18 +28,18 @@ exports[`Industry section view models > snapshots compliance highlights 1`] = `
 exports[`Industry section view models > snapshots mapped solutions and validates linked titles 1`] = `
 [
   {
-    "href": "/solutions/atlas/",
+    "href": "/solutions/mnemosyne/",
     "outcome": "Cuts investigation prep time in half.",
     "positioning": "Centralizes telemetry and governed analytics for financial services teams.",
-    "slug": "atlas",
-    "title": "Atlas Data Fabric",
+    "slug": "mnemosyne",
+    "title": "Mnemosyne Activation Fabric",
   },
   {
-    "href": "/solutions/automation-studio/",
+    "href": "/solutions/hermes/",
     "outcome": null,
     "positioning": "Delivers policy-driven automations that pass internal risk reviews without manual rewrites.",
-    "slug": "automation-studio",
-    "title": "Automation Studio",
+    "slug": "hermes",
+    "title": "Hermes Automation Cloud",
   },
 ]
 `;

@@ -78,6 +78,7 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
     - `/about/[contact|investors|white-papers|history]`
     - `/blog` + `/blog/[slug]`
   - 404/500, sitemap.xml, robots.txt; breadcrumb schema.
+  - 2024-06 IA update: Hermes/Themis/Morpheus/Mnemosyne slugs, diagrams, and nav seeds wired with automation guards.
 - **Acceptance Criteria**
   - All pages build statically; pagefind index generated; sitemap & robots auto‑generated.
 

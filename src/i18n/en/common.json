@@ -20,7 +20,7 @@
       "instructions": "Focus to reveal QA-only locales. Production builds stay on the default language unless the QA flag is enabled.",
       "status": {
         "current": "Browsing the {{locale}} locale.",
-        "updated": "Switching to {{locale}}…"
+        "updated": "Switching to {{locale}}\u2026"
       },
       "defaultLocaleSuffix": "default locale"
     },
@@ -50,13 +50,13 @@
             "label": "Clio Orchestration",
             "description": "Systems thinking behind our cognitive orchestration layer."
           },
-          "atlas": {
-            "label": "Atlas Activation",
-            "description": "Real-time data activation pipelines governed by policy-aware workflows."
-          },
           "nova": {
             "label": "Nova Workbench",
             "description": "Secure experimentation playgrounds for shipping regulated AI features."
+          },
+          "mnemosyne": {
+            "label": "Mnemosyne Activation",
+            "description": "Real-time data activation pipelines governed by policy-aware workflows."
           }
         }
       },
@@ -245,7 +245,7 @@
       "heading": "Contact Apotheon.ai",
       "summary": "Reach out to route opportunities into the orchestration queue. Automated intake ensures every request hits the correct RevOps workflow without manual triage.",
       "organization": "Apotheon.ai",
-      "officeHours": "Mon–Fri, 8:00–18:00 PT",
+      "officeHours": "Mon\u2013Fri, 8:00\u201318:00 PT",
       "labels": {
         "email": "Email",
         "phone": "Phone",
@@ -253,7 +253,7 @@
       }
     },
     "bottom": {
-      "copyright": "© {{year}} Apotheon.ai — Astro powered, edge-ready delivery.",
+      "copyright": "\u00a9 {{year}} Apotheon.ai \u2014 Astro powered, edge-ready delivery.",
       "automationSummary": {
         "beforeCommand": "Pagefind search indexes, sitemaps, and robots.txt regenerate during CI/CD via ",
         "afterCommand": ", ensuring the static bundle remains search-friendly without a custom backend."
@@ -277,7 +277,7 @@
   "alerts": {
     "_comment": "Status banners and toast copy for asynchronous workflows.",
     "success": "All systems operational.",
-    "error": "Something went wrong—please try again or contact support.",
+    "error": "Something went wrong\u2014please try again or contact support.",
     "maintenance": "Scheduled maintenance is in progress. Some features may be temporarily unavailable."
   },
   "placeholders": {
@@ -307,7 +307,7 @@
       "steps": {
         "navigation": {
           "title": "Primary navigation",
-          "description": "Every strategic surface lives here—hover to reveal fly-out panels that mirror the information architecture shipped with each release."
+          "description": "Every strategic surface lives here\u2014hover to reveal fly-out panels that mirror the information architecture shipped with each release."
         },
         "search": {
           "title": "Federated search",

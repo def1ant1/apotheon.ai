@@ -37,10 +37,11 @@ test.describe('seo metadata', () => {
   });
 
   test('solution detail references software application schema', async ({ page }) => {
-    await page.goto('/solutions/atlas/');
+    // Automation guard: hitting Mnemosyne validates the renamed activation slug and keeps schema assertions future-proof.
+    await page.goto('/solutions/mnemosyne/');
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
       'href',
-      /\/solutions\/atlas\//,
+      /\/solutions\/mnemosyne\//,
     );
     const schemaPayloads = await page
       .locator('script[type="application/ld+json"]')

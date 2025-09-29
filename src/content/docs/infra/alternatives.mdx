@@ -9,49 +9,43 @@ description: This register lists open-source or zero-cost (for small workloads)
   integration notes covering security boundaries, data flow implications, and
   performance considerations.
 sourcePath: infra/ALTERNATIVES.md
-sourceLastModified: 2025-09-28T02:01:21.036Z
+sourceLastModified: 2025-09-28T21:16:01.511Z
 tags: []
 ---
 
 This register lists open-source or zero-cost (for small workloads) substitutes for the managed Cloudflare stack so we can pivot while maintaining the automation-first principles defined in [`docs/ai-instructions.md`](/docs/ai-instructions/). Each alternative includes integration notes covering security boundaries, data flow implications, and performance considerations.
 
 - **Pages (SSG Hosting)**
-
   - **OSS / Free Substitute:** Netlify OSS CLI + Netlify Edge Functions, or Vercel CLI (Hobby).
   - **Rationale & Integration Notes:** Astro build output deployable via open CLI; GitHub Actions handle automation.
   - **Security & Operations:** Ensure JWT-based previews and per-branch access controls; enforce IaC-managed DNS/TLS.
   - **Performance Budget:** Target &lt;100 ms TTFB via CDN configuration and keep incremental builds under 5 minutes.
 
 - **Workers (Edge Compute)**
-
   - **OSS / Free Substitute:** Cloudflare Workers OSS Runtime (Miniflare) for self-hosting, Fastly Compute@Edge trial, or Deno Deploy Free tier.
   - **Rationale & Integration Notes:** Preserve serverless patterns with similar Request/Response APIs.
   - **Security & Operations:** Harden with mTLS between edge nodes and upstream stores; centralise logging via OpenTelemetry collectors.
   - **Performance Budget:** Keep cold starts &lt;50 ms and steady-state median latency &lt;80 ms globally.
 
 - **D1 (SQLite)**
-
   - **OSS / Free Substitute:** Litestream + Fly.io, LiteFS, or SQLite with LiteFS Cloud.
   - **Rationale & Integration Notes:** Provide distributed SQLite with automated replication and failover.
   - **Security & Operations:** Host replication control plane in private network segments; encrypt replicas at rest.
   - **Performance Budget:** Achieve &lt;200 ms global write replication lag and &lt;100 ms query latency.
 
 - **KV**
-
   - **OSS / Free Substitute:** Redis (Valkey) with Redis Cloud Free, Upstash Redis Free, or KeyDB OSS.
   - **Rationale & Integration Notes:** Offers key/value semantics with TTL and pub/sub.
   - **Security & Operations:** Deploy inside VPC with IAM-based access; require TLS + ACL tokens.
   - **Performance Budget:** Maintain &lt;15 ms read latency at edge PoPs and &lt;20 ms write propagation.
 
 - **R2 (Object Storage)**
-
   - **OSS / Free Substitute:** MinIO Operator on Kubernetes, Backblaze B2 Free, or Wasabi trial.
   - **Rationale & Integration Notes:** S3-compatible API retains automation scripts; object lifecycle rules mirror R2 policies.
   - **Security & Operations:** Segregate buckets per environment and enforce server-side encryption; route via CDN signed URLs.
   - **Performance Budget:** Keep P95 download latency &lt;250 ms for &lt;5 MB artefacts and ensure ingest throughput ≥ 100 MB/min.
 
 - **KV/Workers Analytics**
-
   - **OSS / Free Substitute:** OpenTelemetry Collector + Grafana LGTM stack, or Matomo (self-hosted).
   - **Rationale & Integration Notes:** Captures metrics and behavioural analytics without vendor lock-in.
   - **Security & Operations:** Deploy analytics ingestion behind authenticated edge proxies; anonymise PII before storage.
