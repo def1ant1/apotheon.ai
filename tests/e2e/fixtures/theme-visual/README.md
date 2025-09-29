@@ -11,10 +11,11 @@ can be reviewed without pulling binary assets into the repository.
    provision system libraries (`npx playwright install-deps chromium`).
 2. From the repository root run:
    ```bash
-   UPDATE_THEME_VISUAL_BASELINES=1 npm run test:e2e -- tests/e2e/theme-visual.spec.ts
+   npm run test:e2e:update-theme-visual
    ```
-   The helper in `tests/e2e/utils/assertBase64Snapshot.ts` will automatically rewrite the fixtures
-   with a prefixed comment block describing the route, theme, fixture path, and regeneration command.
+   The helper in `tests/e2e/utils/assertBase64Snapshot.ts` exports
+   `UPDATE_THEME_VISUAL_BASELINES=1` automatically, then rewrites the fixtures with a prefixed
+   comment block describing the route, theme, fixture path, and regeneration command.
 3. Commit the updated `*.base64.txt` files and the Playwright report if relevant. During review,
    confirm that each header reflects the expected route/theme pairing and that the new base64 payloads
    match intentional UI changes.

@@ -24,7 +24,7 @@ interface SnapshotAssertionInput {
 }
 
 const UPDATE_FLAG = 'UPDATE_THEME_VISUAL_BASELINES';
-const UPDATE_COMMAND = `${UPDATE_FLAG}=1 npx playwright test tests/e2e/theme-visual.spec.ts`;
+const UPDATE_COMMAND = 'npm run test:e2e:update-theme-visual';
 const CHARS_PER_LINE = 120;
 const COMMENT_PREFIX = '# ';
 
@@ -84,7 +84,7 @@ export async function assertBase64Snapshot({
     const hint = [
       `Missing visual baseline for ${scenarioLabel}.`,
       `Expected fixture: ${relativeFixture}.`,
-      `Re-run the spec with \`${UPDATE_FLAG}=1\` to seed the snapshot automatically:`,
+      `Re-run the spec with the dedicated npm helper (it exports \`${UPDATE_FLAG}=1\` automatically):`,
       `  ${UPDATE_COMMAND}`,
     ].join('\n');
 
@@ -94,7 +94,7 @@ export async function assertBase64Snapshot({
   const message = [
     `Visual regression detected for ${scenarioLabel}.`,
     `Baseline fixture: ${relativeFixture}.`,
-    `If the new rendering is intentional, regenerate the stored payload by running:`,
+    `If the new rendering is intentional, regenerate the stored payload via:`,
     `  ${UPDATE_COMMAND}`,
     'Snapshots are persisted as base64-encoded PNG text to keep diffs reviewable while staying binary-free.',
   ].join('\n');

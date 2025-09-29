@@ -1,6 +1,6 @@
 # Route: /industries/
 # Theme: light
-# Regenerate: UPDATE_THEME_VISUAL_BASELINES=1 npx playwright test tests/e2e/theme-visual.spec.ts
+# Regenerate: npm run test:e2e:update-theme-visual
 # Fixture: tests/e2e/fixtures/theme-visual/industries-index__light.base64.txt
 
 iVBORw0KGgoAAAANSUhEUgAABQAAAALQCAIAAABAH0oBAAAQAElEQVR4nOzdCVwUdR/H8fGoxaxFS/AILAWzwA4xS8gErQRT0Uok77s8M2/xRE0x88gSK888
