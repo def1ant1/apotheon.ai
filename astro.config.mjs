@@ -36,6 +36,15 @@ function loadImageOptimizationManifest() {
 
 const IMAGE_OPTIMIZATION_MANIFEST = loadImageOptimizationManifest();
 const I18N_SOURCE_DIR = fileURLToPath(new URL('./src/i18n', import.meta.url));
+/**
+ * The Tailwind plugin ships as an ESM-first Vite integration. Surfacing the
+ * resolved config path up-front keeps the plugin wiring declarative and makes
+ * it explicit to operators that our semantic token contract lives in the root
+ * config. Any future moves (monorepo splits, package hoists, etc.) only need a
+ * single path update here rather than hunting through plugin options in the
+ * Vite block below.
+ */
+const tailwindConfigPath = fileURLToPath(new URL('./tailwind.config.mjs', import.meta.url));
 
 const enableHttps = process.env.ASTRO_DEV_HTTPS === 'true';
 const httpsOptions = enableHttps ? resolveDevHttpsConfig() ?? true : undefined;
@@ -178,7 +187,15 @@ export default defineConfig({
        * commented rationale reminds engineers that the legacy @astrojs/tailwind
        * wrapper has been retired.
        */
-      tailwindcss()
+      tailwindcss({
+        /**
+         * Force the Vite plugin to load the project-level ESM config directly.
+         * Without the explicit path, Lightning would fallback to defaults and
+         * miss our semantic token pipeline, triggering `unknown utility` noise
+         * across both local dev and the theme visual regression suite.
+         */
+        config: tailwindConfigPath
+      })
     ],
     resolve: {
       alias: {
