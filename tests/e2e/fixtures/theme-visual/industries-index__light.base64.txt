@@ -1,8 +1,7 @@
 # Route: /industries/
 # Theme: light
-# Regenerate: npm run test:e2e:update-theme-visual
 # Fixture: tests/e2e/fixtures/theme-visual/industries-index__light.base64.txt
-
+# Regenerate: npm run update:theme-visual
 iVBORw0KGgoAAAANSUhEUgAABQAAAALQCAIAAABAH0oBAAAQAElEQVR4nOzdCVwUdR/H8fGoxaxFS/AILAWzwA4xS8gErQRT0Uok77s8M2/xRE0x88gSK888
 OhBTxDywUiwDOoAO4UkFK8Ey1g42MzZTnx+MbivsLgsooPN5Pz2+Zmfn+M9/Zpf97m9mtnrdeg0UAAAAAACuddUVAAAAAAA0gAAMAAAAANAEAjAAAAAAQBMI
 wAAAAAAATSAAAwAAAAA0gQAMAAAAANAEAjAAAAAAQBMIwAAAAAAATSAAAwAAAAA0gQAMAAAAANAEAjAAAAAAQBMIwAAAAAAATSAAAwAAAAA0gQAMAAAAANAE

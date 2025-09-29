@@ -1,8 +1,13 @@
 import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import { dirname, relative } from 'node:path';
+import { dirname, join, relative } from 'node:path';
 
-import { expect, type Page, type TestInfo } from '@playwright/test';
+import { chromium, expect, type Page, type TestInfo } from '@playwright/test';
+
+import { forceReducedMotion, preloadRouteAssets, setTheme, stabilizePageChrome } from './page';
+
+import type { ThemeName } from '../../../src/styles/tokens';
+import type { ThemeVisualRoute } from '../theme-visual.contract';
 
 /**
  * Shared environment toggle that mirrors Playwright's native snapshot updating
@@ -16,7 +21,13 @@ export const PLAYWRIGHT_SNAPSHOT_UPDATE_ENV = 'PLAYWRIGHT_UPDATE_SNAPSHOTS';
  * the message prevents typos from sneaking into error text and ensures docs,
  * tests, and CLI helpers stay in sync.
  */
-const UPDATE_COMMAND = 'npm run test:e2e:update-theme-visual';
+const UPDATE_COMMAND = 'npm run update:theme-visual';
+
+const SNAPSHOT_UPDATE_FLAGS = [PLAYWRIGHT_SNAPSHOT_UPDATE_ENV, 'UPDATE_SNAPSHOTS'] as const;
+
+export function isSnapshotUpdateEnabled(): boolean {
+  return SNAPSHOT_UPDATE_FLAGS.some((flag) => process.env[flag] === '1');
+}
 
 /**
  * Wrapping base64 output mirrors the POSIX `base64` CLI (76 characters per
@@ -104,11 +115,14 @@ export async function comparePngSnapshot(options: ComparePngSnapshotOptions): Pr
 
   let baselineNormalised: string | null = null;
   try {
+    // eslint-disable-next-line security/detect-non-literal-fs-filename
     const existingFixture = await readFile(options.fixturePath, 'utf8');
     baselineNormalised = sanitisePayload(stripCommentLines(existingFixture));
   } catch (error) {
-    if (process.env[PLAYWRIGHT_SNAPSHOT_UPDATE_ENV] === '1') {
+    if (isSnapshotUpdateEnabled()) {
+      // eslint-disable-next-line security/detect-non-literal-fs-filename
       await mkdir(dirname(options.fixturePath), { recursive: true });
+      // eslint-disable-next-line security/detect-non-literal-fs-filename
       await writeFile(options.fixturePath, `${header}${formatted}\n`, 'utf8');
       return;
     }
@@ -125,8 +139,10 @@ export async function comparePngSnapshot(options: ComparePngSnapshotOptions): Pr
     );
   }
 
-  if (process.env[PLAYWRIGHT_SNAPSHOT_UPDATE_ENV] === '1') {
+  if (isSnapshotUpdateEnabled()) {
+    // eslint-disable-next-line security/detect-non-literal-fs-filename
     await mkdir(dirname(options.fixturePath), { recursive: true });
+    // eslint-disable-next-line security/detect-non-literal-fs-filename
     await writeFile(options.fixturePath, `${header}${formatted}\n`, 'utf8');
     return;
   }
@@ -148,4 +164,88 @@ export async function comparePngSnapshot(options: ComparePngSnapshotOptions): Pr
   ].join('\n');
 
   expect(normalised, message).toBe(baselineNormalised);
+}
+
+const DEFAULT_CONTEXT_OPTIONS = {
+  viewport: { width: 1280, height: 720 },
+  deviceScaleFactor: 1,
+  isMobile: false,
+  hasTouch: false,
+} as const;
+
+interface UpdateThemeSnapshotsOptions {
+  readonly baseURL?: string;
+  readonly fixtureDir: string;
+  readonly routes: readonly ThemeVisualRoute[];
+  readonly themes: readonly ThemeName[];
+  // eslint-disable-next-line no-unused-vars
+  readonly onUpdate?: (_snapshot: {
+    readonly fixturePath: string;
+    readonly routePath: string;
+    readonly slug: string;
+    readonly theme: string;
+  }) => void;
+}
+
+let updatePromise: Promise<void> | null = null;
+
+export async function updateThemeSnapshots(options: UpdateThemeSnapshotsOptions): Promise<void> {
+  if (!isSnapshotUpdateEnabled()) {
+    return;
+  }
+
+  if (!updatePromise) {
+    updatePromise = (async () => {
+      const baseURL =
+        options.baseURL ?? process.env.PLAYWRIGHT_BASE_URL ?? 'http://127.0.0.1:43210';
+
+      const browser = await chromium.launch({ headless: true });
+      try {
+        const context = await browser.newContext({
+          ...DEFAULT_CONTEXT_OPTIONS,
+          baseURL,
+        });
+
+        try {
+          for (const { path, slug } of options.routes) {
+            for (const theme of options.themes) {
+              const page = await context.newPage();
+              try {
+                await forceReducedMotion(page);
+                await page.goto(path, { waitUntil: 'networkidle' });
+                await stabilizePageChrome(page);
+                await setTheme(page, theme);
+                await preloadRouteAssets(page);
+
+                await page.waitForFunction(() => {
+                  const doc = document as Document & { fonts?: FontFaceSet };
+                  return !doc.fonts || doc.fonts.status === 'loaded';
+                });
+                await page.waitForTimeout(300);
+
+                const fixturePath = join(options.fixtureDir, `${slug}__${theme}.base64.txt`);
+                await comparePngSnapshot({
+                  page,
+                  routePath: path,
+                  slug,
+                  theme,
+                  fixturePath,
+                });
+
+                options.onUpdate?.({ fixturePath, routePath: path, slug, theme });
+              } finally {
+                await page.close();
+              }
+            }
+          }
+        } finally {
+          await context.close();
+        }
+      } finally {
+        await browser.close();
+      }
+    })();
+  }
+
+  await updatePromise;
 }

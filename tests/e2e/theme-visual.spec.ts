@@ -10,10 +10,24 @@ import {
   setTheme,
   stabilizePageChrome,
 } from './utils/page';
-import { comparePngSnapshot } from './utils/snapshot';
+import {
+  comparePngSnapshot,
+  isSnapshotUpdateEnabled,
+  updateThemeSnapshots,
+} from './utils/snapshot';
 
 const specDir = dirname(fileURLToPath(import.meta.url));
 const FIXTURE_DIR = join(specDir, 'fixtures', 'theme-visual');
+
+test.beforeAll(async () => {
+  if (isSnapshotUpdateEnabled()) {
+    await updateThemeSnapshots({
+      fixtureDir: FIXTURE_DIR,
+      routes: THEME_VISUAL_ROUTES,
+      themes: THEME_VISUAL_THEMES,
+    });
+  }
+});
 
 // Lock the viewport and device characteristics so screenshots remain stable across developer
 // machines, CI runners, and Playwright releases. Avoiding mobile emulation keeps the layout static
@@ -29,9 +43,8 @@ for (const { path, slug } of THEME_VISUAL_ROUTES) {
   for (const theme of THEME_VISUAL_THEMES) {
     test(`${slug} renders correctly in ${theme} theme`, async ({ page }, testInfo) => {
       // Theme baselines double as design review artefacts. When the contract needs to be updated,
-      // run `npm run test:e2e:update-theme-visual` (which now leverages the CLI refresher and exports
-      // `PLAYWRIGHT_UPDATE_SNAPSHOTS=1`) and commit the refreshed base64 fixtures under
-      // `tests/e2e/fixtures/theme-visual/`.
+      // run `npm run update:theme-visual` to regenerate the fixtures and commit the refreshed
+      // base64 payloads under `tests/e2e/fixtures/theme-visual/`.
       await forceReducedMotion(page);
       await page.goto(path, { waitUntil: 'networkidle' });
       await stabilizePageChrome(page);
