@@ -41,7 +41,13 @@ const semanticColors = {
   },
   utility: {
     backdrop: withOpacity('--color-utility-backdrop'),
-    skeleton: withOpacity('--color-utility-skeleton')
+    skeleton: withOpacity('--color-utility-skeleton'),
+    scrollbar: {
+      /* Scrollbar tokens stay centralized so enterprise accessibility audits trace WCAG 2.5.5 compliance. */
+      track: withOpacity('--color-scrollbar-track'),
+      thumb: withOpacity('--color-scrollbar-thumb'),
+      thumbHover: withOpacity('--color-scrollbar-thumb-hover')
+    }
   }
 };
 
@@ -77,7 +83,8 @@ const spatialScale = {
   'space-2xl': 'var(--space-2xl)',
   'space-3xl': 'var(--space-3xl)',
   'gutter-inline': 'var(--space-gutter-inline)',
-  'gutter-block': 'var(--space-gutter-block)'
+  'gutter-block': 'var(--space-gutter-block)',
+  'scrollbar-thickness': 'var(--size-scrollbar-thickness)' /* Applied in CSS-in-JS when custom scroll containers need thicker rails for ADA touch guidance. */
 };
 
 /**

@@ -327,6 +327,12 @@ The script checks every pairing listed in the [palette matrix](#palette-pairing-
 - Review dark mode surfaces for pure black usage; prefer `brand.neutral.950` to avoid halation on HDR displays.
 - Export Figma components with token names, not hex values, so engineers can map them to Tailwind config without translation errors.
 
+### Reduced motion & system scrollbars
+
+- **Motion tokens in action:** Global CSS now enforces `@media (prefers-reduced-motion: reduce)` overrides so every animated marquee (timeline cards, carousel rails, etc.) snaps to a zero-duration transition. When documenting animation, annotate both the "default" easing and the reduced-motion fallback in Figma to keep parity with the code. WCAG 2.3.3 requires this hook for vestibular safety.
+- **Scrollbar palette:** Use the dedicated variables—`--color-scrollbar-track`, `--color-scrollbar-thumb`, and `--color-scrollbar-thumb-hover`—when mocking scrollable regions. They inherit from the surface/border tokens, ensuring ≥3:1 contrast in light _and_ dark palettes without inventing new swatches.
+- **Sizing guidance:** `--size-scrollbar-thickness` (0.75rem) and `--scrollbar-width-mode` (`thin`) satisfy WCAG 2.5.5 Target Size across pointer types. Avoid compressing scrollbars in comps; custom containers should opt into the same thickness to keep QA and product accessibility reports aligned.
+
 ---
 
 ## Adoption Workflow for Designers & Engineers

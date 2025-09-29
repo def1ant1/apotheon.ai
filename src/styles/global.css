@@ -42,13 +42,83 @@ body {
     layout shift. The background/text colors route through semantic tokens so
     theme flips happen instantly.
   */
-  @apply bg-surface-base font-sans text-ink-primary antialiased;
+  @apply bg-surface-base text-ink-primary font-sans antialiased;
   background-color: hsl(var(--color-surface-base));
   color: hsl(var(--color-ink-primary));
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   transition:
     background-color 180ms ease,
     color 180ms ease;
+}
+
+/*
+  Motion-safety override ------------------------------------------------------
+  - Honors user `prefers-reduced-motion` to meet WCAG 2.3.3 and reduce vestibular
+    discomfort. We zero out transitions/animations declared above so color
+    tokens (`--color-surface-base`, `--color-ink-primary`) snap instantly.
+*/
+@media (prefers-reduced-motion: reduce) {
+  /* Disable smooth scrolling to avoid disorientation during skip-link jumps. */
+  html:focus-within {
+    scroll-behavior: auto;
+  }
+
+  /* Blanket override keeps legacy CSS and Tailwind utilities compliant. */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-play-state: paused !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0ms !important;
+  }
+
+  /* Body transition from above now respects the zero-duration request. */
+  body {
+    transition: none !important;
+  }
+}
+
+/*
+  Enterprise scrollbar theming ------------------------------------------------
+  - Scrollbars inherit semantic tokens so dark/light modes stay in sync.
+  - Thumb contrast aligns with `--color-scrollbar-thumb` (≥3:1 against track)
+    while hover surfaces adopt `--color-scrollbar-thumb-hover` to highlight the
+    affordance per Section 508 expectations.
+*/
+* {
+  scrollbar-color: hsl(var(--color-scrollbar-thumb)) hsl(var(--color-scrollbar-track));
+  scrollbar-width: var(--scrollbar-width-mode);
+}
+
+/* WebKit width/height derive from the shared thickness token for parity. */
+*::-webkit-scrollbar {
+  height: var(--size-scrollbar-thickness);
+  width: var(--size-scrollbar-thickness);
+}
+
+/* Track leans on the rail token so nested themes remain consistent. */
+*::-webkit-scrollbar-track {
+  background-color: hsl(var(--color-scrollbar-track));
+}
+
+/* Thumb rounds to our radius scale and outlines with the base surface token. */
+*::-webkit-scrollbar-thumb {
+  background-clip: padding-box;
+  background-color: hsl(var(--color-scrollbar-thumb));
+  border: 2px solid hsl(var(--color-surface-base));
+  border-radius: var(--radius-lg);
+}
+
+/* Hover state swaps to brand accent token for discoverability. */
+*::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(var(--color-scrollbar-thumb-hover));
+}
+
+/* Corner inherits rail tone so diagonal scroll containers stay neutral. */
+*::-webkit-scrollbar-corner {
+  background-color: hsl(var(--color-scrollbar-track));
 }
 
 body[data-theme='dark'],
@@ -65,7 +135,7 @@ main {
     `tokens.css` mean designers tweak a single value to realign the entire
     layout.
   */
-  @apply mx-auto flex min-h-screen max-w-5xl flex-col gap-space-xl px-gutter-inline pb-space-3xl pt-space-2xl;
+  @apply gap-space-xl px-gutter-inline pb-space-3xl pt-space-2xl mx-auto flex min-h-screen max-w-5xl flex-col;
 }
 
 a {
@@ -74,7 +144,7 @@ a {
     states lean on the shared focus-ring shadow so the outline matches component
     controls.
   */
-  @apply font-semibold text-accent-brand transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-brand;
+  @apply text-accent-brand focus-visible:outline-accent-brand font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2;
   text-decoration-color: hsl(var(--color-accent-brand));
 }
 
@@ -84,7 +154,7 @@ a:hover {
 
 code {
   /* Inline code surfaces leverage raised backgrounds + inverted ink. */
-  @apply rounded-radius-sm bg-surface-overlay/80 px-space-3xs py-[0.35rem] font-mono text-caption text-ink-inverted shadow-elevation-1;
+  @apply rounded-radius-sm bg-surface-overlay/80 px-space-3xs text-caption text-ink-inverted shadow-elevation-1 py-[0.35rem] font-mono;
 }
 
 /*
@@ -96,23 +166,23 @@ code {
 
 .navigation-surface {
   /* The global navigation bar references raised surfaces + blur for glassmorphism. */
-  @apply relative mx-auto flex w-full max-w-4xl items-center justify-center gap-space-sm rounded-radius-2xl border border-border-subtle/70 bg-surface-raised/70 px-space-md py-space-sm text-body-sm text-ink-secondary shadow-elevation-2 backdrop-blur supports-[backdrop-filter]:bg-surface-raised/50;
+  @apply gap-space-sm rounded-radius-2xl border-border-subtle/70 bg-surface-raised/70 px-space-md py-space-sm text-body-sm text-ink-secondary shadow-elevation-2 supports-[backdrop-filter]:bg-surface-raised/50 relative mx-auto flex w-full max-w-4xl items-center justify-center border backdrop-blur;
 }
 
 .navigation-list {
-  @apply flex flex-wrap items-center justify-center gap-space-lg;
+  @apply gap-space-lg flex flex-wrap items-center justify-center;
 }
 
 .navigation-trigger {
-  @apply inline-flex h-12 min-w-[3rem] items-center gap-space-3xs rounded-radius-pill border border-transparent bg-transparent px-space-lg font-semibold text-ink-muted transition-colors duration-200 hover:text-ink-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-brand data-[state=open]:border-border-strong data-[state=open]:bg-surface-overlay/80 data-[state=open]:text-ink-primary;
+  @apply gap-space-3xs rounded-radius-pill px-space-lg text-ink-muted hover:text-ink-primary focus-visible:outline-accent-brand data-[state=open]:border-border-strong data-[state=open]:bg-surface-overlay/80 data-[state=open]:text-ink-primary inline-flex h-12 min-w-[3rem] items-center border border-transparent bg-transparent font-semibold transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2;
 }
 
 .navigation-trigger__chevron {
-  @apply text-xs text-ink-muted transition-transform duration-200 group-data-[state=open]:-rotate-180;
+  @apply text-ink-muted text-xs transition-transform duration-200 group-data-[state=open]:-rotate-180;
 }
 
 .navigation-content {
-  @apply absolute left-1/2 top-full z-10 mt-space-sm w-[min(36rem,90vw)] -translate-x-1/2 space-y-space-sm rounded-radius-2xl border border-border-subtle/80 bg-surface-overlay/95 p-space-lg text-left text-ink-secondary shadow-elevation-3 backdrop-blur-xl supports-[backdrop-filter]:bg-surface-overlay/80;
+  @apply mt-space-sm space-y-space-sm rounded-radius-2xl border-border-subtle/80 bg-surface-overlay/95 p-space-lg text-ink-secondary shadow-elevation-3 supports-[backdrop-filter]:bg-surface-overlay/80 absolute top-full left-1/2 z-10 w-[min(36rem,90vw)] -translate-x-1/2 border text-left backdrop-blur-xl;
 }
 
 .navigation-content__description {
@@ -120,7 +190,7 @@ code {
 }
 
 .navigation-grid {
-  @apply grid gap-space-sm pt-space-xs sm:grid-cols-2;
+  @apply gap-space-sm pt-space-xs grid sm:grid-cols-2;
 }
 
 .navigation-grid__item {
@@ -128,11 +198,11 @@ code {
 }
 
 .navigation-link {
-  @apply block h-full space-y-[0.375rem] rounded-radius-xl border border-transparent bg-surface-base/60 px-space-md py-space-sm text-left text-ink-secondary transition duration-200 hover:border-accent-brand/60 hover:bg-surface-overlay/80 hover:text-ink-primary hover:shadow-elevation-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent-brand;
+  @apply rounded-radius-xl bg-surface-base/60 px-space-md py-space-sm text-ink-secondary hover:border-accent-brand/60 hover:bg-surface-overlay/80 hover:text-ink-primary hover:shadow-elevation-1 focus-visible:outline-accent-brand block h-full space-y-[0.375rem] border border-transparent text-left transition duration-200 focus-visible:outline focus-visible:outline-2;
 }
 
 .navigation-grid__heading {
-  @apply text-title-md font-semibold text-ink-primary;
+  @apply text-title-md text-ink-primary font-semibold;
 }
 
 .navigation-grid__copy {
@@ -144,11 +214,11 @@ code {
 }
 
 .navigation-indicator__arrow {
-  @apply h-3 w-3 rotate-45 rounded-radius-xs bg-surface-overlay shadow-elevation-2;
+  @apply rounded-radius-xs bg-surface-overlay shadow-elevation-2 h-3 w-3 rotate-45;
 }
 
 .navigation-viewport {
-  @apply pointer-events-none absolute left-0 top-full z-10 mt-space-sm w-full rounded-radius-2xl border border-transparent bg-transparent opacity-0 transition-opacity duration-200 data-[state=open]:pointer-events-auto data-[state=open]:opacity-100;
+  @apply mt-space-sm rounded-radius-2xl pointer-events-none absolute top-full left-0 z-10 w-full border border-transparent bg-transparent opacity-0 transition-opacity duration-200 data-[state=open]:pointer-events-auto data-[state=open]:opacity-100;
 }
 
 /*
@@ -206,8 +276,9 @@ code {
 }
 
 .token-grid__item dd {
-  font-family: ui-monospace, SFMono-Regular, SFMono, Menlo, Monaco, Consolas, 'Liberation Mono',
-    'Courier New', monospace;
+  font-family:
+    ui-monospace, SFMono-Regular, SFMono, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+    monospace;
   margin: 0;
 }
 

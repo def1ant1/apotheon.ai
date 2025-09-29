@@ -93,6 +93,11 @@
   --color-accent-focus: 221 83% 53%; /* Theme-agnostic focus ring hue. */
   --color-utility-skeleton: 225 15% 78%; /* Default skeleton shimmer tone (light theme baseline). */
   --color-utility-backdrop: 227 67% 11%; /* Backdrop overlays for dialogs and sheets. */
+  --color-scrollbar-track: 219 41% 94%; /* Scrollbar rail aligns with raised surface token to meet WCAG 2.2 non-text contrast. */
+  --color-scrollbar-thumb: 221 39% 72%; /* Thumb mirrors strong border token for ≥3:1 contrast against the rail. */
+  --color-scrollbar-thumb-hover: 227 90% 58%; /* Hover state escalates to brand accent so low-vision users can locate the handle quickly. */
+  --size-scrollbar-thickness: 0.75rem; /* Physical thickness keeps pointer targets ≥12px for WCAG 2.5.5 Target Size compliance. */
+  --scrollbar-width-mode: thin; /* Firefox keyword preserved as a token so platform overrides remain centralized. */
 
   /* Light mode defaults ---------------------------------------------------- */
   color-scheme: light;
@@ -128,6 +133,11 @@
   --color-accent-danger: 351 74% 50%; /* Critical/destructive states on light. */
   --color-border-subtle: 220 35% 82%; /* Subtle borders dividing neutral surfaces. */
   --color-border-strong: 221 39% 72%; /* Prominent strokes such as cards and nav rails. */
+  --color-scrollbar-track: 219 41% 94%; /* Mirror root rail color to avoid theme mismatches in nested light scopes. */
+  --color-scrollbar-thumb: 221 39% 72%; /* Maintain ≥3:1 contrast on light theme scrollbars. */
+  --color-scrollbar-thumb-hover: 227 90% 58%; /* Hover accent keeps interactive feedback consistent with brand CTAs. */
+  --size-scrollbar-thickness: 0.75rem; /* Preserve pointer target sizing in scoped light themes. */
+  --scrollbar-width-mode: thin; /* Firefox still requires keyword-based sizing; expose via token for parity. */
   --color-utility-skeleton: 225 15% 78%; /* Ensure skeletons stay bright in forced light sections. */
   --color-utility-backdrop: 227 67% 11%; /* Maintain backdrop contrast for modals nested in light mode. */
 }
@@ -147,6 +157,11 @@
   --color-accent-danger: 350 75% 65%; /* Critical/destructive states on dark. */
   --color-border-subtle: 223 32% 26%; /* Subtle borders on dark surfaces. */
   --color-border-strong: 223 40% 36%; /* Prominent strokes on dark surfaces. */
+  --color-scrollbar-track: 223 40% 18%; /* Dark rail references overlay token so thumb contrast remains ≥3:1. */
+  --color-scrollbar-thumb: 223 32% 26%; /* Thumb brightened relative to rail for perceivable affordance. */
+  --color-scrollbar-thumb-hover: 226 92% 70%; /* Hover leverages lighter brand accent for high visibility on deep backgrounds. */
+  --size-scrollbar-thickness: 0.75rem; /* Keep target size parity between light/dark themes. */
+  --scrollbar-width-mode: thin; /* Retain consistent Firefox keyword sizing in dark scopes. */
   --color-utility-skeleton: 224 19% 28%; /* Dimmer skeleton shimmer for dark backgrounds. */
   --color-utility-backdrop: 227 65% 4%; /* Darkened backdrop for modals nested in dark sections. */
 }

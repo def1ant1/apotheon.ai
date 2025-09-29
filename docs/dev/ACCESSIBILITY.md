@@ -10,6 +10,12 @@
 
 Automation keeps accessibility debt visible. Scripts rehydrate the static Astro build and the Ladle storybook before scanning, ensuring every shipped surface—including interactive islands—receives axe-core and Pa11y validation.
 
+## Reduced motion + scrollbar commitments
+
+- **Global motion override:** `src/styles/global.css` now ships a holistic `@media (prefers-reduced-motion: reduce)` guard that blanks transitions, pauses marquee animations, and disables smooth scrolling. When implementing new motion primitives, wrap them in the same media query so we continue satisfying WCAG 2.3.3 and Section 508.
+- **Tokenized scrollbars:** Scroll containers must reference `--color-scrollbar-track`, `--color-scrollbar-thumb`, `--color-scrollbar-thumb-hover`, and `--size-scrollbar-thickness`. Tailwind exposes these under `bg-utility-scrollbar-*` and `spacing.scrollbar-thickness`, eliminating the need for bespoke CSS. This keeps Firefox `scrollbar-width` in sync via the `--scrollbar-width-mode` token.
+- **Regression coverage:** Playwright’s `tests/e2e/accessibility/reduced-motion.spec.ts` emulates the reduced-motion media query to confirm marquee cards stop animating, while `tests/unit/tokens-scrollbar.spec.ts` asserts the new tokens resolve in light and dark scopes. Extend these specs whenever you add new animated surfaces or tweak scrollbar variables.
+
 ## Manual assistive technology sweeps
 
 Perform targeted manual passes before every major milestone (feature launch, brand refresh, architecture upgrade). Document the run in the release notes checklist.
