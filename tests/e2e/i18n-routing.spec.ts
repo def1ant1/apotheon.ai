@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { test, expect } from '@playwright/test';
 
 import { primeLocaleCookie } from './fixtures/locale-toggle';
-import { dismissConsentModal, neutralizeAstroDevToolbar } from './utils/page';
+import { setTheme, stabilizePageChrome } from './utils/page';
 
 const PAGEFIND_MANIFEST_PATH = new URL('../../dist/pagefind/manifest.json', import.meta.url);
 const PAGEFIND_ENTRY_PATH = new URL('../../dist/pagefind/pagefind-entry.json', import.meta.url);
@@ -39,14 +39,17 @@ test.describe('runtime i18n routing', () => {
     await primeLocaleCookie(page, 'es');
 
     await page.goto('/');
-    await neutralizeAstroDevToolbar(page);
-    await dismissConsentModal(page);
+    await stabilizePageChrome(page);
+    await setTheme(page, 'light');
 
     const localeSwitcher = page.locator('select[name="qa-locale-switcher"]');
     await expect(localeSwitcher).toBeVisible();
 
     await localeSwitcher.selectOption('es');
     await page.waitForURL('**/es/**');
+
+    await stabilizePageChrome(page);
+    await setTheme(page, 'light');
 
     await expect(page.getByRole('link', { name: 'Inicio' })).toBeVisible();
 

@@ -1,10 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import {
-  dismissConsentModal,
-  neutralizeAstroDevToolbar,
-  waitForIslandHydration,
-} from './utils/page';
+import { setTheme, stabilizePageChrome, waitForIslandHydration } from './utils/page';
 
 test.beforeEach(async ({ page }) => {
   page.on('console', (message) => {
@@ -32,8 +28,8 @@ test.beforeEach(async ({ page }) => {
 
 test('investor brief CTA deep links into the gated whitepaper flow', async ({ page }) => {
   await page.goto('/');
-  await neutralizeAstroDevToolbar(page);
-  await dismissConsentModal(page);
+  await stabilizePageChrome(page);
+  await setTheme(page, 'light');
 
   const heroInvestorCta = page.getByRole('link', { name: 'Download investor brief' });
   await expect(heroInvestorCta).toBeVisible();
@@ -43,8 +39,8 @@ test('investor brief CTA deep links into the gated whitepaper flow', async ({ pa
   await expect(page).toHaveURL(/whitepaperSlug=apotheon-investor-brief/);
   await expect(page).toHaveURL(/#whitepaper-request$/);
 
-  await neutralizeAstroDevToolbar(page);
-  await dismissConsentModal(page);
+  await stabilizePageChrome(page);
+  await setTheme(page, 'light');
   await waitForIslandHydration(page, 'form[action="/api/whitepapers"]');
   await page.waitForFunction(() => typeof window.__WHITEPAPER_FORM_SET_TOKEN__ === 'function');
 

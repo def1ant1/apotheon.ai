@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { dismissConsentModal, neutralizeAstroDevToolbar } from './utils/page';
+import { setTheme, stabilizePageChrome } from './utils/page';
 
 test.describe('Consent manager & analytics routing', () => {
   test.beforeEach(async ({ page }) => {
@@ -23,8 +23,8 @@ test.describe('Consent manager & analytics routing', () => {
 
   test('persists consent toggles and exposes the headless API', async ({ page }) => {
     await page.goto('/');
-    await neutralizeAstroDevToolbar(page);
-    await dismissConsentModal(page);
+    await stabilizePageChrome(page);
+    await setTheme(page, 'light');
 
     const modal = page.getByTestId('consent-modal');
 
@@ -58,8 +58,8 @@ test.describe('Consent manager & analytics routing', () => {
     });
 
     await page.goto('/blog');
-    await neutralizeAstroDevToolbar(page);
-    await dismissConsentModal(page);
+    await stabilizePageChrome(page);
+    await setTheme(page, 'light');
     const modal = page.getByTestId('consent-modal');
 
     await expect(page.locator('[data-testid="blog-index-root"]')).toHaveAttribute(
@@ -75,7 +75,8 @@ test.describe('Consent manager & analytics routing', () => {
     expect(requestCount).toBe(0);
 
     await page.goBack();
-    await neutralizeAstroDevToolbar(page);
+    await stabilizePageChrome(page);
+    await setTheme(page, 'light');
     await expect(page.locator('[data-testid="blog-index-root"]')).toHaveAttribute(
       'data-hydrated',
       'true',
@@ -97,7 +98,8 @@ test.describe('Consent manager & analytics routing', () => {
     expect(lastPayload?.event).toBe('blog_read');
 
     await page.goBack();
-    await neutralizeAstroDevToolbar(page);
+    await stabilizePageChrome(page);
+    await setTheme(page, 'light');
     await expect(page.locator('[data-testid="blog-index-root"]')).toHaveAttribute(
       'data-hydrated',
       'true',

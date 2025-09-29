@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { dismissConsentModal, neutralizeAstroDevToolbar } from '../utils/page';
+import { forceReducedMotion, setTheme, stabilizePageChrome } from '../utils/page';
 
 const TIMELINE_ROUTE = '/about/history/';
 /* Timeline cards animate into view as our marquee/ticker pattern for historical milestones. */
@@ -10,8 +10,8 @@ test.describe('prefers-reduced-motion compliance', () => {
   test('halts marquee card transitions when the user requests reduced motion', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     await page.goto(TIMELINE_ROUTE);
-    await neutralizeAstroDevToolbar(page);
-    await dismissConsentModal(page);
+    await stabilizePageChrome(page, { reducedMotion: false });
+    await setTheme(page, 'light');
 
     const marqueeCard = page.locator(TIMELINE_CARD_SELECTOR).first();
     await expect(marqueeCard).toBeVisible();
@@ -20,10 +20,10 @@ test.describe('prefers-reduced-motion compliance', () => {
     );
     expect(Number.parseFloat(defaultTransition)).toBeGreaterThan(0.5);
 
-    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await forceReducedMotion(page);
     await page.reload();
-    await neutralizeAstroDevToolbar(page);
-    await dismissConsentModal(page);
+    await stabilizePageChrome(page);
+    await setTheme(page, 'light');
     const reducedTransition = await marqueeCard.evaluate(
       (element) => getComputedStyle(element).transitionDuration,
     );
