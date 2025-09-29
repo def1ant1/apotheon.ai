@@ -1,6 +1,6 @@
 # Performance & OpenGraph Automation
 
-This guide captures the automation that keeps our marketing surface fast, visually consistent, and regression friendly. Use it as a runbook when introducing new assets or reviewing pull requests that touch the rendering pipeline.
+This guide captures the automation that keeps our marketing surface fast, visually consistent, and regression friendly. Use it as a runbook when introducing new assets or reviewing pull requests that touch the rendering pipeline. For the Playwright workflow that enforces visual fidelity, see [End-to-end testing & visual baselines](./TESTING.md).
 
 ## OpenGraph image workflow
 
@@ -41,6 +41,7 @@ Run `npm run lighthouse:calibrate` to generate fresh JSON audits under `reports/
 - [ ] Ensure new pages or routes update `lighthouserc.json` if they should fall under the performance budget umbrella.
 - [ ] Review both `artifacts/lighthouse/desktop` and `artifacts/lighthouse/mobile` outputs when performance regressions are suspected; the latter represents our 4G mobile budget.
 - [ ] Run `npm run lighthouse:calibrate` after large visual overhauls and commit updated reports if the baseline changes.
+- [ ] Refresh Playwright theme fixtures via `npm run test:e2e:update-theme-visual` (documented in [TESTING.md](./TESTING.md)) when UI adjustments are intentional so CI inherits deterministic screenshots.
 
 ## Rollback guidance
 

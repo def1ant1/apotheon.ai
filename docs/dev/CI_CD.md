@@ -18,7 +18,9 @@ executes automatically for pull requests and pushes to `main`.
    `npm run typecheck`, `npm run test`, and `npm run build` in order. The
    bundled `npm run build` now wraps the Astro export, robots.txt generation,
    Pagefind indexing, and smoke verification so deployments always ship complete
-   SEO artifacts.
+   SEO artifacts. Playwright end-to-end coverage and visual baseline management
+   follow the [testing workflow](./TESTING.md) so CI and local executions stay
+   aligned.
 4. **Extended assurance.** On the Node 20 shard we enforce Lighthouse
    performance budgets, perform an OWASP ZAP baseline scan, and execute Gitleaks
    secret detection. Their artifacts are uploaded for manual triage while
@@ -94,6 +96,10 @@ and review the bundled HTML/JSON reports.
    - `npm run lighthouse:ci`
    - `npm run zap:baseline`
    - `npm run gitleaks:ci`
+
+Refer to [docs/dev/TESTING.md](./TESTING.md) for Playwright snapshot refreshes
+and troubleshooting guidance before pushing theme or layout changes—CI assumes
+the light/dark fixtures are current when evaluating pull requests.
 
 The ZAP and Gitleaks commands require Docker. The scripts emit clear error
 messages when Docker is unavailable, but production CI must have Docker
