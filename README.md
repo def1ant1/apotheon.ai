@@ -10,6 +10,8 @@
 
 <em>Zero-trust posture, automation-first operations, and obsessive documentation keep this marketing + documentation hub pre-production ready.</em>
 
+<p align="center"><strong>Baseline:</strong> Astro 5 + Vite 6, validated against Node.js 20 LTS and Node.js 22 Current with automation guardrails described below.</p>
+
 </div>
 
 > **Enterprise note:** Everything in this repository assumes regulated-industry baselines—explicit automation, immutable audit trails, and static-first delivery to minimize operational variance.
@@ -20,7 +22,7 @@
 
 ### 1. Provision the toolchain (one-time per workstation)
 
-- Install **Node.js 20.x or 22.x LTS** and **npm ≥ 9**. Pin versions via `asdf`, `nvm`, or your preferred fleet manager so upgrades stay coordinated across teams.
+- Install **Node.js 20.x or 22.x** and **npm ≥ 9**. Pin versions via `asdf`, `nvm`, or your preferred fleet manager so upgrades stay coordinated across teams.
 - Trust the automation helpers by running `npm install` once—this bootstraps Husky hooks, caches Vale binaries, and generates local assets (OG images, hero media, CMS configs).
 - If you support air-gapped networks, mirror the `npm` cache per [infrastructure guidance](docs/infra/ALTERNATIVES.md) to keep supply chains deterministic.
 
@@ -47,6 +49,16 @@ npm run test:e2e         # Playwright smoke coverage for investor-critical funne
 ```
 
 > **Automation note:** `npm run test` orchestrates the full stack (lint → typecheck → unit → Ladle CI → SEO monitor → synthetic worker tests). Use it before every PR to avoid rework.
+
+### Astro 5 automation guardrails
+
+> **Why this matters:** Astro 5 promotes the Tailwind integration to a dedicated Vite plugin and tightens SSR hooks, so automation must provision new dependencies before CI/CD runs.
+
+- **Tailwind Vite plugin:** Ensure `@tailwindcss/vite` is installed wherever `astro.config.mjs` executes. Missing the plugin will break `astro check`, Vitest, Playwright, and `astro build`.
+- **Playwright browser provisioning:** Run `npx playwright install --with-deps` (or leverage the CI bootstrap job) before invoking `npm run test:e2e` or the whitepaper generators. This prevents runtime downloads that otherwise fail in restricted networks.
+- **Deterministic media fixtures:** Execute `npm run ensure:homepage-hero-media` (part of every `pre*` script) so ESLint and Storybook stories find the generated hero assets. Consider committing the rendered PNG if your CI cannot run Python Pillow.
+- **Python prerequisites:** The hero renderer installs Pillow dynamically. For hermetic builds, bake a virtualenv with `pillow` into your container image or document the requirement in fleet AMIs.
+- **Audit trail:** Full Node 20/22 results live in [`reports/automation/2025-02-15-node-matrix.md`](reports/automation/2025-02-15-node-matrix.md); reference it after dependency updates to confirm guardrails remain intact.
 
 ### 4. Build and inspect production artifacts
 

@@ -8,6 +8,15 @@ semantic versioning once releases begin.
 
 ### Added
 
+- Finalized the Astro 5 migration baseline: upgraded Astro core, adjusted Vite
+  plugins, and validated Node.js 20/22 parity against lint, type-check,
+  Vitest, Playwright, and build automation.
+- Hardened DX guardrails for Astro 5 by documenting Playwright browser
+  provisioning, deterministic media fixture generation, and Tailwind Vite
+  integration requirements in README and `reports/automation/`.
+- Logged the Node.js LTS and Current automation audit in
+  `reports/automation/2025-02-15-node-matrix.md` so future releases inherit a
+  reproducible verification trail.
 - Migrated the web platform to an Astro 4 static-first architecture with React
   islands, Tailwind CSS, MDX content collections, Pagefind search automation, and
   hardened CSP defaults.
@@ -32,6 +41,9 @@ semantic versioning once releases begin.
 
 ### Changed
 
+- README now references Astro 5 as the project baseline and links the automation
+  audit log alongside remediation guidance for missing dependencies highlighted
+  during the migration.
 - Replaced the prior Vite/React SPA entrypoints and removed unused Amplify and
   Vercel scaffolding.
 - Expanded developer documentation (`docs/dev/WORKFLOWS.md`, README) with Radix
