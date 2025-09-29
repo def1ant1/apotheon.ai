@@ -46,6 +46,8 @@ npm run lint             # ESLint + Stylelint + Vale + diagram/icon checks (mirr
 npm run typecheck        # Astro check keeps content collections and TS types in sync
 npm run test:unit        # Vitest suite for islands, workers, and utilities
 npm run test:e2e         # Playwright smoke coverage for investor-critical funnels
+npm run test:e2e:update-theme-visual
+                         # Regenerates light/dark visual baselines for theme regression coverage
 ```
 
 > **Automation note:** `npm run test` orchestrates the full stack (lint → typecheck → unit → Ladle CI → SEO monitor → synthetic worker tests). Use it before every PR to avoid rework.
@@ -56,6 +58,7 @@ npm run test:e2e         # Playwright smoke coverage for investor-critical funne
 
 - **Tailwind Vite plugin:** Ensure `@tailwindcss/vite` is installed wherever `astro.config.mjs` executes. Missing the plugin will break `astro check`, Vitest, Playwright, and `astro build`.
 - **Playwright browser provisioning:** Run `npx playwright install --with-deps` (or leverage the CI bootstrap job) before invoking `npm run test:e2e` or the whitepaper generators. This prevents runtime downloads that otherwise fail in restricted networks.
+- **Theme visual baselines:** Use `npm run test:e2e:update-theme-visual` whenever UI changes intentionally shift the light/dark snapshots. The script exports `UPDATE_THEME_VISUAL_BASELINES=1` for you so both CI and local refreshes stay identical.
 - **Deterministic media fixtures:** Execute `npm run ensure:homepage-hero-media` (part of every `pre*` script) so ESLint and Storybook stories find the generated hero assets. Consider committing the rendered PNG if your CI cannot run Python Pillow.
 - **Python prerequisites:** The hero renderer installs Pillow dynamically. For hermetic builds, bake a virtualenv with `pillow` into your container image or document the requirement in fleet AMIs.
 - **Audit trail:** Full Node 20/22 results live in [`reports/automation/2025-02-15-node-matrix.md`](reports/automation/2025-02-15-node-matrix.md); reference it after dependency updates to confirm guardrails remain intact.

@@ -63,14 +63,14 @@ pre-production environments.
   screenshots into `tests/e2e/fixtures/theme-visual/` as base64-encoded PNG
   strings. Persisting text artifacts keeps Git history readable while still
   catching pixel-perfect regressions.
-- Run `UPDATE_THEME_VISUAL_BASELINES=1 npx playwright test tests/e2e/theme-visual.spec.ts`
-  whenever theme tokens, typography ramps, or layout primitives change. The
-  helper rewrites only the affected fixtures and enforces consistent line
-  wrapping so diffs remain reviewable.
+- Run `npm run test:e2e:update-theme-visual` whenever theme tokens, typography
+  ramps, or layout primitives change. The script exports
+  `UPDATE_THEME_VISUAL_BASELINES=1` for you, rewrites only the affected
+  fixtures, and enforces consistent line wrapping so diffs remain reviewable.
 - Leave the environment flag unset during everyday `npm run test:e2e` runs so
   the stored baselines guard against accidental theme drift. The assertion
   messaging in `assertBase64Snapshot` prints the regeneration command whenever
-  a diff is detected.
+  a diff is detected, matching the new npm script for CI parity.
 
 ### Node.js engine baseline
 

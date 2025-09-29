@@ -32,6 +32,7 @@
     "test:synthetic": "vitest run workers/__tests__/synthetic-health.test.ts",
     "test:analytics-proxy": "vitest run workers/__tests__/analytics-proxy.test.ts workers/__tests__/analytics-proxy.contract.test.ts",
     "test:e2e": "playwright test",
+    "test:e2e:update-theme-visual": "UPDATE_THEME_VISUAL_BASELINES=1 npm run test:e2e -- tests/e2e/theme-visual.spec.ts",
     "preaccessibility:axe": "node ./config/accessibility/prepare-dist.mjs",
     "preaccessibility:pa11y": "node ./config/accessibility/prepare-dist.mjs",
     "accessibility:axe": "node ./config/accessibility/run-axe.mjs",

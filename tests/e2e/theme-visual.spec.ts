@@ -37,8 +37,8 @@ for (const { path, slug } of ROUTES) {
   for (const theme of THEMES) {
     test(`${slug} renders correctly in ${theme} theme`, async ({ page }) => {
       // Theme baselines double as design review artefacts. When the contract needs to be updated,
-      // run the spec with `UPDATE_THEME_VISUAL_BASELINES=1` and commit the refreshed base64 fixtures
-      // under `tests/e2e/fixtures/theme-visual/`.
+      // run `npm run test:e2e:update-theme-visual` (which exports `UPDATE_THEME_VISUAL_BASELINES=1`)
+      // and commit the refreshed base64 fixtures under `tests/e2e/fixtures/theme-visual/`.
       await page.goto(path, { waitUntil: 'networkidle' });
       await neutralizeAstroDevToolbar(page);
       await dismissConsentModal(page);
