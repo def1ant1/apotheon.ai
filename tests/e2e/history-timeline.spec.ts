@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { dismissConsentModal, neutralizeAstroDevToolbar } from './utils/page';
+import { setTheme, stabilizePageChrome } from './utils/page';
 
 const VIEWPORTS = [
   { name: 'desktop', viewport: { width: 1280, height: 768 } },
@@ -13,8 +13,8 @@ for (const { name, viewport } of VIEWPORTS) {
 
     test('renders milestone cards and quick links', async ({ page }) => {
       await page.goto('/about/history/');
-      await neutralizeAstroDevToolbar(page);
-      await dismissConsentModal(page);
+      await stabilizePageChrome(page);
+      await setTheme(page, 'light');
 
       await expect(
         page.getByRole('heading', { name: 'Mission discipline across every growth stage' }),
@@ -33,8 +33,8 @@ for (const { name, viewport } of VIEWPORTS) {
 test.describe('timeline accessibility affordances', () => {
   test('skip link jumps to related resources section for keyboard users', async ({ page }) => {
     await page.goto('/about/history/');
-    await neutralizeAstroDevToolbar(page);
-    await dismissConsentModal(page);
+    await stabilizePageChrome(page);
+    await setTheme(page, 'light');
     const skipLink = page.locator('a.timeline-skip-link');
     await skipLink.focus();
     await expect(skipLink).toBeFocused();
@@ -45,8 +45,8 @@ test.describe('timeline accessibility affordances', () => {
 
   test('timeline cards become visible without relying on animation', async ({ page }) => {
     await page.goto('/about/history/');
-    await neutralizeAstroDevToolbar(page);
-    await dismissConsentModal(page);
+    await stabilizePageChrome(page);
+    await setTheme(page, 'light');
     const firstCard = page.locator('[data-animate="timeline-card"]').first();
     await expect(firstCard).toBeVisible();
     const opacity = await firstCard.evaluate((element) => getComputedStyle(element).opacity);

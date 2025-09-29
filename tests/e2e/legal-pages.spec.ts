@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { dismissConsentModal, neutralizeAstroDevToolbar } from './utils/page';
+import { setTheme, stabilizePageChrome } from './utils/page';
 
 const legalPages = [
   {
@@ -27,8 +27,8 @@ test.describe('Legal policy surfaces', () => {
   for (const pageDefinition of legalPages) {
     test(`${pageDefinition.title} exposes DSAR hooks and Klaro references`, async ({ page }) => {
       await page.goto(pageDefinition.path);
-      await neutralizeAstroDevToolbar(page);
-      await dismissConsentModal(page);
+      await stabilizePageChrome(page);
+      await setTheme(page, 'light');
 
       await expect(
         page.getByRole('heading', { level: 1, name: pageDefinition.title }),

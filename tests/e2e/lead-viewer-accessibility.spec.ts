@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { dismissConsentModal } from './utils/page';
+import { setTheme, stabilizePageChrome } from './utils/page';
 
 const VALID_AUTH = `Basic ${Buffer.from('analyst:secret').toString('base64')}`;
 
@@ -85,8 +85,8 @@ test.describe('lead viewer admin surface', () => {
 
   test('supports keyboard auth flow and renders accessible tables', async ({ page }) => {
     await page.goto('/lead-viewer/');
-
-    await dismissConsentModal(page);
+    await stabilizePageChrome(page);
+    await setTheme(page, 'light');
 
     const username = page.getByLabel('Username');
     await username.fill('analyst');

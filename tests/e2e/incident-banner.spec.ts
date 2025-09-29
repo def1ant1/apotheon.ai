@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-import { dismissConsentModal, neutralizeAstroDevToolbar } from './utils/page';
+import { setTheme, stabilizePageChrome } from './utils/page';
 
 test.describe('incident banner', () => {
   test.beforeEach(async ({ page }) => {
@@ -30,8 +30,8 @@ test.describe('incident banner', () => {
 
   test('stays hidden when synthetic monitors report healthy', async ({ page }) => {
     await page.goto('/');
-    await neutralizeAstroDevToolbar(page);
-    await dismissConsentModal(page);
+    await stabilizePageChrome(page);
+    await setTheme(page, 'light');
 
     const banner = page.locator('[data-testid="incident-banner"]');
     await banner.first().waitFor({ state: 'attached' });
@@ -62,8 +62,8 @@ test.describe('incident banner', () => {
     );
 
     await page.goto('/');
-    await neutralizeAstroDevToolbar(page);
-    await dismissConsentModal(page);
+    await stabilizePageChrome(page);
+    await setTheme(page, 'light');
 
     const banner = page.locator('[data-testid="incident-banner"]');
     await banner.waitFor({ state: 'visible' });

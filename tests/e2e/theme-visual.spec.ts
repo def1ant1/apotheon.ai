@@ -4,7 +4,12 @@ import { fileURLToPath } from 'node:url';
 import { test } from '@playwright/test';
 
 import { themeAttributes, type ThemeName } from '../../src/styles/tokens';
-import { dismissConsentModal, neutralizeAstroDevToolbar } from './utils/page';
+import {
+  forceReducedMotion,
+  preloadRouteAssets,
+  setTheme,
+  stabilizePageChrome,
+} from './utils/page';
 import { assertBase64Snapshot } from './utils/assertBase64Snapshot';
 
 const specDir = dirname(fileURLToPath(import.meta.url));
@@ -39,25 +44,11 @@ for (const { path, slug } of ROUTES) {
       // Theme baselines double as design review artefacts. When the contract needs to be updated,
       // run `npm run test:e2e:update-theme-visual` (which exports `UPDATE_THEME_VISUAL_BASELINES=1`)
       // and commit the refreshed base64 fixtures under `tests/e2e/fixtures/theme-visual/`.
+      await forceReducedMotion(page);
       await page.goto(path, { waitUntil: 'networkidle' });
-      await neutralizeAstroDevToolbar(page);
-      await dismissConsentModal(page);
-
-      // Force deterministic media queries so token-driven theming and reduced-motion fallbacks align
-      // with the expected screenshots. Combined with `animations: 'disabled'`, this prevents hover
-      // flicker, skeleton shimmer, and marquee loops from injecting pixel noise.
-      await page.emulateMedia({
-        colorScheme: theme,
-        reducedMotion: 'reduce',
-      });
-
-      // Inject the desired theme via the same `data-theme` contract the CSS tokens rely on. We mirror
-      // the attribute on both `<html>` and `<body>` to cover selectors that scope at different levels
-      // (BaseLayout defaults to a night theme until we override it).
-      await page.evaluate(({ themeName }) => {
-        document.documentElement.setAttribute('data-theme', themeName);
-        document.body?.setAttribute('data-theme', themeName);
-      }, { themeName: theme });
+      await stabilizePageChrome(page);
+      await setTheme(page, theme);
+      await preloadRouteAssets(page);
 
       // Wait for critical rendering primitives to stabilise so Playwright captures consistent pixels.
       await page.waitForFunction(() => {

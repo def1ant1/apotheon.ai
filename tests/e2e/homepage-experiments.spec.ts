@@ -1,6 +1,6 @@
 import { test, expect, type Page, type Route } from '@playwright/test';
 
-import { neutralizeAstroDevToolbar, waitForIslandHydration } from './utils/page';
+import { setTheme, stabilizePageChrome, waitForIslandHydration } from './utils/page';
 
 async function stubExperimentVariant(page: Page, variant: 'control' | 'accelerated') {
   await page.route('**/v1/features', async (route: Route) => {
@@ -26,7 +26,8 @@ test.describe('Homepage experiment badge', () => {
   test('renders control messaging when the flag is disabled', async ({ page }) => {
     await stubExperimentVariant(page, 'control');
     await page.goto('/');
-    await neutralizeAstroDevToolbar(page);
+    await stabilizePageChrome(page);
+    await setTheme(page, 'light');
     await waitForIslandHydration(page, '[data-testid="experiment-badge"]');
 
     const badge = page.getByTestId('experiment-badge');
@@ -37,7 +38,8 @@ test.describe('Homepage experiment badge', () => {
   test('switches to the accelerated copy when the flag is enabled', async ({ page }) => {
     await stubExperimentVariant(page, 'accelerated');
     await page.goto('/');
-    await neutralizeAstroDevToolbar(page);
+    await stabilizePageChrome(page);
+    await setTheme(page, 'light');
     await waitForIslandHydration(page, '[data-testid="experiment-badge"]');
 
     const badge = page.getByTestId('experiment-badge');

@@ -1,10 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import {
-  dismissConsentModal,
-  neutralizeAstroDevToolbar,
-  waitForIslandHydration,
-} from './utils/page';
+import { setTheme, stabilizePageChrome, waitForIslandHydration } from './utils/page';
 
 test.beforeEach(async ({ page }) => {
   page.on('console', (message) => {
@@ -43,8 +39,8 @@ test('homepage investor CTA completes the investor contact journey', async ({ pa
   });
 
   await page.goto('/');
-  await neutralizeAstroDevToolbar(page);
-  await dismissConsentModal(page);
+  await stabilizePageChrome(page);
+  await setTheme(page, 'light');
 
   const investorCta = page.locator('[data-analytics-id="homepage-investor-banner-cta"]');
   await investorCta.scrollIntoViewIfNeeded();
@@ -53,15 +49,18 @@ test('homepage investor CTA completes the investor contact journey', async ({ pa
   await expect(page).toHaveURL(/\/about\/investors\//);
   await expect(page.getByRole('heading', { level: 1, name: 'Investor Relations' })).toBeVisible();
 
+  await stabilizePageChrome(page);
+  await setTheme(page, 'light');
+
   const heroCta = page.getByRole('link', { name: 'Speak with investor relations' }).first();
   await heroCta.click();
 
   await expect(page).toHaveURL(/\/about\/contact\//);
   await expect(page).toHaveURL(/team=investor-relations/);
 
-  await neutralizeAstroDevToolbar(page);
+  await stabilizePageChrome(page);
+  await setTheme(page, 'light');
   await waitForIslandHydration(page, 'form[aria-labelledby][data-js-ready]');
-  await dismissConsentModal(page);
   await page.waitForFunction(() => typeof window.__CONTACT_FORM_SET_TOKEN__ === 'function');
   await page.evaluate(() => {
     window.__CONTACT_FORM_SET_TOKEN__?.('playwright-turnstile-token');

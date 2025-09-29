@@ -1,10 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-import {
-  dismissConsentModal,
-  neutralizeAstroDevToolbar,
-  waitForIslandHydration,
-} from './utils/page';
+import { setTheme, stabilizePageChrome, waitForIslandHydration } from './utils/page';
 
 const viewports: Record<string, { width: number; height: number }> = {
   desktop: { width: 1280, height: 720 },
@@ -17,7 +13,8 @@ async function prepareViewport(page: Page, viewport: { width: number; height: nu
 
 async function gotoAndPrepare(page: Page, path: string) {
   await page.goto(path);
-  await neutralizeAstroDevToolbar(page);
+  await stabilizePageChrome(page);
+  await setTheme(page, 'light');
 }
 
 test.describe('accessibility regression flows', () => {
@@ -29,7 +26,6 @@ test.describe('accessibility regression flows', () => {
 
       test('skip link lands focus on main content', async ({ page }) => {
         await gotoAndPrepare(page, '/');
-        await dismissConsentModal(page);
 
         const skipLink = page.getByRole('link', { name: /skip to content/i });
         await skipLink.focus();
@@ -42,7 +38,6 @@ test.describe('accessibility regression flows', () => {
 
       test('primary navigation is operable via keyboard', async ({ page }) => {
         await gotoAndPrepare(page, '/');
-        await dismissConsentModal(page);
 
         if (label === 'mobile') {
           await waitForIslandHydration(page, '[data-mobile-nav-ready]', 'data-mobile-nav-ready');
@@ -84,7 +79,6 @@ test.describe('accessibility regression flows', () => {
       test('form validation messaging announces issues', async ({ page }) => {
         await gotoAndPrepare(page, '/about/contact/');
         await waitForIslandHydration(page, 'form[aria-labelledby][data-js-ready]');
-        await dismissConsentModal(page);
 
         const submit = page.getByRole('button', { name: /send message/i });
         await submit.focus();

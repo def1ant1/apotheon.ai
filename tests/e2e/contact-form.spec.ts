@@ -1,10 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-import {
-  dismissConsentModal,
-  neutralizeAstroDevToolbar,
-  waitForIslandHydration,
-} from './utils/page';
+import { setTheme, stabilizePageChrome, waitForIslandHydration } from './utils/page';
 
 test.beforeEach(async ({ page }) => {
   page.on('console', (message) => {
@@ -42,9 +38,9 @@ test('accepts a valid submission', async ({ page }) => {
   });
 
   await page.goto('/about/contact/');
-  await neutralizeAstroDevToolbar(page);
+  await stabilizePageChrome(page);
+  await setTheme(page, 'light');
   await waitForIslandHydration(page, 'form[aria-labelledby][data-js-ready]');
-  await dismissConsentModal(page);
   await page.waitForFunction(() => typeof window.__CONTACT_FORM_SET_TOKEN__ === 'function');
   await page.evaluate(() => {
     window.__CONTACT_FORM_SET_TOKEN__?.('playwright-turnstile-token');
@@ -78,9 +74,9 @@ test('surfaces validation failures from the worker', async ({ page }) => {
   });
 
   await page.goto('/about/contact/');
-  await neutralizeAstroDevToolbar(page);
+  await stabilizePageChrome(page);
+  await setTheme(page, 'light');
   await waitForIslandHydration(page, 'form[aria-labelledby][data-js-ready]');
-  await dismissConsentModal(page);
   await page.waitForFunction(() => typeof window.__CONTACT_FORM_SET_TOKEN__ === 'function');
   await page.evaluate(() => {
     window.__CONTACT_FORM_SET_TOKEN__?.('playwright-turnstile-token');
