@@ -1,5 +1,9 @@
+<!--
+  Diagram provenance: Adapted from automation-studio.svg in commit history to represent the Hermes automation pillar.
+  Maintainer note: keep structural geometry intact so automation pipelines can diff changes deterministically.
+-->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 220">
-  <title>Automation Studio orchestration lanes</title>
+  <title>Hermes automation orchestration lanes</title>
   <rect x="0" y="0" width="360" height="220" rx="18" fill="#020617" />
   <g stroke="#1E293B" stroke-width="1.5" fill="#0F172A">
     <rect x="24" y="40" width="312" height="48" rx="12" />

@@ -52,12 +52,12 @@ describe('Industry section view models', () => {
 
   const solutionMap: IndustrySolutionReference[] = [
     {
-      slug: 'atlas',
+      slug: 'mnemosyne',
       positioning: 'Centralizes telemetry and governed analytics for financial services teams.',
       outcome: 'Cuts investigation prep time in half.',
     },
     {
-      slug: 'automation-studio',
+      slug: 'hermes',
       positioning:
         'Delivers policy-driven automations that pass internal risk reviews without manual rewrites.',
     },
@@ -94,12 +94,12 @@ describe('Industry section view models', () => {
 
   const solutionEntries: IndustrySolutionSummary[] = [
     {
-      slug: 'atlas',
-      data: { title: 'Atlas Data Fabric' },
+      slug: 'mnemosyne',
+      data: { title: 'Mnemosyne Activation Fabric' },
     },
     {
-      slug: 'automation-studio',
-      data: { title: 'Automation Studio' },
+      slug: 'hermes',
+      data: { title: 'Hermes Automation Cloud' },
     },
   ] as const;
 
@@ -125,8 +125,8 @@ describe('Industry section view models', () => {
 
     expect(resolvedSolutions).toMatchSnapshot();
     expect(resolvedSolutions.map((entry) => entry.title)).toEqual([
-      'Atlas Data Fabric',
-      'Automation Studio',
+      'Mnemosyne Activation Fabric',
+      'Hermes Automation Cloud',
     ]);
   });
 

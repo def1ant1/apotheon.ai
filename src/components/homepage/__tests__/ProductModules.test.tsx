@@ -6,24 +6,31 @@ import ProductModulesSection from '../ProductModulesSection';
 
 const demoModules = [
   {
-    name: 'Governance Lakehouse',
+    name: 'Themis Governance Control Plane',
     summary:
       'Unifies policies, risk scoring, and mitigation tasks so legal, security, and product teams collaborate from the same source of truth.',
-    href: '/solutions/governance-lakehouse',
+    href: '/solutions/themis',
     icon: 'themis',
   },
   {
-    name: 'Observability Fabric',
+    name: 'Morpheus Observability Fabric',
     summary:
       'Streams token-level telemetry, feedback queues, and anomaly detection to keep every agentic workflow measurable and improvable.',
-    href: '/solutions/observability-fabric',
+    href: '/solutions/morpheus',
+    icon: 'morpheus',
+  },
+  {
+    name: 'Hermes Automation Cloud',
+    summary:
+      'No-code and code-native builders orchestrate human reviews, multi-model routing, and escalation runbooks with enterprise-grade RBAC.',
+    href: '/solutions/hermes',
     icon: 'hermes',
   },
   {
-    name: 'Automation Studio',
+    name: 'Mnemosyne Activation Fabric',
     summary:
-      'No-code and code-native builders orchestrate human reviews, multi-model routing, and escalation runbooks with enterprise-grade RBAC.',
-    href: '/solutions/automation-studio',
+      'Governs identity resolution, consent-aware audiences, and activation telemetry without bespoke ETL upkeep.',
+    href: '/solutions/mnemosyne',
     icon: 'mnemosyne',
   },
 ];

@@ -20,17 +20,17 @@ test.describe('Law industry detail page', () => {
     await expect(solutionList).toHaveCount(3);
     await expect(
       page.locator(
-        '#industry-solution-map [data-solution-slug="atlas"] a[href="/solutions/atlas/"]',
+        '#industry-solution-map [data-solution-slug="mnemosyne"] a[href="/solutions/mnemosyne/"]',
       ),
     ).toBeVisible();
     await expect(
       page.locator(
-        '#industry-solution-map [data-solution-slug="automation-studio"] a[href="/solutions/automation-studio/"]',
+        '#industry-solution-map [data-solution-slug="hermes"] a[href="/solutions/hermes/"]',
       ),
     ).toBeVisible();
     await expect(
       page.locator(
-        '#industry-solution-map [data-solution-slug="governance-lakehouse"] a[href="/solutions/governance-lakehouse/"]',
+        '#industry-solution-map [data-solution-slug="themis"] a[href="/solutions/themis/"]',
       ),
     ).toBeVisible();
 

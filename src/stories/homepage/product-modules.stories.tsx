@@ -17,24 +17,31 @@ export default meta;
 
 const demoModules: ModuleData[] = [
   {
-    name: 'Governance Lakehouse',
+    name: 'Themis Governance Control Plane',
     summary:
       'Centralizes policies, attestations, and remediation workflows so legal, risk, and product teams work from the same truth set.',
-    href: '/solutions/governance-lakehouse',
+    href: '/solutions/themis',
     icon: 'themis',
   },
   {
-    name: 'Observability Fabric',
+    name: 'Morpheus Observability Fabric',
     summary:
       'Token-level telemetry with configurable retention and anomaly routing. Scales from pre-production evals to global deployments.',
-    href: '/solutions/observability-fabric',
+    href: '/solutions/morpheus',
+    icon: 'morpheus',
+  },
+  {
+    name: 'Hermes Automation Cloud',
+    summary:
+      'Builder that choreographs human reviews, multi-model routing, and escalation handoffs with enterprise-grade RBAC.',
+    href: '/solutions/hermes',
     icon: 'hermes',
   },
   {
-    name: 'Automation Studio',
+    name: 'Mnemosyne Activation Fabric',
     summary:
-      'Builder that choreographs human reviews, multi-model routing, and escalation handoffs with enterprise-grade RBAC.',
-    href: '/solutions/automation-studio',
+      'Activation foundation that synchronizes governed customer data into every channel without bespoke ETL.',
+    href: '/solutions/mnemosyne',
     icon: 'mnemosyne',
   },
 ];

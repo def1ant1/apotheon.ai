@@ -108,6 +108,7 @@
     "@lhci/cli": "^0.15.1",
     "@miniflare/d1": "^2.14.4",
     "@playwright/test": "^1.55.0",
+    "@tailwindcss/vite": "^4.1.13",
     "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/react": "^14.3.1",
     "@testing-library/user-event": "^14.6.1",
@@ -151,12 +152,11 @@
     "tailwindcss": "4.1.13",
     "tsx": "^4.20.5",
     "typescript": "^5.6.2",
+    "vite": "6.3.6",
     "vitest": "2.1.9",
     "wrangler": "^3.77.0",
     "yaml": "^2.8.1",
-    "zod": "^3.25.76",
-    "vite": "6.3.6",
-    "@tailwindcss/vite": "4.1.13"
+    "zod": "^3.25.76"
   },
   "enterpriseDependencyNotes": {
     "astro": "Pinned to 5.14.1 to land the Astro 5 feature surface while keeping reproducible builds for security review.",
