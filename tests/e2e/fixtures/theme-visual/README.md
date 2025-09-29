@@ -13,8 +13,8 @@ can be reviewed without pulling binary assets into the repository.
    ```bash
    npm run test:e2e:update-theme-visual
    ```
-   The helper in `tests/e2e/utils/assertBase64Snapshot.ts` exports
-   `UPDATE_THEME_VISUAL_BASELINES=1` automatically, then rewrites the fixtures with a prefixed
+   The CLI in `scripts/update-theme-visual-fixtures.ts` exports
+   `PLAYWRIGHT_UPDATE_SNAPSHOTS=1` automatically, then rewrites the fixtures with a prefixed
    comment block describing the route, theme, fixture path, and regeneration command.
 3. Commit the updated `*.base64.txt` files and the Playwright report if relevant. During review,
    confirm that each header reflects the expected route/theme pairing and that the new base64 payloads

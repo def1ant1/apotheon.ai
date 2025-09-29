@@ -3,30 +3,17 @@ import { fileURLToPath } from 'node:url';
 
 import { test } from '@playwright/test';
 
-import { themeAttributes, type ThemeName } from '../../src/styles/tokens';
+import { THEME_VISUAL_ROUTES, THEME_VISUAL_THEMES } from './theme-visual.contract';
 import {
   forceReducedMotion,
   preloadRouteAssets,
   setTheme,
   stabilizePageChrome,
 } from './utils/page';
-import { assertBase64Snapshot } from './utils/assertBase64Snapshot';
+import { comparePngSnapshot } from './utils/snapshot';
 
 const specDir = dirname(fileURLToPath(import.meta.url));
 const FIXTURE_DIR = join(specDir, 'fixtures', 'theme-visual');
-
-// The contract intentionally lists high-signal marketing routes so contributors can review
-// light/dark deltas for hero modules, dense grids, and long-form content without manual QA.
-// Extend this array as new surfaces launch; the snapshot helper automatically creates the
-// fixture skeleton when `UPDATE_THEME_VISUAL_BASELINES=1` is supplied.
-const ROUTES: Array<{ path: string; slug: string }> = [
-  { path: '/', slug: 'homepage' },
-  { path: '/solutions/', slug: 'solutions-index' },
-  { path: '/industries/', slug: 'industries-index' },
-  { path: '/blog/aios-architecture/', slug: 'blog-aios-architecture' },
-];
-
-const THEMES = Object.keys(themeAttributes) as ThemeName[];
 
 // Lock the viewport and device characteristics so screenshots remain stable across developer
 // machines, CI runners, and Playwright releases. Avoiding mobile emulation keeps the layout static
@@ -38,12 +25,13 @@ test.use({
   hasTouch: false,
 });
 
-for (const { path, slug } of ROUTES) {
-  for (const theme of THEMES) {
-    test(`${slug} renders correctly in ${theme} theme`, async ({ page }) => {
+for (const { path, slug } of THEME_VISUAL_ROUTES) {
+  for (const theme of THEME_VISUAL_THEMES) {
+    test(`${slug} renders correctly in ${theme} theme`, async ({ page }, testInfo) => {
       // Theme baselines double as design review artefacts. When the contract needs to be updated,
-      // run `npm run test:e2e:update-theme-visual` (which exports `UPDATE_THEME_VISUAL_BASELINES=1`)
-      // and commit the refreshed base64 fixtures under `tests/e2e/fixtures/theme-visual/`.
+      // run `npm run test:e2e:update-theme-visual` (which now leverages the CLI refresher and exports
+      // `PLAYWRIGHT_UPDATE_SNAPSHOTS=1`) and commit the refreshed base64 fixtures under
+      // `tests/e2e/fixtures/theme-visual/`.
       await forceReducedMotion(page);
       await page.goto(path, { waitUntil: 'networkidle' });
       await stabilizePageChrome(page);
@@ -57,17 +45,13 @@ for (const { path, slug } of ROUTES) {
       });
       await page.waitForTimeout(300);
 
-      const screenshot = await page.screenshot({
-        animations: 'disabled',
-        fullPage: true,
-        caret: 'hide',
-        scale: 'css',
-      });
-
-      await assertBase64Snapshot({
-        pngBuffer: screenshot,
+      await comparePngSnapshot({
+        page,
+        routePath: path,
+        slug,
+        theme,
         fixturePath: join(FIXTURE_DIR, `${slug}__${theme}.base64.txt`),
-        scenarioLabel: `${path} (${theme})`,
+        testInfo,
       });
     });
   }
