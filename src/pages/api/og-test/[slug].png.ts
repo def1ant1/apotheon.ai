@@ -47,7 +47,11 @@ function createPreviewFontCache(): PreviewRenderEnv['OG_IMAGE_CACHE'] {
       }
       if (ArrayBuffer.isView(value)) {
         const view = value as ArrayBufferView;
-        store.set(key, view.buffer.slice(view.byteOffset, view.byteOffset + view.byteLength));
+        const normalizedViewBuffer = view.buffer.slice(
+          view.byteOffset,
+          view.byteOffset + view.byteLength,
+        ) as ArrayBuffer;
+        store.set(key, normalizedViewBuffer);
         return;
       }
       const reader = value.getReader();
@@ -117,7 +121,10 @@ export const GET: APIRoute = async ({ params, request }) => {
     source: undefined,
   });
 
-  const arrayBuffer = png.buffer.slice(png.byteOffset, png.byteOffset + png.byteLength);
+  const arrayBuffer = png.buffer.slice(
+    png.byteOffset,
+    png.byteOffset + png.byteLength,
+  ) as ArrayBuffer;
 
   return new Response(arrayBuffer, {
     headers: {

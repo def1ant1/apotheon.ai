@@ -42,7 +42,7 @@
 - Provide investor dashboards summarizing signed download activity and compliance attestations.
 - Fold incident response hooks into ops runbooks with automated dry runs.
 - **Automation notes:**
-  - [workers/contact](workers/contact) Worker handlers encapsulate validation, storage, and webhook emission.
+  - [workers/contact.ts](workers/contact.ts) Worker handlers encapsulate validation, storage, and webhook emission.
   - [scripts/ops](scripts/ops) contains backup and verification routines, including `ops:backup:dry-run` for D1/R2 exports.
   - [scripts/security](scripts/security) provides abuse detection and secret rotation helpers used by the worker deployment flow.
 

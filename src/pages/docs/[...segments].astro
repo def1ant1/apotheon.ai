@@ -40,7 +40,7 @@ const seo = {
   },
 };
 
-const repositoryBase = 'https://github.com/apotheonai/apotheon.ai/blob/main/';
+const repositoryBase = 'https://github.com/apotheon-ai/apotheon.ai/blob/main/';
 const sourceHref = entry.data.sourcePath
   ? new URL(entry.data.sourcePath, repositoryBase).toString()
   : null;
@@ -62,11 +62,11 @@ const lastReviewedDisplay =
     trail={breadcrumbs}
   />
 
-  <article class="mx-auto flex w-full max-w-5xl flex-col gap-10 px-6 pb-24 pt-12 text-slate-100">
+  <article class="mx-auto flex w-full max-w-5xl flex-col gap-10 px-6 pt-12 pb-24 text-slate-100">
     <header class="grid gap-4">
       <div class="flex flex-wrap items-center gap-3">
         <span
-          class="rounded-full border border-slate-700 bg-slate-900/70 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-slate-300"
+          class="rounded-full border border-slate-700 bg-slate-900/70 px-3 py-1 text-xs font-semibold tracking-[0.3em] text-slate-300 uppercase"
         >
           {entry.data.categoryLabel ?? 'Docs'}
         </span>
@@ -92,7 +92,7 @@ const lastReviewedDisplay =
           )
         }
         <span
-          class="rounded-full border border-slate-700 bg-slate-950/60 px-3 py-1 text-[0.65rem] uppercase tracking-[0.3em] text-slate-300"
+          class="rounded-full border border-slate-700 bg-slate-950/60 px-3 py-1 text-[0.65rem] tracking-[0.3em] text-slate-300 uppercase"
         >
           Automation ready
         </span>

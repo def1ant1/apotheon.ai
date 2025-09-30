@@ -1,0 +1,12 @@
+{
+  "name": "lychee",
+  "version": "0.20.1",
+  "description": "Enterprise wrapper bundling the lycheeverse/lychee CLI for deterministic link audits.",
+  "bin": {
+    "lychee": "bin/lychee.js"
+  },
+  "scripts": {
+    "postinstall": "node ./postinstall.js"
+  },
+  "license": "MIT"
+}

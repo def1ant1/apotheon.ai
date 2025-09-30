@@ -51,6 +51,15 @@ jobs:
       - name: Run linting
         run: npm run lint
 
+      - name: Upload link audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: link-audit-${{ matrix.node }}
+          path: artifacts/link-check/report.json
+          if-no-files-found: ignore
+          retention-days: 14
+
       - name: Type check
         run: npm run typecheck
 

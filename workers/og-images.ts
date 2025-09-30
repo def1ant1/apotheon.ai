@@ -426,7 +426,7 @@ async function renderOgImage(env: FontRuntimeEnv, payload: RenderPayload): Promi
 }
 
 function toArrayBuffer(view: Uint8Array): ArrayBuffer {
-  return view.buffer.slice(view.byteOffset, view.byteOffset + view.byteLength);
+  return view.buffer.slice(view.byteOffset, view.byteOffset + view.byteLength) as ArrayBuffer;
 }
 
 async function persistMetadata(

@@ -28,9 +28,18 @@ const SNAPSHOT_ROOT = 'tests/e2e/__screenshots__';
 const DESKTOP_VIEWPORT = { width: 1440, height: 900 } as const;
 const PREFETCH_HEADER = 'x-apotheon-preload-image-manifest';
 
+type DeviceAugmentations = {
+  contextOptions?: { extraHTTPHeaders?: Record<string, string> };
+  launchOptions?: { args?: string[] };
+};
+
+const DESKTOP_DEVICE = devices['Desktop Chrome'];
+const MOBILE_DEVICE = devices['Pixel 5'];
+
 function buildDesktopProject(theme: 'light' | 'dark'): Project {
   const threshold = theme === 'dark' ? 0.05 : 0.02;
   const maxDiffPixelRatio = theme === 'dark' ? 0.03 : 0.015;
+  const desktopExtras = DESKTOP_DEVICE as unknown as DeviceAugmentations;
 
   return {
     name: `chromium-desktop-${theme}`,
@@ -39,20 +48,20 @@ function buildDesktopProject(theme: 'light' | 'dark'): Project {
       manifestPreloaded: true,
     },
     use: {
-      ...devices['Desktop Chrome'],
+      ...DESKTOP_DEVICE,
       colorScheme: theme,
       viewport: DESKTOP_VIEWPORT,
       reducedMotion: 'reduce',
       deviceScaleFactor: 1,
       extraHTTPHeaders: {
-        ...(devices['Desktop Chrome'].extraHTTPHeaders ?? {}),
+        ...(desktopExtras.contextOptions?.extraHTTPHeaders ?? {}),
         [PREFETCH_HEADER]: '1',
       },
       launchOptions: {
-        ...(devices['Desktop Chrome'].launchOptions ?? {}),
-        args: [...(devices['Desktop Chrome'].launchOptions?.args ?? []), '--force-device-scale-factor=1'],
+        ...(desktopExtras.launchOptions ?? {}),
+        args: [...(desktopExtras.launchOptions?.args ?? []), '--force-device-scale-factor=1'],
       },
-    },
+    } as Parameters<typeof defineConfig>[0]['use'],
     expect: {
       toMatchSnapshot: {
         threshold,
@@ -84,18 +93,19 @@ export default defineConfig({
       [PREFETCH_HEADER]: '1',
     },
     reducedMotion: 'reduce',
-  },
+  } as Parameters<typeof defineConfig>[0]['use'],
   projects: [
     {
       name: 'chromium-mobile',
       use: {
-        ...devices['Pixel 5'],
+        ...MOBILE_DEVICE,
         reducedMotion: 'reduce',
         extraHTTPHeaders: {
-          ...(devices['Pixel 5'].extraHTTPHeaders ?? {}),
+          ...((MOBILE_DEVICE as unknown as DeviceAugmentations).contextOptions?.extraHTTPHeaders ??
+            {}),
           [PREFETCH_HEADER]: '1',
         },
-      },
+      } as Parameters<typeof defineConfig>[0]['use'],
     },
     buildDesktopProject('light'),
     buildDesktopProject('dark'),

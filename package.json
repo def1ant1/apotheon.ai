@@ -19,7 +19,8 @@
     "icons:build": "node ./scripts/brand/build-icons.mjs --react",
     "diagrams:lint": "node ./scripts/brand/build-solution-diagrams.mjs --check",
     "diagrams:build": "node ./scripts/brand/build-solution-diagrams.mjs",
-    "lint": "npm run lint:vale && npm run diagrams:lint && npm run icons:lint && npm run lint:eslint && npm run lint:styles",
+    "lint": "npm run lint:vale && npm run diagrams:lint && npm run icons:lint && npm run lint:eslint && npm run lint:styles && npm run lint:links",
+    "lint:links": "node ./scripts/ci/run-lychee.mjs",
     "lint:eslint": "cross-env ESLINT_USE_FLAT_CONFIG=0 eslint --config .eslintrc.cjs . --max-warnings=0 --report-unused-disable-directives --ext .js,.jsx,.ts,.tsx,.astro,.mdx --ignore-pattern '!.ladle/**/*'",
     "lint:styles": "stylelint \"src/**/*.{css,pcss,scss,sass,astro}\" \"docs/**/*.{css,pcss,scss,sass,astro}\" \"public/**/*.{css,pcss,scss,sass}\" --allow-empty-input",
     "format": "prettier --write \"**/*.{astro,css,html,js,json,md,mdx,ts,tsx,yaml,yml}\"",
@@ -159,7 +160,8 @@
     "vitest": "2.1.9",
     "wrangler": "^3.77.0",
     "yaml": "^2.8.1",
-    "zod": "^3.25.76"
+    "zod": "^3.25.76",
+    "lychee": "file:vendor/lychee"
   },
   "enterpriseDependencyNotes": {
     "astro": "Pinned to 5.14.1 to land the Astro 5 feature surface while keeping reproducible builds for security review.",
@@ -185,6 +187,7 @@
     "eslint-plugin-security": "Locked to 3.0.1 ensuring the security lint surface stays static for auditability.",
     "eslint-mdx": "Pinned to 3.6.2 for consistent MDX linting semantics matching the plugin layer.",
     "eslint-import-resolver-typescript": "Locked to 4.4.4 so path resolution mirrors our tsconfig during Vite 6 upgrades.",
-    "@tailwindcss/vite": "Pinned to 4.1.13 so the Tailwind 4 Lightning engine runs through Vite without relying on the deprecated Astro wrapper."
+    "@tailwindcss/vite": "Pinned to 4.1.13 so the Tailwind 4 Lightning engine runs through Vite without relying on the deprecated Astro wrapper.",
+    "lychee": "Vendored at 0.20.1 via file:vendor/lychee so the Rust CLI ships with prebuilt binaries, giving us deterministic, air-gapped friendly link audits."
   }
 }

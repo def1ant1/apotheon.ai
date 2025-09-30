@@ -1,4 +1,16 @@
-# End-to-end testing & visual baselines
+---
+title: End-to-end testing & visual baselines
+category: dev
+categoryLabel: Development
+description: This runbook explains how we exercise the Playwright suite, keep
+  the light/dark theme fixtures in sync with intentional UI changes, and debug
+  snapshot diffs without falling back to ad-hoc manual review. Follow the flow
+  below before touching the marketing surface or shipping new design tokens so
+  the CI pipeline inherits deterministic pixels.
+sourcePath: dev/TESTING.md
+sourceLastModified: 2025-09-30T16:35:03.665Z
+tags: []
+---
 
 This runbook explains how we exercise the Playwright suite, keep the light/dark theme fixtures in sync with
 intentional UI changes, and debug snapshot diffs without falling back to ad-hoc manual review. Follow the flow below
@@ -98,12 +110,10 @@ broken references.
   hermetic CI, so use `npm run lint:links -- --online` when you explicitly want to exercise production URLs.
 - **Artifact trail.** Results land in `artifacts/link-check/report.json`; commit or upload this file when auditors need
   evidence of the scan.
-- **Binary provisioning.** The vendored CLI lives under `vendor/lychee` and downloads its architecture-specific binary into
-  `vendor/lychee/vendor/` during `npm install`. The executable is gitignored to satisfy the "no large binaries" policy, so
-  pre-seed that directory before installing when you work completely offline. Set `APOTHEON_LYCHEE_ARCHIVE_URL` to an
-  internal mirror, `APOTHEON_LYCHEE_ARCHIVE_PATH` to a pre-seeded tarball, or `APOTHEON_LYCHEE_SKIP_DOWNLOAD=1` once the
-  binary is present. Use `HOMEPAGE_HERO_DISABLE_RENDER=1` when you do prime the static build to avoid Python/Pillow
-  requirements.
+- **Binary provisioning.** The vendored CLI lives under `vendor/lychee`. If the environment cannot reach GitHub, set
+  `APOTHEON_LYCHEE_ARCHIVE_URL` to an internal mirror, `APOTHEON_LYCHEE_ARCHIVE_PATH` to a pre-seeded tarball, or
+  `APOTHEON_LYCHEE_SKIP_DOWNLOAD=1` once the binary is present. Use `HOMEPAGE_HERO_DISABLE_RENDER=1` when you do prime the
+  static build to avoid Python/Pillow requirements.
 
 ## Troubleshooting deterministic captures
 

@@ -42,7 +42,7 @@ describe.sequential('whitepaper automation pipeline', () => {
       const pdfArray = pdfBuffer.buffer.slice(
         pdfBuffer.byteOffset,
         pdfBuffer.byteOffset + pdfBuffer.byteLength,
-      );
+      ) as ArrayBuffer;
       const pdf = await PDFDocument.load(pdfArray);
       const checksum = createHash('sha256').update(pdfBuffer).digest('hex');
 

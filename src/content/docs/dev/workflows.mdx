@@ -7,7 +7,7 @@ description: The `/about/contact/` experience now routes through a Cloudflare
   document outlines how the pipeline is wired together and what automation keeps
   it healthy in pre-production environments.
 sourcePath: dev/WORKFLOWS.md
-sourceLastModified: 2025-09-29T00:17:47.286Z
+sourceLastModified: 2025-09-30T15:59:37.715Z
 tags: []
 ---
 
@@ -16,7 +16,7 @@ inquiry lands in auditable infrastructure backed by D1. This document outlines
 how the pipeline is wired together and what automation keeps it healthy in
 pre-production environments.
 
-> **Onboarding reminder:** Before diving into workflow specifics, review the [README Quick Start](https://github.com/apotheonai/apotheon.ai/blob/main/README.md#quick-start) for the required tooling cadence and the [README Features](https://github.com/apotheonai/apotheon.ai/blob/main/README.md#features) recap so your local environment mirrors the static-first contract described in the hero block.
+> **Onboarding reminder:** Before diving into workflow specifics, review the [README Quick Start](https://github.com/apotheon-ai/apotheon.ai/blob/main/README.md#quick-start) for the required tooling cadence and the [README Features](https://github.com/apotheon-ai/apotheon.ai/blob/main/README.md#features) recap so your local environment mirrors the static-first contract described in the hero block.
 
 ## High-level sequence
 
@@ -67,9 +67,34 @@ pre-production environments.
   macOS laptops, or Windows VMs no longer requires manual cleanup—each
   environment hydrates its own Vale executable automatically.
 
+### Theme visual regression baselines
+
+- `tests/e2e/theme-visual.spec.ts` now sources its crawl targets directly from
+  `THEME_VISUAL_ROUTES`, giving the automation suite a single contract that
+  spans the marketing homepage, the documentation shell, and the lead viewer
+  dashboard. Each run exercises hero blocks, long-form layouts, and the RevOps
+  admin chrome so enterprise-ready coverage lands in one pass.
+- Deterministic screenshots are written to `tests/e2e/fixtures/theme-visual/`
+  as base64-encoded PNG strings. Persisting text artifacts keeps Git history
+  readable while still catching pixel-perfect regressions across the three
+  surfaces.
+- Run `npm run test:e2e:update-theme-visual` whenever theme tokens, typography
+  ramps, or layout primitives change. The script first executes the
+  `scripts/update-theme-visual-fixtures.ts` CLI (which internally exports
+  `PLAYWRIGHT_UPDATE_SNAPSHOTS=1`) and then replays the Playwright spec so the
+  committed fixtures and the report stay aligned.
+- Leave the environment flag unset during everyday `npm run test:e2e` runs so
+  the stored baselines guard against accidental theme drift. The assertion
+  messaging in `comparePngSnapshot` prints the regeneration command whenever a
+  diff is detected, matching the new npm script for CI parity.
+- Review the most recent regeneration log at
+  [`reports/automation/2025-02-19-theme-visual-regeneration.md`](https://github.com/apotheon-ai/apotheon.ai/blob/main/reports/automation/2025-02-19-theme-visual-regeneration.md)
+  before adjusting the contract so future pull requests inherit the audited
+  route × theme matrix.
+
 ### Node.js engine baseline
 
-The [README Quick Start](https://github.com/apotheonai/apotheon.ai/blob/main/README.md#quick-start) is the canonical source
+The [README Quick Start](https://github.com/apotheon-ai/apotheon.ai/blob/main/README.md#quick-start) is the canonical source
 for runtime support. Align with its **Node.js 20.x/22.x LTS** requirement so the
 Worker automation, Astro pipeline, and analytics proxies execute against the
 same JavaScript engine everywhere.

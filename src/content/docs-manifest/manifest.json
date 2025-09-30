@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2025-09-29T00:30:15.830Z",
+  "generatedAt": "2025-09-30T17:00:37.663Z",
   "source": "file:///workspace/apotheon.ai/docs",
   "entries": [
     {
@@ -9,7 +9,7 @@
       "categoryLabel": "AI Playbooks",
       "slug": "ai-instructions",
       "sourcePath": "ai-instructions.md",
-      "sourceLastModified": "2025-09-29T00:17:47.286Z"
+      "sourceLastModified": "2025-09-30T04:05:36.323Z"
     },
     {
       "title": "Architecture Decision Ledger",
@@ -18,7 +18,7 @@
       "categoryLabel": "Architecture",
       "slug": "architecture/decisions",
       "sourcePath": "architecture/DECISIONS.md",
-      "sourceLastModified": "2025-09-28T21:16:01.507Z"
+      "sourceLastModified": "2025-09-30T04:05:36.323Z"
     },
     {
       "title": "Apotheon Brand & Experience Style Guide",
@@ -27,7 +27,7 @@
       "categoryLabel": "Brand",
       "slug": "brand/styleguide",
       "sourcePath": "brand/STYLEGUIDE.md",
-      "sourceLastModified": "2025-09-29T00:23:47.881Z"
+      "sourceLastModified": "2025-09-30T15:59:37.715Z"
     },
     {
       "title": "Blog Editorial Playbook",
@@ -36,7 +36,7 @@
       "categoryLabel": "Content Strategy",
       "slug": "content/blog-editorial",
       "sourcePath": "content/BLOG_EDITORIAL.md",
-      "sourceLastModified": "2025-09-28T21:16:01.507Z"
+      "sourceLastModified": "2025-09-30T04:05:36.323Z"
     },
     {
       "title": "Editorial and Experiment Calendar",
@@ -45,7 +45,7 @@
       "categoryLabel": "Content Strategy",
       "slug": "content/calendar",
       "sourcePath": "content/CALENDAR.md",
-      "sourceLastModified": "2025-09-28T21:16:01.507Z"
+      "sourceLastModified": "2025-09-30T04:05:36.323Z"
     },
     {
       "title": "CMS & Lead Management Playbook",
@@ -54,7 +54,7 @@
       "categoryLabel": "Content Strategy",
       "slug": "content/cms",
       "sourcePath": "content/CMS.md",
-      "sourceLastModified": "2025-09-28T21:16:01.507Z"
+      "sourceLastModified": "2025-09-30T04:05:36.323Z"
     },
     {
       "title": "Marketing Information Architecture",
@@ -63,7 +63,7 @@
       "categoryLabel": "Content Strategy",
       "slug": "content/information-architecture",
       "sourcePath": "content/INFORMATION_ARCHITECTURE.md",
-      "sourceLastModified": "2025-09-28T21:16:01.507Z"
+      "sourceLastModified": "2025-09-30T04:05:36.323Z"
     },
     {
       "title": "Accessibility Operations Playbook",
@@ -72,7 +72,7 @@
       "categoryLabel": "Development",
       "slug": "dev/accessibility",
       "sourcePath": "dev/ACCESSIBILITY.md",
-      "sourceLastModified": "2025-09-28T21:16:01.507Z"
+      "sourceLastModified": "2025-09-30T04:05:36.323Z"
     },
     {
       "title": "Blog Delivery Workflow",
@@ -81,7 +81,7 @@
       "categoryLabel": "Development",
       "slug": "dev/blog",
       "sourcePath": "dev/BLOG.md",
-      "sourceLastModified": "2025-09-28T21:16:01.507Z"
+      "sourceLastModified": "2025-09-30T04:05:36.323Z"
     },
     {
       "title": "Blog Analytics Platform",
@@ -90,7 +90,7 @@
       "categoryLabel": "Development",
       "slug": "dev/blog-analytics",
       "sourcePath": "dev/BLOG-ANALYTICS.md",
-      "sourceLastModified": "2025-09-28T21:16:01.507Z"
+      "sourceLastModified": "2025-09-30T04:05:36.323Z"
     },
     {
       "title": "Continuous Integration Pipeline",
@@ -99,7 +99,7 @@
       "categoryLabel": "Development",
       "slug": "dev/ci-cd",
       "sourcePath": "dev/CI_CD.md",
-      "sourceLastModified": "2025-09-28T21:16:01.507Z"
+      "sourceLastModified": "2025-09-30T04:05:36.323Z"
     },
     {
       "title": "Editorial Playbook",
@@ -108,7 +108,7 @@
       "categoryLabel": "Development",
       "slug": "dev/editorial",
       "sourcePath": "dev/EDITORIAL.md",
-      "sourceLastModified": "2025-09-28T21:16:01.507Z"
+      "sourceLastModified": "2025-09-30T04:05:36.323Z"
     },
     {
       "title": "History Timeline Editorial Playbook",
@@ -117,7 +117,7 @@
       "categoryLabel": "Development",
       "slug": "dev/history",
       "sourcePath": "dev/HISTORY.md",
-      "sourceLastModified": "2025-09-28T21:16:01.507Z"
+      "sourceLastModified": "2025-09-30T04:05:36.323Z"
     },
     {
       "title": "Homepage Governance",
@@ -126,7 +126,7 @@
       "categoryLabel": "Development",
       "slug": "dev/homepage",
       "sourcePath": "dev/HOMEPAGE.md",
-      "sourceLastModified": "2025-09-28T21:16:01.507Z"
+      "sourceLastModified": "2025-09-30T04:05:36.323Z"
     },
     {
       "title": "Internationalisation Operations",
@@ -135,7 +135,7 @@
       "categoryLabel": "Development",
       "slug": "dev/i18n",
       "sourcePath": "dev/I18N.md",
-      "sourceLastModified": "2025-09-28T21:16:01.511Z"
+      "sourceLastModified": "2025-09-30T04:05:36.323Z"
     },
     {
       "title": "Industries Editorial Playbook",
@@ -144,16 +144,25 @@
       "categoryLabel": "Development",
       "slug": "dev/industries",
       "sourcePath": "dev/INDUSTRIES.md",
-      "sourceLastModified": "2025-09-28T21:16:01.511Z"
+      "sourceLastModified": "2025-09-30T15:59:37.715Z"
+    },
+    {
+      "title": "Navigation Delivery Contract",
+      "description": "Enterprise buyers expect deterministic navigation affordances that scale across locales, screen readers, and motion preferences. This document captures the smooth-scroll/focus contract introduced for the global header and how to validate it before releasing to staging.",
+      "category": "dev",
+      "categoryLabel": "Development",
+      "slug": "dev/navigation",
+      "sourcePath": "dev/NAVIGATION.md",
+      "sourceLastModified": "2025-09-30T15:59:37.715Z"
     },
     {
       "title": "Performance & OpenGraph Automation",
-      "description": "This guide captures the automation that keeps our marketing surface fast, visually consistent, and regression friendly. Use it as a runbook when introducing new assets or reviewing pull requests that touch the rendering pipeline.",
+      "description": "This guide captures the automation that keeps our marketing surface fast, visually consistent, and regression friendly. Use it as a runbook when introducing new assets or reviewing pull requests that touch the rendering pipeline. For the Playwright workflow that enforces visual fidelity, see [End-to-end testing & visual baselines](./TESTING.md).",
       "category": "dev",
       "categoryLabel": "Development",
       "slug": "dev/performance",
       "sourcePath": "dev/PERFORMANCE.md",
-      "sourceLastModified": "2025-09-28T21:16:01.511Z"
+      "sourceLastModified": "2025-09-30T04:05:36.323Z"
     },
     {
       "title": "Privacy & Analytics Runbook",
@@ -162,7 +171,7 @@
       "categoryLabel": "Development",
       "slug": "dev/privacy",
       "sourcePath": "dev/PRIVACY.md",
-      "sourceLastModified": "2025-09-28T21:16:01.511Z"
+      "sourceLastModified": "2025-09-30T04:05:36.323Z"
     },
     {
       "title": "Role Targeting Presets",
@@ -171,7 +180,7 @@
       "categoryLabel": "Development",
       "slug": "dev/role-targeting",
       "sourcePath": "dev/ROLE-TARGETING.md",
-      "sourceLastModified": "2025-09-28T21:16:01.511Z"
+      "sourceLastModified": "2025-09-30T04:05:36.323Z"
     },
     {
       "title": "SEO & SMO Operations Guide",
@@ -180,7 +189,7 @@
       "categoryLabel": "Development",
       "slug": "dev/seo",
       "sourcePath": "dev/SEO.md",
-      "sourceLastModified": "2025-09-29T00:23:42.722Z"
+      "sourceLastModified": "2025-09-30T04:05:36.323Z"
     },
     {
       "title": "Solutions Content Schema & Workflow",
@@ -189,7 +198,16 @@
       "categoryLabel": "Development",
       "slug": "dev/solutions",
       "sourcePath": "dev/SOLUTIONS.md",
-      "sourceLastModified": "2025-09-28T21:16:01.511Z"
+      "sourceLastModified": "2025-09-30T04:05:36.323Z"
+    },
+    {
+      "title": "End-to-end testing & visual baselines",
+      "description": "This runbook explains how we exercise the Playwright suite, keep the light/dark theme fixtures in sync with intentional UI changes, and debug snapshot diffs without falling back to ad-hoc manual review. Follow the flow below before touching the marketing surface or shipping new design tokens so the CI pipeline inherits deterministic pixels.",
+      "category": "dev",
+      "categoryLabel": "Development",
+      "slug": "dev/testing",
+      "sourcePath": "dev/TESTING.md",
+      "sourceLastModified": "2025-09-30T16:35:03.665Z"
     },
     {
       "title": "Whitepaper delivery pipeline",
@@ -198,7 +216,7 @@
       "categoryLabel": "Development",
       "slug": "dev/whitepapers",
       "sourcePath": "dev/WHITEPAPERS.md",
-      "sourceLastModified": "2025-09-28T21:16:01.511Z"
+      "sourceLastModified": "2025-09-30T04:05:36.323Z"
     },
     {
       "title": "Contact submission workflow",
@@ -207,7 +225,7 @@
       "categoryLabel": "Development",
       "slug": "dev/workflows",
       "sourcePath": "dev/WORKFLOWS.md",
-      "sourceLastModified": "2025-09-29T00:17:47.286Z"
+      "sourceLastModified": "2025-09-30T15:59:37.715Z"
     },
     {
       "title": "Managed Service Alternatives",
@@ -216,7 +234,7 @@
       "categoryLabel": "Infrastructure",
       "slug": "infra/alternatives",
       "sourcePath": "infra/ALTERNATIVES.md",
-      "sourceLastModified": "2025-09-28T21:16:01.511Z"
+      "sourceLastModified": "2025-09-30T04:05:36.323Z"
     },
     {
       "title": "Hosting Playbook",
@@ -225,7 +243,7 @@
       "categoryLabel": "Infrastructure",
       "slug": "infra/hosting",
       "sourcePath": "infra/HOSTING.md",
-      "sourceLastModified": "2025-09-28T21:16:01.511Z"
+      "sourceLastModified": "2025-09-30T04:05:36.323Z"
     },
     {
       "title": "Go-Live Readiness Checklist",
@@ -234,7 +252,7 @@
       "categoryLabel": "Launch Readiness",
       "slug": "launch/go-live-checklist",
       "sourcePath": "launch/GO-LIVE_CHECKLIST.md",
-      "sourceLastModified": "2025-09-28T21:16:01.511Z"
+      "sourceLastModified": "2025-09-30T04:05:36.323Z"
     },
     {
       "title": "Self-Hosted Font Policy",
@@ -243,7 +261,7 @@
       "categoryLabel": "Security",
       "slug": "security/font-hosting",
       "sourcePath": "security/FONT_HOSTING.md",
-      "sourceLastModified": "2025-09-28T21:16:01.511Z"
+      "sourceLastModified": "2025-09-30T04:05:36.323Z"
     },
     {
       "title": "Incident Response Framework",
@@ -252,7 +270,7 @@
       "categoryLabel": "Security",
       "slug": "security/incident-response",
       "sourcePath": "security/INCIDENT_RESPONSE.md",
-      "sourceLastModified": "2025-09-28T21:16:01.511Z"
+      "sourceLastModified": "2025-09-30T04:05:36.323Z"
     },
     {
       "title": "Local HTTPS + CSP Validation Playbook",
@@ -261,7 +279,7 @@
       "categoryLabel": "Security",
       "slug": "security/local-https",
       "sourcePath": "security/LOCAL_HTTPS.md",
-      "sourceLastModified": "2025-09-28T21:16:01.511Z"
+      "sourceLastModified": "2025-09-30T04:05:36.323Z"
     },
     {
       "title": "Contact Abuse Containment Runbook",
@@ -270,7 +288,7 @@
       "categoryLabel": "Security",
       "slug": "security/runbook-contact-abuse",
       "sourcePath": "security/RUNBOOK_CONTACT_ABUSE.md",
-      "sourceLastModified": "2025-09-28T21:16:01.511Z"
+      "sourceLastModified": "2025-09-30T04:05:36.323Z"
     },
     {
       "title": "CSP Violation Triage Runbook",
@@ -279,7 +297,7 @@
       "categoryLabel": "Security",
       "slug": "security/runbook-csp-triage",
       "sourcePath": "security/RUNBOOK_CSP_Triage.md",
-      "sourceLastModified": "2025-09-28T21:16:01.511Z"
+      "sourceLastModified": "2025-09-30T04:05:36.323Z"
     },
     {
       "title": "Whitepaper R2 Incident Runbook",
@@ -288,7 +306,7 @@
       "categoryLabel": "Security",
       "slug": "security/runbook-r2-incident",
       "sourcePath": "security/RUNBOOK_R2_INCIDENT.md",
-      "sourceLastModified": "2025-09-28T21:16:01.511Z"
+      "sourceLastModified": "2025-09-30T04:05:36.323Z"
     },
     {
       "title": "Epics And Work Items",
@@ -297,7 +315,7 @@
       "categoryLabel": "Workplan",
       "slug": "workplan/epics-and-work-items",
       "sourcePath": "workplan/EPICS_AND_WORK_ITEMS.md",
-      "sourceLastModified": "2025-09-29T00:23:57.537Z"
+      "sourceLastModified": "2025-09-30T04:05:36.323Z"
     }
   ]
 }
