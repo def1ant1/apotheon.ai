@@ -153,6 +153,19 @@ module.exports = {
       },
     },
     {
+      files: ['playwright.config.ts'],
+      parser: '@typescript-eslint/parser',
+      parserOptions: {
+        project: projectTsconfig,
+        tsconfigRootDir: __dirname,
+      },
+      rules: {
+        '@typescript-eslint/no-unsafe-assignment': 'off',
+        '@typescript-eslint/no-unsafe-member-access': 'off',
+        '@typescript-eslint/no-unsafe-return': 'off',
+      },
+    },
+    {
       // Node-based automation scripts run under tsx with full type safety.
       files: ['scripts/**/*.ts'],
       excludedFiles: ['**/*.d.ts'],
