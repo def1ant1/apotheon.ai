@@ -7,7 +7,7 @@ description: This document captures the conventions that keep Apotheon.ai's
   guidance below as the source of truth when extending metadata, structured
   data, or search artifacts.
 sourcePath: dev/SEO.md
-sourceLastModified: 2025-09-29T00:23:42.722Z
+sourceLastModified: 2025-09-30T04:05:36.323Z
 tags: []
 ---
 
@@ -17,7 +17,7 @@ source of truth when extending metadata, structured data, or search artifacts.
 
 ## Centralised metadata utility
 
-All layout metadata flows through [`src/utils/seo.ts`](https://github.com/apotheonai/apotheon.ai/blob/main/src/utils/seo.ts).
+All layout metadata flows through [`src/utils/seo.ts`](https://github.com/apotheon-ai/apotheon.ai/blob/main/src/utils/seo.ts).
 Use the exported `createPageSeo` helper to derive canonical URLs, OpenGraph
 payloads, Twitter cards, and hreflang alternates. The utility handles trailing
 slash normalisation, locale defaults, and noindex directives, so avoid building
@@ -42,7 +42,7 @@ const seo = createPageSeo(
 When you need to override metadata for a route, pass overrides via the `seo`
 prop exposed by `MarketingShell` or call `createPageSeo` directly if you are
 using the base layout without an intermediate shell. Locale-aware metadata is
-automatically derived from [`config/seo/manifest.mjs`](https://github.com/apotheonai/apotheon.ai/blob/main/config/seo/manifest.mjs):
+automatically derived from [`config/seo/manifest.mjs`](https://github.com/apotheon-ai/apotheon.ai/blob/main/config/seo/manifest.mjs):
 
 - `resolveLocaleFromPath` inspects the manifest path prefixes so layouts can
   infer the language from the current route. Shells should forward the resolved
@@ -140,7 +140,7 @@ automation, and smoke tests.
 
 ## Search Console automation & monitoring
 
-The scheduled Worker defined in [`workers/seo-monitor.ts`](https://github.com/apotheonai/apotheon.ai/blob/main/workers/seo-monitor.ts)
+The scheduled Worker defined in [`workers/seo-monitor.ts`](https://github.com/apotheon-ai/apotheon.ai/blob/main/workers/seo-monitor.ts)
 pulls two streams of telemetry every six hours:
 
 1. Core Web Vitals (LCP, INP, CLS) via the CrUX API for each locale origin.
@@ -148,7 +148,7 @@ pulls two streams of telemetry every six hours:
    in `config/seo/manifest.mjs`.
 
 Snapshots are persisted to the D1 database initialised by
-[`workers/migrations/seo-monitor/0001_init.sql`](https://github.com/apotheonai/apotheon.ai/blob/main/workers/migrations/seo-monitor/0001_init.sql),
+[`workers/migrations/seo-monitor/0001_init.sql`](https://github.com/apotheon-ai/apotheon.ai/blob/main/workers/migrations/seo-monitor/0001_init.sql),
 providing historical context for regressions. Thresholds default to the Core Web
 Vitals “good” budget (LCP ≤ 2.5s, INP ≤ 200ms, CLS ≤ 0.1) with zero tolerance for
 coverage errors; override them by setting environment variables on the Worker

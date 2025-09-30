@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+#
+# Husky pre-push hook: execute the full lint suite (Vale, ESLint, link checks)
+# before code leaves the workstation. This keeps repo automation aligned with
+# CI's expectations and catches link regressions early.
+set -eu
+
+npm run lint

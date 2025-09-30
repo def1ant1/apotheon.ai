@@ -55,3 +55,6 @@ src/assets/history/*.webp
 public/generated/history/
 # Whitepaper PDFs are generated via automation; keep the working tree clean of large binaries.
 assets/whitepapers/*.pdf
+# Lychee CLI binaries are fetched on demand to avoid shipping large executables in git history.
+vendor/lychee/vendor/
+.lycheecache

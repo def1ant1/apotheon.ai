@@ -6,7 +6,7 @@
 
 [![Astro Static Platform](https://img.shields.io/badge/Astro-Static%20Sites-BC52EE?logo=astro&logoColor=white)](https://astro.build/)
 [![Tailwind Utility System](https://img.shields.io/badge/Tailwind-Design%20Tokens-38BDF8?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
-[![GitHub Repo stars](https://img.shields.io/github/stars/apotheon-ai/apotheon.ai?style=social)](https://github.com/apotheon-ai/apotheon.ai/stargazers)
+[![GitHub Repo stars](https://img.shields.io/github/stars/apotheon-ai/apotheon.ai?style=social)](https://github.com/apotheon-ai/apotheon.ai)
 
 <em>Zero-trust posture, automation-first operations, and obsessive documentation keep this marketing + documentation hub pre-production ready.</em>
 

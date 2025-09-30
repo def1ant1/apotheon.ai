@@ -24,7 +24,7 @@ const TARGET_MANIFEST_DIR = join(PROJECT_ROOT, 'src', 'content', 'docs-manifest'
 const TARGET_MANIFEST_PATH = join(TARGET_MANIFEST_DIR, 'manifest.json');
 const LEGACY_MANIFEST_PATH = join(TARGET_DOCS_DIR, 'handbook', 'manifest.json');
 const LEGACY_GENERATED_DIR = join(TARGET_DOCS_DIR, 'handbook');
-const GITHUB_BASE = 'https://github.com/apotheonai/apotheon.ai/blob/main/';
+const GITHUB_BASE = 'https://github.com/apotheon-ai/apotheon.ai/blob/main/';
 
 const CATEGORY_LABEL_OVERRIDES: Record<string, string> = {
   ai: 'AI',

@@ -8,13 +8,13 @@ description: The `CI` workflow codifies our enterprise readiness guardrails so
   [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) and executes
   automatically for pull requests and pushes to `main`.
 sourcePath: dev/CI_CD.md
-sourceLastModified: 2025-09-28T21:16:01.507Z
+sourceLastModified: 2025-09-30T04:05:36.323Z
 tags: []
 ---
 
 The `CI` workflow codifies our enterprise readiness guardrails so every commit is
 vetted for quality, security, and operational excellence. The workflow is
-implemented in [`.github/workflows/ci.yml`](https://github.com/apotheonai/apotheon.ai/blob/main/.github/workflows/ci.yml) and
+implemented in [`.github/workflows/ci.yml`](https://github.com/apotheon-ai/apotheon.ai/blob/main/.github/workflows/ci.yml) and
 executes automatically for pull requests and pushes to `main`.
 
 ## High-level flow
@@ -30,7 +30,9 @@ executes automatically for pull requests and pushes to `main`.
    `npm run typecheck`, `npm run test`, and `npm run build` in order. The
    bundled `npm run build` now wraps the Astro export, robots.txt generation,
    Pagefind indexing, and smoke verification so deployments always ship complete
-   SEO artifacts.
+   SEO artifacts. Playwright end-to-end coverage and visual baseline management
+   follow the [testing workflow](/docs/dev/testing/) so CI and local executions stay
+   aligned.
 4. **Extended assurance.** On the Node 20 shard we enforce Lighthouse
    performance budgets, perform an OWASP ZAP baseline scan, and execute Gitleaks
    secret detection. Their artifacts are uploaded for manual triage while
@@ -39,7 +41,7 @@ executes automatically for pull requests and pushes to `main`.
 ## Performance budgets and Lighthouse
 
 Lighthouse runs via `npm run lighthouse:ci`, which wraps `@lhci/cli` with the
-strict budgets defined in [`lighthouserc.json`](https://github.com/apotheonai/apotheon.ai/blob/main/lighthouserc.json). Key
+strict budgets defined in [`lighthouserc.json`](https://github.com/apotheon-ai/apotheon.ai/blob/main/lighthouserc.json). Key
 metrics are tuned to protect Largest Contentful Paint (≤ 2.5s), Interaction to
 Next Paint (≤ 200ms), Cumulative Layout Shift (≤ 0.1), and Total Blocking Time
 (≤ 150ms). Budgets also limit script/image weight and third-party requests.
@@ -57,7 +59,7 @@ To adjust budgets:
 
 `npm run zap:baseline` starts an `astro preview` server, waits for it to stabilise,
 then executes `zap-baseline.py` in the official Docker image. The scope is
-restricted via [`zap-baseline.conf`](https://github.com/apotheonai/apotheon.ai/blob/main/zap-baseline.conf) so only the static
+restricted via [`zap-baseline.conf`](https://github.com/apotheon-ai/apotheon.ai/blob/main/zap-baseline.conf) so only the static
 preview hosted from `dist/` is crawled. The script emits HTML, JSON, and XML
 reports in `artifacts/security/zap` and fails the build if ZAP reports high
 severity issues.
@@ -73,7 +75,7 @@ When updating scan parameters:
 ## Secret scanning with Gitleaks
 
 `npm run gitleaks:ci` shells into the `zricethezav/gitleaks` Docker image using
-our curated configuration ([`.gitleaks.toml`](https://github.com/apotheonai/apotheon.ai/blob/main/.gitleaks.toml)). The config
+our curated configuration ([`.gitleaks.toml`](https://github.com/apotheon-ai/apotheon.ai/blob/main/.gitleaks.toml)). The config
 extends the upstream defaults and suppresses noisy generated directories while
 retaining strict detection for source and documentation files. Any discovered
 secrets will fail the pipeline; the redacted JSON report is stored under
@@ -106,6 +108,10 @@ and review the bundled HTML/JSON reports.
    - `npm run lighthouse:ci`
    - `npm run zap:baseline`
    - `npm run gitleaks:ci`
+
+Refer to [docs/dev/TESTING.md](/docs/dev/testing/) for Playwright snapshot refreshes
+and troubleshooting guidance before pushing theme or layout changes—CI assumes
+the light/dark fixtures are current when evaluating pull requests.
 
 The ZAP and Gitleaks commands require Docker. The scripts emit clear error
 messages when Docker is unavailable, but production CI must have Docker

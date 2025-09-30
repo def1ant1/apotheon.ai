@@ -1,0 +1,30 @@
+#############################  Display  #############################
+verbose = "warn"
+no_progress = true
+output = "artifacts/link-check/report.json"
+
+#############################  Cache  ###############################
+cache = true
+max_cache_age = "1d"
+
+#############################  Runtime  #############################
+max_retries = 2
+max_concurrency = 24
+
+#############################  Requests  ############################
+user_agent = "apotheon.ai link auditor"
+timeout = 20
+retry_wait_time = 2
+accept = ["200", "204", "206", "301", "302", "303", "307", "308", "429"]
+
+#############################  Exclusions  ##########################
+include_fragments = false
+exclude = [
+    '^https?://[^?]+\\?(?:[^=]+=[^&]*&)*(?:Signature|X-Amz-Signature|sig|token)=[^&]+',
+    '^#',
+    '^https?://localhost',
+    '^file:///.+/workers/(contact|whitepapers|csp-report-handler)$',
+]
+
+#############################  Mail #################################
+include_mail = false

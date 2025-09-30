@@ -19,7 +19,7 @@ description: '- [Brand Design North Star](#brand-design-north-star) - [Homepage
   Engineers](#adoption-workflow-for-designers--engineers) - [Navigation
   Information Architecture](#navigation-information-architecture)'
 sourcePath: brand/STYLEGUIDE.md
-sourceLastModified: 2025-09-29T00:23:47.881Z
+sourceLastModified: 2025-09-30T15:59:37.715Z
 tags: []
 ---
 
@@ -102,7 +102,7 @@ Each table lists the internal token name (`brand.<group>.<step>`), HEX value, us
 
 ### Daylight Palette (Light Mode)
 
-![Light palette preview showing primary, secondary, neutral, and status colors arranged in 4x3 blocks.](https://github.com/apotheonai/apotheon.ai/blob/main/public/static/brand/palette-light.svg)
+![Light palette preview showing primary, secondary, neutral, and status colors arranged in 4x3 blocks.](https://github.com/apotheon-ai/apotheon.ai/blob/main/public/static/brand/palette-light.svg)
 
 | Token                | Hex       | Usage                           | Meets Contrast With                      |
 | -------------------- | --------- | ------------------------------- | ---------------------------------------- |
@@ -130,7 +130,7 @@ Each table lists the internal token name (`brand.<group>.<step>`), HEX value, us
 
 ### Midnight Palette (Dark Mode)
 
-![Dark palette preview showing equivalent tones for dark surfaces.](https://github.com/apotheonai/apotheon.ai/blob/main/public/static/brand/palette-dark.svg)
+![Dark palette preview showing equivalent tones for dark surfaces.](https://github.com/apotheon-ai/apotheon.ai/blob/main/public/static/brand/palette-dark.svg)
 
 | Token                | Hex       | Usage                              | Meets Contrast With                       |
 | -------------------- | --------- | ---------------------------------- | ----------------------------------------- |
@@ -174,7 +174,7 @@ Each table lists the internal token name (`brand.<group>.<step>`), HEX value, us
 
 ## Typography Scale
 
-![Typography specimen showing type ramp from Display to Micro.](https://github.com/apotheonai/apotheon.ai/blob/main/public/static/brand/typography-scale.svg)
+![Typography specimen showing type ramp from Display to Micro.](https://github.com/apotheon-ai/apotheon.ai/blob/main/public/static/brand/typography-scale.svg)
 
 > **Rationale:** A strict typographic scale (1.25 modular base) lets designers and engineers switch contexts without redefining font sizes. All sizes map to Tailwind utilities and custom CSS variables for handoffs into motion or PDF outputs.
 
@@ -206,7 +206,7 @@ _Rationale:_ A system-first stack eliminates layout shift on initial render, whi
 
 ### Spacing Rhythm
 
-![Spacing scale preview showing modular steps labeled 4px–64px.](https://github.com/apotheonai/apotheon.ai/blob/main/public/static/brand/spacing-scale.svg)
+![Spacing scale preview showing modular steps labeled 4px–64px.](https://github.com/apotheon-ai/apotheon.ai/blob/main/public/static/brand/spacing-scale.svg)
 
 | Token      | px   | Tailwind Class  | Notes                             |
 | ---------- | ---- | --------------- | --------------------------------- |
@@ -349,6 +349,12 @@ The script checks every pairing listed in the [palette matrix](#palette-pairing-
 - Ensure motion states (e.g., loading skeletons) never rely on color alone – pair with iconography or text.
 - Review dark mode surfaces for pure black usage; prefer `brand.neutral.950` to avoid halation on HDR displays.
 - Export Figma components with token names, not hex values, so engineers can map them to Tailwind config without translation errors.
+
+### Reduced motion & system scrollbars
+
+- **Motion tokens in action:** Global CSS now enforces `@media (prefers-reduced-motion: reduce)` overrides so every animated marquee (timeline cards, carousel rails, etc.) snaps to a zero-duration transition. When documenting animation, annotate both the "default" easing and the reduced-motion fallback in Figma to keep parity with the code. WCAG 2.3.3 requires this hook for vestibular safety.
+- **Scrollbar palette:** Use the dedicated variables—`--color-scrollbar-track`, `--color-scrollbar-thumb`, and `--color-scrollbar-thumb-hover`—when mocking scrollable regions. They inherit from the surface/border tokens, ensuring ≥3:1 contrast in light _and_ dark palettes without inventing new swatches.
+- **Sizing guidance:** `--size-scrollbar-thickness` (0.75rem) and `--scrollbar-width-mode` (`thin`) satisfy WCAG 2.5.5 Target Size across pointer types. Avoid compressing scrollbars in comps; custom containers should opt into the same thickness to keep QA and product accessibility reports aligned.
 
 ---
 
