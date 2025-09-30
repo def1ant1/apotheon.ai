@@ -88,12 +88,22 @@ async function ensureDirectory(pathname) {
 
 async function buildStaticSite(outDir) {
   await fs.rm(outDir, {recursive: true, force: true});
-  await run(astroBin, ['astro', 'build', '--outDir', outDir, '--log-level', 'warn'], {
-    env: {
-      ...process.env,
-      NODE_ENV: 'production',
+  await run(
+    astroBin, // Binary path already points to `astro`; pass only subcommands here to avoid regressions.
+    [
+      'build',
+      '--outDir',
+      outDir,
+      '--log-level',
+      'warn',
+    ],
+    {
+      env: {
+        ...process.env,
+        NODE_ENV: 'production',
+      },
     },
-  });
+  );
 }
 
 function collectTargets(ephemeralDist, overrides) {

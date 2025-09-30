@@ -98,6 +98,9 @@ broken references.
   hermetic CI, so use `npm run lint:links -- --online` when you explicitly want to exercise production URLs.
 - **Artifact trail.** Results land in `artifacts/link-check/report.json`; commit or upload this file when auditors need
   evidence of the scan.
+- **Astro CLI invocation.** The wrapper calls the `node_modules/.bin/astro` shim directly, so extend it with subcommands
+  only (for example `['build', '--outDir', …]`). Passing a leading `astro` string double-prefixes the binary and breaks
+  the static build.
 - **Binary provisioning.** The vendored CLI lives under `vendor/lychee` and downloads its architecture-specific binary into
   `vendor/lychee/vendor/` during `npm install`. The executable is gitignored to satisfy the "no large binaries" policy, so
   pre-seed that directory before installing when you work completely offline. Set `APOTHEON_LYCHEE_ARCHIVE_URL` to an
