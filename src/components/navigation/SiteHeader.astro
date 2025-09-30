@@ -16,6 +16,12 @@ import RadixNavigationMenu, { type NavigationMenuGroup } from '../islands/RadixN
 const { t } = await useTranslations(Astro);
 const sanitizedMenuGroups: ReadonlyArray<NavigationMenuGroup> =
   await getValidatedNavigationGroups(t);
+/**
+ * Centralize the skip-link target ID so the runtime focus manager and tests stay in sync. The ID
+ * is mirrored in `BaseLayout` (`<main id="main">`) and referenced by the client-side focus
+ * utility to satisfy WCAG 2.4.1 (Bypass Blocks) across locales.
+ */
+const MAIN_CONTENT_ID = 'main' as const;
 const availableLocales = getAvailableLocales();
 const defaultLocale = getDefaultLocale();
 const currentLocale = detectLocaleFromPath?.(Astro.url.pathname) ?? defaultLocale;
@@ -50,16 +56,21 @@ const localeSwitcherLabels: LocaleSwitcherLabels = {
 <header
   role="banner"
   aria-label={t('navigation.aria.primaryHeader', { defaultValue: 'Primary site header' })}
-  class="sticky top-0 z-40 flex justify-center bg-surface-base/70 px-gutter-inline pb-space-sm pt-space-xs backdrop-blur supports-[backdrop-filter]:bg-surface-base/60"
+  class="bg-surface-base/70 px-gutter-inline pb-space-sm pt-space-xs supports-[backdrop-filter]:bg-surface-base/60 sticky top-0 z-40 flex justify-center backdrop-blur"
 >
-  <div class="flex w-full max-w-5xl flex-col gap-space-xs">
+  <div class="gap-space-xs flex w-full max-w-5xl flex-col">
     {
       /**
       Keep the skip link as the first interactive element so assistive tech exposes it immediately.
       The target maps to `<main id="main" tabindex="-1">` declared in `BaseLayout`.
     */
     }
-    <a class="sr-only focus:not-sr-only" href="#main">
+    <a
+      class="sr-only focus:not-sr-only"
+      data-skip-link
+      href={`#${MAIN_CONTENT_ID}`}
+      data-skip-link-target={MAIN_CONTENT_ID}
+    >
       {t('navigation.skipLink', { defaultValue: 'Skip to content' })}
     </a>
 
@@ -85,11 +96,11 @@ const localeSwitcherLabels: LocaleSwitcherLabels = {
       )
     }
 
-    <div class="flex items-start justify-between gap-space-xs">
-      <div class="flex flex-col gap-space-3xs">
+    <div class="gap-space-xs flex items-start justify-between">
+      <div class="gap-space-3xs flex flex-col">
         <a
           href="/"
-          class="text-title-sm font-black tracking-tight text-ink-primary transition hover:text-accent-brand"
+          class="text-title-sm text-ink-primary hover:text-accent-brand font-black tracking-tight transition"
         >
           {t('navigation.brand.name', { defaultValue: 'Apotheon.ai' })}
         </a>
@@ -138,3 +149,18 @@ const localeSwitcherLabels: LocaleSwitcherLabels = {
     </div>
   </div>
 </header>
+
+{
+  /**
+   * Ship a tiny client module that wires the skip link to the shared focus utility. We keep the
+   * orchestration here (instead of scattering ad-hoc listeners) so the SiteHeader remains the single
+   * authority for enterprise navigation. The helper handles smooth-scroll completion, respects the
+   * `prefers-reduced-motion` contract, and programmatically focuses `#main` once the viewport settles
+   * to guarantee deterministic keyboard landings in audits.
+   */
+}
+<script type="module" is:inline>
+  import { initSiteHeaderAnchorFocus } from './siteHeader.client';
+
+  initSiteHeaderAnchorFocus();
+</script>
