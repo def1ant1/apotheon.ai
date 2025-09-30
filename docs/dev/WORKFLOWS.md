@@ -58,11 +58,15 @@ pre-production environments.
 
 ### Theme visual regression baselines
 
-- `tests/e2e/theme-visual.spec.ts` drives high-signal marketing routes (hero,
-  grid, long-form layouts) through Playwright and writes deterministic
-  screenshots into `tests/e2e/fixtures/theme-visual/` as base64-encoded PNG
-  strings. Persisting text artifacts keeps Git history readable while still
-  catching pixel-perfect regressions.
+- `tests/e2e/theme-visual.spec.ts` now sources its crawl targets directly from
+  `THEME_VISUAL_ROUTES`, giving the automation suite a single contract that
+  spans the marketing homepage, the documentation shell, and the lead viewer
+  dashboard. Each run exercises hero blocks, long-form layouts, and the RevOps
+  admin chrome so enterprise-ready coverage lands in one pass.
+- Deterministic screenshots are written to `tests/e2e/fixtures/theme-visual/`
+  as base64-encoded PNG strings. Persisting text artifacts keeps Git history
+  readable while still catching pixel-perfect regressions across the three
+  surfaces.
 - Run `npm run test:e2e:update-theme-visual` whenever theme tokens, typography
   ramps, or layout primitives change. The script first executes the
   `scripts/update-theme-visual-fixtures.ts` CLI (which internally exports
@@ -72,6 +76,10 @@ pre-production environments.
   the stored baselines guard against accidental theme drift. The assertion
   messaging in `comparePngSnapshot` prints the regeneration command whenever a
   diff is detected, matching the new npm script for CI parity.
+- Review the most recent regeneration log at
+  [`reports/automation/2025-02-19-theme-visual-regeneration.md`](../../reports/automation/2025-02-19-theme-visual-regeneration.md)
+  before adjusting the contract so future pull requests inherit the audited
+  route × theme matrix.
 
 ### Node.js engine baseline
 
