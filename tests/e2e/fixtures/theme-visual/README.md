@@ -2,7 +2,15 @@
 
 This directory stores the base64-encoded PNG fixtures that power `tests/e2e/theme-visual.spec.ts`.
 Every snapshot captures a `(route, theme)` combination so design changes across light/dark surfaces
-can be reviewed without pulling binary assets into the repository.
+can be reviewed without pulling binary assets into the repository. The contract in
+`tests/e2e/theme-visual.contract.ts` currently emits the following matrix:
+
+- `/` → `homepage` (themes: `light`, `dark`) — Marketing hero, pricing grid, and testimonial modules.
+- `/docs/` → `docs-index` (themes: `light`, `dark`) — Documentation shell navigation, search affordances, and typography ramps.
+- `/lead-viewer/` → `lead-viewer-dashboard` (themes: `light`, `dark`) — Dashboard shell + authentication chrome for the RevOps handoff experience.
+
+The docs and dashboard shells are part of the baseline contract so enterprise stakeholders can audit
+knowledge base and admin surfaces alongside marketing routes without bespoke tooling.
 
 ## Regenerating baselines
 
@@ -12,14 +20,16 @@ can be reviewed without pulling binary assets into the repository.
    platform.
 2. From the repository root run:
    ```bash
-   npm run update:theme-visual
+   npm run test:e2e:update-theme-visual
    ```
    The CLI in `scripts/update-theme-visual-fixtures.ts` now boots an Astro dev server on demand,
    preloads manifest assets, exports the snapshot update flags, and rewrites every fixture with a
    prefixed comment block describing the route, theme, fixture path, and regeneration command.
 3. Commit the updated `*.base64.txt` files and the Playwright report if relevant. During review,
    confirm that each header reflects the expected route/theme pairing and that the new base64 payloads
-   match intentional UI changes.
+   match intentional UI changes. Reference the regeneration log in
+   [`reports/automation/2025-02-19-theme-visual-regeneration.md`](../../../reports/automation/2025-02-19-theme-visual-regeneration.md)
+   to cross-check the matrix captured during the fixture refresh task before merging additional changes.
 
 ## Review checklist
 
