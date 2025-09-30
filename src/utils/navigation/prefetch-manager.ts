@@ -1,4 +1,5 @@
 import { evaluateAnchorEligibility, type LinkEligibilityOptions } from './link-eligibility';
+import { prefetchTelemetry } from './prefetch-telemetry';
 
 export type PrefetchStrategy = 'link' | 'fetch';
 
@@ -375,6 +376,7 @@ class IntersectionObserverPrefetchManager implements PrefetchManager {
         credentials: 'same-origin',
         mode: 'same-origin',
       });
+      prefetchTelemetry.markPrefetched(task.url);
       return;
     }
 
@@ -391,6 +393,13 @@ class IntersectionObserverPrefetchManager implements PrefetchManager {
     link.rel = 'prefetch';
     link.href = task.url;
     link.as = 'document';
+    link.addEventListener(
+      'load',
+      () => {
+        prefetchTelemetry.markPrefetched(task.url);
+      },
+      { once: true },
+    );
     head.appendChild(link);
   }
 

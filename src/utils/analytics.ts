@@ -15,7 +15,8 @@ export type AnalyticsEvent =
   | 'blog_read'
   | 'search_query'
   | 'docs_exit'
-  | 'role_experience_impression';
+  | 'role_experience_impression'
+  | 'prefetch_navigation_metrics';
 
 interface TrackOptions {
   event: AnalyticsEvent;
@@ -25,7 +26,7 @@ interface TrackOptions {
   onOptOut?: () => void;
 }
 
-interface TrackResult {
+export interface TrackResult {
   delivered: boolean;
   reason?: string;
   requestId?: string;
@@ -269,6 +270,8 @@ function inferConsentService(event: AnalyticsEvent): TrackOptions['consentServic
       return 'umami-telemetry';
     case 'search_query':
     case 'docs_exit':
+      return 'umami-telemetry';
+    case 'prefetch_navigation_metrics':
       return 'umami-telemetry';
     case 'lead_demo':
     case 'lead_investor':
