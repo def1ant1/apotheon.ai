@@ -44,6 +44,8 @@ semantic versioning once releases begin.
 - README now references Astro 5 as the project baseline and links the automation
   audit log alongside remediation guidance for missing dependencies highlighted
   during the migration.
+- Canonicalized the finance industry slug at `/industries/finance`, updated navigation, CTA routes, and documentation, and
+  regenerated search fixtures to retire the legacy `/industries/financial-services` path.
 - Replaced the prior Vite/React SPA entrypoints and removed unused Amplify and
   Vercel scaffolding.
 - Expanded developer documentation (`docs/dev/WORKFLOWS.md`, README) with Radix

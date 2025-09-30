@@ -1,7 +1,14 @@
 import * as NavigationMenu from '@radix-ui/react-navigation-menu';
 import { Slot } from '@radix-ui/react-slot';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
-import React, { forwardRef, useMemo, type ComponentPropsWithoutRef, type ElementRef } from 'react';
+import React, {
+  forwardRef,
+  useEffect,
+  useMemo,
+  useRef,
+  type ComponentPropsWithoutRef,
+  type ElementRef,
+} from 'react';
 
 /**
  * `RadixNavigationMenu` composes Radix primitives into an accessible primary navigation shell.
@@ -91,10 +98,11 @@ export const navigationMenuGroups: ReadonlyArray<NavigationMenuGroup> = [
         descriptionKey: 'navigation.groups.industries.links.healthcare.description',
       },
       {
-        id: 'financial-services',
+        // 2024 IA requirement: keep the finance slug aligned with /industries/finance.
+        id: 'finance',
         label: 'Financial Services',
         labelKey: 'navigation.groups.industries.links.financialServices.label',
-        href: '/industries/financial-services',
+        href: '/industries/finance',
         description: 'Accelerate underwriting decisions without compromising compliance.',
         descriptionKey: 'navigation.groups.industries.links.financialServices.description',
       },
@@ -324,7 +332,7 @@ export function RadixNavigationMenu({
   groups = navigationMenuGroups,
   className,
 }: RadixNavigationMenuProps = {}) {
-  const rootRef = React.useRef<HTMLDivElement | null>(null);
+  const rootRef = useRef<HTMLDivElement | null>(null);
   /**
    * Define navigation content as data first. This keeps the JSX lean and allows us to
    * generate both the trigger labels and panel content from a single source of truth.
@@ -340,7 +348,7 @@ export function RadixNavigationMenu({
     [className],
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     const node = rootRef.current;
     if (!node) {
       return undefined;

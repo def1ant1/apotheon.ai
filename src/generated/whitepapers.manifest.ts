@@ -27,7 +27,7 @@ export const WHITEPAPER_MANIFEST: ReadonlyArray<WhitepaperManifestEntry> = [
     title: 'Apotheon.ai Investor Brief',
     summary:
       'Board-ready overview of revenue momentum, regulated AI moat, and automation platform economics for diligence teams.',
-    industries: ['financial-services', 'healthcare', 'public-sector'],
+    industries: ['finance', 'healthcare', 'public-sector'],
     asset: {
       objectKey: 'whitepapers/apotheon-investor-brief.pdf',
       checksum: '2f3839aa2225181bf5a10a84ddcb46db80d5267d666292a3a08131bcf9900651',
@@ -112,7 +112,7 @@ export const WHITEPAPER_MANIFEST: ReadonlyArray<WhitepaperManifestEntry> = [
     title: 'Apotheon Strategic Automation Playbook',
     summary:
       'Board-ready automation guidance illustrating how regulated enterprises orchestrate Apotheon.ai rollouts without manual toil.',
-    industries: ['financial-services', 'healthcare', 'government'],
+    industries: ['finance', 'healthcare', 'government'],
     asset: {
       objectKey: 'whitepapers/apotheon-strategic-automation-playbook.pdf',
       checksum: '41feba531b25c5bbde367e6c2e60887143c31d60be1e1997c78ba1adef269771',

@@ -13,6 +13,8 @@ tags: []
 
 Industry narratives moved into the dedicated `src/content/industries` collection so editors capture compliance-first messaging without touching templates. Every entry is validated by Zod at build time and rendered through hydration-free Astro components.
 
+> **2024 IA requirement:** The finance route is canonicalized at `/industries/finance`. Keep the file name, navigation slug, CTA query parameters, and any supporting assets aligned with `finance`—the legacy `financial-services` path remains deprecated.
+
 ## Schema Overview
 
 Each MDX file must satisfy the schema exported from `src/content/industries/index.ts`:
