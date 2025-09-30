@@ -1,6 +1,7 @@
 ---
 import { getFooterContact, getFooterColumns, getFooterLegalLinks } from './navigationData';
 import { useTranslations } from '../../i18n/runtime';
+import PrefetchController, { PREFETCH_ATTRIBUTE_PAYLOAD } from '../islands/PrefetchController';
 
 const { t } = await useTranslations(Astro);
 const navigationColumns = await getFooterColumns(t);
@@ -19,15 +20,22 @@ const currentYear = new Date().getFullYear();
 <footer
   role="contentinfo"
   aria-label={t('footer.aria.contentInfo', { defaultValue: 'Primary site footer' })}
-  class="border-t border-border-subtle/60 bg-surface-raised/40 text-body-sm text-ink-secondary"
+  class="border-border-subtle/60 bg-surface-raised/40 text-body-sm text-ink-secondary border-t"
 >
-  <div class="mx-auto flex w-full max-w-6xl flex-col gap-space-xl px-gutter-inline py-space-2xl">
+  {
+    /**
+    Hydrate the shared PrefetchController here so the footer's dense navigation grid immediately
+    benefits from speculative loading without each column rolling its own integration.
+  */
+  }
+  <PrefetchController client:idle />
+  <div class="gap-space-xl px-gutter-inline py-space-2xl mx-auto flex w-full max-w-6xl flex-col">
     <!--
       Navigation columns consume the same data contract as the header. This keeps the IA consistent
       across surfaces and ensures CMS-driven updates flow into the footer without manual edits.
     -->
     <div
-      class="grid gap-space-lg sm:grid-cols-2 lg:grid-cols-[repeat(4,minmax(0,1fr))] xl:gap-space-xl"
+      class="gap-space-lg xl:gap-space-xl grid sm:grid-cols-2 lg:grid-cols-[repeat(4,minmax(0,1fr))]"
     >
       {
         navigationColumns.map((column) => {
@@ -35,7 +43,7 @@ const currentYear = new Date().getFullYear();
 
           return (
             <nav aria-labelledby={headingId} class="space-y-space-xs">
-              <h2 id={headingId} class="text-title-md font-semibold text-ink-primary">
+              <h2 id={headingId} class="text-title-md text-ink-primary font-semibold">
                 {column.title}
               </h2>
               {column.summary && <p class="text-body-sm text-ink-muted">{column.summary}</p>}
@@ -43,7 +51,8 @@ const currentYear = new Date().getFullYear();
                 {column.links.map((link) => (
                   <li>
                     <a
-                      class="inline-flex items-center gap-space-3xs text-body-sm font-semibold text-ink-secondary transition-colors hover:text-accent-brand"
+                      {...PREFETCH_ATTRIBUTE_PAYLOAD}
+                      class="gap-space-3xs text-body-sm text-ink-secondary hover:text-accent-brand inline-flex items-center font-semibold transition-colors"
                       href={link.href}
                     >
                       {link.label}
@@ -57,7 +66,7 @@ const currentYear = new Date().getFullYear();
       }
 
       <nav aria-labelledby="footer-legal" class="space-y-space-xs">
-        <h2 id="footer-legal" class="text-title-md font-semibold text-ink-primary">
+        <h2 id="footer-legal" class="text-title-md text-ink-primary font-semibold">
           {t('footer.legal.heading', { defaultValue: 'Legal' })}
         </h2>
         <p class="text-body-sm text-ink-muted">
@@ -73,7 +82,8 @@ const currentYear = new Date().getFullYear();
             footerLegalLinks.map((link) => (
               <li>
                 <a
-                  class="inline-flex items-center gap-space-3xs text-body-sm font-semibold text-ink-secondary transition-colors hover:text-accent-brand"
+                  {...PREFETCH_ATTRIBUTE_PAYLOAD}
+                  class="gap-space-3xs text-body-sm text-ink-secondary hover:text-accent-brand inline-flex items-center font-semibold transition-colors"
                   href={link.href}
                 >
                   {link.label}
@@ -92,10 +102,10 @@ const currentYear = new Date().getFullYear();
     -->
     <section
       aria-labelledby="footer-contact"
-      class="flex flex-col gap-space-sm rounded-radius-xl border border-border-subtle/60 bg-surface-base/70 p-space-lg shadow-elevation-1"
+      class="gap-space-sm rounded-radius-xl border-border-subtle/60 bg-surface-base/70 p-space-lg shadow-elevation-1 flex flex-col border"
     >
       <div>
-        <h2 id="footer-contact" class="text-title-md font-semibold text-ink-primary">
+        <h2 id="footer-contact" class="text-title-md text-ink-primary font-semibold">
           {t('footer.contact.heading', { defaultValue: 'Contact Apotheon.ai' })}
         </h2>
         <p class="text-body-sm text-ink-muted">
@@ -109,20 +119,20 @@ const currentYear = new Date().getFullYear();
       </div>
 
       <div
-        class="flex flex-col gap-space-3xs sm:flex-row sm:flex-wrap sm:items-start sm:gap-space-lg"
+        class="gap-space-3xs sm:gap-space-lg flex flex-col sm:flex-row sm:flex-wrap sm:items-start"
       >
         <address class="not-italic">
-          <span class="block font-semibold text-ink-primary">{footerContact.organization}</span>
+          <span class="text-ink-primary block font-semibold">{footerContact.organization}</span>
           {
             footerContact.addressLines.map((line) => (
-              <span class="block text-body-sm text-ink-secondary">{line}</span>
+              <span class="text-body-sm text-ink-secondary block">{line}</span>
             ))
           }
         </address>
 
-        <dl class="flex flex-col gap-space-3xs">
+        <dl class="gap-space-3xs flex flex-col">
           <div>
-            <dt class="text-caption uppercase tracking-wide text-ink-muted">
+            <dt class="text-caption text-ink-muted tracking-wide uppercase">
               {t('footer.contact.labels.email', { defaultValue: 'Email' })}
             </dt>
             <dd>
@@ -132,7 +142,7 @@ const currentYear = new Date().getFullYear();
             </dd>
           </div>
           <div>
-            <dt class="text-caption uppercase tracking-wide text-ink-muted">
+            <dt class="text-caption text-ink-muted tracking-wide uppercase">
               {t('footer.contact.labels.phone', { defaultValue: 'Phone' })}
             </dt>
             <dd>
@@ -142,10 +152,10 @@ const currentYear = new Date().getFullYear();
             </dd>
           </div>
           <div>
-            <dt class="text-caption uppercase tracking-wide text-ink-muted">
+            <dt class="text-caption text-ink-muted tracking-wide uppercase">
               {t('footer.contact.labels.officeHours', { defaultValue: 'Office Hours' })}
             </dt>
-            <dd class="text-body-sm font-semibold text-ink-secondary">
+            <dd class="text-body-sm text-ink-secondary font-semibold">
               {footerContact.officeHours}
             </dd>
           </div>
@@ -154,7 +164,7 @@ const currentYear = new Date().getFullYear();
     </section>
 
     <div
-      class="flex flex-col gap-space-3xs text-caption text-ink-muted sm:flex-row sm:items-center sm:justify-between"
+      class="gap-space-3xs text-caption text-ink-muted flex flex-col sm:flex-row sm:items-center sm:justify-between"
     >
       <p>
         {

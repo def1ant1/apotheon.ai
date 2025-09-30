@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import { createPortal } from 'react-dom';
 
+import PrefetchController from './PrefetchController';
 import { WELCOME_TOUR_EVENT_CHANNEL, WELCOME_TOUR_STORAGE_KEY } from './welcomeTour.constants';
 
 /**
@@ -516,15 +517,19 @@ export default function WelcomeTour({
     };
   }, [focusableRefs, handleNext, handlePrevious, handleSkip, isOpen]);
 
-  if (!hydrated || !isOpen || !activeStep) {
+  if (!hydrated) {
     return null;
+  }
+
+  if (!isOpen || !activeStep) {
+    return <PrefetchController />;
   }
 
   const progressLabel = renderProgressLabel(labels.progress, currentStepIndex + 1, totalSteps);
 
   const dialog = (
     <div
-      className="fixed inset-0 z-[60] flex items-end justify-center px-4 pb-6 pt-12 sm:items-center sm:pb-12"
+      className="fixed inset-0 z-[60] flex items-end justify-center px-4 pt-12 pb-6 sm:items-center sm:pb-12"
       data-testid="welcome-tour-overlay"
     >
       <div aria-hidden className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm" />
@@ -556,7 +561,7 @@ export default function WelcomeTour({
         </p>
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-2">
-            <p className="text-sm uppercase tracking-[0.2em] text-sky-300">{progressLabel}</p>
+            <p className="text-sm tracking-[0.2em] text-sky-300 uppercase">{progressLabel}</p>
             <h2 id={dialogTitleId} className="text-2xl font-semibold">
               {title}
             </h2>
@@ -622,5 +627,10 @@ export default function WelcomeTour({
     </div>
   );
 
-  return createPortal(dialog, document.body);
+  return (
+    <>
+      <PrefetchController />
+      {createPortal(dialog, document.body)}
+    </>
+  );
 }

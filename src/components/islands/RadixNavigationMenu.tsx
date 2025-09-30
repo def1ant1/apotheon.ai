@@ -10,6 +10,9 @@ import React, {
   type ElementRef,
 } from 'react';
 
+import PrefetchController from './PrefetchController';
+import { PREFETCH_ATTRIBUTE_PAYLOAD } from '../../utils/navigation/prefetch-constants';
+
 /**
  * `RadixNavigationMenu` composes Radix primitives into an accessible primary navigation shell.
  *
@@ -376,6 +379,8 @@ export function RadixNavigationMenu({
       aria-label="Primary"
       className={rootClassName}
     >
+      {/* Prefetch controller mounts here so desktop navigation links participate without extra wiring. */}
+      <PrefetchController />
       <VisuallyHidden>
         {/*
          * Hidden descriptive text improves context for assistive tech without affecting layout.
@@ -443,7 +448,12 @@ const NavigationMenuLink = forwardRef<
   return (
     <NavigationMenu.Link asChild {...props}>
       <Slot>
-        <a ref={forwardedRef} href={href} className="navigation-link">
+        <a
+          {...PREFETCH_ATTRIBUTE_PAYLOAD}
+          ref={forwardedRef}
+          href={href}
+          className="navigation-link"
+        >
           {children}
         </a>
       </Slot>

@@ -6,6 +6,7 @@ import { isLocaleQASwitcherEnabled } from '../../utils/featureFlags';
 import LocaleSwitcher, { type LocaleSwitcherLabels } from '../islands/LocaleSwitcher';
 import MobileNavigationDrawer from '../islands/MobileNavigationDrawer';
 import PagefindSearch from '../islands/PagefindSearch';
+import PrefetchController, { PREFETCH_ATTRIBUTE_PAYLOAD } from '../islands/PrefetchController';
 import RadixNavigationMenu, { type NavigationMenuGroup } from '../islands/RadixNavigationMenu';
 
 /**
@@ -58,6 +59,14 @@ const localeSwitcherLabels: LocaleSwitcherLabels = {
   aria-label={t('navigation.aria.primaryHeader', { defaultValue: 'Primary site header' })}
   class="bg-surface-base/70 px-gutter-inline pb-space-sm pt-space-xs supports-[backdrop-filter]:bg-surface-base/60 sticky top-0 z-40 flex justify-center backdrop-blur"
 >
+  {
+    /**
+    PrefetchController hydrates here so every layout that ships the global header gains speculative
+    navigation automatically. The island renders nothing visually but wires runtime observers to
+    anchors annotated with `data-prefetch="intent"`.
+  */
+  }
+  <PrefetchController client:idle />
   <div class="gap-space-xs flex w-full max-w-5xl flex-col">
     {
       /**
@@ -99,6 +108,7 @@ const localeSwitcherLabels: LocaleSwitcherLabels = {
     <div class="gap-space-xs flex items-start justify-between">
       <div class="gap-space-3xs flex flex-col">
         <a
+          {...PREFETCH_ATTRIBUTE_PAYLOAD}
           href="/"
           class="text-title-sm text-ink-primary hover:text-accent-brand font-black tracking-tight transition"
         >

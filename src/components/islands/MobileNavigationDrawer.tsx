@@ -5,6 +5,7 @@ import { useCallback, useId, useMemo, useRef, useState, type MouseEvent } from '
 
 import PagefindSearch from './PagefindSearch';
 import { navigationMenuGroups, type NavigationMenuGroup } from './RadixNavigationMenu';
+import { PREFETCH_ATTRIBUTE_PAYLOAD } from '../../utils/navigation/prefetch-constants';
 
 export interface MobileNavigationDrawerProps {
   readonly groups?: ReadonlyArray<NavigationMenuGroup>;
@@ -95,12 +96,12 @@ export default function MobileNavigationDrawer({
           <button
             type="button"
             ref={triggerRef}
-            className="flex items-center gap-space-2xs rounded-radius-md border border-border-subtle bg-surface-raised px-space-sm py-space-2xs text-body-sm font-semibold text-ink-primary shadow-elevation-1 transition hover:bg-surface-raised/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-brand"
+            className="gap-space-2xs rounded-radius-md border-border-subtle bg-surface-raised px-space-sm py-space-2xs text-body-sm text-ink-primary shadow-elevation-1 hover:bg-surface-raised/90 focus-visible:outline-accent-brand flex items-center border font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             aria-expanded={open}
             aria-controls={navigationContentId}
             aria-label={open ? 'Close navigation menu' : 'Open navigation menu'}
           >
-            <span aria-hidden className="text-caption uppercase tracking-wide text-ink-muted">
+            <span aria-hidden className="text-caption text-ink-muted tracking-wide uppercase">
               Menu
             </span>
             <VisuallyHidden>{open ? 'Close navigation' : 'Open navigation'}</VisuallyHidden>
@@ -114,13 +115,13 @@ export default function MobileNavigationDrawer({
            * for the close button.
            */}
           <Dialog.Overlay
-            className="fixed inset-0 z-[60] bg-utility-backdrop/60 backdrop-blur-sm"
+            className="bg-utility-backdrop/60 fixed inset-0 z-[60] backdrop-blur-sm"
             onClick={handleOverlayClick}
           >
             <Dialog.Close asChild>
               <a
                 href="#main"
-                className="sr-only absolute left-1/2 top-6 -translate-x-1/2 rounded-radius-pill bg-surface-base/95 px-space-sm py-space-2xs text-body-sm font-medium text-ink-primary shadow-elevation-2 focus:not-sr-only"
+                className="rounded-radius-pill bg-surface-base/95 px-space-sm py-space-2xs text-body-sm text-ink-primary shadow-elevation-2 sr-only absolute top-6 left-1/2 -translate-x-1/2 font-medium focus:not-sr-only"
               >
                 Skip overlay and return to page content
               </a>
@@ -130,25 +131,25 @@ export default function MobileNavigationDrawer({
           <Dialog.Content
             id={navigationContentId}
             aria-describedby={`${navigationContentId}-description`}
-            className="fixed inset-y-0 right-0 z-[70] flex w-full max-w-xs flex-col overflow-y-auto border-l border-border-subtle bg-surface-base px-6 pb-8 pt-6 shadow-2xl outline-none sm:max-w-sm"
+            className="border-border-subtle bg-surface-base fixed inset-y-0 right-0 z-[70] flex w-full max-w-xs flex-col overflow-y-auto border-l px-6 pt-6 pb-8 shadow-2xl outline-none sm:max-w-sm"
             onOpenAutoFocus={handleOpenAutoFocus}
             onCloseAutoFocus={handleCloseAutoFocus}
           >
-            <Dialog.Title className="text-title-sm font-semibold text-ink-primary">
+            <Dialog.Title className="text-title-sm text-ink-primary font-semibold">
               Mobile navigation
             </Dialog.Title>
             <Dialog.Description
               id={`${navigationContentId}-description`}
-              className="mt-1 text-body-sm text-ink-muted"
+              className="text-body-sm text-ink-muted mt-1"
             >
               Primary Apotheon.ai sections reproduced for small screens.
             </Dialog.Description>
 
-            <div className="mt-4 flex flex-col gap-space-2xs">
+            <div className="gap-space-2xs mt-4 flex flex-col">
               <Dialog.Close asChild>
                 <a
                   href="#main"
-                  className="sr-only inline-flex w-max items-center gap-space-2xs rounded-radius-md bg-accent-brand px-space-sm py-space-2xs text-body-sm font-semibold text-ink-inverted shadow-elevation-2 focus:not-sr-only focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-brand"
+                  className="gap-space-2xs rounded-radius-md bg-accent-brand px-space-sm py-space-2xs text-body-sm text-ink-inverted shadow-elevation-2 focus-visible:outline-accent-brand sr-only inline-flex w-max items-center font-semibold focus:not-sr-only focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                 >
                   Skip to page content
                 </a>
@@ -156,7 +157,7 @@ export default function MobileNavigationDrawer({
               <a
                 ref={skipLinkRef}
                 href={`#${navigationListId}`}
-                className="sr-only inline-flex w-max items-center gap-space-2xs rounded-radius-md bg-surface-raised/80 px-space-sm py-space-2xs text-body-sm font-semibold text-ink-primary shadow-elevation-1 focus:not-sr-only focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-brand"
+                className="gap-space-2xs rounded-radius-md bg-surface-raised/80 px-space-sm py-space-2xs text-body-sm text-ink-primary shadow-elevation-1 focus-visible:outline-accent-brand sr-only inline-flex w-max items-center font-semibold focus:not-sr-only focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
               >
                 Skip to navigation links
               </a>
@@ -168,7 +169,7 @@ export default function MobileNavigationDrawer({
              * directly into the rendered list. The drawer keeps search above the primary nav so handheld users
              * can reach it without wading through every section link.
              */}
-            <div className="mt-6 border-t border-border-subtle/80 pt-6">
+            <div className="border-border-subtle/80 mt-6 border-t pt-6">
               <PagefindSearch />
             </div>
 
@@ -178,23 +179,25 @@ export default function MobileNavigationDrawer({
              * additions by forcing teams to extend the canonical data export first.
              */}
             <nav aria-label="Primary" className="mt-6">
-              <ul id={navigationListId} className="flex flex-col gap-space-sm">
+              <ul id={navigationListId} className="gap-space-sm flex flex-col">
                 {menuGroups.map((group) => (
-                  <li key={group.label} className="flex flex-col gap-space-2xs">
-                    <div className="flex flex-col gap-space-3xs">
-                      <p className="text-title-sm font-semibold text-ink-primary">{group.label}</p>
+                  <li key={group.label} className="gap-space-2xs flex flex-col">
+                    <div className="gap-space-3xs flex flex-col">
+                      <p className="text-title-sm text-ink-primary font-semibold">{group.label}</p>
                       <p className="text-body-sm text-ink-muted">{group.description}</p>
                     </div>
 
-                    <ul className="flex flex-col gap-space-3xs border-l border-dashed border-border-subtle/60 pl-space-sm">
+                    <ul className="gap-space-3xs border-border-subtle/60 pl-space-sm flex flex-col border-l border-dashed">
                       {group.links.map((link) => (
                         <li key={link.label}>
+                          {/* Annotate first-party anchors with the shared prefetch payload so the controller can register them automatically. */}
                           <a
+                            {...PREFETCH_ATTRIBUTE_PAYLOAD}
                             href={link.href}
-                            className="block rounded-radius-md px-space-sm py-space-2xs text-body-sm font-medium text-ink-primary transition hover:bg-surface-raised/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-brand"
+                            className="rounded-radius-md px-space-sm py-space-2xs text-body-sm text-ink-primary hover:bg-surface-raised/70 focus-visible:outline-accent-brand block font-medium transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                           >
                             <span className="block">{link.label}</span>
-                            <span className="block text-caption text-ink-muted">
+                            <span className="text-caption text-ink-muted block">
                               {link.description}
                             </span>
                           </a>
@@ -209,7 +212,7 @@ export default function MobileNavigationDrawer({
             <Dialog.Close asChild>
               <button
                 type="button"
-                className="mt-8 rounded-radius-md border border-border-subtle px-space-sm py-space-2xs text-body-sm font-semibold text-ink-primary transition hover:bg-surface-raised/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-brand"
+                className="rounded-radius-md border-border-subtle px-space-sm py-space-2xs text-body-sm text-ink-primary hover:bg-surface-raised/70 focus-visible:outline-accent-brand mt-8 border font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
               >
                 Close menu
               </button>
