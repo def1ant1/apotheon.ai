@@ -70,4 +70,95 @@ describe('analytics proxy helpers', () => {
     const request = new Request('https://collect.example.com/beacon');
     expect(() => __internal.assertGeoHeaders(request)).toThrow(/Missing required header/);
   });
+
+  it('normalises prefetch telemetry payloads', () => {
+    const now = new Date().toISOString();
+    const payload = {
+      version: 1 as const,
+      recordedAt: now,
+      routes: [
+        {
+          route: 'https://apotheon.ai/customers/12345/orders/abcdef0123456789?utm=1',
+          prefetched: {
+            visits: 1,
+            buckets: {
+              '0-100ms': 0,
+              '100-200ms': 1,
+              '200-400ms': 0,
+              '400-800ms': 0,
+              '800-1600ms': 0,
+              '1600ms+': 0,
+            },
+          },
+          nonPrefetched: {
+            visits: 0,
+            buckets: {
+              '0-100ms': 0,
+              '100-200ms': 0,
+              '200-400ms': 0,
+              '400-800ms': 0,
+              '800-1600ms': 0,
+              '1600ms+': 0,
+            },
+          },
+        },
+        {
+          route: '/docs/getting-started',
+          prefetched: {
+            visits: 0,
+            buckets: {
+              '0-100ms': 0,
+              '100-200ms': 0,
+              '200-400ms': 0,
+              '400-800ms': 0,
+              '800-1600ms': 0,
+              '1600ms+': 0,
+            },
+          },
+          nonPrefetched: {
+            visits: 2,
+            buckets: {
+              '0-100ms': 0,
+              '100-200ms': 0,
+              '200-400ms': 0,
+              '400-800ms': 0,
+              '800-1600ms': 2,
+              '1600ms+': 0,
+            },
+          },
+        },
+        {
+          route: '/ignored/empty',
+          prefetched: {
+            visits: 0,
+            buckets: {
+              '0-100ms': 0,
+              '100-200ms': 0,
+              '200-400ms': 0,
+              '400-800ms': 0,
+              '800-1600ms': 0,
+              '1600ms+': 0,
+            },
+          },
+          nonPrefetched: {
+            visits: 0,
+            buckets: {
+              '0-100ms': 0,
+              '100-200ms': 0,
+              '200-400ms': 0,
+              '400-800ms': 0,
+              '800-1600ms': 0,
+              '1600ms+': 0,
+            },
+          },
+        },
+      ],
+    };
+
+    const normalised = __internal.normalizePrefetchMetricsPayload(payload);
+    expect(normalised.routes).toHaveLength(2);
+    expect(normalised.routes[0]?.route).toBe('/customers/:int/orders/:hash');
+    expect(normalised.routes[0]?.prefetched.visits).toBe(1);
+    expect(normalised.routes[1]?.nonPrefetched.buckets['800-1600ms']).toBe(2);
+  });
 });

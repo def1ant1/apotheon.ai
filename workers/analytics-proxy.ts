@@ -48,6 +48,41 @@ const beaconSchema = z
   })
   .passthrough();
 
+const PREFETCH_EVENT_NAME = 'prefetch_navigation_metrics';
+const PREFETCH_BUCKET_LABELS = [
+  '0-100ms',
+  '100-200ms',
+  '200-400ms',
+  '400-800ms',
+  '800-1600ms',
+  '1600ms+',
+] as const;
+const PREFETCH_ROUTE_SEGMENTS_MAX = 4;
+const PREFETCH_SEGMENT_LENGTH_MAX = 48;
+const PREFETCH_MAX_ROUTES = 64;
+const PREFETCH_MAX_VISITS = 10_000;
+
+const prefetchMetricGroupSchema = z.object({
+  visits: z.number().int().min(0).max(PREFETCH_MAX_VISITS).default(0),
+  buckets: z
+    .record(z.enum(PREFETCH_BUCKET_LABELS), z.number().int().min(0).max(PREFETCH_MAX_VISITS))
+    .default({} as Record<(typeof PREFETCH_BUCKET_LABELS)[number], number>),
+});
+
+const prefetchPayloadSchema = z.object({
+  version: z.literal(1),
+  recordedAt: z.string().datetime({ offset: true }),
+  routes: z
+    .array(
+      z.object({
+        route: z.string().trim().min(1).max(256),
+        prefetched: prefetchMetricGroupSchema,
+        nonPrefetched: prefetchMetricGroupSchema,
+      }),
+    )
+    .max(PREFETCH_MAX_ROUTES),
+});
+
 const REQUIRED_GEO_HEADERS = ['cf-ipcountry', 'cf-ray'] as const;
 const RATE_LIMIT_WINDOW_DEFAULT = 60;
 const RATE_LIMIT_MAX_DEFAULT = 120;
@@ -198,7 +233,7 @@ export default {
 
       assertGeoHeaders(request);
 
-      const rawBody = await request.text();
+      let rawBody = await request.text();
       if (!rawBody) {
         throw new HttpError(400, 'Empty payload');
       }
@@ -213,6 +248,22 @@ export default {
         beacon = beaconSchema.parse(json);
       } catch (error) {
         throw new HttpError(422, error instanceof Error ? error.message : 'Invalid payload');
+      }
+
+      if (beacon.event === PREFETCH_EVENT_NAME) {
+        try {
+          const normalised = normalizePrefetchMetricsPayload(beacon.payload);
+          if (normalised.routes.length === 0) {
+            return createNoopResponse('analytics-suppressed=prefetch-empty');
+          }
+          beacon = { ...beacon, payload: normalised } as BeaconRecord;
+          rawBody = JSON.stringify(beacon);
+        } catch (error) {
+          throw new HttpError(
+            422,
+            error instanceof Error ? error.message : 'Invalid prefetch payload',
+          );
+        }
       }
 
       const rate = await enforceRateLimit(env, request, beacon);
@@ -350,6 +401,8 @@ export const __internal = {
   assertGeoHeaders,
   buildSecurityHeaders,
   buildForwardHeaders,
+  normalizePrefetchMetricsPayload,
+  sanitisePrefetchRoute,
 };
 
 let auditTableReady = false;
@@ -450,4 +503,105 @@ async function forwardToGa(env: AnalyticsProxyEnv, beacon: BeaconRecord): Promis
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(body),
   });
+}
+
+function normalizePrefetchMetricsPayload(payload: unknown) {
+  const parsed = prefetchPayloadSchema.parse(payload);
+  const routes = parsed.routes
+    .map((route) => {
+      const routeId = sanitisePrefetchRoute(route.route);
+      const prefetched = normalisePrefetchGroup(route.prefetched);
+      const nonPrefetched = normalisePrefetchGroup(route.nonPrefetched);
+      if (prefetched.visits === 0 && nonPrefetched.visits === 0) {
+        return null;
+      }
+      return {
+        route: routeId,
+        prefetched,
+        nonPrefetched,
+      };
+    })
+    .filter((value): value is NonNullable<typeof value> => Boolean(value));
+
+  return {
+    version: 1 as const,
+    recordedAt: parsed.recordedAt,
+    routes,
+  };
+}
+
+function normalisePrefetchGroup(group: z.infer<typeof prefetchMetricGroupSchema>) {
+  const buckets: Record<(typeof PREFETCH_BUCKET_LABELS)[number], number> = {
+    '0-100ms': 0,
+    '100-200ms': 0,
+    '200-400ms': 0,
+    '400-800ms': 0,
+    '800-1600ms': 0,
+    '1600ms+': 0,
+  };
+
+  let bucketTotal = 0;
+  for (const label of PREFETCH_BUCKET_LABELS) {
+    const raw = group.buckets?.[label] ?? 0;
+    const clamped = clampPrefetchCount(raw);
+    buckets[label] = clamped;
+    bucketTotal += clamped;
+  }
+
+  const desired = clampPrefetchCount(group.visits ?? bucketTotal, Math.max(bucketTotal, 0));
+  const visits = Math.min(PREFETCH_MAX_VISITS, Math.max(bucketTotal, desired));
+  return {
+    visits,
+    buckets,
+  };
+}
+
+function clampPrefetchCount(value: unknown, fallback = 0): number {
+  const numeric = typeof value === 'number' ? value : Number(value);
+  if (!Number.isFinite(numeric)) {
+    return Math.min(PREFETCH_MAX_VISITS, Math.max(0, Math.round(fallback)));
+  }
+  return Math.min(PREFETCH_MAX_VISITS, Math.max(0, Math.round(numeric)));
+}
+
+function sanitisePrefetchRoute(route: string): string {
+  let path = '/';
+  try {
+    const url = new URL(route, 'https://apotheon.ai');
+    path = url.pathname;
+  } catch {
+    path = route.startsWith('/') ? route : `/${route}`;
+  }
+
+  const segments = path
+    .split('/')
+    .slice(0, PREFETCH_ROUTE_SEGMENTS_MAX + 1)
+    .map((segment) => sanitisePrefetchSegment(segment))
+    .filter((segment, index, array) => segment !== '' || index === 0 || index === array.length - 1);
+
+  const normalised = segments.join('/');
+  return normalised || '/';
+}
+
+function sanitisePrefetchSegment(segment: string): string {
+  if (!segment) return '';
+  let decoded = segment;
+  try {
+    decoded = decodeURIComponent(segment);
+  } catch {
+    decoded = segment;
+  }
+  decoded = decoded.trim();
+  if (decoded.length === 0) {
+    return '';
+  }
+
+  const lower = decoded.toLowerCase();
+  if (/^\d+$/.test(lower)) {
+    return ':int';
+  }
+  if (/^[0-9a-f]{8,}$/.test(lower.replace(/-/g, ''))) {
+    return ':hash';
+  }
+  return decoded.slice(0, PREFETCH_SEGMENT_LENGTH_MAX);
 }

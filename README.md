@@ -92,6 +92,50 @@ npm run preview          # Serves the production bundle with asset headers and C
 
 > **Where to dive deeper:** Start with the [Architecture Decision Ledger](docs/architecture/DECISIONS.md), inspect the [system context diagram](docs/architecture/system-context.svg), then review the [brand style guide](docs/brand/STYLEGUIDE.md) before editing UI.
 
+## Prefetch navigation telemetry
+
+> **Privacy & automation note:** The navigation telemetry shipped under `src/utils/navigation/prefetch-telemetry.ts` only records aggregate, anonymized deltas between navigation start and time-to-first-byte (TTFB). Individual visitors, query strings, and unique identifiers never leave the browser; instead, the controller batches sanitized histograms per route and sends them through the analytics proxy only once consent, Do-Not-Track, and Global Privacy Control checks pass.
+
+- **Histogram schema:** Each batch serializes as:
+
+  ```jsonc
+  {
+    "version": 1,
+    "recordedAt": "2025-03-06T12:00:00.000Z",
+    "routes": [
+      {
+        "route": "/docs/intro",
+        "prefetched": {
+          "visits": 12,
+          "buckets": {
+            "0-100ms": 4,
+            "100-200ms": 6,
+            "200-400ms": 2,
+            "400-800ms": 0,
+            "800-1600ms": 0,
+            "1600ms+": 0,
+          },
+        },
+        "nonPrefetched": {
+          "visits": 9,
+          "buckets": {
+            "0-100ms": 1,
+            "100-200ms": 3,
+            "200-400ms": 3,
+            "400-800ms": 2,
+            "800-1600ms": 0,
+            "1600ms+": 0,
+          },
+        },
+      },
+    ],
+  }
+  ```
+
+- **PII safeguards:** Route paths are truncated to the first four segments, numeric identifiers become `:int`, hexadecimal-like tokens become `:hash`, and anything longer than 48 characters is truncated. Prefetch hints expire from session storage after 15 minutes so multi-user devices cannot correlate visits.
+- **Persistence strategy:** Aggregates live in local storage under `apotheon.prefetch.telemetry.v1` for batching and session storage tracks short-lived 'was-prefetched' hints. Controllers call `prefetchTelemetry.submitPending()` only after confirming consent and DNT requirements via `trackAnalyticsEvent`, ensuring the Worker proxy remains the sole egress path.
+- **Automation hook:** The Cloudflare Worker at `workers/analytics-proxy.ts` normalizes every payload (route sanitization, bucket clamping, empty-batch suppression) before signing and forwarding the payload downstream. Contract tests cover this flow so CI can assert ≥20 % improvements without risking data quality regressions.
+
 ## Contributing
 
 > **Process note:** Conventional Commits, lint-staged auto-fixes, and CI parity are non-negotiable. Each guideline below keeps the platform enterprise-grade.
