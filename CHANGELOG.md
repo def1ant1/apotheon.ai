@@ -38,6 +38,8 @@ semantic versioning once releases begin.
 - Captured Cloudflare-centric architecture decisions, security boundaries, and performance budgets in `docs/architecture/DECISIONS.md`.
 - Published a system context diagram (`docs/architecture/system-context.puml` + `.svg`) showing browser↔edge↔data plane flows.
 - Documented open-source/zero-cost substitutes for each managed service in `docs/infra/ALTERNATIVES.md`.
+- Extended the vendored lychee installer to cover Intel macOS, keeping deterministic link linting functional across mixed
+  Apple Silicon/Intel fleets and documenting the expanded support in developer guides.
 
 ### Changed
 

@@ -102,7 +102,9 @@ broken references.
   only (for example `['build', '--outDir', …]`). Passing a leading `astro` string double-prefixes the binary and breaks
   the static build.
 - **Binary provisioning.** The vendored CLI lives under `vendor/lychee` and downloads its architecture-specific binary into
-  `vendor/lychee/vendor/` during `npm install`. The executable is gitignored to satisfy the "no large binaries" policy, so
+  `vendor/lychee/vendor/` during `npm install`. Prebuilt archives now cover Linux (x64/arm64/armv7), Apple Silicon and Intel
+  macOS, plus Windows x64 so enterprise fleets stay deterministic regardless of hardware refresh cycles. The executable is
+  gitignored to satisfy the "no large binaries" policy, so
   pre-seed that directory before installing when you work completely offline. Set `APOTHEON_LYCHEE_ARCHIVE_URL` to an
   internal mirror, `APOTHEON_LYCHEE_ARCHIVE_PATH` to a pre-seeded tarball, or `APOTHEON_LYCHEE_SKIP_DOWNLOAD=1` once the
   binary is present. Use `HOMEPAGE_HERO_DISABLE_RENDER=1` when you do prime the static build to avoid Python/Pillow
