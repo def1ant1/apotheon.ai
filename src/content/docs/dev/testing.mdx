@@ -110,10 +110,11 @@ broken references.
   hermetic CI, so use `npm run lint:links -- --online` when you explicitly want to exercise production URLs.
 - **Artifact trail.** Results land in `artifacts/link-check/report.json`; commit or upload this file when auditors need
   evidence of the scan.
-- **Binary provisioning.** The vendored CLI lives under `vendor/lychee`. If the environment cannot reach GitHub, set
-  `APOTHEON_LYCHEE_ARCHIVE_URL` to an internal mirror, `APOTHEON_LYCHEE_ARCHIVE_PATH` to a pre-seeded tarball, or
-  `APOTHEON_LYCHEE_SKIP_DOWNLOAD=1` once the binary is present. Use `HOMEPAGE_HERO_DISABLE_RENDER=1` when you do prime the
-  static build to avoid Python/Pillow requirements.
+- **Binary provisioning.** The vendored CLI lives under `vendor/lychee`. Prebuilt archives now span Linux (x64/arm64/armv7),
+  Apple Silicon and Intel macOS, plus Windows x64 so every platform our auditors use resolves to a deterministic binary.
+  If the environment cannot reach GitHub, set `APOTHEON_LYCHEE_ARCHIVE_URL` to an internal mirror,
+  `APOTHEON_LYCHEE_ARCHIVE_PATH` to a pre-seeded tarball, or `APOTHEON_LYCHEE_SKIP_DOWNLOAD=1` once the binary is present.
+  Use `HOMEPAGE_HERO_DISABLE_RENDER=1` when you do prime the static build to avoid Python/Pillow requirements.
 
 ## Troubleshooting deterministic captures
 

@@ -35,6 +35,10 @@ function selectArchive() {
   if (platform === 'darwin' && arch === 'arm64') {
     return `${BASE_URL}/lychee-arm64-macos.tar.gz`;
   }
+  if (platform === 'darwin' && arch === 'x64') {
+    // Intel macOS coverage so corporate fleets without Apple Silicon can still run deterministic link linting.
+    return `${BASE_URL}/lychee-x86_64-apple-darwin.tar.gz`;
+  }
   if (platform === 'win32' && arch === 'x64') {
     return `${BASE_URL}/lychee-x86_64-windows.exe`;
   }
