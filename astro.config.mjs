@@ -23,6 +23,7 @@ import {
   SEO_MANIFEST,
   createRouteExclusionPredicate
 } from './config/seo/manifest.mjs';
+import { createCompressionPluginSuite } from './config/build/compression.mjs';
 
 function loadImageOptimizationManifest() {
   try {
@@ -45,6 +46,7 @@ const I18N_SOURCE_DIR = fileURLToPath(new URL('./src/i18n', import.meta.url));
  * Vite block below.
  */
 const tailwindConfigPath = fileURLToPath(new URL('./tailwind.config.mjs', import.meta.url));
+const { plugins: compressionPlugins } = createCompressionPluginSuite();
 
 const enableHttps = process.env.ASTRO_DEV_HTTPS === 'true';
 const httpsOptions = enableHttps ? resolveDevHttpsConfig() ?? true : undefined;
@@ -185,7 +187,11 @@ export default defineConfig({
        * Tailwind 4 ships as a first-party Vite plugin. Placing it first keeps
        * its PostCSS emulation ahead of Astro's own transforms while the
        * commented rationale reminds engineers that the legacy @astrojs/tailwind
-       * wrapper has been retired.
+       * wrapper has been retired. Immediately after Tailwind we register the
+       * compression helpers so both gzip and Brotli variants are emitted without
+       * touching the origin files. The shared helper also wires CDN-facing hash
+       * metadata, keeping our diffability story intact for the static edge
+       * caches that pin bundles for months at a time.
        */
       tailwindcss({
         /**
@@ -195,7 +201,8 @@ export default defineConfig({
          * across both local dev and the theme visual regression suite.
          */
         config: tailwindConfigPath
-      })
+      }),
+      ...compressionPlugins
     ],
     resolve: {
       alias: {
@@ -217,6 +224,7 @@ export default defineConfig({
     },
     build: {
       target: 'esnext',
+      manifest: true,
       rollupOptions: {
         external: ['@resvg/resvg-js', 'satori']
       }
