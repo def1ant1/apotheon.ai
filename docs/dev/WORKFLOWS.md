@@ -81,6 +81,46 @@ pre-production environments.
   before adjusting the contract so future pull requests inherit the audited
   route × theme matrix.
 
+### Contact form accessibility contract
+
+The `/about/contact/` island ships a deterministic accessibility surface so QA
+and assistive technology users receive the same remediation cues on every
+release:
+
+- **Deterministic error identifiers.** Each control mirrors the schema-issued
+  issue code with a prefixed error ID (`contact-error-name`,
+  `contact-error-email`, `contact-error-company`, `contact-error-intent`,
+  `contact-error-message`, `contact-error-turnstile`). These IDs are
+  concatenated with any persistent helper text (for example `email-help`) inside
+  `aria-describedby` to ensure every invalid field references all supporting
+  guidance.
+- **Explicit ARIA wiring.** Invalid fields toggle `aria-invalid="true"` and
+  register the deterministic IDs in `aria-describedby`. The `<form>` element is
+  labelled by its `<legend>` and references the dedicated status region via
+  `aria-describedby="contact-form-status"`, while the submit button exposes
+  `aria-live="polite"` updates for users navigating with virtual cursors.
+- **Status announcements.** The live region (`role="status"`, `id` matching the
+  deterministic descriptor) emits success, validation, and worker rejection
+  copy. It sets a `data-state` flag so the e2e suite can validate error,
+  warning, and success pathways without relying on text heuristics.
+
+### Internationalization touchpoints
+
+- Text strings, validation prompts, and status announcements for the contact
+  journey live under `src/i18n/<locale>/common.json` in the `contact` namespace.
+  Update every locale bundle and confirm the Astro i18next registration mirrors
+  the new keys before merging.
+- When extending intents or helper copy, update the structured translations and
+  validate that `ContactForm` consumes the namespace via `useTranslation`. This
+  keeps the deterministic IDs paired with the correct localized messaging.
+- Regression coverage exists in:
+  - `tests/unit/accessibility-islands.spec.tsx` for DOM-level ARIA contracts and
+    deterministic error IDs.
+  - `tests/e2e/contact-form.spec.ts` for screen reader mode announcements,
+    worker-driven failures, and valid submission flows under localization-aware
+    routes. Run `npm run test` and `npm run test:e2e` after localization edits to
+    preserve the accessibility contract.
+
 ### Node.js engine baseline
 
 The [README Quick Start](../../README.md#quick-start) is the canonical source

@@ -37,8 +37,10 @@ import RadixNavigationMenu, {
 } from '../../src/components/islands/RadixNavigationMenu';
 import WhitepaperRequestForm from '../../src/components/islands/WhitepaperRequestForm';
 
+type ContactFormTokenSetter = NonNullable<Window['__CONTACT_FORM_SET_TOKEN__']>;
+
 type TestWindow = typeof window & {
-  __CONTACT_FORM_SET_TOKEN__?: (value: string) => void;
+  __CONTACT_FORM_SET_TOKEN__?: ContactFormTokenSetter;
 };
 
 const expectInvalidFieldState = (

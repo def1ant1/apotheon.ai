@@ -1,4 +1,4 @@
-import { test, expect, type Locator, type BrowserContext } from '@playwright/test';
+import { test, expect, type Locator, type BrowserContext, type Page } from '@playwright/test';
 
 import { setTheme, stabilizePageChrome, waitForIslandHydration } from './utils/page';
 
@@ -111,12 +111,28 @@ test('announces validation guidance with screen reader emulation', async ({ page
   });
 
   // Enable the assistive tech affordances so we validate the same pathways used by VoiceOver users.
-  await page.emulateVisionDeficiency('none');
+  const pageWithVisionControls = page as Page & {
+    emulateVisionDeficiency?: unknown;
+  };
+  const visionToggle =
+    typeof pageWithVisionControls.emulateVisionDeficiency === 'function'
+      ? (pageWithVisionControls.emulateVisionDeficiency as CallableFunction).bind(
+          pageWithVisionControls,
+        )
+      : null;
+  await visionToggle?.('none');
+
   const context = page.context();
-  const { setScreenReaderMode } = context as Partial<Pick<BrowserContext, 'setScreenReaderMode'>>;
-  if (typeof setScreenReaderMode === 'function') {
-    await setScreenReaderMode.call(context, true);
-  }
+  const contextWithScreenReader = context as BrowserContext & {
+    setScreenReaderMode?: unknown;
+  };
+  const toggleScreenReader =
+    typeof contextWithScreenReader.setScreenReaderMode === 'function'
+      ? (contextWithScreenReader.setScreenReaderMode as CallableFunction).bind(
+          contextWithScreenReader,
+        )
+      : null;
+  await toggleScreenReader?.(true);
 
   // Ensure every field is blank so the Zod schema emits deterministic issues for each control.
   await page.fill('#name', '');
@@ -124,7 +140,7 @@ test('announces validation guidance with screen reader emulation', async ({ page
   await page.fill('#company', '');
   await page.fill('#message', '');
   await page.evaluate(() => {
-    const select = document.querySelector<HTMLSelectElement>('#intent');
+    const select = document.querySelector('#intent') as HTMLSelectElement | null;
     if (select) {
       select.value = '';
       select.dispatchEvent(new Event('change', { bubbles: true }));
