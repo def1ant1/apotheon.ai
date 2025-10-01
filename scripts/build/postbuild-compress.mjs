@@ -15,14 +15,44 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Worker, isMainThread, parentPort } from 'node:worker_threads';
 import globModule from 'glob';
-import { performance } from 'node:perf_hooks';
 
-const { glob } = globModule;
+const globSync = typeof globModule.globSync === 'function' ? globModule.globSync : globModule.sync.bind(globModule);
+import { performance } from 'node:perf_hooks';
+import { z } from 'zod';
+
 
 const THIS_FILE = fileURLToPath(import.meta.url);
-const ROOT_DIR = path.join(path.dirname(path.dirname(THIS_FILE)), '..');
-const DIST_DIR = path.join(ROOT_DIR, 'dist');
-const MANIFEST_PATH = path.join(DIST_DIR, '.compressed-manifest.json');
+export const ROOT_DIR = path.join(path.dirname(path.dirname(THIS_FILE)), '..');
+export const DIST_DIR = path.join(ROOT_DIR, 'dist');
+export const COMPRESSION_MANIFEST_PATH = path.join(DIST_DIR, '.compressed-manifest.json');
+
+/**
+ * Shared Zod schema that downstream tooling (tests, CI pipelines, etc.) can
+ * import to reason about the manifest with static type-safety. Centralising the
+ * shape here eliminates the chance of ad-hoc parsers drifting out of sync when
+ * new fields are introduced during future optimisations.
+ */
+export const CompressionEncodingSchema = z.object({
+  file: z.string(),
+  bytes: z.number(),
+  mtime: z.string(),
+});
+
+export const CompressionAssetSchema = z.object({
+  source: z.string(),
+  hash: z.string(),
+  sourceBytes: z.number(),
+  sourceMtime: z.string(),
+  brotli: CompressionEncodingSchema,
+  gzip: CompressionEncodingSchema,
+  validatedAt: z.string(),
+  compressedDurationMs: z.number().optional(),
+});
+
+export const CompressionManifestSchema = z.object({
+  generatedAt: z.string(),
+  assets: z.array(CompressionAssetSchema),
+});
 
 const toPosix = (value) => value.split(path.sep).join('/');
 const nowIso = () => new Date().toISOString();
@@ -274,6 +304,42 @@ const readJsonFile = async (targetPath) => {
   }
 };
 
+/**
+ * Enterprise manifest reader that keeps CI, tests, and operational tooling in
+ * lock-step with the compression pipeline. The helper performs existence checks
+ * and schema validation so every consumer receives a fully-typed manifest
+ * without re-implementing guards or default handling.
+ *
+ * @param {Object} [options]
+ * @param {string} [options.manifestPath=COMPRESSION_MANIFEST_PATH] Absolute path to the manifest file.
+ * @param {boolean} [options.requirePresence=true] When true, throws if the manifest is missing.
+ * @returns {Promise<import('zod').infer<typeof CompressionManifestSchema> | null>}
+ */
+export const readCompressionManifest = async ({
+  manifestPath = COMPRESSION_MANIFEST_PATH,
+  requirePresence = true,
+} = {}) => {
+  const raw = await readJsonFile(manifestPath);
+
+  if (!raw) {
+    if (requirePresence) {
+      throw new Error(
+        `Compression manifest not found at ${manifestPath}. Ensure the build pipeline executed postbuild:compress first.`,
+      );
+    }
+    return null;
+  }
+
+  const result = CompressionManifestSchema.safeParse(raw);
+  if (!result.success) {
+    throw new Error(
+      `Compression manifest at ${manifestPath} failed validation: ${result.error.toString()}`,
+    );
+  }
+
+  return result.data;
+};
+
 const computeHash = (buffer) => {
   const hash = createHash('sha256');
   hash.update(buffer);
@@ -283,7 +349,10 @@ const computeHash = (buffer) => {
 const readFileBuffer = async (filePath) => fs.readFile(filePath);
 
 const loadPreviousManifest = async () => {
-  const previous = await readJsonFile(MANIFEST_PATH);
+  const previous = await readCompressionManifest({
+    manifestPath: COMPRESSION_MANIFEST_PATH,
+    requirePresence: false,
+  });
   if (!previous || !Array.isArray(previous.assets)) {
     return new Map();
   }
@@ -333,7 +402,7 @@ const main = async () => {
   // The glob is resolved relative to the repo root so the script stays relocatable
   // when executed by npm, pnpm, or directly via Node.
   const pattern = toPosix(path.join('dist', '**', '*.{js,css,html,svg,json}'));
-  const absoluteFiles = await glob(pattern, {
+  const absoluteFiles = globSync(pattern, {
     cwd: ROOT_DIR,
     absolute: true,
     nodir: true,
@@ -350,7 +419,7 @@ const main = async () => {
   if (candidateFiles.length === 0) {
     console.log('[#compress] No compressible artefacts discovered under dist/.');
     await fs.writeFile(
-      MANIFEST_PATH,
+      COMPRESSION_MANIFEST_PATH,
       `${JSON.stringify({ generatedAt: nowIso(), assets: [] }, null, 2)}\n`,
       'utf8',
     );
@@ -486,17 +555,25 @@ const main = async () => {
     assets: updatedEntries,
   };
 
-  await fs.writeFile(MANIFEST_PATH, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
+  await fs.writeFile(
+    COMPRESSION_MANIFEST_PATH,
+    `${JSON.stringify(manifest, null, 2)}\n`,
+    'utf8',
+  );
   console.log(
     `[#compress] Compression manifest written with ${updatedEntries.length} entries at ${toPosix(
-      path.relative(ROOT_DIR, MANIFEST_PATH),
+      path.relative(ROOT_DIR, COMPRESSION_MANIFEST_PATH),
     )}.`,
   );
 };
 
 if (isMainThread) {
-  main().catch((error) => {
-    console.error('[#compress] Compression pipeline failed:', error);
-    process.exitCode = 1;
-  });
+  const invokedFromCli = process.argv[1] && path.resolve(process.argv[1]) === THIS_FILE;
+
+  if (invokedFromCli) {
+    main().catch((error) => {
+      console.error('[#compress] Compression pipeline failed:', error);
+      process.exitCode = 1;
+    });
+  }
 }
