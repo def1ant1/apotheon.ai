@@ -44,7 +44,7 @@ This guide captures the automation that keeps our marketing surface fast, visual
 
 - Every successful speculative fetch invokes `prefetchTelemetry.markPrefetched`, setting a signed sessionStorage flag for the normalised route. When the subsequent navigation timing beacon fires, the telemetry controller joins that flag with the recorded TTFB to determine whether the experience was warm or cold.
 - Aggregates are persisted in localStorage under `apotheon.prefetch.telemetry.v1` as capped histograms for each anonymised route. The controller trims to 48 routes per session, caps visit counters at 10,000, and normalises sensitive path segments (e.g., `/customers/:int/orders/:hash`) before egress.
-- Browser sessions periodically call `prefetchTelemetry.submitPending`, emitting a `prefetch_navigation_metrics` event through the analytics proxy Worker. The Worker validates payload shape, enforces geo headers and rate limits, signs the body, and forwards it to Umami and downstream warehousing jobs.
+- **Flush requirements:** `prefetchTelemetry.submitPending` is intentionally not auto-invoked. Product surfaces must explicitly call it (typically from the same consent-gated analytics queue that ships commerce beacons) to release batches to the analytics proxy Worker. Without that integration, aggregates remain in localStorage and the downstream dashboards stay empty.
 - Dashboards:
   - **Grafana – Prefetch Warmth Coverage** (`https://grafana.apotheon.ai/d/prefetch-nav/perf-prefetch`): Tracks warm vs. cold visit mix, TTFB histogram deltas, and the ratio of speculative hits to misses.
   - **Looker – Prefetch Trend Report** (`https://looker.apotheon.ai/dashboards/prefetch-efficiency`): Surfaces 7/30-day regressions, route families with outlier TTFB buckets, and alert states mirrored into PagerDuty.
@@ -54,7 +54,7 @@ This guide captures the automation that keeps our marketing surface fast, visual
 
 - **Anchors ignored** – Confirm the link spreads `PREFETCH_ATTRIBUTE_PAYLOAD` and does not include `download`, `_blank`, or cross-origin URLs. The `tests/e2e/navigation-prefetch.spec.ts` fixture page offers parity examples for quick regression checks.
 - **Prefetches never fire** – Inspect DevTools > Application > Storage to verify reduced-motion and Save-Data signals. Forcing those preferences locally should suppress pointer and idle triggers; if they do not, assert that `respectReducedMotion`/`respectSaveData` were not overridden.
-- **Telemetry gaps** – Inspect localStorage/sessionStorage for the `apotheon.prefetch.*` keys. Missing entries often mean `prefetchTelemetry.submitPending` failed; tail the analytics proxy Worker logs (Cloudflare dashboard → Analytics Proxy → Recent logs) for schema validation errors or rate limit denials.
+- **Telemetry gaps** – Inspect localStorage/sessionStorage for the `apotheon.prefetch.*` keys. Missing entries usually mean prefetches never fired; if data is present but dashboards are blank, confirm an owning surface is calling `prefetchTelemetry.submitPending` after analytics consent. When submissions do occur, tail the analytics proxy Worker logs (Cloudflare dashboard → Analytics Proxy → Recent logs) for schema validation errors or rate limit denials.
 - **Dashboard regression** – Review the most recent deploy for changes to `prefetch-manager.ts` or link templates. If the Worker is returning 428 errors, Cloudflare may not be appending geo headers due to a configuration drift—check the zone worker routes first.
 
 ## Lighthouse calibration
