@@ -1,4 +1,19 @@
-# Deployment & Edge Compression Playbook
+---
+title: Deployment & Edge Compression Playbook
+category: dev
+categoryLabel: Development
+description: This playbook equips release managers with the exact steps required
+  to translate our post-build compression manifest into Cloudflare (or
+  equivalent CDN) rules. The manifest is the single source of truth for which
+  static artefacts ship with Brotli and gzip variants, the digests we use for
+  cache-busting, and the metadata the CDN needs in order to serve the optimal
+  encoding automatically. Lean on the manifest so you never have to craft
+  bespoke caching policies by hand—the pipeline already produces the data in a
+  deterministic, audit-friendly shape.
+sourcePath: dev/DEPLOYMENT.md
+sourceLastModified: 2025-10-01T17:07:08.860Z
+tags: []
+---
 
 This playbook equips release managers with the exact steps required to translate our
 post-build compression manifest into Cloudflare (or equivalent CDN) rules. The
@@ -10,9 +25,9 @@ produces the data in a deterministic, audit-friendly shape.
 
 ## Compression manifest anatomy
 
-`npm run build` finishes by executing [`scripts/build/postbuild-compress.mjs`](../../scripts/build/postbuild-compress.mjs).
+`npm run build` finishes by executing [`scripts/build/postbuild-compress.mjs`](https://github.com/apotheon-ai/apotheon.ai/blob/main/scripts/build/postbuild-compress.mjs).
 The worker pool emits `.br` and `.gz` companions for every static asset that matches
-the [`STATIC_EDGE_COMPRESSION_PATTERN`](../../config/build/compression.mjs) and then
+the [`STATIC_EDGE_COMPRESSION_PATTERN`](https://github.com/apotheon-ai/apotheon.ai/blob/main/config/build/compression.mjs) and then
 writes `dist/.compressed-manifest.json`. Each entry includes:
 
 - `source` – origin-relative path (e.g., `assets/index.abc123.js`).

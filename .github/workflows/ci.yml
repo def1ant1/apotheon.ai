@@ -48,6 +48,11 @@ jobs:
       - name: Backup automation dry-run
         run: npm run ops:backup:dry-run
 
+      - name: Prepare HTML validation targets
+        run: |
+          npm run build:static
+          npm run ladle:build
+
       - name: Run linting
         run: npm run lint
 

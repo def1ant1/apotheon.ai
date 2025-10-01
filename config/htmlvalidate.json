@@ -1,0 +1,11 @@
+{
+  "extends": ["html-validate:recommended", "html-validate:document"],
+  "rules": {
+    "void-style": "error",
+    "doctype-style": "error",
+    "attribute-allowed-values": "error",
+    "wcag/h32": "error",
+    "no-implicit-button-type": "error",
+    "no-multiple-main": "error"
+  }
+}
