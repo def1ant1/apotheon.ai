@@ -23,6 +23,20 @@ interface FieldErrors {
   [key: string]: string;
 }
 
+/**
+ * Centralize the mapping between validation keys and deterministic DOM identifiers so both JSX
+ * attributes and error paragraphs can reference the same ids without risking drift across
+ * refactors.
+ */
+const FIELD_ERROR_IDS = {
+  name: 'contact-error-name',
+  email: 'contact-error-email',
+  company: 'contact-error-company',
+  intent: 'contact-error-intent',
+  message: 'contact-error-message',
+  turnstileToken: 'contact-error-turnstile',
+} as const;
+
 const DEFAULT_ENDPOINT = import.meta.env.PUBLIC_CONTACT_ENDPOINT ?? '/api/contact';
 const DEFAULT_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? 'test-site-key';
 
@@ -407,6 +421,15 @@ export default function ContactForm({
    */
   const statusRegionId = 'contact-form-status';
 
+  /**
+   * Compose `aria-describedby` values from optional base helper ids and conditional error message
+   * ids so screen readers announce the full guidance context when validation issues surface.
+   */
+  const resolveDescribedBy = (...ids: Array<string | false | null | undefined>) => {
+    const filtered = ids.filter(Boolean) as string[];
+    return filtered.length > 0 ? filtered.join(' ') : undefined;
+  };
+
   return (
     <form
       ref={formRef}
@@ -488,8 +511,15 @@ export default function ContactForm({
             onChange={() => {
               setFieldErrors((previous) => ({ ...previous, name: '' }));
             }}
+            aria-invalid={fieldErrors.name ? 'true' : undefined}
+            data-error-state={fieldErrors.name ? 'error' : undefined}
+            aria-describedby={resolveDescribedBy(fieldErrors.name && FIELD_ERROR_IDS.name)}
           />
-          {fieldErrors.name && <p className="text-sm text-amber-300">{fieldErrors.name}</p>}
+          {fieldErrors.name && (
+            <p id={FIELD_ERROR_IDS.name} className="text-sm text-amber-300">
+              {fieldErrors.name}
+            </p>
+          )}
         </div>
 
         <div className="grid gap-2">
@@ -506,12 +536,18 @@ export default function ContactForm({
               setEmail(event.currentTarget.value);
               setFieldErrors((previous) => ({ ...previous, email: '' }));
             }}
-            aria-describedby="email-help"
+            aria-invalid={fieldErrors.email ? 'true' : undefined}
+            data-error-state={fieldErrors.email ? 'error' : undefined}
+            aria-describedby={resolveDescribedBy('email-help', fieldErrors.email && FIELD_ERROR_IDS.email)}
           />
           <p id="email-help" className="text-sm text-slate-400">
             {emailHelpText}
           </p>
-          {fieldErrors.email && <p className="text-sm text-amber-300">{fieldErrors.email}</p>}
+          {fieldErrors.email && (
+            <p id={FIELD_ERROR_IDS.email} className="text-sm text-amber-300">
+              {fieldErrors.email}
+            </p>
+          )}
         </div>
 
         <div className="grid gap-2">
@@ -524,8 +560,17 @@ export default function ContactForm({
             required
             className="rounded-md border border-slate-700 bg-slate-800/80 px-3 py-2 text-white shadow-inner focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             onChange={() => setFieldErrors((previous) => ({ ...previous, company: '' }))}
+            aria-invalid={fieldErrors.company ? 'true' : undefined}
+            data-error-state={fieldErrors.company ? 'error' : undefined}
+            aria-describedby={resolveDescribedBy(
+              fieldErrors.company && FIELD_ERROR_IDS.company,
+            )}
           />
-          {fieldErrors.company && <p className="text-sm text-amber-300">{fieldErrors.company}</p>}
+          {fieldErrors.company && (
+            <p id={FIELD_ERROR_IDS.company} className="text-sm text-amber-300">
+              {fieldErrors.company}
+            </p>
+          )}
         </div>
 
         <div className="grid gap-2">
@@ -543,6 +588,9 @@ export default function ContactForm({
               setFieldErrors((previous) => ({ ...previous, intent: '' }));
               logEvent('contact_form_intent_changed', { intent: nextIntent });
             }}
+            aria-invalid={fieldErrors.intent ? 'true' : undefined}
+            data-error-state={fieldErrors.intent ? 'error' : undefined}
+            aria-describedby={resolveDescribedBy(fieldErrors.intent && FIELD_ERROR_IDS.intent)}
           >
             <option value="demo">Product demo</option>
             <option value="partnership">Partner with us</option>
@@ -551,7 +599,11 @@ export default function ContactForm({
             <option value="investor">Investor relations</option>
             <option value="support">Customer support</option>
           </select>
-          {fieldErrors.intent && <p className="text-sm text-amber-300">{fieldErrors.intent}</p>}
+          {fieldErrors.intent && (
+            <p id={FIELD_ERROR_IDS.intent} className="text-sm text-amber-300">
+              {fieldErrors.intent}
+            </p>
+          )}
         </div>
 
         <div className="grid gap-2">
@@ -565,8 +617,15 @@ export default function ContactForm({
             minLength={40}
             className="min-h-[150px] rounded-md border border-slate-700 bg-slate-800/80 px-3 py-2 text-white shadow-inner focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             onChange={() => setFieldErrors((previous) => ({ ...previous, message: '' }))}
+            aria-invalid={fieldErrors.message ? 'true' : undefined}
+            data-error-state={fieldErrors.message ? 'error' : undefined}
+            aria-describedby={resolveDescribedBy(fieldErrors.message && FIELD_ERROR_IDS.message)}
           />
-          {fieldErrors.message && <p className="text-sm text-amber-300">{fieldErrors.message}</p>}
+          {fieldErrors.message && (
+            <p id={FIELD_ERROR_IDS.message} className="text-sm text-amber-300">
+              {fieldErrors.message}
+            </p>
+          )}
         </div>
 
         <div aria-hidden="true" className="hidden">
@@ -576,9 +635,19 @@ export default function ContactForm({
 
         <div className="grid gap-2">
           <span className="text-sm font-medium text-slate-200">Verification</span>
-          <div ref={turnstileRef} className="min-h-[65px]" />
+          <div
+            ref={turnstileRef}
+            className="min-h-[65px]"
+            aria-invalid={fieldErrors.turnstileToken ? 'true' : undefined}
+            data-error-state={fieldErrors.turnstileToken ? 'error' : undefined}
+            aria-describedby={resolveDescribedBy(
+              fieldErrors.turnstileToken && FIELD_ERROR_IDS.turnstileToken,
+            )}
+          />
           {fieldErrors.turnstileToken && (
-            <p className="text-sm text-amber-300">{fieldErrors.turnstileToken}</p>
+            <p id={FIELD_ERROR_IDS.turnstileToken} className="text-sm text-amber-300">
+              {fieldErrors.turnstileToken}
+            </p>
           )}
           <noscript>
             <p className="rounded-md border border-amber-500 bg-amber-500/10 p-3 text-sm text-amber-200">
