@@ -1,0 +1,155 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { PREFETCH_ATTRIBUTE_PAYLOAD } from '../../utils/navigation/prefetch-constants';
+
+const seo = {
+  title: 'Navigation Prefetch QA surface',
+  description:
+    'Deterministic fixture used by the Playwright suite to validate intent-driven prefetch orchestration.',
+  path: '/testing/navigation-prefetch',
+};
+---
+
+<BaseLayout {seo}>
+  <section class="gap-space-lg px-gutter-inline py-space-xl mx-auto flex max-w-3xl flex-col">
+    {
+      /**
+       * Enterprise prefetch QA surface
+       * --------------------------------
+       *
+       * The markup intentionally mirrors the heuristics enforced by `PrefetchController` so Playwright can assert
+       * the runtime contract without depending on production copy or marketing layouts. Each anchor ships a
+       * deterministic URL that the suite listens for via the network stack to confirm the correct triggers fire.
+       * We document the rationale inline so future contributors understand why these nodes must stay stable.
+       */
+    }
+    <header class="space-y-space-3xs">
+      <h1 class="text-title-lg text-ink-primary font-semibold">Navigation prefetch QA surface</h1>
+      <p class="text-body-sm text-ink-muted">
+        These anchors power the automated end-to-end regression tests for the speculative navigation
+        manager. Avoid renaming data attributes or URLs unless you simultaneously update the
+        matching Playwright spec.
+      </p>
+    </header>
+
+    {
+      /**
+       * Pointer intent target
+       * ---------------------
+       * The anchor renders in the initial viewport so pointer hover is the only mechanism that should enqueue a
+       * prefetch request when `prefers-reduced-motion: no-preference`. Tests disable the IntersectionObserver in
+       * that flow to isolate the pointer contract without changing production code.
+       */
+    }
+    <div
+      class="gap-space-3xs border-ink-accent p-space-sm flex flex-col rounded-lg border border-dashed"
+    >
+      <h2 class="text-title-sm text-ink-primary font-semibold">Pointer intent target</h2>
+      <p class="text-body-xs text-ink-muted">
+        Hovering this link should schedule a prefetch. The target URL carries a query flag so
+        Playwright can uniquely detect the network request without racing other navigation assets.
+      </p>
+      <a
+        {...PREFETCH_ATTRIBUTE_PAYLOAD}
+        data-testid="prefetch-pointer-anchor"
+        class="text-link hover:text-link-hover"
+        href="/testing/navigation-prefetch?prefetch=pointer-intent"
+      >
+        Prefetch the pointer-intent destination
+      </a>
+    </div>
+
+    {
+      /**
+       * Spacer before the intersection target keeps the element outside the initial viewport so the
+       * IntersectionObserver path owns the prefetch trigger. Tests scroll the anchor into view to confirm the
+       * observer fires exactly once per URL.
+       */
+    }
+    <div aria-hidden="true" class="h-[140vh] w-px bg-transparent"></div>
+
+    {
+      /**
+       * Intersection intent target
+       * --------------------------
+       * Scrolling this anchor into view should emit a prefetch request even when motion is reduced. The anchor
+       * retains the attribute payload to mimic real templates and uses another query flag for deterministic
+       * network assertions.
+       */
+    }
+    <div
+      class="gap-space-3xs border-ink-accent p-space-sm flex flex-col rounded-lg border border-dashed"
+    >
+      <h2 class="text-title-sm text-ink-primary font-semibold">Intersection intent target</h2>
+      <p class="text-body-xs text-ink-muted">
+        Once this element intersects the viewport the runtime should enqueue the
+        intersection-prefetch URL.
+      </p>
+      <a
+        {...PREFETCH_ATTRIBUTE_PAYLOAD}
+        data-testid="prefetch-intersection-anchor"
+        class="text-link hover:text-link-hover"
+        href="/testing/navigation-prefetch?prefetch=intersection-intent"
+      >
+        Prefetch the intersection-intent destination
+      </a>
+    </div>
+
+    {
+      /**
+       * Negative eligibility cases
+       * --------------------------
+       * External URLs and downloads must never prefetch even when annotated. The data attributes stay in place so
+       * the prefetch manager performs the same eligibility audit the production templates rely on. Tests listen
+       * for any stray network chatter to guarantee we skip these anchors.
+       */
+    }
+    <div class="gap-space-sm border-ink-accent p-space-sm grid rounded-lg border border-dashed">
+      <h2 class="text-title-sm text-ink-primary font-semibold">Anchors that must be ignored</h2>
+      <a
+        {...PREFETCH_ATTRIBUTE_PAYLOAD}
+        data-testid="prefetch-external-anchor"
+        class="text-link text-warning-600 hover:text-warning-500"
+        href="https://example.com/prefetch-ignore"
+      >
+        External destinations must stay opt-out
+      </a>
+      <a
+        {...PREFETCH_ATTRIBUTE_PAYLOAD}
+        data-testid="prefetch-download-anchor"
+        class="text-link text-warning-600 hover:text-warning-500"
+        download
+        href="/testing/navigation-prefetch?prefetch=download-intent"
+      >
+        Download links must be skipped
+      </a>
+    </div>
+
+    {
+      /**
+       * Reduced-motion guardrail
+       * ------------------------
+       * When users prefer reduced motion we intentionally disable pointer triggers so speculative fetches do not
+       * surprise them. Playwright hovers this anchor with `prefers-reduced-motion: reduce` and asserts that no
+       * additional network traffic occurs.
+       */
+    }
+    <div
+      class="gap-space-3xs border-ink-accent p-space-sm flex flex-col rounded-lg border border-dashed"
+    >
+      <h2 class="text-title-sm text-ink-primary font-semibold">Reduced motion pointer target</h2>
+      <p class="text-body-xs text-ink-muted">
+        This link mirrors the pointer anchor but the reduced-motion scenario confirms the manager
+        silences hover heuristics when accessibility preferences request it.
+      </p>
+      <a
+        {...PREFETCH_ATTRIBUTE_PAYLOAD}
+        data-testid="prefetch-reduced-pointer-anchor"
+        class="text-link hover:text-link-hover"
+        href="/testing/navigation-prefetch?prefetch=reduced-pointer-intent"
+      >
+        Prefetch should stay disabled when motion is reduced
+      </a>
+    </div>
+  </section>
+</BaseLayout>
