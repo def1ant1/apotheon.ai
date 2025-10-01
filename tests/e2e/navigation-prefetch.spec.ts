@@ -110,4 +110,114 @@ test.describe('navigation prefetch intent orchestration', () => {
     expect(observed.download).toBe(0);
     expect(observed.reduced).toBe(0);
   });
+
+  test('flush orchestrator ships consent-gated prefetch telemetry batches', async ({ page }) => {
+    await page.addInitScript(() => {
+      const recordedAt = new Date('2024-10-01T11:00:00Z').toISOString();
+      const aggregates = [
+        {
+          route: '/docs/performance-playbook',
+          prefetched: {
+            visits: 2,
+            buckets: {
+              '0-100ms': 1,
+              '100-200ms': 1,
+              '200-400ms': 0,
+              '400-800ms': 0,
+              '800-1600ms': 0,
+              '1600ms+': 0,
+            },
+          },
+          nonPrefetched: {
+            visits: 1,
+            buckets: {
+              '0-100ms': 0,
+              '100-200ms': 1,
+              '200-400ms': 0,
+              '400-800ms': 0,
+              '800-1600ms': 0,
+              '1600ms+': 0,
+            },
+          },
+          firstRecordedAt: recordedAt,
+          lastUpdatedAt: recordedAt,
+        },
+      ];
+      window.localStorage.setItem('apotheon.prefetch.telemetry.v1', JSON.stringify(aggregates));
+
+      const nav = navigator as Navigator & {
+        __APOTHEON_PREFETCH_BEACONS__?: Array<{ url: string; payload: string | null }>;
+        __APOTHEON_ORIGINAL_BEACON__?: typeof navigator.sendBeacon;
+      };
+      nav.__APOTHEON_PREFETCH_BEACONS__ = [];
+      (window as typeof window & { __APOTHEON_PREFETCH_BEACONS__?: typeof nav.__APOTHEON_PREFETCH_BEACONS__ }).__APOTHEON_PREFETCH_BEACONS__ =
+        nav.__APOTHEON_PREFETCH_BEACONS__;
+      if (typeof nav.sendBeacon === 'function') {
+        nav.__APOTHEON_ORIGINAL_BEACON__ = nav.sendBeacon.bind(nav);
+      }
+      nav.sendBeacon = (url: string, data?: BodyInit | null) => {
+        let payload: string | null = null;
+        if (typeof data === 'string') {
+          payload = data;
+        } else if (data instanceof Blob) {
+          payload = null;
+        } else if (data instanceof ArrayBuffer) {
+          payload = new TextDecoder().decode(data);
+        } else if (data instanceof FormData) {
+          payload = null;
+        } else if (data) {
+          try {
+            payload = data.toString();
+          } catch {
+            payload = null;
+          }
+        }
+        nav.__APOTHEON_PREFETCH_BEACONS__?.push({ url, payload });
+        return true;
+      };
+    });
+
+    await navigateToFixture(page, { reducedMotion: 'no-preference' });
+
+    await page.evaluate(() => {
+      window.__APOTHEON_CONSENT__?.update({
+        'consent-storage': true,
+        'umami-telemetry': false,
+        'pipeline-alerts': false,
+      });
+    });
+
+    await page.waitForTimeout(200);
+    await expect
+      .poll(() =>
+        page.evaluate(() => window.__APOTHEON_PREFETCH_BEACONS__?.length ?? 0),
+      )
+      .toBe(0);
+
+    await page.evaluate(() => {
+      window.__APOTHEON_CONSENT__?.update({
+        'consent-storage': true,
+        'umami-telemetry': true,
+        'pipeline-alerts': false,
+      });
+      const snapshot = window.__APOTHEON_CONSENT__?.get();
+      window.dispatchEvent(new CustomEvent('apotheon:consent:updated', { detail: snapshot }));
+    });
+
+    await expect
+      .poll(
+        () =>
+          page.evaluate(() => window.__APOTHEON_PREFETCH_BEACONS__?.length ?? 0),
+        { message: 'Expected consent-gated prefetch flush' },
+      )
+      .toBe(1);
+
+    const payload = await page.evaluate(() => window.__APOTHEON_PREFETCH_BEACONS__?.[0] ?? null);
+    expect(payload?.url).toContain('collect.apotheon.ai');
+    expect(payload?.payload).toBeTruthy();
+
+    const parsed = payload?.payload ? JSON.parse(payload.payload) : null;
+    expect(parsed?.event).toBe('prefetch_navigation_metrics');
+    expect(parsed?.payload?.routes?.[0]?.route).toBe('/docs/performance-playbook');
+  });
 });

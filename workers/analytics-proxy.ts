@@ -62,6 +62,8 @@ const PREFETCH_SEGMENT_LENGTH_MAX = 48;
 const PREFETCH_MAX_ROUTES = 64;
 const PREFETCH_MAX_VISITS = 10_000;
 
+type NormalizedPrefetchPayload = ReturnType<typeof normalizePrefetchMetricsPayload>;
+
 const prefetchMetricGroupSchema = z.object({
   visits: z.number().int().min(0).max(PREFETCH_MAX_VISITS).default(0),
   buckets: z
@@ -338,6 +340,68 @@ async function persistAuditRecord(
     .run();
 }
 
+async function persistPrefetchMetrics(
+  env: AnalyticsProxyEnv,
+  options: { payload: NormalizedPrefetchPayload; status: number },
+): Promise<void> {
+  const { payload, status } = options;
+  if (!payload || payload.routes.length === 0) {
+    return;
+  }
+
+  await ensurePrefetchTable(env);
+
+  const statements = payload.routes.map((entry) => {
+    const statement = env.ANALYTICS_AUDIT_DB.prepare(
+      `INSERT INTO prefetch_navigation_metrics (
+        id,
+        recorded_at,
+        route,
+        batch_status,
+        prefetched_visits,
+        prefetched_bucket_0_100ms,
+        prefetched_bucket_100_200ms,
+        prefetched_bucket_200_400ms,
+        prefetched_bucket_400_800ms,
+        prefetched_bucket_800_1600ms,
+        prefetched_bucket_1600ms_plus,
+        non_prefetched_visits,
+        non_prefetched_bucket_0_100ms,
+        non_prefetched_bucket_100_200ms,
+        non_prefetched_bucket_200_400ms,
+        non_prefetched_bucket_400_800ms,
+        non_prefetched_bucket_800_1600ms,
+        non_prefetched_bucket_1600ms_plus
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    );
+
+    return statement.bind(
+      crypto.randomUUID(),
+      payload.recordedAt,
+      entry.route,
+      status,
+      entry.prefetched.visits,
+      entry.prefetched.buckets['0-100ms'],
+      entry.prefetched.buckets['100-200ms'],
+      entry.prefetched.buckets['200-400ms'],
+      entry.prefetched.buckets['400-800ms'],
+      entry.prefetched.buckets['800-1600ms'],
+      entry.prefetched.buckets['1600ms+'],
+      entry.nonPrefetched.visits,
+      entry.nonPrefetched.buckets['0-100ms'],
+      entry.nonPrefetched.buckets['100-200ms'],
+      entry.nonPrefetched.buckets['200-400ms'],
+      entry.nonPrefetched.buckets['400-800ms'],
+      entry.nonPrefetched.buckets['800-1600ms'],
+      entry.nonPrefetched.buckets['1600ms+'],
+    );
+  });
+
+  if (statements.length > 0) {
+    await env.ANALYTICS_AUDIT_DB.batch(statements);
+  }
+}
+
 function createSuccessResponse(): Response {
   return new Response(null, {
     status: 204,
@@ -351,7 +415,7 @@ async function fanOutAsyncTasks(
   beacon: BeaconRecord,
   status: number,
 ): Promise<void> {
-  await Promise.allSettled([
+  const tasks: Array<Promise<unknown>> = [
     persistAuditRecord(env, {
       beacon,
       status,
@@ -360,7 +424,18 @@ async function fanOutAsyncTasks(
     }),
     forwardToPlausible(env, beacon),
     forwardToGa(env, beacon),
-  ]);
+  ];
+
+  if (beacon.event === PREFETCH_EVENT_NAME) {
+    tasks.push(
+      persistPrefetchMetrics(env, {
+        payload: beacon.payload as NormalizedPrefetchPayload,
+        status,
+      }),
+    );
+  }
+
+  await Promise.allSettled(tasks);
 }
 
 function createNoopResponse(reason: string): Response {
@@ -424,6 +499,39 @@ async function ensureAuditTable(env: AnalyticsProxyEnv): Promise<void> {
   if (auditTableReady) return;
   await env.ANALYTICS_AUDIT_DB.exec(AUDIT_TABLE_SQL);
   auditTableReady = true;
+}
+
+let prefetchTableReady = false;
+const PREFETCH_TABLE_SQL = `
+CREATE TABLE IF NOT EXISTS prefetch_navigation_metrics (
+  id TEXT PRIMARY KEY,
+  recorded_at TEXT NOT NULL,
+  route TEXT NOT NULL,
+  batch_status INTEGER NOT NULL,
+  prefetched_visits INTEGER NOT NULL,
+  prefetched_bucket_0_100ms INTEGER NOT NULL,
+  prefetched_bucket_100_200ms INTEGER NOT NULL,
+  prefetched_bucket_200_400ms INTEGER NOT NULL,
+  prefetched_bucket_400_800ms INTEGER NOT NULL,
+  prefetched_bucket_800_1600ms INTEGER NOT NULL,
+  prefetched_bucket_1600ms_plus INTEGER NOT NULL,
+  non_prefetched_visits INTEGER NOT NULL,
+  non_prefetched_bucket_0_100ms INTEGER NOT NULL,
+  non_prefetched_bucket_100_200ms INTEGER NOT NULL,
+  non_prefetched_bucket_200_400ms INTEGER NOT NULL,
+  non_prefetched_bucket_400_800ms INTEGER NOT NULL,
+  non_prefetched_bucket_800_1600ms INTEGER NOT NULL,
+  non_prefetched_bucket_1600ms_plus INTEGER NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+);
+CREATE INDEX IF NOT EXISTS idx_prefetch_metrics_recorded ON prefetch_navigation_metrics (recorded_at);
+CREATE INDEX IF NOT EXISTS idx_prefetch_metrics_route ON prefetch_navigation_metrics (route);
+`;
+
+async function ensurePrefetchTable(env: AnalyticsProxyEnv): Promise<void> {
+  if (prefetchTableReady) return;
+  await env.ANALYTICS_AUDIT_DB.exec(PREFETCH_TABLE_SQL);
+  prefetchTableReady = true;
 }
 
 const PLAUSIBLE_EVENTS = new Set(['search_query', 'docs_exit']);

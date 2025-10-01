@@ -2,6 +2,7 @@
 import { getFooterContact, getFooterColumns, getFooterLegalLinks } from './navigationData';
 import { useTranslations } from '../../i18n/runtime';
 import PrefetchController, { PREFETCH_ATTRIBUTE_PAYLOAD } from '../islands/PrefetchController';
+import PrefetchFlushOrchestrator from '../islands/PrefetchFlushOrchestrator';
 
 const { t } = await useTranslations(Astro);
 const navigationColumns = await getFooterColumns(t);
@@ -29,6 +30,14 @@ const currentYear = new Date().getFullYear();
   */
   }
   <PrefetchController client:idle />
+  {
+    /**
+    Co-locate the analytics flush orchestrator so consent-gated telemetry drains from every layout
+    that renders the footer. The helper short-circuits when storages are unavailable (private
+    browsing, etc.) so SSR paths remain unaffected.
+  */
+  }
+  <PrefetchFlushOrchestrator client:idle />
   <div class="gap-space-xl px-gutter-inline py-space-2xl mx-auto flex w-full max-w-6xl flex-col">
     <!--
       Navigation columns consume the same data contract as the header. This keeps the IA consistent
