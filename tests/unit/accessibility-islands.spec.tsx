@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom/vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { beforeAll, describe, expect, it } from 'vitest';
@@ -36,6 +36,39 @@ import RadixNavigationMenu, {
   navigationMenuGroups,
 } from '../../src/components/islands/RadixNavigationMenu';
 import WhitepaperRequestForm from '../../src/components/islands/WhitepaperRequestForm';
+
+type TestWindow = typeof window & {
+  __CONTACT_FORM_SET_TOKEN__?: (value: string) => void;
+};
+
+const expectInvalidFieldState = (
+  field: HTMLElement,
+  expected: { errorId: string; baseIds?: string[] },
+) => {
+  /**
+   * Every invalid control must surface the `aria-invalid` contract so assistive tech announces
+   * actionable remediation guidance without forcing users to hunt for visual affordances.
+   */
+  expect(field.getAttribute('aria-invalid')).toBe('true');
+  const describedBy = field.getAttribute('aria-describedby');
+  expect(describedBy).toBeTruthy();
+  const references = (describedBy ?? '').split(/\s+/);
+  for (const id of [...(expected.baseIds ?? []), expected.errorId]) {
+    expect(references).toContain(id);
+  }
+};
+
+const resolveContactField = (label: RegExp | string) =>
+  screen.getByLabelText(label, { selector: 'input, textarea, select' });
+
+const primeTurnstileToken = async (token: string) => {
+  await waitFor(() => {
+    const tokenSetter = (window as TestWindow).__CONTACT_FORM_SET_TOKEN__;
+    expect(typeof tokenSetter).toBe('function');
+  });
+
+  (window as TestWindow).__CONTACT_FORM_SET_TOKEN__?.(token);
+};
 
 describe('island accessibility contracts', () => {
   it('RadixNavigationMenu exposes a named navigation landmark', () => {
@@ -107,13 +140,32 @@ describe('island accessibility contracts', () => {
     const legend = labelledBy ? document.getElementById(labelledBy) : null;
     expect(legend?.tagName.toLowerCase()).toBe('legend');
 
+    await primeTurnstileToken('unit-test-turnstile-token');
+
     const submitButton = screen.getByRole('button', { name: /send message/i });
     await user.click(submitButton);
 
     const status = await screen.findByRole('status');
     expect(status.getAttribute('id')).toBe('contact-form-status');
-    expect(status.textContent ?? '').toMatch(/Complete the verification challenge/i);
+    expect(status.textContent ?? '').toMatch(/Full name/i);
     expect(submitButton.getAttribute('aria-live')).toBe('polite');
+
+    expectInvalidFieldState(resolveContactField('Full name'), {
+      errorId: 'contact-error-name',
+    });
+
+    expectInvalidFieldState(resolveContactField('Business email'), {
+      errorId: 'contact-error-email',
+      baseIds: ['email-help'],
+    });
+
+    expectInvalidFieldState(resolveContactField('Company'), {
+      errorId: 'contact-error-company',
+    });
+
+    expectInvalidFieldState(resolveContactField(/accelerate your roadmap/i), {
+      errorId: 'contact-error-message',
+    });
   });
 
   it('WhitepaperRequestForm announces download readiness and verification issues', async () => {
