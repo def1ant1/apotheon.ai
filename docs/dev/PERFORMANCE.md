@@ -24,6 +24,39 @@ This guide captures the automation that keeps our marketing surface fast, visual
 - `astro.config.mjs` reads the manifest at config time, injecting a global constant so layouts and components can surface preload/LCP annotations without hard-coding file paths.
 - `HomepageHero.astro` consults the manifest to decide whether to emit the AVIF preload (falling back to the existing frontmatter flag) and tags the media wrapper with `data-lcp-candidate` for perf tooling.
 
+## Navigation prefetch automation
+
+### PrefetchManager ↔ PrefetchController contract
+
+- `src/components/islands/PrefetchController.tsx` is the only surface that should instantiate the shared `PrefetchManager`. The island mounts in the global header and footer so speculative navigation becomes ubiquitous without bespoke page wiring.
+- The controller only enrols anchors that spread `PREFETCH_ATTRIBUTE_PAYLOAD` (`data-prefetch="intent"`); this explicit opt-in keeps marketing, docs, and authenticated surfaces aligned on which links are safe to hydrate ahead of time.
+- Eligible anchors are registered once and tracked through a shared runtime that is reference-counted. When the last island unmounts, the runtime tears down observers, listeners, and telemetry handles automatically to avoid ghost prefetches during onboarding modals or route transitions.
+- The MutationObserver watches for attribute changes and dynamically inserted anchors. Consumers can also dispatch the `PREFETCH_REFRESH_EVENT` to force a rescan after Astro Islands render client-side navigations.
+
+#### Eligibility and automation safeguards
+
+- `evaluateAnchorEligibility` guarantees that only same-origin, http(s) navigations without `download` attributes or `_blank` targets can be registered. Custom allow predicates can be layered on by surfaces that want to short-circuit prefetching based on business logic.
+- `respectSaveData` and the network `effectiveType` guard rails are enabled by default so low-bandwidth visitors never see speculative traffic. Setting `respectSaveData` to `false` in the manager config requires a compliance review.
+- `respectReducedMotion` defaults to `true`; pointer-enter heuristics disable themselves when `prefers-reduced-motion` is active so screen readers and high-sensitivity users do not encounter background network bursts. IntersectionObserver and focus-based triggers remain active because they align with explicit intent.
+- Prefetches are scheduled through `requestIdleCallback` (with a timeout fallback) and concurrency-limited to four in-flight requests, ensuring the feature plays nicely with the main thread and connection pools on lower-end devices.
+
+### Telemetry, aggregation, and monitoring
+
+- Every successful speculative fetch invokes `prefetchTelemetry.markPrefetched`, setting a signed sessionStorage flag for the normalised route. When the subsequent navigation timing beacon fires, the telemetry controller joins that flag with the recorded TTFB to determine whether the experience was warm or cold.
+- Aggregates are persisted in localStorage under `apotheon.prefetch.telemetry.v1` as capped histograms for each anonymised route. The controller trims to 48 routes per session, caps visit counters at 10,000, and normalises sensitive path segments (e.g., `/customers/:int/orders/:hash`) before egress.
+- **Flush requirements:** `prefetchTelemetry.submitPending` is intentionally not auto-invoked. Product surfaces must explicitly call it (typically from the same consent-gated analytics queue that ships commerce beacons) to release batches to the analytics proxy Worker. Without that integration, aggregates remain in localStorage and the downstream dashboards stay empty.
+- Dashboards:
+  - **Grafana – Prefetch Warmth Coverage** (`https://grafana.apotheon.ai/d/prefetch-nav/perf-prefetch`): Tracks warm vs. cold visit mix, TTFB histogram deltas, and the ratio of speculative hits to misses.
+  - **Looker – Prefetch Trend Report** (`https://looker.apotheon.ai/dashboards/prefetch-efficiency`): Surfaces 7/30-day regressions, route families with outlier TTFB buckets, and alert states mirrored into PagerDuty.
+- Alerts on those dashboards notify #web-perf-ops when warm coverage dips below 55% for any high-traffic route or when cold TTFB p95 exceeds the Lighthouse guardrail. Operators should expect a single consolidated batch event per active session; duplicate bursts typically indicate client-side storage resets or analytics proxy replays.
+
+### Troubleshooting runbook
+
+- **Anchors ignored** – Confirm the link spreads `PREFETCH_ATTRIBUTE_PAYLOAD` and does not include `download`, `_blank`, or cross-origin URLs. The `tests/e2e/navigation-prefetch.spec.ts` fixture page offers parity examples for quick regression checks.
+- **Prefetches never fire** – Inspect DevTools > Application > Storage to verify reduced-motion and Save-Data signals. Forcing those preferences locally should suppress pointer and idle triggers; if they do not, assert that `respectReducedMotion`/`respectSaveData` were not overridden.
+- **Telemetry gaps** – Inspect localStorage/sessionStorage for the `apotheon.prefetch.*` keys. Missing entries usually mean prefetches never fired; if data is present but dashboards are blank, confirm an owning surface is calling `prefetchTelemetry.submitPending` after analytics consent. When submissions do occur, tail the analytics proxy Worker logs (Cloudflare dashboard → Analytics Proxy → Recent logs) for schema validation errors or rate limit denials.
+- **Dashboard regression** – Review the most recent deploy for changes to `prefetch-manager.ts` or link templates. If the Worker is returning 428 errors, Cloudflare may not be appending geo headers due to a configuration drift—check the zone worker routes first.
+
 ## Lighthouse calibration
 
 Run `npm run lighthouse:calibrate` to generate fresh JSON audits under `reports/lighthouse/`. The script:
@@ -42,6 +75,13 @@ Run `npm run lighthouse:calibrate` to generate fresh JSON audits under `reports/
 - [ ] Review both `artifacts/lighthouse/desktop` and `artifacts/lighthouse/mobile` outputs when performance regressions are suspected; the latter represents our 4G mobile budget.
 - [ ] Run `npm run lighthouse:calibrate` after large visual overhauls and commit updated reports if the baseline changes.
 - [ ] Refresh Playwright theme fixtures via `npm run test:e2e:update-theme-visual` (documented in [TESTING.md](./TESTING.md)) when UI adjustments are intentional so CI inherits deterministic screenshots.
+
+## CI validation for navigation prefetch
+
+- **Unit coverage** – `vitest` executes `src/utils/__tests__/prefetch-manager.test.ts` and `src/utils/navigation/__tests__/prefetch-telemetry.test.ts`, hardening the eligibility decision tree, reduced-motion enforcement, TTL expiries, anonymisation helpers, and analytics submission contract.
+- **Playwright suite** – `tests/e2e/navigation-prefetch.spec.ts` visits the `/testing/navigation-prefetch` fixture and asserts pointer, intersection, and automation safeguards. The spec references the same attribute payloads outlined above, so regressions immediately highlight contract drift.
+- **Lighthouse budgets** – `npm run lighthouse:ci` monitors the TTFB and LCP deltas caused by speculative navigation. Prefetch regressions typically manifest as slower mobile LCP; the calibration workflow keeps the baseline aligned with the dashboards referenced in the telemetry section.
+- **New specification docs** – Any change to the contract or telemetry flow must update this file and the Playwright fixture markup so CI and documentation remain in sync.
 
 ## Rollback guidance
 
