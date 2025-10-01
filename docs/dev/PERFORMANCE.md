@@ -1,6 +1,6 @@
 # Performance & OpenGraph Automation
 
-This guide captures the automation that keeps our marketing surface fast, visually consistent, and regression friendly. Use it as a runbook when introducing new assets or reviewing pull requests that touch the rendering pipeline. For the Playwright workflow that enforces visual fidelity, see [End-to-end testing & visual baselines](./TESTING.md).
+This guide captures the automation that keeps our marketing surface fast, visually consistent, and regression friendly. Use it as a runbook when introducing new assets or reviewing pull requests that touch the rendering pipeline. For the Playwright workflow that enforces visual fidelity, see [End-to-end testing & visual baselines](./TESTING.md). Deployment engineers should pair these notes with the [Deployment & Edge Compression Playbook](./DEPLOYMENT.md) to translate build artefacts into CDN cache rules without manual guesswork.
 
 ## OpenGraph image workflow
 
