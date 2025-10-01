@@ -19,9 +19,18 @@ interface ContactFormProps {
   siteKey?: string;
 }
 
-interface FieldErrors {
-  [key: string]: string;
-}
+const FIELD_KEYS_IN_ORDER = [
+  'name',
+  'email',
+  'company',
+  'intent',
+  'message',
+  'turnstileToken',
+] as const;
+
+type FieldKey = (typeof FIELD_KEYS_IN_ORDER)[number];
+
+type FieldErrors = Partial<Record<FieldKey, string>>;
 
 /**
  * Centralize the mapping between validation keys and deterministic DOM identifiers so both JSX
@@ -127,6 +136,56 @@ export default function ContactForm({
     }
     return `${rolePreset.contact.headline}: ${rolePreset.contact.message}`;
   }, [rolePreset]);
+
+  const FIELD_LABEL_FALLBACKS: Record<FieldKey, string> = useMemo(
+    () => ({
+      name: 'Full name',
+      email: 'Business email',
+      company: 'Company',
+      intent: 'Intent',
+      message: 'Message',
+      turnstileToken: 'Verification',
+    }),
+    [],
+  );
+
+  /**
+   * Keep the status region copy localized by mirroring the visible field labels instead of hard-coding
+   * English strings. Assistive tech will read out the same label text users see, and future locale
+   * rewrites only need to update the JSX content, not the validation helper.
+   */
+  const resolveLocalizedFieldLabel = (field: FieldKey): string => {
+    const form = formRef.current;
+    if (!form) {
+      return FIELD_LABEL_FALLBACKS[field];
+    }
+
+    if (field === 'turnstileToken') {
+      const label = form.querySelector<HTMLElement>('[data-turnstile-label="true"]');
+      const text = label?.textContent?.trim();
+      return text && text.length > 0 ? text : FIELD_LABEL_FALLBACKS[field];
+    }
+
+    const label = form.querySelector<HTMLLabelElement>(`label[for="${field}"]`);
+    const text = label?.textContent?.trim();
+    return text && text.length > 0 ? text : FIELD_LABEL_FALLBACKS[field];
+  };
+
+  /**
+   * Slot the localized label into the validation template that feeds the `role="status"` region so
+   * screen readers announce actionable remediation guidance alongside the inline field errors.
+   */
+  const composeValidationSummaryMessage = (field: FieldKey): string => {
+    const template =
+      formRef.current?.dataset.validationSummaryTemplate ?? 'Review “{{fieldLabel}}” to continue.';
+    return template.replace('{{fieldLabel}}', resolveLocalizedFieldLabel(field));
+  };
+
+  const normaliseFieldKey = (candidate: string): FieldKey | null => {
+    return FIELD_KEYS_IN_ORDER.includes(candidate as FieldKey)
+      ? (candidate as FieldKey)
+      : null;
+  };
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -300,7 +359,7 @@ export default function ContactForm({
         turnstileToken: 'Complete the verification challenge.',
       }));
       setStatus('error');
-      setGlobalMessage('Complete the verification challenge before submitting.');
+      setGlobalMessage(composeValidationSummaryMessage('turnstileToken'));
       logEvent('contact_form_validation_failed', { issues: { turnstileToken: 'missing' } });
       return;
     }
@@ -310,13 +369,22 @@ export default function ContactForm({
     if (!validation.success) {
       const flattened = validation.error.flatten();
       const fieldIssue: FieldErrors = {};
+      let firstInvalidField: FieldKey | null = null;
       for (const [key, messages] of Object.entries(flattened.fieldErrors)) {
-        if (messages && messages.length > 0) {
-          fieldIssue[key] = messages[0];
+        if (!messages || messages.length === 0) continue;
+        const fieldKey = normaliseFieldKey(key);
+        if (!fieldKey) continue;
+        fieldIssue[fieldKey] = messages[0];
+        if (!firstInvalidField) {
+          firstInvalidField = fieldKey;
         }
       }
       setFieldErrors(fieldIssue);
-      setGlobalMessage('Double-check the highlighted fields to continue.');
+      if (firstInvalidField) {
+        setGlobalMessage(composeValidationSummaryMessage(firstInvalidField));
+      } else {
+        setGlobalMessage('Double-check the highlighted fields to continue.');
+      }
       setStatus('error');
       logEvent('contact_form_validation_failed', { issues: fieldIssue });
       return;
@@ -443,6 +511,7 @@ export default function ContactForm({
       aria-labelledby={legendId}
       aria-describedby={statusRegionId}
       data-js-ready="false"
+      data-validation-summary-template="Review “{{fieldLabel}}” to continue."
     >
       <input type="hidden" name="turnstileToken" value={token} />
       <fieldset className="grid gap-4">
@@ -634,7 +703,9 @@ export default function ContactForm({
         </div>
 
         <div className="grid gap-2">
-          <span className="text-sm font-medium text-slate-200">Verification</span>
+          <span className="text-sm font-medium text-slate-200" data-turnstile-label="true">
+            Verification
+          </span>
           <div
             ref={turnstileRef}
             className="min-h-[65px]"
