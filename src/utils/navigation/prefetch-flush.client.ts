@@ -1,4 +1,5 @@
 import { prefetchTelemetry } from './prefetch-telemetry';
+
 import type { ConsentApi, ConsentState } from '../analytics';
 
 /**

@@ -150,8 +150,11 @@ test.describe('navigation prefetch intent orchestration', () => {
         __APOTHEON_ORIGINAL_BEACON__?: typeof navigator.sendBeacon;
       };
       nav.__APOTHEON_PREFETCH_BEACONS__ = [];
-      (window as typeof window & { __APOTHEON_PREFETCH_BEACONS__?: typeof nav.__APOTHEON_PREFETCH_BEACONS__ }).__APOTHEON_PREFETCH_BEACONS__ =
-        nav.__APOTHEON_PREFETCH_BEACONS__;
+      (
+        window as typeof window & {
+          __APOTHEON_PREFETCH_BEACONS__?: typeof nav.__APOTHEON_PREFETCH_BEACONS__;
+        }
+      ).__APOTHEON_PREFETCH_BEACONS__ = nav.__APOTHEON_PREFETCH_BEACONS__;
       if (typeof nav.sendBeacon === 'function') {
         nav.__APOTHEON_ORIGINAL_BEACON__ = nav.sendBeacon.bind(nav);
       }
@@ -190,7 +193,12 @@ test.describe('navigation prefetch intent orchestration', () => {
     await page.waitForTimeout(200);
     await expect
       .poll(() =>
-        page.evaluate(() => window.__APOTHEON_PREFETCH_BEACONS__?.length ?? 0),
+        page.evaluate(() => {
+          const instrumentedWindow = window as typeof window & {
+            __APOTHEON_PREFETCH_BEACONS__?: Array<{ url: string; payload: string | null }>;
+          };
+          return instrumentedWindow.__APOTHEON_PREFETCH_BEACONS__?.length ?? 0;
+        }),
       )
       .toBe(0);
 
@@ -207,12 +215,22 @@ test.describe('navigation prefetch intent orchestration', () => {
     await expect
       .poll(
         () =>
-          page.evaluate(() => window.__APOTHEON_PREFETCH_BEACONS__?.length ?? 0),
+          page.evaluate(() => {
+            const instrumentedWindow = window as typeof window & {
+              __APOTHEON_PREFETCH_BEACONS__?: Array<{ url: string; payload: string | null }>;
+            };
+            return instrumentedWindow.__APOTHEON_PREFETCH_BEACONS__?.length ?? 0;
+          }),
         { message: 'Expected consent-gated prefetch flush' },
       )
       .toBe(1);
 
-    const payload = await page.evaluate(() => window.__APOTHEON_PREFETCH_BEACONS__?.[0] ?? null);
+    const payload = await page.evaluate(() => {
+      const instrumentedWindow = window as typeof window & {
+        __APOTHEON_PREFETCH_BEACONS__?: Array<{ url: string; payload: string | null }>;
+      };
+      return instrumentedWindow.__APOTHEON_PREFETCH_BEACONS__?.[0] ?? null;
+    });
     expect(payload?.url).toContain('collect.apotheon.ai');
     expect(payload?.payload).toBeTruthy();
 
