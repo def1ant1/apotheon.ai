@@ -85,7 +85,10 @@ easy to debug issues without re-running a full build.
 
 Artifacts from Lighthouse, ZAP, Pagefind, and Gitleaks remain available for 14
 days. When triaging a failure, download the relevant archive from the Actions UI
-and review the bundled HTML/JSON reports.
+and review the bundled HTML/JSON reports. Release managers can pull the
+compression manifest from the same workflow run—follow the
+[Deployment & Edge Compression Playbook](./DEPLOYMENT.md) for the ingestion
+steps that feed CDN configuration.
 
 ## Running the pipeline locally
 

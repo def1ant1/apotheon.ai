@@ -147,6 +147,7 @@ jobs:
           path: |
             dist/pagefind
             dist/**/*.html
+            dist/.compressed-manifest.json
           retention-days: 14
 
       - name: Lighthouse budget enforcement
