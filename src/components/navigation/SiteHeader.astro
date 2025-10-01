@@ -7,6 +7,7 @@ import LocaleSwitcher, { type LocaleSwitcherLabels } from '../islands/LocaleSwit
 import MobileNavigationDrawer from '../islands/MobileNavigationDrawer';
 import PagefindSearch from '../islands/PagefindSearch';
 import PrefetchController, { PREFETCH_ATTRIBUTE_PAYLOAD } from '../islands/PrefetchController';
+import PrefetchFlushOrchestrator from '../islands/PrefetchFlushOrchestrator';
 import RadixNavigationMenu, { type NavigationMenuGroup } from '../islands/RadixNavigationMenu';
 
 /**
@@ -67,6 +68,14 @@ const localeSwitcherLabels: LocaleSwitcherLabels = {
   */
   }
   <PrefetchController client:idle />
+  {
+    /**
+    Mount the analytics flush orchestrator alongside the controller so consent-gated telemetry
+    automatically drains pending batches. The orchestrator only runs in the browser and exits early
+    if storage or consent APIs are unavailable.
+  */
+  }
+  <PrefetchFlushOrchestrator client:idle />
   <div class="gap-space-xs flex w-full max-w-5xl flex-col">
     {
       /**
