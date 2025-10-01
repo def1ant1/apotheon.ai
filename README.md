@@ -66,7 +66,7 @@ npm run test:e2e:update-theme-visual
 ### 4. Build and inspect production artifacts
 
 ```bash
-npm run build            # Static render + sitemap + hreflang + robots + Pagefind index + SEO verification
+npm run build            # Static render + compression + sitemap + hreflang + robots + Pagefind index + SEO verification
 npm run preview          # Serves the production bundle with asset headers and CSP enforced
 ```
 
