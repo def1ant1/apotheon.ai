@@ -135,6 +135,17 @@ jobs:
       - name: Build Ladle stories
         run: npm run ladle:build
 
+      - name: Upload compressed bundle
+        if: always() && matrix.node == '20.x'
+        uses: actions/upload-artifact@v4
+        with:
+          name: compressed-bundle
+          path: |
+            dist/.compressed-manifest.json
+            dist/**/*.br
+            dist/**/*.gz
+          retention-days: 14
+
       - name: Build Pagefind index
         if: matrix.node == '20.x'
         run: npm run pagefind:index

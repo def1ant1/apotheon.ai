@@ -86,18 +86,29 @@ exist.
 ## Sourcing the manifest from CI
 
 The Node 20 shard of the `CI` workflow publishes the manifest alongside the static
-build so release managers never have to rebuild locally.
+build so release managers never have to rebuild locally. Two artifacts ship the
+data we need: `compressed-bundle` (the manifest plus compressed assets) and
+`pagefind-index` (the searchable HTML mirror).
 
 1. Navigate to the workflow run in GitHub Actions.
-2. Download the `pagefind-index` artifact (UI) or run:
+2. Download the `compressed-bundle` artifact (UI) or run:
+
+   ```bash
+   gh run download <run-id> --name compressed-bundle --dir artifacts/compressed
+   ```
+
+   The archive contains `dist/.compressed-manifest.json` together with every
+   pre-compressed `.br`/`.gz` asset so SRE can diff payloads offline or rehydrate
+   them into the CDN without rebuilding locally.
+
+3. Download the `pagefind-index` artifact (UI) or run:
 
    ```bash
    gh run download <run-id> --name pagefind-index --dir artifacts/pagefind
    ```
 
-3. The manifest is available at
-   `artifacts/pagefind/dist/.compressed-manifest.json` together with the HTML and
-   Pagefind assets required for cache validation.
+   This bundle keeps the searchable HTML mirrored for cache validation.
+
 4. Feed the manifest into your deployment automation. For Wrangler-based releases,
    the deploy job can push the manifest into Workers KV before activating new
    routes.
