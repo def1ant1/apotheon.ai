@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Locator, type BrowserContext } from '@playwright/test';
 
 import { setTheme, stabilizePageChrome, waitForIslandHydration } from './utils/page';
 
@@ -96,4 +96,61 @@ test('surfaces validation failures from the worker', async ({ page }) => {
   await page.getByRole('button', { name: 'Send message' }).click();
 
   await expect(page.getByText('Disposable or blocked domain detected.')).toBeVisible();
+});
+
+test('announces validation guidance with screen reader emulation', async ({ page }) => {
+  await page.goto('/about/contact/');
+  await stabilizePageChrome(page);
+  await setTheme(page, 'light');
+  await waitForIslandHydration(page, 'form[aria-labelledby][data-js-ready]');
+
+  await page.waitForFunction(() => typeof window.__CONTACT_FORM_SET_TOKEN__ === 'function');
+  await page.evaluate(() => {
+    // Short token keeps the turnstile surface in an error state while still exercising client-side validation.
+    window.__CONTACT_FORM_SET_TOKEN__?.('short');
+  });
+
+  // Enable the assistive tech affordances so we validate the same pathways used by VoiceOver users.
+  await page.emulateVisionDeficiency('none');
+  const context = page.context();
+  const { setScreenReaderMode } = context as Partial<Pick<BrowserContext, 'setScreenReaderMode'>>;
+  if (typeof setScreenReaderMode === 'function') {
+    await setScreenReaderMode.call(context, true);
+  }
+
+  // Ensure every field is blank so the Zod schema emits deterministic issues for each control.
+  await page.fill('#name', '');
+  await page.fill('#email', '');
+  await page.fill('#company', '');
+  await page.fill('#message', '');
+  await page.evaluate(() => {
+    const select = document.querySelector<HTMLSelectElement>('#intent');
+    if (select) {
+      select.value = '';
+      select.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  });
+
+  await page.getByRole('button', { name: 'Send message' }).click();
+
+  const statusRegion = page.locator('#contact-form-status');
+  await expect(statusRegion).toHaveAttribute('data-state', 'error');
+  await expect(statusRegion).toContainText('Review “Full name” to continue.');
+
+  const expectedFieldStates: Array<{ locator: Locator; description: string }> = [
+    { locator: page.locator('#name'), description: 'contact-error-name' },
+    { locator: page.locator('#email'), description: 'email-help contact-error-email' },
+    { locator: page.locator('#company'), description: 'contact-error-company' },
+    { locator: page.locator('#intent'), description: 'contact-error-intent' },
+    { locator: page.locator('#message'), description: 'contact-error-message' },
+    {
+      locator: page.locator('[data-turnstile-label="true"] + div'),
+      description: 'contact-error-turnstile',
+    },
+  ];
+
+  for (const { locator, description } of expectedFieldStates) {
+    await expect(locator).toHaveAttribute('aria-invalid', 'true');
+    await expect(locator).toHaveAttribute('aria-describedby', description);
+  }
 });
