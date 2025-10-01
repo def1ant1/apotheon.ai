@@ -169,7 +169,11 @@ function registerAnchorsFromNode(runtime: PrefetchRuntime, node: Node): void {
 
   if (node instanceof Element || node instanceof DocumentFragment) {
     const anchors = node.querySelectorAll?.(PREFETCH_ANCHOR_SELECTOR) ?? [];
-    anchors.forEach((anchor) => registerAnchor(runtime, anchor));
+    anchors.forEach((anchor) => {
+      if (anchor instanceof HTMLAnchorElement) {
+        registerAnchor(runtime, anchor);
+      }
+    });
   }
 }
 
@@ -180,7 +184,11 @@ function unregisterAnchorsFromNode(runtime: PrefetchRuntime, node: Node): void {
 
   if (node instanceof Element || node instanceof DocumentFragment) {
     const anchors = node.querySelectorAll?.(PREFETCH_ANCHOR_SELECTOR) ?? [];
-    anchors.forEach((anchor) => unregisterAnchor(runtime, anchor));
+    anchors.forEach((anchor) => {
+      if (anchor instanceof HTMLAnchorElement) {
+        unregisterAnchor(runtime, anchor);
+      }
+    });
   }
 }
 
