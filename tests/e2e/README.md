@@ -18,6 +18,11 @@ document the associated fixture here so future contributors understand the share
   - Retain the inline documentation in the fixture to remind future authors why the markup must avoid visual
     redesigns that would break deterministic scroll/hover behaviour.
 
+Before running any specs locally, execute `npm run pretest:e2e`. The pretest
+hook now performs a production build (`npm run build:static`) and replays the
+post-build compression pipeline so `astro preview` can negotiate the precompressed
+artefacts that CI validates.
+
 Run the suite in isolation with:
 
 ```bash
