@@ -86,6 +86,18 @@ forking scripts:
 Set one of the snapshot flags to `1` to regenerate fixtures during bespoke automation (e.g., scheduled jobs). When unset,
 the suite fails with actionable messaging and uploads the drifted assets for inspection.
 
+## Structural HTML validation
+
+`npm run lint:html` wraps `scripts/ci/run-html-validate.mjs`, which shells into the local `html-validate` binary so we gate the exact HTML that Astro and Ladle emitted. The harness expects `dist/` and `dist/ladle/` to exist ahead of time, mirroring how CI runs inside a sandbox with no network access. Run the following before invoking the validator locally:
+
+```bash
+npm run build
+npm run ladle:build
+npm run lint:html
+```
+
+The validator prints a summary of scanned files plus rule violations (missing `alt` text, duplicate `<main>` landmarks, implicit buttons, etc.). Fixtures live under `tests/fixtures/html-validator/` so we keep deterministic reproducers for new rules or regressions.
+
 ## Link linting & content hygiene
 
 `npm run lint:links` wraps the enterprise lychee binary so link hygiene runs alongside ESLint, Vale, and the other quality

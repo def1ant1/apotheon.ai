@@ -30,6 +30,7 @@ synthetic_health && wrangler tail`) to confirm `/api/contact` and
 
 - Trigger the warmup script (`npm run build && node scripts/ci/ensure-ladle-output.mjs`)
   to prime static assets and OG imagery before the first user hits the site.
+- Regenerate the static bundles (`npm run build && npm run ladle:build`) and run `npm run lint:html` so the html-validate gate signs off on the launch-ready markup before cache warmup begins.
 - Fire the synthetic Worker immediately after warmup so the contact and
   whitepaper caches contain fresh responses. This also seeds D1 with the first
   production run for observability.
