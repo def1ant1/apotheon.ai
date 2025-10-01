@@ -56,7 +56,11 @@ if (!isMainThread) {
 
     if (message.type === 'shutdown') {
       parentPort.postMessage({ type: 'shutdownAck' });
-      return;
+      // Explicitly close the message channel and exit so the main thread can
+      // await a clean shutdown. Without this, the worker would keep the event
+      // loop alive and `WorkerPool.destroy()` would hang forever.
+      parentPort.close();
+      process.exit(0);
     }
 
     if (message.type !== 'compress') {
