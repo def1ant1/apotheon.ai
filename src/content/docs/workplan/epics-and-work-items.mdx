@@ -4,7 +4,7 @@ category: workplan
 categoryLabel: Workplan
 description: docs/workplan/EPICS_AND_WORK_ITEMS.md
 sourcePath: workplan/EPICS_AND_WORK_ITEMS.md
-sourceLastModified: 2025-09-30T04:05:36.323Z
+sourceLastModified: 2025-10-04T18:30:39.439Z
 tags: []
 ---
 
@@ -60,14 +60,14 @@ docs/workplan/EPICS_AND_WORK_ITEMS.md
 - **Deliverables**
   - `brand/STYLEGUIDE.md`: palette (dark & light), typography scale, spacing, radii, shadows.
   - Tokenized **Tailwind config**; prefers system fonts for perf; variable fonts optional (subset + preload).
-  - Icon set: custom SVGs for **Clio, Hermes, THEMIS, Morpheus, Mnemosyne**, and 6 industries.
+  - Icon set: custom SVGs for **BWC-CUM, Clio, Hermes, THEMIS, Morpheus, Mnemosyne**, and 6 industries.
   - Favicon + PWA icons (use provided 512x512 asset).
   - Component library docs (Storybook **Chromatic** alt → **Ladle** OSS if lighter).
 
 - **Work Items**
   - **Document the brand system** — Create `docs/brand/STYLEGUIDE.md` capturing the light/dark palettes, typography scale, spacing/radii/shadow tokens, usage tables, and instructions for running an automated WCAG contrast audit script so designers and engineers share a single source of truth.
   - **Codify multi-theme design tokens** — Expand `tailwind.config.mjs` (and supporting files such as `src/styles/global.css` and a new `src/styles/tokens.(css|ts)`) to expose semantic color, typography, spacing, radii, and shadow tokens via CSS variables for both themes, prefer the system stack before optional variable fonts to eliminate layout shift, and annotate the tokens with inline comments.
-  - **Automate the icon pipeline** — Produce custom SVGs for Clio, Hermes, THEMIS, Morpheus, Mnemosyne, and the six industries under `public/static/icons/brand/`, wire an `svgo` configuration plus an `npm run icons:build` script to normalize/optimize them (and optionally emit React wrappers), and document naming/usage guidance in the style guide.
+  - **Automate the icon pipeline** — Produce custom SVGs for BWC-CUM, Clio, Hermes, THEMIS, Morpheus, Mnemosyne, and the six industries under `public/static/icons/brand/`, wire an `svgo` configuration plus an `npm run icons:build` script to normalize/optimize them (and optionally emit React wrappers), and document naming/usage guidance in the style guide.
   - **Automate favicons & manifest metadata** — Use the existing 512×512 master asset to generate favicon/PWA sizes via a script such as `npm run brand:favicons` (pwa-asset-generator or Sharp), refresh `public/favicon.ico`, update `public/manifest.json` and the `<link rel>` tags in `src/layouts/BaseLayout.astro`, and record the regeneration workflow in the style guide.
   - **Stand up component documentation** — Add Ladle (preferred OSS) or Storybook with scripts (`npm run ladle`, `npm run ladle:build`), author stories that showcase the design tokens and navigation components with extensive notes, hook the tool into automation/CI for visual or accessibility checks, and document the workflow for designers/developers.
 

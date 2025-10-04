@@ -985,3 +985,31 @@ export function buildFaqSchema(
     })),
   };
 }
+
+export function buildHowToSchema({
+  name,
+  description,
+  steps,
+  locale = DEFAULT_LOCALE,
+}: {
+  name: string;
+  description?: string;
+  steps: Array<{ name: string; text: string; url?: string }>;
+  locale?: string;
+}): StructuredSchema {
+  const language = resolveLocaleCandidate(locale);
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'HowTo',
+    name,
+    ...(description ? { description } : {}),
+    ...(language ? { inLanguage: language } : {}),
+    step: steps.map((step, index) => ({
+      '@type': 'HowToStep',
+      position: index + 1,
+      name: step.name,
+      text: step.text,
+      ...(step.url ? { url: step.url } : {}),
+    })),
+  };
+}

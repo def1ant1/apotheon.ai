@@ -11,7 +11,7 @@ await mkdir(targetDir, { recursive: true });
 
 const manifestPayload = {
   generatedAt: new Date().toISOString(),
-  routes: ['/','/es/'],
+  routes: ['/', '/es/', '/research/'],
   metadata: {
     note: 'Stub manifest seeded for Playwright tests. Replace with real Pagefind export in CI builds.',
   },

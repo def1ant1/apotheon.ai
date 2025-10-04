@@ -19,7 +19,7 @@ description: '- [Brand Design North Star](#brand-design-north-star) - [Homepage
   Engineers](#adoption-workflow-for-designers--engineers) - [Navigation
   Information Architecture](#navigation-information-architecture)'
 sourcePath: brand/STYLEGUIDE.md
-sourceLastModified: 2025-09-30T15:59:37.715Z
+sourceLastModified: 2025-10-04T18:30:39.439Z
 tags: []
 ---
 
@@ -79,6 +79,15 @@ The ensure script deterministically rebuilds `hero-base.png` and derivative form
 - **Accessibility sync:** Update `heroMedia.alt` in `src/content/homepage/landing.mdx` whenever the illustration focus changes. Alt copy is the canonical description for assistive tech and analytics heatmaps.
 
 ---
+
+## Platform Narrative System
+
+> **Why document this:** Homepage copy, investor decks, and solution landing pages now share the BWCCUM → Themis → Mnemosyne → Hermes → Morpheus progression introduced in the README “Platform Overview”. Locking the story to a fixed cadence keeps marketing claims, diligence packets, and product UI labels synchronized.
+
+- **Authoring contract:** Update the `modules` array inside `src/content/homepage/landing.mdx` (see inline comments) when sequencing changes. Always run `npm run ensure:whitepapers` before editing copy so downloadable asset slugs stay accurate, then refresh `npm run lint && npm run typecheck && npm run build` to rehydrate automation snapshots.
+- **Research integration:** FEDGEN and Trace Synthesis references must link to the Markdown dossiers under `docs/research/`. Those files track asset provenance and automation hooks—never hardcode external URLs in hero/module copy without recording the redirect contract there.
+- **BWCCUM ↔ Themis interplay:** Visual collateral should mirror the orchestrated DAG hand-off: BWCCUM executes compliance-aware workloads, Themis certifies and pauses lanes on failure, Mnemosyne syndicates consented outputs, while Hermes/Morpheus expose automation and telemetry. Reuse these beats across decks, PDFs, and product UI to maintain investor/regulator trust.
+- **Metrics refresh cadence:** Quarterly RevOps reviews update the metrics reported in the README table and landing modules. When new data lands, regenerate PDFs via `npm run ensure:whitepapers`, rerun `npm run test` to rebuild automation reports, and update both README + landing copy in the same pull request.
 
 ## Token Orchestration & Theme Controls
 
@@ -284,7 +293,7 @@ _Rationale:_ A system-first stack eliminates layout shift on initial render, whi
 - **Optimized exports:** Running the build script writes production-ready assets into `public/static/icons/brand/`. The SVGO config (`svgo.config.cjs`) enforces precision, viewBox preservation, and adds `role="img"`/`focusable="false"` for consistent runtime behavior.
 - **React wrappers:** When marketing or product teams need JSX access, enable the optional React generation (`--react`) to refresh `src/components/icons/`. Components expose a typed `title` prop so experiences can opt into decorative or labelled usage.
 
-Current brand marks include the five Apotheon pillars (Clio, Hermes, THEMIS, Morpheus, Mnemosyne) plus six industry glyphs (energy, finance, healthcare, manufacturing, public sector, transport). Keep additions within this directory so the automation stack can reason over them.
+Current brand marks include the six Apotheon pillars (BWC-CUM, Clio, Hermes, THEMIS, Morpheus, Mnemosyne) plus six industry glyphs (energy, finance, healthcare, manufacturing, public sector, transport). Keep additions within this directory so the automation stack can reason over them.
 
 ### Accessibility Expectations
 

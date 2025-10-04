@@ -65,6 +65,11 @@ describe('breadcrumbs utilities', () => {
       { href: '/', label: 'Home', isCurrentPage: false },
       { href: '/industries/', label: 'Industries', isCurrentPage: true },
     ]);
+
+    expect(createMarketingIndexTrail('research')).toEqual([
+      { href: '/', label: 'Home', isCurrentPage: false },
+      { href: '/research/', label: 'Research', isCurrentPage: true },
+    ]);
   });
 
   it('builds blog index and detail trails that reuse collection metadata', () => {

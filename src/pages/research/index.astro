@@ -1,0 +1,100 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+import MarketingCtaRow from '../../components/marketing/MarketingCtaRow.astro';
+import MarketingHero from '../../components/marketing/MarketingHero.astro';
+import MarketingShell from '../../components/marketing/MarketingShell.astro';
+import SchemaScript from '../../components/seo/SchemaScript.astro';
+import { createMarketingEntryTrail } from '../../utils/breadcrumbs';
+import { buildBreadcrumbSchema, buildHowToSchema } from '../../utils/seo';
+
+const entries = await getCollection('marketing', ({ slug }) => slug === 'research');
+const researchEntry = entries[0];
+
+if (!researchEntry) {
+  throw new Error(
+    'Research marketing entry missing. Ensure src/content/marketing/research.mdx is committed before building /research/.',
+  );
+}
+
+const { data } = researchEntry;
+const { Content } = await researchEntry.render();
+const heroCopy =
+  data.summary ??
+  'Partner with the Apotheon.ai research program to align academic rigor, Trace Synthesis telemetry, and governed sandboxes.';
+const heroCtaHref = '/about/contact/?team=research&intent=sandbox-access';
+const heroCtaDescription =
+  'Routes directly to the research RevOps queue so sandbox provisioning and compliance onboarding finish inside 1 business day.';
+const breadcrumbs = createMarketingEntryTrail(researchEntry as CollectionEntry<'marketing'>);
+const siteOrigin = Astro.site?.origin ?? Astro.url.origin;
+const breadcrumbSchema = buildBreadcrumbSchema(breadcrumbs, siteOrigin);
+const onboardingSchema = buildHowToSchema({
+  name: 'Research sandbox onboarding workflow',
+  description:
+    'Steps researchers follow to access governed Nova sandboxes and feed Trace Synthesis pipelines with institutionally approved corpora.',
+  steps: [
+    {
+      name: 'Submit sandbox request',
+      text: 'Use the Request sandbox credentials CTA or the RevOps contact form with team=research to emit an intake event for RevOps automation.',
+      url: `${siteOrigin}/about/contact/?team=research`,
+    },
+    {
+      name: 'Validate datasets with FEDGEN dry-run',
+      text: 'Execute npm run ensure:research-intake -- --dry-run to generate manifests and confirm consent lineage before transferring corpora.',
+      url: `${siteOrigin}/docs/dev/workflows/`,
+    },
+    {
+      name: 'Activate Trace Synthesis replay bundles',
+      text: 'Coordinate with Trace Synthesis operators to hydrate Nova sandboxes and attach telemetry subscriptions for experiment reviews.',
+      url: `${siteOrigin}/solutions/nova/`,
+    },
+  ],
+});
+const schemaPayload = [breadcrumbSchema, onboardingSchema];
+const ctaItems = [
+  {
+    title: 'Download Sovereign AI Assurance',
+    description:
+      'Review the compliance ledger referenced by FEDGEN before running experiments so policy reviewers start with aligned evidence.',
+    href: '/about/white-papers/',
+    label: 'Access compliance brief',
+  },
+  {
+    title: 'Book a Trace Synthesis rehearsal',
+    description:
+      'Pair with our applied science team to rehearse replay flows and confirm telemetry outputs ahead of publication deadlines.',
+    href: '/about/contact/?team=research&intent=trace-synthesis',
+    label: 'Schedule rehearsal',
+  },
+  {
+    title: 'Explore Nova research tenants',
+    description:
+      'Walk through the Nova AI Research Workbench to understand isolation policies, export controls, and evidence capture.',
+    href: '/solutions/nova/',
+    label: 'Inspect Nova workbench',
+  },
+];
+---
+
+<MarketingShell title={data.title} description={heroCopy} {breadcrumbs}>
+  <SchemaScript slot="head" schema={schemaPayload} />
+
+  <MarketingHero
+    eyebrow="Research"
+    headline={data.title}
+    copy={heroCopy}
+    cta={{
+      label: data.heroCtaLabel ?? 'Request sandbox access',
+      href: heroCtaHref,
+      description: heroCtaDescription,
+    }}
+  />
+
+  <article
+    class="prose prose-invert prose-headings:font-semibold prose-headings:text-white prose-p:text-slate-200 prose-strong:text-white max-w-none"
+  >
+    <Content />
+  </article>
+
+  <MarketingCtaRow heading="Accelerate your research program" items={ctaItems} />
+</MarketingShell>

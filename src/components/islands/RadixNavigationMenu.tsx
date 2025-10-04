@@ -206,6 +206,46 @@ export const navigationMenuGroups: ReadonlyArray<NavigationMenuGroup> = [
   },
   {
     /**
+     * Research navigation surfaces the academic partnership hub alongside Trace Synthesis
+     * enablement resources. Aligning the data structure with other groups means navigation
+     * validators and Pagefind indexing automatically recognize the /research route whenever
+     * marketing ships new MDX updates.
+     */
+    id: 'research',
+    label: 'Research',
+    labelKey: 'navigation.groups.research.label',
+    description:
+      'Academic partnerships, Trace Synthesis integrations, and sandbox provisioning guidance.',
+    descriptionKey: 'navigation.groups.research.description',
+    links: [
+      {
+        id: 'research-hub',
+        label: 'Research partnerships hub',
+        labelKey: 'navigation.groups.research.links.hub.label',
+        href: '/research',
+        description: 'Program overview, FEDGEN workflows, and publication guidance.',
+        descriptionKey: 'navigation.groups.research.links.hub.description',
+      },
+      {
+        id: 'research-nova',
+        label: 'Nova research tenants',
+        labelKey: 'navigation.groups.research.links.nova.label',
+        href: '/solutions/nova',
+        description: 'Isolation controls and export governance for academic workloads.',
+        descriptionKey: 'navigation.groups.research.links.nova.description',
+      },
+      {
+        id: 'research-whitepapers',
+        label: 'Sovereign AI Assurance',
+        labelKey: 'navigation.groups.research.links.whitepapers.label',
+        href: '/about/white-papers',
+        description: 'Download attestation playbooks and Trace Synthesis integration briefs.',
+        descriptionKey: 'navigation.groups.research.links.whitepapers.description',
+      },
+    ],
+  },
+  {
+    /**
      * Incident response guides stay isolated in their own menu bucket so security teams can hotlink
      * the exact playbook they need during incidents without parsing the broader handbook catalog.
      */

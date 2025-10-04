@@ -8,6 +8,7 @@ import IndustriesPreview from '../components/homepage/IndustriesPreview.astro';
 import InvestorBanner from '../components/homepage/InvestorBanner.astro';
 import PlatformBenefits from '../components/homepage/PlatformBenefits.astro';
 import ProductModules from '../components/homepage/ProductModules.astro';
+import ResearchBanner from '../components/homepage/ResearchBanner.astro';
 import LiveClock from '../components/islands/LiveClock';
 import WelcomeTour from '../components/islands/WelcomeTour';
 import {
@@ -272,6 +273,7 @@ const welcomeTourSteps = [
     }
 
     <InvestorBanner banner={homepageEntry.data.ctaBanners.investor} />
+    <ResearchBanner banner={homepageEntry.data.ctaBanners.research} />
     <DemoBanner banner={homepageEntry.data.ctaBanners.demo} />
 
     <!--

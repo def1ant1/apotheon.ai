@@ -4,6 +4,7 @@ import {
   buildArticleSchema,
   buildBreadcrumbSchema,
   buildFaqSchema,
+  buildHowToSchema,
   buildOrganizationSchema,
   buildSoftwareApplicationSchema,
   buildWebsiteSchema,
@@ -186,6 +187,34 @@ describe('structured data builders', () => {
         {
           name: 'How fast is onboarding?',
         },
+      ],
+      inLanguage: 'en-US',
+    });
+  });
+
+  it('builds HowTo schema payloads', () => {
+    const schema = buildHowToSchema({
+      name: 'Provision research sandbox access',
+      description: 'Steps researchers follow before activating Nova tenants.',
+      steps: [
+        {
+          name: 'Request access',
+          text: 'Submit the sandbox form with research intent metadata.',
+          url: `${SITE_ORIGIN}/about/contact/?team=research`,
+        },
+        {
+          name: 'Validate corpora',
+          text: 'Execute npm run ensure:research-intake -- --dry-run to emit manifests.',
+        },
+      ],
+    });
+
+    expect(schema).toMatchObject({
+      '@type': 'HowTo',
+      name: 'Provision research sandbox access',
+      step: [
+        { '@type': 'HowToStep', position: 1 },
+        { '@type': 'HowToStep', position: 2 },
       ],
       inLanguage: 'en-US',
     });

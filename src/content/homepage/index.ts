@@ -235,6 +235,35 @@ export const homepageSchema = z.object({
             .describe('Configuration for the investor banner button'),
         })
         .describe('Investor enablement banner copy + CTA metadata'),
+      /** Research banner spotlights the academic hub + sandbox automation path. */
+      research: z
+        .object({
+          /** Banner headline rendered as an <h2>. */
+          heading: z.string().min(1).describe('Research banner headline copy'),
+          /** Supporting copy framing partnerships, integrations, or download bundles. */
+          body: z
+            .string()
+            .min(1)
+            .describe('Body copy summarizing research partnerships and automation workflows'),
+          /** Optional secondary note for submission deadlines or cohort cadence. */
+          secondaryText: z
+            .string()
+            .min(1)
+            .optional()
+            .describe('Optional secondary message highlighting cohort cadence or response SLAs'),
+          /** CTA metadata ensures analytics + accessibility remain synchronized. */
+          cta: z
+            .object({
+              label: z.string().min(1).describe('Visible CTA label copy'),
+              href: z.string().min(1).describe('Destination URL for the research CTA'),
+              ariaLabel: z
+                .string()
+                .min(1)
+                .describe('Accessible label clarifying the research-focused action'),
+            })
+            .describe('Configuration for the research banner button'),
+        })
+        .describe('Research hub banner copy + CTA metadata'),
       /** Demo banner routes prospects into guided evaluations managed by RevOps. */
       demo: z
         .object({
@@ -282,4 +311,5 @@ export type HomepageIndustriesPreview = NonNullable<HomepageHeroContent['industr
 export type HomepageBenefit = HomepageHeroContent['benefits'][number];
 export type HomepageCtaBanners = HomepageHeroContent['ctaBanners'];
 export type HomepageInvestorBanner = HomepageCtaBanners['investor'];
+export type HomepageResearchBanner = HomepageCtaBanners['research'];
 export type HomepageDemoBanner = HomepageCtaBanners['demo'];

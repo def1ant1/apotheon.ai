@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">FEDGEN and Trace Synthesis integration data flow</title>
+  <desc id="desc">Diagram showing how academic partners submit datasets into the FEDGEN broker which synchronizes with the Trace Synthesis pipeline before activating governed sandboxes.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+    <style>
+      .panel { fill: rgba(15,23,42,0.7); stroke: #38bdf8; stroke-width: 2; rx: 16; ry: 16; }
+      .label { font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif; fill: #e2e8f0; font-size: 20px; font-weight: 600; }
+      .body { font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif; fill: #cbd5f5; font-size: 16px; }
+      .arrow { stroke: #38bdf8; stroke-width: 2; marker-end: url(#arrowhead); }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#38bdf8" />
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="960" height="540" fill="url(#bg)" />
+  <rect class="panel" x="60" y="96" width="240" height="180" />
+  <text class="label" x="180" y="140" text-anchor="middle">Academic Nodes</text>
+  <text class="body" x="180" y="170" text-anchor="middle">University labs</text>
+  <text class="body" x="180" y="200" text-anchor="middle">Joint review boards</text>
+  <text class="body" x="180" y="230" text-anchor="middle">Encrypted corpora uploads</text>
+
+  <rect class="panel" x="360" y="60" width="240" height="180" />
+  <text class="label" x="480" y="104" text-anchor="middle">FEDGEN Broker</text>
+  <text class="body" x="480" y="134" text-anchor="middle">Policy validation</text>
+  <text class="body" x="480" y="164" text-anchor="middle">Consent lineage ledger</text>
+  <text class="body" x="480" y="194" text-anchor="middle">Zero-copy dataset escrow</text>
+
+  <rect class="panel" x="360" y="300" width="240" height="180" />
+  <text class="label" x="480" y="344" text-anchor="middle">Trace Synthesis</text>
+  <text class="body" x="480" y="374" text-anchor="middle">Feature distillation</text>
+  <text class="body" x="480" y="404" text-anchor="middle">Bias instrumentation</text>
+  <text class="body" x="480" y="434" text-anchor="middle">Regulated replay trails</text>
+
+  <rect class="panel" x="660" y="180" width="240" height="180" />
+  <text class="label" x="780" y="224" text-anchor="middle">Governed Sandboxes</text>
+  <text class="body" x="780" y="254" text-anchor="middle">Nova research tenants</text>
+  <text class="body" x="780" y="284" text-anchor="middle">Automated export controls</text>
+  <text class="body" x="780" y="314" text-anchor="middle">Signed telemetry bundles</text>
+
+  <line class="arrow" x1="300" y1="186" x2="360" y2="150" />
+  <line class="arrow" x1="300" y1="186" x2="360" y2="390" />
+  <line class="arrow" x1="600" y1="150" x2="660" y2="240" />
+  <line class="arrow" x1="600" y1="390" x2="660" y2="240" />
+</svg>

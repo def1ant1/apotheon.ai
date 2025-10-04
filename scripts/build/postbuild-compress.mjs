@@ -14,9 +14,31 @@ import { cpus } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Worker, isMainThread, parentPort } from 'node:worker_threads';
-import globModule from 'glob';
+import * as globModule from 'glob';
 
-const globSync = typeof globModule.globSync === 'function' ? globModule.globSync : globModule.sync.bind(globModule);
+/**
+ * glob v10+ ships pure ESM named exports while older versions exposed a
+ * default export with `.sync`. Normalising here keeps the compression pipeline
+ * resilient no matter which glob variant the dependency resolver provides.
+ */
+const resolveGlobSync = () => {
+  if (typeof globModule.globSync === 'function') {
+    return globModule.globSync;
+  }
+
+  const defaultExport = /** @type {{ default?: unknown }} */ (globModule).default;
+  if (typeof defaultExport === 'function') {
+    return /** @type {typeof globModule.globSync} */ (defaultExport);
+  }
+
+  if (typeof globModule.sync === 'function') {
+    return globModule.sync.bind(globModule);
+  }
+
+  throw new Error('glob module missing globSync-compatible export. Update postbuild-compress.mjs resolver.');
+};
+
+const globSync = resolveGlobSync();
 import { performance } from 'node:perf_hooks';
 import { z } from 'zod';
 

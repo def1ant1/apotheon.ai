@@ -36,6 +36,21 @@ and campaign assets that go live each week.
    planning so marketing, RevOps, and engineering stay aligned on which features
    and content will be under test.
 
+### Research hub release process
+
+1. Draft or update the MDX narrative in `src/content/marketing/research.mdx` with
+   `[//]: #` workflow annotations. Ship the change through Pull Request so
+   Pagefind reindexes automatically during `npm run build`.
+2. Sync cohort milestones and sandbox availability windows in this calendar so
+   growth, RevOps, and academic partners operate against the same timeline.
+3. Refresh supporting assets:
+   - Run `npm run ensure:whitepapers` if download descriptions change.
+   - Re-render diagrams under `public/static/diagrams/research/` when the FEDGEN
+     or Trace Synthesis topology evolves.
+4. Confirm the `/research/` route renders as expected by running `npm run lint`,
+   `npm run typecheck`, and `npm run build`. Capture updates in the PR summary so
+   reviewers know the automation suite executed.
+
 ## Onboarding Checklist
 
 - Read `docs/dev/EDITORIAL.md` for the full publishing workflow.

@@ -1,0 +1,62 @@
+---
+title: Research & Academic Partnerships
+summary: Partner with Apotheon.ai to co-develop regulated AI controls, synthesize evaluation traces, and access governed sandboxes wired for compliance research.
+heroCtaLabel: Request sandbox credentials
+order: 8
+---
+
+[//]: # 'RESEARCH PLAYBOOK: Update cohort + integration tables in lockstep with Pagefind indexing. Run npm run build so the static search bundle captures edits immediately.'
+
+## Academic partnership program
+
+We operate multi-year memoranda of understanding with universities and federal labs that specialize in resilient automation, policy assurance, and evaluation science.
+
+- **Joint research boards** at MITRE, CMU, and Stanford review every dataset before it enters the platform, aligning with IRB approvals and export-control guidance.
+- **Dual-rail publication tracks** allow partners to ship peer-reviewed papers alongside applied playbooks surfaced in the Apotheon.ai docs hub.
+- **Evidence-first collaboration** keeps board minutes, experiment telemetry, and audit artifacts in the same ledger so compliance checkpoints are never lost.
+
+> Contact [research@apotheon.ai](mailto:research@apotheon.ai) to nominate new cohort members. We rotate invitations twice per year and publish selections in the handbook changelog.
+
+### Active partner cohorts
+
+| Cohort                   | Focus area                                                            | Current milestone                                                                                   |
+| ------------------------ | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Sovereign AI Observatory | Zero-knowledge proof systems for multinational data residency         | Q3: Deploying FedRAMP-aligned verification harnesses inside Nova tenants                            |
+| Trace Ethics Consortium  | Bias detection and remediation frameworks across healthcare + finance | Q2: Publishing comparative drift analysis results via the Sovereign AI Assurance whitepaper refresh |
+| Mission Systems Lab      | Field-deployable AI orchestration for classified environments         | Q4: Delivering IL5 sandbox blueprints with attested runtime policies                                |
+
+[//]: # 'SANDBOX ACCESS: Research program owners must sync new cohorts with docs/content/CALENDAR.md so release cadences stay aligned.'
+
+## FEDGEN and Trace Synthesis integration
+
+![FEDGEN and Trace Synthesis data exchange diagram](/static/diagrams/research/fedgen-trace-synthesis.svg)
+
+The research hub federates deterministic provenance (FEDGEN) with Trace Synthesis replay pipelines so every experiment emits audit-ready telemetry.
+
+1. **FEDGEN broker** validates partner uploads against consent lineage policies, encrypts corpora using tenant-managed keys, and stages zero-copy escrow in R2.
+2. **Trace Synthesis fabric** distills features, applies fairness instrumentation, and exports replay bundles with deterministic seeds for reproducibility.
+3. **Governed Nova sandboxes** hydrate the replay bundles, enforcing adaptive guardrails through Clio before researchers access controlled GPUs.
+
+Each stage produces signed manifests stored alongside the [Sovereign AI Assurance whitepaper](/about/white-papers/), making compliance reviews self-service for legal and policy stakeholders.
+
+## Researcher onboarding guidance
+
+- **Sandbox provisioning** — Submit a request via the hero CTA or [RevOps contact form](/about/contact/?team=research) with your institution’s compliance officer copied. RevOps automates background checks and drops credentials within one business day.
+- **Data ingestion** — Run `npm run ensure:research-intake -- --dry-run` locally (documented in the private ops handbook) before transferring corpora to confirm schema alignment. The workflow emits manifests consumed by FEDGEN.
+- **Publication workflow** — Draft findings in MDX under `src/content/marketing/research/` child folders. Include `[//]: # "PUBLISHING"` annotations so peers understand required automation. Ship updates through Pull Requests to trigger Pagefind reindexing.
+
+### Downloadable resources
+
+| Resource                                              | Description                                                                                  | Maintainer             |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------------------- | ---------------------- |
+| [Sovereign AI Assurance](/about/white-papers/)        | Compliance blueprint covering attestation exchange workflows referenced by FEDGEN sandboxes. | compliance@apotheon.ai |
+| [Strategic Automation Playbook](/about/white-papers/) | Operational playbook aligning Trace Synthesis insights with enterprise rollout cadences.     | revops@apotheon.ai     |
+| [Nova AI Research Workbench](/solutions/nova/)        | Module overview detailing how Nova isolates research tenants and enforces export controls.   | product@apotheon.ai    |
+
+> **Automation note:** Whitepaper metadata syncs from `src/content/whitepapers`. Run `npm run ensure:whitepapers` before updating download descriptions so checksum manifests stay aligned with the delivery Worker.
+
+## Next steps
+
+- Review the [downloadable resources](#downloadable-resources) table and capture experiment intents in `docs/content/CALENDAR.md`.
+- Use the sandbox CTA to request credentials, then coordinate integration testing with the FEDGEN team via the Trace Synthesis Slack bridge.
+- Schedule quarterly retrospectives with Apotheon.ai research program managers to ensure academic roadmaps and enterprise releases stay synchronized.
