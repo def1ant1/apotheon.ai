@@ -63,21 +63,29 @@ pillars:
     longForm: 'Blueprints codify data onboarding, evaluation, and red-teaming so every ship stays compliant while unlocking minutes-not-months iteration speed.'
     icon: 'clio'
 # Modules pair to deep-dive pages. Keep names aligned with IA and prefer on-site href targets.
+# Product stack editorial contract: preserve ordering (BWCCUM ↔ Themis ↔ Mnemosyne ↔ Hermes ↔ Morpheus)
+# so storytelling mirrors the automation flow described in README.md. When metrics or asset slugs
+# evolve, refresh via `npm run ensure:whitepapers` first, then update these summaries to avoid
+# desynchronizing analytics annotations baked into ProductModulesSection.tsx.
 modules:
+  - name: 'BWCCUM Orchestration Mesh'
+    summary: 'Deterministic DAG orchestration runs policy-aware workflows across every region while teeing up remediation packets for Themis. Request the BWCCUM runbook via the investor portal to download the FEDGEN oversight briefing.'
+    href: '/about/white-papers/?whitepaperSlug=apotheon-investor-brief#whitepaper-request'
+    icon: 'nova'
   - name: 'Themis Governance Control Plane'
-    summary: 'Unifies policies, risk scoring, and mitigation tasks so legal, security, and product teams collaborate from the same source of truth.'
+    summary: 'Unifies policies, risk scoring, and mitigation tasks so legal, security, and product teams collaborate from the same source of truth while certifying every BWCCUM DAG hop. Compliance officers can pull the DORA attestation pack directly from the Sovereign AI assurance whitepaper.'
     href: '/solutions/themis'
     icon: 'themis'
   - name: 'Morpheus Observability Fabric'
-    summary: 'Streams token-level telemetry, feedback queues, and anomaly detection to keep every agentic workflow measurable and improvable.'
+    summary: 'Streams token-level telemetry, feedback queues, and anomaly detection to keep every agentic workflow measurable and improvable, fusing Trace Synthesis digests with Nova cost curves for proactive drift response.'
     href: '/solutions/morpheus'
     icon: 'morpheus'
   - name: 'Hermes Automation Cloud'
-    summary: 'No-code and code-native builders orchestrate human reviews, multi-model routing, and escalation runbooks with enterprise-grade RBAC.'
+    summary: 'No-code and code-native builders orchestrate human reviews, multi-model routing, and escalation runbooks with enterprise-grade RBAC, packaging Nova + Themis policies into reusable BWCCUM lane templates.'
     href: '/solutions/hermes'
     icon: 'hermes'
   - name: 'Mnemosyne Activation Fabric'
-    summary: 'Governs identity resolution, consent-aware audiences, and activation telemetry without bespoke ETL upkeep.'
+    summary: 'Governs identity resolution, consent-aware audiences, and activation telemetry without bespoke ETL upkeep, shipping Trace Synthesis audience controls back into RevOps with downloadable consent ledgers.'
     href: '/solutions/mnemosyne'
     icon: 'mnemosyne'
 # Homepage industries preview inherits copy from here so marketing can keep

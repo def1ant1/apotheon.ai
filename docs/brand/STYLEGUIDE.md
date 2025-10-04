@@ -57,6 +57,15 @@ The ensure script deterministically rebuilds `hero-base.png` and derivative form
 
 ---
 
+## Platform Narrative System
+
+> **Why document this:** Homepage copy, investor decks, and solution landing pages now share the BWCCUM → Themis → Mnemosyne → Hermes → Morpheus progression introduced in the README “Platform Overview”. Locking the story to a fixed cadence keeps marketing claims, diligence packets, and product UI labels synchronized.
+
+- **Authoring contract:** Update the `modules` array inside `src/content/homepage/landing.mdx` (see inline comments) when sequencing changes. Always run `npm run ensure:whitepapers` before editing copy so downloadable asset slugs stay accurate, then refresh `npm run lint && npm run typecheck && npm run build` to rehydrate automation snapshots.
+- **Research integration:** FEDGEN and Trace Synthesis references must link to the Markdown dossiers under `docs/research/`. Those files track asset provenance and automation hooks—never hardcode external URLs in hero/module copy without recording the redirect contract there.
+- **BWCCUM ↔ Themis interplay:** Visual collateral should mirror the orchestrated DAG hand-off: BWCCUM executes compliance-aware workloads, Themis certifies and pauses lanes on failure, Mnemosyne syndicates consented outputs, while Hermes/Morpheus expose automation and telemetry. Reuse these beats across decks, PDFs, and product UI to maintain investor/regulator trust.
+- **Metrics refresh cadence:** Quarterly RevOps reviews update the metrics reported in the README table and landing modules. When new data lands, regenerate PDFs via `npm run ensure:whitepapers`, rerun `npm run test` to rebuild automation reports, and update both README + landing copy in the same pull request.
+
 ## Token Orchestration & Theme Controls
 
 > **Why this matters:** A centralized token pipeline lets the brand team tweak one file and have Astro, Tailwind, and React islands update in lockstep. Theme switches (light/dark) ride on the exact same variables so we avoid diverging palettes between CSS and TypeScript.

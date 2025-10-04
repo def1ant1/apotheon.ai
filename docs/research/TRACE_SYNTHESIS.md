@@ -1,0 +1,21 @@
+# Trace Synthesis Research Dossier
+
+> **Purpose:** Centralize the automation guardrails, consent policies, and distribution hooks for the Trace Synthesis research cited across homepage modules and investor collateral.
+
+## Data Pipeline Overview
+
+1. Capture orchestrated traces from BWCCUM lanes with PII scrubbed at the edge.
+2. Themis evaluates compliance posture and annotates the dataset with jurisdictional gating metadata.
+3. Mnemosyne packages approved aggregates for activation while Hermes exposes scenario sandboxes for RevOps and partner enablement.
+
+## Drift Appendix Automation Contract
+
+- **Source MDX:** `src/content/whitepapers/trace-synthesis.mdx` (placeholder until research publish). Update metrics directly in MDX so the PDF export stays authoritative.
+- **Generation:** Run `npm run ensure:whitepapers` to produce the appendix PDF and refresh the manifest ledger before touching README or landing summaries.
+- **Verification:** Execute `npm run lint && npm run typecheck && npm run build` to confirm automation parity and Lighthouse budgets after copy changes.
+
+## Download & Consent Workflow
+
+- **Investor access:** Route visitors through `/about/white-papers/?whitepaperSlug=strategic-automation-playbook#whitepaper-request` until the dedicated Trace Synthesis slug ships.
+- **Consent logging:** The whitepaper Worker persists consent receipts to D1; confirm the records via `npm run test:synthetic` in CI for every change.
+- **Revocation handling:** Mnemosyne automatically propagates opt-outs to BWCCUM lanes. Document escalations in the consent ledger referenced in homepage copy.

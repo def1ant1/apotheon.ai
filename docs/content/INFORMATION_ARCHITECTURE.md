@@ -16,7 +16,6 @@ components cooperate during `npm run build`.
 ## Page Templates
 
 - **Dynamic routes:**
-
   - `src/pages/solutions/[product].astro`
   - `src/pages/industries/[sector].astro`
   - `src/pages/about/[page].astro`
@@ -26,7 +25,6 @@ components cooperate during `npm run build`.
   hydration occurs outside optional islands authors may embed later.
 
 - **Index routes:**
-
   - `src/pages/solutions/index.astro`
   - `src/pages/industries/index.astro`
   - `src/pages/about/index.astro`
@@ -42,6 +40,29 @@ components cooperate during `npm run build`.
   button styling and copy length guidance.
 - `src/components/marketing/MarketingCtaRow.astro` prevents duplicate CTA markup while outlining
   performance and analytics considerations.
+
+## Homepage Product Stack Grid
+
+- **Source of truth:** The product stack grid ships inside `src/content/homepage/landing.mdx` as the
+  `modules` array. Follow the inline editorial contract to keep the BWCCUM → Themis → Mnemosyne →
+  Hermes → Morpheus cadence intact.
+- **Automation discipline:** Before editing module summaries or links, run `npm run ensure:whitepapers`
+  so regenerated PDFs (FEDGEN oversight, Sovereign AI assurance, Strategic automation playbook)
+  publish updated slugs into `assets/whitepapers/managed-assets.json`. Then execute `npm run lint`,
+  `npm run typecheck`, and `npm run build` to let CI mirror the refresh.
+- **Research hand-offs:** FEDGEN and Trace Synthesis references must point to the dossiers stored in
+  `docs/research/`. These Markdown files document access policies, download automation, and
+  investor-review cadence. Never link directly to R2 object URLs from marketing pages.
+- **Analytics alignment:** ProductModulesSection.tsx emits data attributes that assume the module
+  order in the MDX file. Any reorder requires updating analytics dashboards and the README table in
+  the same commit to keep revenue reporting accurate.
+
+## Research Dossiers
+
+- `docs/research/FEDGEN.md` — Tracks the capital oversight briefing workflow, signed URL
+  distribution cadence, and BWCCUM × Themis orchestration metrics investors see in PDFs.
+- `docs/research/TRACE_SYNTHESIS.md` — Documents trace aggregation, consent packaging, and the
+  Mnemosyne export hooks the homepage now references.
 
 Future additions (e.g., testimonial sliders, pricing tables) should follow the same pattern: create a
 component inside `src/components/marketing/`, annotate it thoroughly, and import it from page
