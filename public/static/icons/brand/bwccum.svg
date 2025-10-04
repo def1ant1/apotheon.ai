@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" focusable="false" role="img">
+  <title>BWCCUM autonomous control mesh icon</title>
+  <circle cx="12" cy="12" r="8.25" stroke="#0ea5e9"/>
+  <path stroke="#1e3a8a" d="M8.25 12a3.75 3.75 0 1 0 7.5 0 3.75 3.75 0 1 0-7.5 0"/>
+  <path stroke="#1d4ed8" d="M5.75 5.75 9 9m6 6 3.25 3.25"/>
+  <path stroke="#2563eb" d="M5.75 18.25 9 15m6-6 3.25-3.25"/>
+  <circle cx="12" cy="12" r="1.4" stroke="#38bdf8"/>
+</svg>

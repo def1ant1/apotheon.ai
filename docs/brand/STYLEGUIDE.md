@@ -270,7 +270,7 @@ _Rationale:_ A system-first stack eliminates layout shift on initial render, whi
 - **Optimized exports:** Running the build script writes production-ready assets into `public/static/icons/brand/`. The SVGO config (`svgo.config.cjs`) enforces precision, viewBox preservation, and adds `role="img"`/`focusable="false"` for consistent runtime behavior.
 - **React wrappers:** When marketing or product teams need JSX access, enable the optional React generation (`--react`) to refresh `src/components/icons/`. Components expose a typed `title` prop so experiences can opt into decorative or labelled usage.
 
-Current brand marks include the five Apotheon pillars (Clio, Hermes, THEMIS, Morpheus, Mnemosyne) plus six industry glyphs (energy, finance, healthcare, manufacturing, public sector, transport). Keep additions within this directory so the automation stack can reason over them.
+Current brand marks include the six Apotheon pillars (BWC-CUM, Clio, Hermes, THEMIS, Morpheus, Mnemosyne) plus six industry glyphs (energy, finance, healthcare, manufacturing, public sector, transport). Keep additions within this directory so the automation stack can reason over them.
 
 ### Accessibility Expectations
 

@@ -48,4 +48,16 @@ test.describe('seo metadata', () => {
       .allTextContents();
     expect(schemaPayloads.some((payload) => payload.includes('"SoftwareApplication"'))).toBe(true);
   });
+
+  test('BWCCUM detail page exposes canonical metadata and description', async ({ page }) => {
+    await page.goto('/solutions/bwccum/');
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      /\/solutions\/bwccum\//,
+    );
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+      'content',
+      /centralizes policy orchestration/i,
+    );
+  });
 });

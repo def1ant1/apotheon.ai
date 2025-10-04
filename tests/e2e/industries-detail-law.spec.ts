@@ -17,7 +17,12 @@ test.describe('Law industry detail page', () => {
 
     // Ensure each mapped solution resolves to its canonical solution detail route.
     const solutionList = page.locator('#industry-solution-map [data-solution-slug]');
-    await expect(solutionList).toHaveCount(3);
+    await expect(solutionList).toHaveCount(4);
+    await expect(
+      page.locator(
+        '#industry-solution-map [data-solution-slug="bwccum"] a[href="/solutions/bwccum/"]',
+      ),
+    ).toBeVisible();
     await expect(
       page.locator(
         '#industry-solution-map [data-solution-slug="mnemosyne"] a[href="/solutions/mnemosyne/"]',

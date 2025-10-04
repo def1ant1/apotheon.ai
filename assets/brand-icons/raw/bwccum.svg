@@ -1,0 +1,16 @@
+<!--
+  BWCCUM icon represents the bidirectional policy mesh continually enforcing controls.
+  Overlapping concentric circuits and central nexus illustrate orchestration lanes syncing evidence.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <title>BWCCUM autonomous control mesh icon</title>
+  <!-- Outer governance loop signaling continuous compliance perimeter -->
+  <circle cx="12" cy="12" r="8.25" stroke="#0EA5E9" />
+  <!-- Inner automation circuit showing remediation cadence -->
+  <path d="M8.25 12a3.75 3.75 0 1 0 7.5 0 3.75 3.75 0 1 0-7.5 0Z" stroke="#1E3A8A" />
+  <!-- Crossed pathways denoting bidirectional policy and evidence flow -->
+  <path d="M5.75 5.75 9 9M15 15l3.25 3.25" stroke="#1D4ED8" />
+  <path d="M5.75 18.25 9 15M15 9l3.25-3.25" stroke="#2563EB" />
+  <!-- Nexus node capturing attested control execution -->
+  <circle cx="12" cy="12" r="1.4" stroke="#38BDF8" />
+</svg>

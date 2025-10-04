@@ -2,6 +2,7 @@
  * Auto-generated React icon barrel.
  * Updates via scripts/brand/build-icons.mjs --react.
  */
+export { BwccumIcon } from './BwccumIcon';
 export { ClioIcon } from './ClioIcon';
 export { HermesIcon } from './HermesIcon';
 export { IndustryEnergyIcon } from './IndustryEnergyIcon';
