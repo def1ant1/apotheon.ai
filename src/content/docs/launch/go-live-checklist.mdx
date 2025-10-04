@@ -6,7 +6,7 @@ description: This playbook codifies the enterprise-grade launch routine for
   Apotheon.ai. Every step favors automation over one-off console work so we can
   rehearse, audit, and repeat the launch procedure without drift.
 sourcePath: launch/GO-LIVE_CHECKLIST.md
-sourceLastModified: 2025-09-30T04:05:36.323Z
+sourceLastModified: 2025-10-04T15:54:28.571Z
 tags: []
 ---
 
@@ -40,6 +40,7 @@ synthetic_health && wrangler tail`) to confirm `/api/contact` and
 
 - Trigger the warmup script (`npm run build && node scripts/ci/ensure-ladle-output.mjs`)
   to prime static assets and OG imagery before the first user hits the site.
+- Regenerate the static bundles (`npm run build && npm run ladle:build`) and run `npm run lint:html` so the html-validate gate signs off on the launch-ready markup before cache warmup begins.
 - Fire the synthetic Worker immediately after warmup so the contact and
   whitepaper caches contain fresh responses. This also seeds D1 with the first
   production run for observability.

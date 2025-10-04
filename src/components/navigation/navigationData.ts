@@ -262,6 +262,11 @@ export async function getFooterColumns(t?: Translator): Promise<ReadonlyArray<Fo
       titleKey: 'footer.columns.industries.title',
       fallbackTitle: 'Industries',
     },
+    {
+      sourceId: 'research',
+      titleKey: 'footer.columns.research.title',
+      fallbackTitle: 'Research',
+    },
     { sourceId: 'company', titleKey: 'footer.columns.company.title', fallbackTitle: 'Company' },
   ];
 

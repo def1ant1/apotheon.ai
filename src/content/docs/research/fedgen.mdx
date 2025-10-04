@@ -1,0 +1,37 @@
+---
+title: FEDGEN Capital Oversight Briefing
+category: research
+categoryLabel: Research
+description: 1. Author or update the MDX source under `src/content/whitepapers/`
+  (e.g., `fedgen-operational-oversight.mdx`). 2. Run `npm run
+  ensure:whitepapers` to regenerate PDFs and update
+  `assets/whitepapers/managed-assets.json` with fresh checksums. 3. Execute `npm
+  run test && npm run build` to rebuild automation reports and ensure CI parity
+  before publishing. 4. Commit the regenerated manifest entries alongside any
+  README or landing page copy updates so reviewers can trace metrics to source
+  artifacts.
+sourcePath: research/FEDGEN.md
+sourceLastModified: 2025-10-04T15:54:28.571Z
+tags: []
+---
+
+> **Purpose:** Document the pipeline that generates and distributes the FEDGEN (Federated Governance) investor whitepaper referenced across the README, homepage product stack, and diligence packets.
+
+## Asset Generation Workflow
+
+1. Author or update the MDX source under `src/content/whitepapers/` (e.g., `fedgen-operational-oversight.mdx`).
+2. Run `npm run ensure:whitepapers` to regenerate PDFs and update `assets/whitepapers/managed-assets.json` with fresh checksums.
+3. Execute `npm run test && npm run build` to rebuild automation reports and ensure CI parity before publishing.
+4. Commit the regenerated manifest entries alongside any README or landing page copy updates so reviewers can trace metrics to source artifacts.
+
+## Distribution & Access Controls
+
+- **Primary funnel:** `/about/white-papers/?whitepaperSlug=apotheon-investor-brief#whitepaper-request` issues signed URLs via the Workers delivery proxy. Update the slug once the dedicated FEDGEN MDX ships.
+- **Synthetic monitoring:** `npm run test:synthetic` validates that the whitepaper Worker can mint download URLs and persist audit trails to D1.
+- **Investor notifications:** Coordinate with RevOps to schedule GOV/IR email drops immediately after PDFs regenerate. The BWCCUM orchestration metrics in the README table must match the PDF appendix.
+
+## Signal Taxonomy Custody
+
+- **Coverage:** Runtime metrics exported from BWCCUM lanes, policy attestation deltas from Themis, and consent summaries from Mnemosyne.
+- **Storage:** Persist sanitized aggregates in the FEDGEN section of `assets/whitepapers/managed-assets.json`. Never embed raw customer data.
+- **Review cadence:** Quarterly (or sooner if regulatory policy shifts). Always rerun `npm run ensure:whitepapers` and refresh README metrics in the same change set.

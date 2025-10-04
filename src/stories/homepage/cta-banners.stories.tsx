@@ -1,5 +1,6 @@
 import DemoBannerSection from '../../components/homepage/DemoBannerSection';
 import InvestorBannerSection from '../../components/homepage/InvestorBannerSection';
+import ResearchBannerSection from '../../components/homepage/ResearchBannerSection';
 import { footerContact } from '../../components/navigation/contactMetadata';
 
 import type { Meta, Story } from '@ladle/react';
@@ -34,6 +35,17 @@ const demoBanner = {
   },
 };
 
+const researchBanner = {
+  heading: 'Research partnerships & sandboxes',
+  body: 'Coordinate academic cohorts, FEDGEN integrations, and Trace Synthesis sandboxes without bespoke intake workflows.',
+  secondaryText: `Research requests route to dedicated RevOps analysts during ${footerContact.officeHours}.`,
+  cta: {
+    label: 'Explore research hub',
+    href: '/research',
+    ariaLabel: 'Navigate to the Apotheon.ai research and academic partnerships hub',
+  },
+};
+
 export const BannerShowcase: Story = () => (
   <article className="token-story">
     <header>
@@ -46,6 +58,7 @@ export const BannerShowcase: Story = () => (
 
     <div className="space-y-10">
       <InvestorBannerSection banner={investorBanner} />
+      <ResearchBannerSection banner={researchBanner} />
       <DemoBannerSection banner={demoBanner} />
     </div>
 

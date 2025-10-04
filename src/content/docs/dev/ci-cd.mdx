@@ -8,7 +8,7 @@ description: The `CI` workflow codifies our enterprise readiness guardrails so
   [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) and executes
   automatically for pull requests and pushes to `main`.
 sourcePath: dev/CI_CD.md
-sourceLastModified: 2025-09-30T04:05:36.323Z
+sourceLastModified: 2025-10-04T15:54:28.567Z
 tags: []
 ---
 
@@ -97,7 +97,10 @@ easy to debug issues without re-running a full build.
 
 Artifacts from Lighthouse, ZAP, Pagefind, and Gitleaks remain available for 14
 days. When triaging a failure, download the relevant archive from the Actions UI
-and review the bundled HTML/JSON reports.
+and review the bundled HTML/JSON reports. Release managers can pull the
+compression manifest from the same workflow run—follow the
+[Deployment & Edge Compression Playbook](/docs/dev/deployment/) for the ingestion
+steps that feed CDN configuration.
 
 ## Running the pipeline locally
 

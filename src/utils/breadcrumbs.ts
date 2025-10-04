@@ -26,6 +26,10 @@ const SECTION_CONFIG = {
     label: 'About',
     href: '/about/',
   },
+  research: {
+    label: 'Research',
+    href: '/research/',
+  },
   blog: {
     label: 'Blog',
     href: '/blog/',

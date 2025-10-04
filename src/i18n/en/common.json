@@ -138,6 +138,24 @@
           }
         }
       },
+      "research": {
+        "label": "Research",
+        "description": "Academic partnerships, Trace Synthesis integrations, and sandbox provisioning guidance.",
+        "links": {
+          "hub": {
+            "label": "Research partnerships hub",
+            "description": "Program overview, FEDGEN workflows, and publication guidance."
+          },
+          "nova": {
+            "label": "Nova research tenants",
+            "description": "Isolation controls and export governance for academic workloads."
+          },
+          "whitepapers": {
+            "label": "Sovereign AI Assurance",
+            "description": "Download attestation playbooks and Trace Synthesis integration briefs."
+          }
+        }
+      },
       "securityRunbooks": {
         "label": "Security Runbooks",
         "description": "Field-ready incident guides aligned with the security playbooks introduced in issue #3.",
@@ -218,6 +236,9 @@
       },
       "industries": {
         "title": "Industries"
+      },
+      "research": {
+        "title": "Research"
       },
       "company": {
         "title": "Company"
