@@ -5,6 +5,16 @@ fully structured so Astro templates render hydration-free sections in a consiste
 Each entry is a Markdown or MDX file whose frontmatter must satisfy the schema defined in
 `src/content/solutions/index.ts`.
 
+## Current Solution Roster
+
+- `bwccum` — BWC-CUM Autonomous Control Mesh orchestrating continuous control enforcement.
+- `clio` — Clio Revenue Intelligence aligning GTM pipelines and executive narratives.
+- `hermes` — Hermes Automation Cloud powering workflow orchestration and human-in-the-loop review.
+- `mnemosyne` — Mnemosyne Activation Fabric governing consent-aware activation.
+- `morpheus` — Morpheus Observability Fabric streaming telemetry for automated guardrails.
+- `nova` — Nova Workbench securing experimentation pipelines for AI teams.
+- `themis` — Themis Governance Control Plane centralizing policy evidence and attestation.
+
 ## Required Frontmatter Fields
 
 | Field             | Type                | Purpose                                                                                 |

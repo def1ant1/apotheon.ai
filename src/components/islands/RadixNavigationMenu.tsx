@@ -65,6 +65,20 @@ export const navigationMenuGroups: ReadonlyArray<NavigationMenuGroup> = [
       },
       {
         /**
+         * BWCCUM sits ahead of Themis + Mnemosyne in the control mesh sequence, so we surface it
+         * directly in global navigation. Keeping the slug aligned with /solutions/bwccum ensures the
+         * sitemap generator, Pagefind indexer, and nav validator remain in sync.
+         */
+        id: 'bwccum',
+        label: 'BWC-CUM Control Mesh',
+        labelKey: 'navigation.groups.platform.links.bwccum.label',
+        href: '/solutions/bwccum',
+        description:
+          'Autonomous control mesh that propagates policies and evidence across every lane.',
+        descriptionKey: 'navigation.groups.platform.links.bwccum.description',
+      },
+      {
+        /**
          * Automation guard: keep Mnemosyne copy in sync with the activation pillar slug so pagefind seeds
          * and sitemap automation stay deterministic.
          */

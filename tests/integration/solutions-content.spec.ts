@@ -27,6 +27,10 @@ function normalizeRoute(href: string): string {
 }
 
 describe('solutions content integration contract', () => {
+  it('tracks BWCCUM in the published slug roster', () => {
+    expect(solutionSlugSet.has('bwccum')).toBe(true);
+  });
+
   it('loads hero, overview, and CTA metadata through astro:content', () => {
     expect(publishedSolutions.length).toBeGreaterThan(0);
 
