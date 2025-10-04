@@ -46,4 +46,20 @@ test.describe('blog posts', () => {
     expect(atomText).toContain('<feed');
     expect(atomText).toContain('<entry>');
   });
+
+  test('published posts render CTA panels with routable links', async ({ page }) => {
+    await page.goto('/blog/aios-architecture/');
+    const cta = page.locator('[data-qa="blog-cta"]');
+    await expect(cta).toBeVisible();
+
+    const primary = cta.locator('[data-qa="blog-cta-primary"]');
+    await expect(primary).toHaveAttribute('href', '/about/white-papers/#whitepaper-request');
+
+    const primaryHref = await primary.getAttribute('href');
+    expect(primaryHref).toBeTruthy();
+
+    const resolvedUrl = new URL(primaryHref ?? '', page.url()).toString();
+    const response = await page.request.get(resolvedUrl);
+    expect(response.ok()).toBeTruthy();
+  });
 });
