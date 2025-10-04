@@ -1,0 +1,50 @@
+<!--
+  Diagram provenance: Newly authored for the BWCCUM compliance mesh narrative. Structured to mirror existing
+  solutions diagrams so the build pipeline can optimize deterministically without manual tweaks.
+  Maintainer note: Grouping order mirrors the rendered z-index. Preserve the coordinate grid (360x220) when
+  updating artwork to avoid churn in optimized exports and downstream stories relying on intrinsic sizing.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 220">
+  <title>BWCCUM compliance mesh service topology</title>
+  <rect x="0" y="0" width="360" height="220" rx="18" fill="#020617" />
+  <g fill="none" stroke="#1E293B" stroke-width="1.5">
+    <rect x="24" y="32" width="312" height="156" rx="16" />
+    <rect x="24" y="32" width="96" height="156" rx="16" />
+    <rect x="132" y="32" width="96" height="156" rx="16" />
+    <rect x="240" y="32" width="96" height="156" rx="16" />
+  </g>
+  <g font-family="'Inter', sans-serif" font-size="12" fill="#F1F5F9">
+    <text x="72" y="60" text-anchor="middle" font-weight="600">Ingest</text>
+    <text x="72" y="80" text-anchor="middle">Global feeds</text>
+    <text x="180" y="60" text-anchor="middle" font-weight="600">Normalize</text>
+    <text x="180" y="80" text-anchor="middle">Policy graph</text>
+    <text x="288" y="60" text-anchor="middle" font-weight="600">Assure</text>
+    <text x="288" y="80" text-anchor="middle">Risk signals</text>
+  </g>
+  <g font-family="'Inter', sans-serif" font-size="11" fill="#38BDF8">
+    <rect x="40" y="100" width="64" height="32" rx="10" fill="#0F172A" stroke="#38BDF8" stroke-width="1.5" />
+    <text x="72" y="120" text-anchor="middle">Logs</text>
+    <rect x="148" y="100" width="64" height="32" rx="10" fill="#0F172A" stroke="#38BDF8" stroke-width="1.5" />
+    <text x="180" y="120" text-anchor="middle">Mappings</text>
+    <rect x="256" y="100" width="64" height="32" rx="10" fill="#0F172A" stroke="#38BDF8" stroke-width="1.5" />
+    <text x="288" y="120" text-anchor="middle">Evidence</text>
+  </g>
+  <g font-family="'Inter', sans-serif" font-size="11" fill="#A855F7">
+    <rect x="40" y="146" width="64" height="32" rx="10" fill="#0B1120" stroke="#A855F7" stroke-width="1.5" />
+    <text x="72" y="166" text-anchor="middle">Adapters</text>
+    <rect x="148" y="146" width="64" height="32" rx="10" fill="#0B1120" stroke="#A855F7" stroke-width="1.5" />
+    <text x="180" y="166" text-anchor="middle">Ontologies</text>
+    <rect x="256" y="146" width="64" height="32" rx="10" fill="#0B1120" stroke="#A855F7" stroke-width="1.5" />
+    <text x="288" y="166" text-anchor="middle">Controls</text>
+  </g>
+  <g stroke="#22D3EE" stroke-width="3" stroke-linecap="round" fill="none">
+    <path d="M104 116 C 124 116 132 116 148 116" />
+    <path d="M212 116 C 232 116 240 116 256 116" />
+    <path d="M104 162 C 124 150 132 146 148 146" />
+    <path d="M212 162 C 232 150 240 146 256 146" />
+  </g>
+  <g stroke="#F97316" stroke-width="3" stroke-dasharray="6 6" fill="none">
+    <path d="M72 94 C 128 60 232 60 288 94" />
+    <path d="M72 184 C 128 204 232 204 288 184" />
+  </g>
+</svg>
