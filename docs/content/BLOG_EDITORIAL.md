@@ -17,6 +17,9 @@ ships with inline comments—treat this document as the narrative companion for 
   calculate manually after the draft stabilizes.
 - **Author block** – The `author` object powers the shared `<AuthorBio>` component and JSON-LD schema. Keep bios under 320
   characters and include optional social links for trust signals.
+- **Call to action** – Use the optional `cta` object to surface the next best action (whitepaper downloads, beta enrollment,
+  executive briefings). Pair every CTA with inline MDX comments describing when to rotate the links so future editors inherit
+  the guidance.
 
 ## Draft Management
 
@@ -26,6 +29,8 @@ ships with inline comments—treat this document as the narrative companion for 
   and inspect `dist/` locally. Never upload this build—CI runs `npm run build` without the flag to guarantee drafts stay private.
 - Draft placeholders should capture outline bullets and next steps. Schema validation ensures we never lose metadata fidelity,
   even when copy is still rough.
+- CTA placeholders are acceptable during outline phases; keep the inline comment updated so marketing knows whether a post
+  should drive whitepaper downloads, beta waitlists, or research briefings once the asset is live.
 
 ## Publishing Workflow
 

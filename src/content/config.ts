@@ -92,6 +92,55 @@ const blogCollection = defineCollection({
           ),
       })
       .describe('OpenGraph artwork references keep marketing previews consistent across channels.'),
+    cta: z
+      .object({
+        eyebrow: z
+          .string()
+          .optional()
+          .describe(
+            'Optional eyebrow rendered above the CTA headline (e.g., “Download” or “Beta”).',
+          ),
+        title: z.string().min(1).describe('Primary CTA heading surfaced in the gradient panel.'),
+        description: z
+          .string()
+          .optional()
+          .describe('Short supporting copy that explains the value of the linked resource.'),
+        primary: z
+          .object({
+            label: z.string().min(1).describe('Button label for the highest priority action.'),
+            href: z
+              .string()
+              .min(1)
+              .describe('Absolute or relative URL to the target asset or workflow.'),
+            rel: z
+              .string()
+              .optional()
+              .describe(
+                'Optional rel override for the primary link when legal/compliance requires it.',
+              ),
+          })
+          .describe('Primary CTA rendered as a filled pill button.'),
+        secondary: z
+          .object({
+            label: z
+              .string()
+              .min(1)
+              .describe('Secondary button label for readers who need a softer touchpoint.'),
+            href: z
+              .string()
+              .min(1)
+              .describe('Absolute or relative URL for the secondary follow-up action.'),
+            rel: z.string().optional().describe('Optional rel override for the secondary link.'),
+          })
+          .optional()
+          .describe(
+            'Optional secondary CTA shown as an outlined pill for comparison shopping journeys.',
+          ),
+      })
+      .optional()
+      .describe(
+        'Optional CTA metadata appended to the article. When omitted, the layout suppresses the gradient panel automatically.',
+      ),
     draft: z
       .boolean()
       .default(false)

@@ -6,6 +6,7 @@ export type BlogCollectionEntry = CollectionEntry<'blog'>;
 export type BlogEntryData = InferEntrySchema<'blog'>;
 export type BlogAuthorMetadata = BlogEntryData['author'];
 export type BlogOpenGraphMetadata = BlogEntryData['openGraph'];
+export type BlogEntryCallToAction = BlogEntryData['cta'];
 
 /**
  * Supported publish date sorting directions.

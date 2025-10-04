@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 
 import AuthorBio from '../../components/blog/AuthorBio.astro';
+import CallToActionPanel from '../../components/blog/CallToActionPanel.astro';
 import RelatedPosts from '../../components/blog/RelatedPosts.astro';
 import Breadcrumbs from '../../components/navigation/Breadcrumbs.astro';
 import SchemaScript from '../../components/seo/SchemaScript.astro';
@@ -120,6 +121,9 @@ const breadcrumbSchema = buildBreadcrumbSchema(breadcrumbs, siteOrigin, pageLoca
     <section class="prose prose-invert prose-slate max-w-none">
       <Content />
     </section>
+
+    <!-- CTA metadata lives in `cta` frontmatter so marketing can rotate assets without touching markup. -->
+    <CallToActionPanel cta={entry.data.cta} />
 
     {
       headings.length > 3 && (

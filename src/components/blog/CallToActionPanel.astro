@@ -1,0 +1,60 @@
+---
+import { normalizeBlogCta, type BlogCallToAction } from './call-to-action';
+
+export interface Props {
+  /**
+   * CTA metadata supplied by blog frontmatter. When undefined the component
+   * renders nothing so articles without a CTA stay compact.
+   */
+  readonly cta?: BlogCallToAction | null;
+}
+
+const cta = normalizeBlogCta(Astro.props.cta);
+
+if (!cta) {
+  return null;
+}
+---
+
+<!-- CTA panel renders sanitized metadata from frontmatter; all strings are normalized before hitting the DOM. -->
+<section
+  aria-labelledby="blog-cta-heading"
+  class="rounded-3xl border border-sky-400/40 bg-gradient-to-br from-slate-950 via-slate-900/90 to-slate-950 p-8 shadow-[0_40px_120px_-45px_rgba(56,189,248,0.45)]"
+  data-qa="blog-cta"
+>
+  {
+    cta.eyebrow && (
+      <p class="text-xs font-semibold tracking-[0.35em] text-sky-300 uppercase">{cta.eyebrow}</p>
+    )
+  }
+  <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+    <div class="flex flex-col gap-3">
+      <h2 id="blog-cta-heading" class="text-2xl font-semibold text-white">
+        {cta.title}
+      </h2>
+      {cta.description && <p class="text-base text-slate-300">{cta.description}</p>}
+    </div>
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center md:justify-end">
+      <a
+        class="inline-flex items-center justify-center rounded-full bg-sky-400 px-6 py-3 text-base font-semibold text-slate-950 transition hover:bg-sky-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-200"
+        data-qa="blog-cta-primary"
+        href={cta.primary.href}
+        rel={cta.primary.rel}
+      >
+        {cta.primary.label}
+      </a>
+      {
+        cta.secondary && (
+          <a
+            class="inline-flex items-center justify-center rounded-full border border-sky-300 px-6 py-3 text-base font-semibold text-sky-200 transition hover:border-sky-200 hover:text-sky-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-200"
+            data-qa="blog-cta-secondary"
+            href={cta.secondary.href}
+            rel={cta.secondary.rel}
+          >
+            {cta.secondary.label}
+          </a>
+        )
+      }
+    </div>
+  </div>
+</section>
